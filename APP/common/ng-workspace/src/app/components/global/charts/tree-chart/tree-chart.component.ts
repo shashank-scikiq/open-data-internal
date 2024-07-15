@@ -14,7 +14,6 @@ export class TreeChartComponent implements OnInit {
   metrix: any = 'map_total_orders_metrics';
   selectedState: any;
   isLoading: boolean = false;
-  object = Object;
   
   selectedStateOption: string = '';
   selectedDistrictOption: string = '';
@@ -27,6 +26,7 @@ export class TreeChartComponent implements OnInit {
   stateOptions: string[] = [];
   options: string[] = [];
   issueInLoading: boolean = false;
+  object = Object;
 
   private topSellerSubscription$ = new Subject<void>();
 

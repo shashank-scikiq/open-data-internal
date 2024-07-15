@@ -13,19 +13,16 @@ from dateutil.relativedelta import relativedelta
 from dotenv import load_dotenv
 from django.http import HttpRequest
 from apps.src.chart_data.supply_chart import fetch_downloadable_data_logistics_overall, fetch_overall_top3_states_sellers, fetch_overall_top3_district_sellers
-from apps.src.database_utils.ClsDomain import Domain
+
 from apps.src.database_utils.database_utility import DatabaseUtility
 from apps.src.database_utils.dal_logistics_overall import DataAccessLayer
 from apps.src.database_utils.data_service_layer import DataService
-from apps.src.database_utils.OrderMetrics import OrderMetric
-from apps.src.database_utils.SellerMetrics import SellerMetric
-from apps.src.database_utils.ZonalCommerceMetrics import ZonalCommerceMetric
 from apps.src.database_utils.generic_queries import max_date_logistics_overall
 import logging
 import hashlib, hmac
-import calendar
+
 from apps.logging_conf import log_function_call, exceptionAPI, ondcLogger
-import os
+
 load_dotenv()
 
 from apps.utils import constant
@@ -38,81 +35,6 @@ templatePath = 'apps/retail_all/web/html/'
 db_utility = DatabaseUtility()
 data_access_layer = DataAccessLayer(db_utility)
 data_service = DataService(data_access_layer)
-
-
-
-def fetch_state_district_list():
-    query = f''' select distinct "Statecode" as state_code, "Statename" as state_name, "Districtname" as district from {constant.PINCODE_TABLE}'''
-    db_util = DatabaseUtility(alias='default')
-    df = db_util.execute_query(query, return_type='df')
-    return df
-def shift_date_months(start_date_str, end_date_str, months=-1):
-    start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
-    end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
-    new_start_date = start_date + relativedelta(months=months)
-    new_end_date = end_date + relativedelta(months=months)
-    return new_start_date.strftime("%Y-%m-%d"), new_end_date.strftime("%Y-%m-%d")
-
-def calculate_percentage_change(current, previous):
-    if previous == 0:
-        return 100 if current != 0 else 0
-    return round(((current - previous) / previous) * 100, 2)
-
-
-def fetch_state_list():
-    query = f''' select distinct "Statecode" as state_code, "Statename" as state_name from {constant.PINCODE_TABLE}'''
-    db_util = DatabaseUtility(alias='default')
-    df = db_util.execute_query(query, return_type='df')
-    return df
-
-def safe_divide(a, b, default=1):
-    try:
-        return np.divide(a, b)
-    except Exception as e:
-        return default
-
-def fetch_max_min_data():
-    db_util = DatabaseUtility(alias='default')
-    df = db_util.execute_query(max_date_logistics_overall, return_type='df')
-    # Extract the minimum and maximum year_month values
-    min_year_month = df['min_year_month'].iloc[0]
-    max_year_month = df['max_year_month'].iloc[0]
-
-    # Convert these values to year and month
-    min_year = min_year_month // 100
-    min_month = min_year_month % 100
-
-    max_year = max_year_month // 100
-    max_month = max_year_month % 100
-
-    # Construct min_date as the first day of the min year/month
-    min_date = f"{min_year}-{min_month:02d}-01"
-
-    # Calculate the last day of the max month
-    last_day = calendar.monthrange(max_year, max_month)[1]
-    max_date = f"{max_year}-{max_month:02d}-{last_day:02d}"
-
-    # Optionally convert to datetime objects
-    min_date_dt = pd.to_datetime(min_date)
-    max_date_dt = pd.to_datetime(max_date)
-
-    min_date= min_date_dt.strftime('%Y-%m-%d')
-    max_date= max_date_dt.strftime('%Y-%m-%d')
-
-
-    return min_date, max_date
-
-try:
-    min_date, max_date = fetch_max_min_data()
-except Exception as e:
-    min_date = ''
-    max_date = ''
-
-class CustomJSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.int64):
-            return int(obj)
-        return super().default(obj)
 
 
 class SummaryBaseDataAPI(APIView):
@@ -152,13 +74,10 @@ class SummaryBaseDataAPI(APIView):
 
     @log_function_call(ondcLogger)
     def top_chart_format(self, df: pd.DataFrame, chart_type):
-        data_column = 'total_orders_delivered'
-        if 'seller' in chart_type:
-            data_column = 'active_sellers_count'
         df['order_date'] = df['order_month'].astype(int).apply(lambda x: f"{x:02}") + '-' + df['order_year'].astype(int).astype(str)
         if not pd.api.types.is_datetime64_any_dtype(df['order_date']):
             df['order_date'] = pd.to_datetime(df['order_date'])
-        df[data_column] = pd.to_numeric(df[data_column], errors='coerce')
+        df['total_orders_delivered'] = pd.to_numeric(df['total_orders_delivered'], errors='coerce')
 
         formatted_data = {
             "series": [],
@@ -167,7 +86,7 @@ class SummaryBaseDataAPI(APIView):
         if chart_type == 'cumulative':
             formatted_data["series"].append({
                 "name": "India",
-                "data": df[data_column].tolist()
+                "data": df['total_orders_delivered'].tolist()
             })
         else:
             for state in df[chart_type].unique():
@@ -175,7 +94,7 @@ class SummaryBaseDataAPI(APIView):
                     continue
                 state_data = {
                     "name": state,
-                    "data": df[df[chart_type] == state][data_column].tolist()
+                    "data": df[df[chart_type] == state]['total_orders_delivered'].tolist()
                 }
                 formatted_data["series"].append(state_data)
 
@@ -323,23 +242,20 @@ class SummaryBaseDataAPI(APIView):
 
     @log_function_call(ondcLogger)
     def map_state_data_format(self, map_state_df: pd.DataFrame):
-        map_state_df = map_state_df[['state_code', 'state_name', 'district',
-                                     'total_active_sellers',
-                                     'total_orders_delivered', 'intradistrict_orders', 'intrastate_orders']]
-        map_state_df['district'] = map_state_df['district'].fillna('Unknown').str.upper()
-        map_state_df['state_code'] = map_state_df['state_code'].fillna('Unknown')
+        map_state_df['delivery_district'] = map_state_df['delivery_district'].fillna('Unknown').str.upper()
+        map_state_df['delivery_state_code'] = map_state_df['delivery_state_code'].fillna('Unknown')
         map_state_df['intrastate_orders'] = map_state_df['intrastate_orders'].astype('float')
         map_state_df['intradistrict_orders'] = map_state_df['intradistrict_orders'].astype('float')
 
         result = {}
 
-        for state_code in map_state_df['state_code'].unique():
-            state_df = map_state_df[map_state_df['state_code'] == state_code]
+        for state_code in map_state_df['delivery_state_code'].unique():
+            state_df = map_state_df[map_state_df['delivery_state_code'] == state_code]
             state_data = result.setdefault(state_code, {'districts': {}, 'total': {}})
-            for district in state_df['district'].unique():
-                district_df = state_df[state_df['district'] == district]
+            for district in state_df['delivery_district'].unique():
+                district_df = state_df[state_df['delivery_district'] == district]
                 total_orders_delivered = district_df['total_orders_delivered'].sum()
-                total_active_sellers = district_df['total_active_sellers'].sum()
+                total_active_sellers = district_df['active_sellers_count'].sum()
                 total_intradistrict_orders = district_df['intradistrict_orders'].sum()
                 intradistrict_percentage = float(float(total_intradistrict_orders) / float(
                     total_orders_delivered)) * 100 if total_orders_delivered else 0
@@ -363,7 +279,7 @@ class SummaryBaseDataAPI(APIView):
                 'intrastate_percentage': round(
                     float(state_df['intrastate_orders'].sum() / state_df['total_orders_delivered'].sum()) * 100, 2) if
                 state_df['total_orders_delivered'].sum() else 0,
-                'active_sellers': int(state_df['total_active_sellers'].sum())
+                'active_sellers': int(state_df['active_sellers_count'].sum())
             }
 
         return result
@@ -397,6 +313,30 @@ class SummaryBaseDataAPI(APIView):
                 result['statewise'].append(state_data)
 
         return result
+
+import calendar
+
+
+def shift_date_months(start_date_str, end_date_str, months=-1):
+    start_date = datetime.strptime(start_date_str, "%Y-%m-%d")
+    end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
+    new_start_date = start_date + relativedelta(months=months)
+    new_end_date = end_date + relativedelta(months=months)
+    return new_start_date.strftime("%Y-%m-%d"), new_end_date.strftime("%Y-%m-%d")
+
+
+
+def calculate_percentage_change(current, previous):
+    if previous == 0:
+        return 100 if current != 0 else 0
+    return round(((current - previous) / previous) * 100, 2)
+
+
+def fetch_state_list():
+    query = f''' select distinct "Statecode" as delivery_state_code_current from {constant.PINCODE_TABLE}'''
+    db_util = DatabaseUtility(alias='default')
+    df = db_util.execute_query(query, return_type='df')
+    return df
 
 
 class FetchMaxDate(APIView):
@@ -444,9 +384,53 @@ class FetchMaxDate(APIView):
         df = db_util.execute_query(max_date_logistics_overall, return_type='df')
         return df
 
+def safe_divide(a, b, default=1):
+    try:
+        return np.divide(a, b)
+    except Exception as e:
+        return default
+
+def fetch_max_min_data():
+    db_util = DatabaseUtility(alias='default')
+    df = db_util.execute_query(max_date_logistics_overall, return_type='df')
+    # Extract the minimum and maximum year_month values
+    min_year_month = df['min_year_month'].iloc[0]
+    max_year_month = df['max_year_month'].iloc[0]
+
+    # Convert these values to year and month
+    min_year = min_year_month // 100
+    min_month = min_year_month % 100
+
+    max_year = max_year_month // 100
+    max_month = max_year_month % 100
+
+    # Construct min_date as the first day of the min year/month
+    min_date = f"{min_year}-{min_month:02d}-01"
+
+    # Calculate the last day of the max month
+    last_day = calendar.monthrange(max_year, max_month)[1]
+    max_date = f"{max_year}-{max_month:02d}-{last_day:02d}"
+
+    # Optionally convert to datetime objects
+    min_date_dt = pd.to_datetime(min_date)
+    max_date_dt = pd.to_datetime(max_date)
+
+    min_date= min_date_dt.strftime('%Y-%m-%d')
+    max_date= max_date_dt.strftime('%Y-%m-%d')
 
 
-class FetchTopCardDeltaData1(SummaryBaseDataAPI):
+    return min_date, max_date
+
+try:
+    min_date, max_date = fetch_max_min_data()
+except Exception as e:
+    min_date = ''
+    max_date = ''
+
+import os
+
+
+class FetchTopCardDeltaData(SummaryBaseDataAPI):
     @exceptionAPI(ondcLogger)
     def get(self, request, *args, **kwargs):
         """
@@ -636,155 +620,6 @@ class FetchTopCardDeltaData1(SummaryBaseDataAPI):
         }
 
 
-class FetchTopCardDeltaData(SummaryBaseDataAPI):
-    """
-    API view for fetching the top states orders.
-    """
-
-    def get_previous_date_range(self, params):
-        original_start_date = params['start_date']
-        original_end_date = params['end_date']
-        previous_start_date, previous_end_date = shift_date_months(original_start_date, original_end_date)
-
-        try:
-            previous_st_date = datetime.strptime(previous_start_date, '%Y-%m-%d').date()
-            min_date_obj = datetime.strptime(min_date, '%Y-%m-%d').date()
-            if previous_st_date < min_date_obj:
-                previous_start_date = min_date
-                previous_end_date = original_end_date
-        except Exception as e:
-            print(e)
-            previous_start_date, previous_end_date = shift_date_months(original_start_date, original_end_date)
-
-        return previous_start_date, previous_end_date
-
-    def create_metric_data(self, count, heading, delta, tooltip_text):
-        return {
-            "type": 'default',
-            "count": int(count),
-            "heading": heading,
-            "tooltipText": tooltip_text,
-            "icon": 'trending_up' if delta >= 0 else 'trending_down',
-            "positive": bool(delta >= 0),
-            "percentageCount": float(delta)
-        }
-
-    def create_max_orders_delivered_area_data(self, most_ordering_district):
-        return {
-            "type": 'max_state',
-            "heading": 'records the highest order count',
-            "tooltipText": 'Maximum Orders by State/Districts, basis the date range. It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.',
-            "mainText": str(most_ordering_district)
-        }
-
-    def clean_and_prepare_data(self, merged_df):
-
-        merged_df = merged_df[['state_code', 'state_name', 'total_active_sellers',
-                                'delta_active_sellers', 'total_districts',
-                                'delivered_orders', 'delta_districts', 'delta_delivered_orders',
-                                'most_ordering_district']]
-
-        merged_df['most_ordering_district'] = merged_df['most_ordering_district'].fillna(constant.NO_DATA_MSG)
-        merged_df['state_code'] = merged_df['state_code'].fillna('UN')
-        merged_df['state_name'] = merged_df['state_name'].fillna('Missing')
-        # merged_df['delivery_state'] = merged_df['delivery_state'].fillna('TOTAL')
-        # merged_df = merged_df.fillna(0)
-
-        merged_df['district_count_delta'] = np.round(merged_df['delta_districts'], 2
-        )
-        merged_df['orders_count_delta'] = np.round(merged_df['delta_delivered_orders'], 2)
-        merged_df['sellers_count_delta'] = np.round(merged_df['delta_active_sellers'], 2)
-
-        merged_df = merged_df.replace([np.inf, -np.inf], 100).replace([np.nan], 0).fillna(0)
-        return merged_df
-        # return merged_df.drop(
-        #     ['delivered_orders_previous', 'total_districts_previous', 'total_active_sellers_previous',
-        #      'delivery_state_code_previous'], axis=1
-        # )
-
-    def format_response_data(self, merged_df, previous_start_date, previous_end_date):
-        date_format = '%b, %Y'
-        prev_start_date_str = datetime.strftime(datetime.strptime(previous_start_date, '%Y-%m-%d'), date_format)
-        prev_end_date_str = datetime.strftime(datetime.strptime(previous_end_date, '%Y-%m-%d'), date_format)
-        # merged_df = merged_df[['state_code', 'state_name', 'total_active_sellers',
-        #                         'delta_active_sellers', 'total_districts',
-        #                         'delivered_orders', 'delta_districts', 'delta_delivered_orders',
-        #                         'most_ordering_district']]
-        top_card_data = {}
-        for _, row in merged_df.iterrows():
-            state_code = row['state_code']
-            if state_code not in top_card_data:
-                top_card_data[state_code] = [
-                    self.create_metric_data(
-                        row['delivered_orders'], 'Total Orders', row['orders_count_delta'],
-                        'Count of Distinct Network Order Id within the selected range.'
-                    ),
-                    self.create_metric_data(
-                        row['total_districts'], 'Districts', row['district_count_delta'],
-                        'Unique count of Districts where orders has been delivered within the date range. Districts are fetched using districts mapping using End pincode'
-                    ),
-                    self.create_metric_data(
-                        row['total_active_sellers'], 'Registered sellers', row['sellers_count_delta'],
-                        'Unique count of combination of (Provider ID + Seller App) within the date range'
-                    ),
-                    self.create_max_orders_delivered_area_data(
-                        row['most_ordering_district'])
-                ]
-
-        return {
-            "prev_date_range": f"Vs {prev_start_date_str} - {prev_end_date_str}",
-            "top_card_data": top_card_data
-        }
-
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
-        """
-        APIView BaseDataAPI FetchTopStatesOrders
-        """
-        params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics'
-        order_metric = OrderMetric(db_utility)
-        seller_metric =SellerMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [order_metric, seller_metric])
-        orders_data = logistics_overall_domain.run_metric_function(metric_name='ordermetric',
-                                                            function_name='top_card_delta',
-                                                            **params)
-
-        seller_data = logistics_overall_domain.run_metric_function(metric_name='sellermetric',
-                                                            function_name='top_card_delta',
-                                                            **params)
-        state_list = fetch_state_list()
-        seller_data.rename(columns={'seller_state_code': 'state_code', 'seller_state': 'state'}, inplace=True)
-        orders_data.rename(columns={'delivery_state_code': 'state_code', 'delivery_state': 'state'}, inplace=True)
-        data_resp = pd.merge(state_list, seller_data, on='state_code', how='outer')
-        data_resp = pd.merge(data_resp, orders_data, on='state_code', how='outer')
-        data_resp = self.clean_and_prepare_data(data_resp)
-
-
-        previous_start_date, previous_end_date = self.get_previous_date_range(params)
-        data = self.format_response_data(data_resp, previous_start_date, previous_end_date)
-
-        # formatted_data = self.top_chart_format(data, chart_type='delivery_state')
-        return JsonResponse(data, safe=False)
-class FetchTopCardDeltaData22(SummaryBaseDataAPI):
-    """
-    API view for fetching the top states orders.
-    """
-
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
-        """
-        APIView BaseDataAPI FetchTopStatesOrders
-        """
-        params = self.extract_common_params(request)
-        # params['domain_name'] = 'Logistics'
-        order_metric = OrderMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [order_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='ordermetric',
-                                                            function_name='top_card_delta',
-                                                            **params)
-        # formatted_data = self.top_chart_format(data, chart_type='delivery_state')
-        return JsonResponse(data, safe=False)
 class FetchMapStateWiseData(SummaryBaseDataAPI):
     @exceptionAPI(ondcLogger)
     def get(self, request, *args, **kwargs):
@@ -826,91 +661,22 @@ class FetchMapStateWiseData(SummaryBaseDataAPI):
             return JsonResponse(error_message, status=200, safe=False)
 
 
+class CustomJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.int64):
+            return int(obj)
+        return super().default(obj)
+
+
 class FetchMapStateData(SummaryBaseDataAPI):
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
-        """
-        APIView BaseDataAPI FetchTopStatesOrders
-        """
-        params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics'
-        order_metric = OrderMetric(db_utility)
-        seller_metric =SellerMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [order_metric, seller_metric])
-
-        orders_data = logistics_overall_domain.run_metric_function(metric_name='ordermetric',
-                                                            function_name='map_state_data',
-                                                            **params)
-
-        seller_data = logistics_overall_domain.run_metric_function(metric_name='sellermetric',
-                                                            function_name='map_state_data',
-                                                            **params)
-
-        # data = self.map_state_data_format()
-        state_list = fetch_state_district_list()
-        seller_data.rename(columns={'seller_state_code': 'state_code', 'seller_state': 'state', 'seller_district':'district'}, inplace=True)
-        orders_data.rename(columns={'delivery_state_code': 'state_code', 'delivery_state': 'state', 'delivery_district':'district'}, inplace=True)
-        data_resp = pd.merge(state_list, seller_data, on=['state_code', 'district'], how='outer')
-        data_resp = pd.merge(data_resp, orders_data, on=['state_code', 'district'], how='outer')
-        data = self.map_state_data_format(data_resp)
-        # data_resp = self.clean_and_prepare_data(data_resp)
-        #
-        #
-        # previous_start_date, previous_end_date = self.get_previous_date_range(params)
-        # data = self.format_response_data(data_resp, previous_start_date, previous_end_date)
-
-        # formatted_data = self.top_chart_format(data, chart_type='delivery_state')
-        return JsonResponse(data, safe=False)
-
-    # def get(self, request, *args, **kwargs):
-    #     """
-    #     APIView BaseDataAPI FetchMapStateData
-    #     """
-    #     params = self.extract_common_params(request)
-    #
-    #     p_d = [params['domain_name'], params['start_date'],
-    #            params['end_date'], params['state']]
-    #     cleaned_list = [element for element in p_d if element not in [None, 'None']]
-    #
-    #     p_d = "FetchMapStateData_$$$".join(cleaned_list)
-    #
-    #     resp_data = cache.get(p_d)
-    #     if resp_data is None:
-    #
-    #         data = data_service.get_cumulative_orders_statedata_summary(**params)
-    #         active_sellers_data = data_service.get_overall_active_sellers_statedata(**params)
-    #
-    #         active_sellers_renamed = active_sellers_data.rename(columns={'seller_state_code': 'delivery_state_code',
-    #                                                                      'seller_state': 'delivery_state',
-    #                                                                      'seller_district': 'delivery_district'})
-    #
-    #         merged = data.merge(active_sellers_renamed,
-    #                             on=['delivery_state_code', 'delivery_state', 'delivery_district'],
-    #                             how='outer')
-    #
-    #         merged.fillna(0, inplace=True)
-    #
-    #         numeric_columns = ['active_sellers_count', 'total_orders_delivered']
-    #         for col in numeric_columns:
-    #             merged[col] = pd.to_numeric(merged[col], errors='coerce')
-    #
-    #         formatted_data = self.map_state_data_format(merged)
-    #         # json_data = json.dumps(formatted_data, cls=CustomJSONEncoder)
-    #         json_data = formatted_data
-    #
-    #         cache.set(p_d, json_data, 60 * 60)
-    #
-    #     else:
-    #         json_data = resp_data
-    #     return JsonResponse(json_data, safe=False)
-class FetchMapStateData22(SummaryBaseDataAPI):
     @exceptionAPI(ondcLogger)
     def get(self, request, *args, **kwargs):
         """
         APIView BaseDataAPI FetchMapStateData
         """
         params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics_Overall'
+        params['domain_name'] = 'Logistics'
+
 
         p_d = [params['domain_name'], params['start_date'],
                params['end_date'], params['state']]
@@ -920,17 +686,26 @@ class FetchMapStateData22(SummaryBaseDataAPI):
 
         resp_data = cache.get(p_d)
         if resp_data is None:
-            order_metric = OrderMetric()
-            seller_metric = SellerMetric()
-            zonal_commerce_metric = ZonalCommerceMetric()
 
-            # Initialize domains
-            # retail_overall_domain = Domain("Retail_Overall", [order_metric, seller_metric, zonal_commerce_metric])
-            logistics_overall_domain = Domain("Logistics_Overall", [order_metric, seller_metric, zonal_commerce_metric])
+            data = data_service.get_cumulative_orders_statedata_summary(**params)
+            active_sellers_data = data_service.get_overall_active_sellers_statedata(**params)
 
-            formatted_data = logistics_overall_domain.run_metric_function( metric_name='ordermetric',
-                                                                           function_name='top_card_delta',
-                                                                           **params)
+            active_sellers_renamed = active_sellers_data.rename(columns={'seller_state_code': 'delivery_state_code',
+                                                                         'seller_state': 'delivery_state',
+                                                                         'seller_district': 'delivery_district'})
+
+            merged = data.merge(active_sellers_renamed,
+                                on=['delivery_state_code', 'delivery_state', 'delivery_district'],
+                                how='outer')
+
+            merged.fillna(0, inplace=True)
+
+            numeric_columns = ['active_sellers_count', 'total_orders_delivered']
+            for col in numeric_columns:
+                merged[col] = pd.to_numeric(merged[col], errors='coerce')
+
+            formatted_data = self.map_state_data_format(merged)
+            # json_data = json.dumps(formatted_data, cls=CustomJSONEncoder)
             json_data = formatted_data
 
             cache.set(p_d, json_data, 60 * 60)
@@ -952,32 +727,9 @@ class FetchTopStatesOrders(SummaryBaseDataAPI):
         """
         params = self.extract_common_params(request)
         params['domain_name'] = 'Logistics'
-        order_metric = OrderMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [order_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='ordermetric',
-                                                            function_name='top_states_chart',
-                                                            **params)
+
+        data = data_service.get_retail_overall_top_states_orders(**params)
         formatted_data = self.top_chart_format(data, chart_type='delivery_state')
-        return JsonResponse(formatted_data, safe=False)
-
-class FetchTopStatesSellers(SummaryBaseDataAPI):
-    """
-    API view for fetching the top states orders.
-    """
-
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
-        """
-        APIView BaseDataAPI FetchTopStatesOrders
-        """
-        params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics'
-        seller_metric = SellerMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [seller_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='sellermetric',
-                                                            function_name='top_states_chart',
-                                                            **params)
-        formatted_data = self.top_chart_format(data, chart_type='seller_state')
         return JsonResponse(formatted_data, safe=False)
 
 class FetchCumulativeOrders(SummaryBaseDataAPI):
@@ -992,14 +744,10 @@ class FetchCumulativeOrders(SummaryBaseDataAPI):
         """
         params = self.extract_common_params(request)
         params['domain_name'] = 'Logistics'
-        order_metric = OrderMetric(db_utility)
-
-        logistics_overall_domain = Domain("Logistics_Overall", [order_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='ordermetric',
-                                                            function_name='top_cumulative_chart',
-                                                            **params)
-
+        data = data_service.get_retail_overall_orders(**params)
         merged_data = data.replace([np.nan], 0)
+        # merged_data['total_orders_delivered'] = (merged_data['total_orders_delivered'] +
+        #                                          merged_data['total_orders_delivered_rv'])
 
         formatted_data = self.top_chart_format(merged_data, chart_type='cumulative')
         return JsonResponse(formatted_data, safe=False)
@@ -1013,20 +761,31 @@ class FetchCumulativeSellers(SummaryBaseDataAPI):
     @exceptionAPI(ondcLogger)
     def get(self, request, *args, **kwargs):
         """
-        APIView BaseDataAPI FetchTopStatesOrders
+        APIView BaseDataAPI FetchCumulativeSellers
         """
         params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics'
-        seller_metric = SellerMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [seller_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='sellermetric',
-                                                            function_name='top_cumulative_chart',
-                                                            **params)
+        data = data_service.get_overall_cumulative_sellers(**params)
         formatted_data = self.top_chart_format(data, chart_type='cumulative')
         return JsonResponse(formatted_data, safe=False)
 
 
 class FetchTopDistrictOrders(SummaryBaseDataAPI):
+    """
+    API view for fetching the top district orders.
+    """
+
+    @exceptionAPI(ondcLogger)
+    def get(self, request, *args, **kwargs):
+        """
+        APIView BaseDataAPI FetchTopDistrictOrders
+        """
+        params = self.extract_common_params(request)
+        params['domain_name'] = 'Logistics'
+        data = data_service.get_overall_top_district_orders(**params)
+        formatted_data = self.top_chart_format(data, chart_type='delivery_district')
+        return JsonResponse(formatted_data, safe=False)
+
+class FetchTopStatesHyperlocal(SummaryBaseDataAPI):
     """
     API view for fetching the top states orders.
     """
@@ -1034,16 +793,12 @@ class FetchTopDistrictOrders(SummaryBaseDataAPI):
     @exceptionAPI(ondcLogger)
     def get(self, request, *args, **kwargs):
         """
-        APIView BaseDataAPI FetchTopStatesOrders
+        APIView BaseDataAPI FetchTopStatesHyperlocal
         """
         params = self.extract_common_params(request)
         params['domain_name'] = 'Logistics'
-        order_metric = OrderMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [order_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='ordermetric',
-                                                            function_name='top_district_chart',
-                                                            **params)
-        formatted_data = self.top_chart_format(data, chart_type='delivery_district')
+        data = data_service.get_overall_top_states_hyperlocal_orders(**params)
+        formatted_data = self.top_chart_hyperlocal_format(data, chart_type='delivery_state')
         return JsonResponse(formatted_data, safe=False)
 
 
@@ -1058,99 +813,154 @@ class FetchTopDistrictHyperlocal(SummaryBaseDataAPI):
         APIView BaseDataAPI FetchTopDistrictHyperlocal
         """
         params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics'
-        zc_metric = ZonalCommerceMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [zc_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='zonalcommercemetric',
-                                                            function_name='top_district_chart',
-                                                            **params)
-        formatted_data = self.zonal_commerce_format(data, tree_type='seller_district')
+        data = data_service.get_overall_top_district_hyperlocal_orders(**params)
+        formatted_data = self.top_chart_hyperlocal_format(data, chart_type='delivery_district')
         return JsonResponse(formatted_data, safe=False)
 
-
-
-class FetchTopStatesHyperlocal(SummaryBaseDataAPI):
-    """
-    API view for fetching the top states orders.
-    """
-
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
-        """
-        APIView BaseDataAPI FetchTopStatesHyperlocal
-        """
-        params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics'
-        zc_metric = ZonalCommerceMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [zc_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='zonalcommercemetric',
-                                                            function_name='top_states_chart',
-                                                            **params)
-        formatted_data = self.top_chart_hyperlocal_format(data, chart_type='delivery_state')
-        return JsonResponse(formatted_data, safe=False)
-
-class FetchTop5SellersDistrict(SummaryBaseDataAPI):
-    """
-    API view for fetching the top states orders.
-    """
-
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
-        """
-        APIView BaseDataAPI FetchTopStatesHyperlocal
-        """
-        params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics'
-        params['district'] = request.query_params.get('district_name', None)
-        zc_metric = ZonalCommerceMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [zc_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='zonalcommercemetric',
-                                                            function_name='district_tree_chart',
-                                                            **params)
-        formatted_data = self.zonal_commerce_format(data, tree_type='delivery_district')
-        return JsonResponse(formatted_data, safe=False)
 
 
 class FetchTop5SellerStates(SummaryBaseDataAPI):
     """
-    API view for fetching the top states orders.
+    API view for fetching the top district orders.
     """
 
     @exceptionAPI(ondcLogger)
     def get(self, request, *args, **kwargs):
         """
-        APIView BaseDataAPI FetchTopStatesHyperlocal
+        APIView BaseDataAPI FetchTop5SellerStates
         """
         params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics'
-        zc_metric = ZonalCommerceMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [zc_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='zonalcommercemetric',
-                                                            function_name='state_tree_chart',
-                                                            **params)
+        data = data_service.get_overall_zonal_commerce_top_states(**params)
         formatted_data = self.zonal_commerce_format(data, tree_type='delivery_state')
         return JsonResponse(formatted_data, safe=False)
 
-class FetchTopDistrictSellers(SummaryBaseDataAPI):
+
+class FetchTop5SellersDistrict(SummaryBaseDataAPI):
     """
-    API view for fetching the top states orders.
+    API view for fetching the top district orders.
     """
 
     @exceptionAPI(ondcLogger)
     def get(self, request, *args, **kwargs):
         """
-        APIView BaseDataAPI FetchTopStatesOrders
+        APIView BaseDataAPI FetchTop5SellersDistrict
         """
         params = self.extract_common_params(request)
-        params['domain_name'] = 'Logistics'
-        seller_metric = SellerMetric(db_utility)
-        logistics_overall_domain = Domain("Logistics_Overall", [seller_metric])
-        data = logistics_overall_domain.run_metric_function(metric_name='sellermetric',
-                                                            function_name='top_district_chart',
-                                                            **params)
-        formatted_data = self.top_chart_format(data, chart_type='seller_district')
+        district = request.query_params.get('district_name', None)
+        if district == 'None' or district == 'undefined':
+            district = None
+        params['district'] = district
+        data = data_service.get_overall_zonal_commerce_top_districts(**params)
+        formatted_data = self.zonal_commerce_format(data, tree_type='delivery_district')
         return JsonResponse(formatted_data, safe=False)
-class FetchTopDistrictSellers11(APIView):
+
+
+class FetchTopStatesSellers(APIView):
+
+    def convert_decimal_to_float(self, data):
+        try:
+            if isinstance(data, Decimal):
+                return float(data)
+            elif isinstance(data, pd.Series):
+                return data.apply(self.convert_decimal_to_float).tolist()
+            elif isinstance(data, list):
+                return [self.convert_decimal_to_float(item) for item in data]
+            elif isinstance(data, dict):
+                return {key: self.convert_decimal_to_float(value) for key, value in data.items()}
+            return data
+
+        except Exception as e:
+            raise RuntimeError(f"An error occurred during conversion: {str(e)}")
+
+    @log_function_call(ondcLogger)
+    def process_fetch_result(self, result):
+        if isinstance(result, pd.DataFrame):
+            result_dict = result.to_dict(orient='records')
+            return {k: v[0] if isinstance(v, list) and len(v) == 1 else v for k, v in
+                    result_dict[0].items()} if result_dict else {}
+        return self.convert_decimal_to_float(result)
+
+    @log_function_call(ondcLogger)
+    def dataframe_to_dict_of_lists(self, df):
+        return {col: self.convert_decimal_to_float(df[col]) for col in df}
+
+    @log_function_call(ondcLogger)
+    def get_formatted_data(self, df):
+        df['date'] = df['order_month'].astype(int).apply(lambda x: f"{x:02}") + '-' + df['order_year'].astype(int).astype(str)
+
+        if not pd.api.types.is_datetime64_any_dtype(df['date']):
+            df['date'] = pd.to_datetime(df['date'])
+
+        df['active_sellers_count'] = pd.to_numeric(df['active_sellers_count'], errors='coerce')
+
+        formatted_data = {
+            "series": [],
+            "categories": df['date'].dt.strftime('%b-%y').unique().tolist()
+        }
+
+        for state in df['state'].unique():
+            if state == "MISSING" or state == "":
+                continue
+
+            state_specific_df = df[df['state'] == state]
+            state_data_series = state_specific_df.groupby(state_specific_df['date'].dt.strftime(constant.chart_date_format))[
+                'active_sellers_count'].sum().tolist()
+
+            state_data = {
+                "name": state,
+                "data": state_data_series
+            }
+            formatted_data["series"].append(state_data)
+
+        return formatted_data
+
+    @exceptionAPI(ondcLogger)
+    def get(self, request, *args, **kwargs):
+        """
+        APIView FetchTopStatesSellers
+        """
+
+        domain_name = request.GET.get('domainName')
+        if domain_name in ('undefined', 'all', 'None', None):
+            domain_name = 'Logistics'
+        end_date = request.GET.get('endDate')
+        start_date = request.GET.get('startDate')
+        category = request.GET.get('category')
+        if category in ('undefined', 'all', 'None'):
+            category = None
+        state = request.GET.get('state')
+        if state in ('undefined', 'all', 'None', 'null'):
+            state = None
+        sub_category = request.GET.get('subCategory')
+        if sub_category in constant.sub_category_none_values:
+            sub_category = None
+
+        p_d = [domain_name, start_date, end_date, category, sub_category, state]
+        cleaned_list = [element for element in p_d if element not in [None, 'None']]
+
+        p_d = "FetchTopStatesSellers_$$$".join(cleaned_list)
+
+        data = cache.get(p_d)
+        if data is None:
+
+            with connection.cursor() as conn:
+
+                if state is not None:
+                    state = state.upper()
+                    top_3_state_sellers_df = fetch_overall_top3_states_sellers(conn, start_date, end_date, category,
+                                                                       sub_category, domain_name, state)
+                else:
+                    top_3_state_sellers_df = fetch_overall_top3_states_sellers(conn, start_date, end_date, category,
+                                                                       sub_category, domain_name, None)
+
+                formatted_data = self.get_formatted_data(top_3_state_sellers_df)
+                cache.set(p_d, formatted_data, 60 * 60)
+        else:
+            formatted_data = data
+        return JsonResponse(formatted_data, safe=False)
+
+
+class FetchTopDistrictSellers(APIView):
 
     def convert_decimal_to_float(self, data):
         if isinstance(data, Decimal):

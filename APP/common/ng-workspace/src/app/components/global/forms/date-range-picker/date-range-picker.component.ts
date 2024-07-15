@@ -27,6 +27,9 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   }
 
   checkClear() {
+    if (
+      !this.date || !this.availableDateRange
+    ) return false;
     return !(this.date[0].toString()==this.availableDateRange[0].toString() && this.date[1].toString() == this.availableDateRange[1].toString())
   }
 

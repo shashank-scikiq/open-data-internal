@@ -13,7 +13,6 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  re_path(r'^blog/', include('blog.urls'))
 """
-import os
 
 from django.urls import include, re_path, path
 import importlib
@@ -29,10 +28,5 @@ urlpatterns +=[
     # re_path(r'^.*$',RedirectView.as_view(url='/', permanent=False)),
     re_path(r'^(?:.*)/?$', angular_app, name='angular_app'),
 ]
-# urlpatterns += [path('silk/', include('silk.urls', namespace='silk'))]
-# if os.getenv('DEBUG'):
-# import debug_toolbar
-# urlpatterns = [
-#     path('__debug__/', include(debug_toolbar.urls)),
-# ] + urlpatterns
+
 handler404 = 'apps.dashboard.dashboard_app.views.custom_404'

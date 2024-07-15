@@ -18,11 +18,11 @@
         </div>
         <div class="heading-section-btn-container">
             
-            @if(this.isStagingEnabled == 'False') {
+            <!-- @if(this.isStagingEnabled == 'False') {
             <app-month-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
-            } @else {
+            } @else { -->
             <app-date-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
-            }
+            <!-- } -->
             <!-- <div class="btn" nz-tooltip nzTooltipPlacement="top"
             nzTooltipTitle="Download data" (click)="openDownloadDialog()">
                 <i class="fa-solid fa-download"></i>

@@ -54,7 +54,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-    # 'debug_toolbar',
 ]+env_mod_setting.INSTALL_APP
 
 MIDDLEWARE = [
@@ -66,13 +65,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.BrokenLinkEmailsMiddleware',
-    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
-SILKY_PYTHON_PROFILER = True
-SILKY_PYTHON_PROFILER_BINARY = True
-SILKY_AUTHENTICATION = True  # User must login to see the silky reports
-SILKY_AUTHORISATION = True  # User must have permissions to see the silky reports
 CACHE_MIDDLEWARE_SECONDS = 60
 
 ROOT_URLCONF = 'django_setup.urls'

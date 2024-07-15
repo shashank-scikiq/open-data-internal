@@ -81,7 +81,7 @@ export class AppService {
       return this.http.get(`${this.baseUrl}api/${uri}/get-max-date/`);
     }
     else {
-      return this.http.get(`${this.baseUrl}api/get-max-date/`);
+      return this.http.get(`${this.baseUrl}api/retail/overall/get-max-date/`);
     }
   }
 
@@ -118,11 +118,6 @@ export class AppService {
 
     return [year, month, day].join('-');
   }
-  getFormattedChoosableDateRange() {
-    let startDate: any = this.formatDate(this.choosableDateRange.value[0]);
-    let endDate: any = this.formatDate(this.choosableDateRange.value[1]);
-    return [startDate, endDate];
-  }
 
   getFormattedDateRange() {
     let startDate: any = this.formatDate(this.dateRange.value[0]);
@@ -133,12 +128,9 @@ export class AppService {
   getSummaryCardData() {
     this.cancelSummaryCardDataPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
-    let [choosableStartDate, choosableEndDate] = this.getFormattedChoosableDateRange();
-
     const params = {
       startDate,
-      endDate,
-      minDate: choosableStartDate, maxDate: choosableEndDate
+      endDate
     }
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_card_delta/`,

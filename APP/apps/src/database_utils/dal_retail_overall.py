@@ -11,11 +11,8 @@ from apps.utils.constant import (MONTHLY_DISTRICT_TABLE,
 from datetime import datetime
 
 from apps.utils import constant
-import time
-from django.db.models import Count
-from django.db.models.functions import TruncMonth
-from apps.logistics_all.logistics_all_app.models import MonthlyProvider
-from django.db.models import Count, Q
+
+
 getcontext().prec = 4
 
 
@@ -595,79 +592,6 @@ class DataAccessLayer:
         return df
 
     @log_function_call(ondcLogger)
-    def fetch_overall_cumulative_sellers1(self, start_date, end_date, category=None,
-                                         sub_category=None, domain_name=None, state=None, group_by_seller_state=False,
-                           group_by_seller_district=False):
-        table_name = constant.PROVIDER_MONTHLY_AGGREGATION
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        end_month = edate_obj.month
-        start_year = stdate_obj.year
-        end_year = edate_obj.year
-
-        month_names = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
-
-        conditions = []
-
-        # Create conditions for each relevant month
-        if start_year == end_year:
-            month_conditions = [f"{month_names[m - 1]} = 1" for m in range(start_month, end_month + 1)]
-            conditions.append(f"(order_year = {start_year} AND ({' OR '.join(month_conditions)}))")
-        else:
-            # Conditions for the first year
-            first_year_months = [f"{month_names[m - 1]} = 1" for m in range(start_month, 13)]
-            conditions.append(f"(order_year = {start_year} AND ({' OR '.join(first_year_months)}))")
-
-            # Conditions for the full years in between
-            if end_year > start_year + 1:
-                middle_years = f"(order_year > {start_year} AND order_year < {end_year})"
-                conditions.append(middle_years)
-
-            # Conditions for the last year
-            last_year_months = [f"{month_names[m - 1]} = 1" for m in range(1, end_month + 1)]
-            conditions.append(f"(order_year = {end_year} AND ({' OR '.join(last_year_months)}))")
-
-        final_query = f"""
-        SELECT
-            order_year,
-            order_month,
-            COUNT(DISTINCT provider_key) AS total_orders_delivered
-        FROM (
-            SELECT 
-                provider_key, 
-                seller_district, 
-                seller_state, 
-                order_year,
-                unnest(array[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]) as order_month,
-                unnest(array[jan, feb, mar, apr, may, jun, jul, aug, sep, oct, nov, dec]) as month_present
-            FROM 
-                provider_monthly_aggregation
-            WHERE
-                {" OR ".join(conditions)}
-        ) AS monthly_data
-        WHERE
-            month_present = 1
-        """
-
-        if state:
-            final_query += f" AND seller_state = '{state}'"
-
-        final_query += """
-        GROUP BY order_year, order_month
-        ORDER BY order_year, order_month
-        """
-        df = self.db_utility.execute_query(final_query)
-
-
-        return pd.DataFrame(df, columns=['order_year', 'order_month', 'total_orders_delivered'])
-
-        df = self.db_utility.execute_query(final_query, parameters)
-        return df
-
-    @log_function_call(ondcLogger)
     def fetch_overall_top_states_hyperlocal_orders(self, start_date, end_date, category=None, sub_category=None,
                                                    domain_name=None, state=None):
         selected_view = constant.MONTHLY_DISTRICT_TABLE
@@ -1106,45 +1030,12 @@ class DataAccessLayer:
 
         return aggregated_df
 
-    def fetch_overall_active_sellers23(self, start_date, end_date, category=None,
-                                     sub_category=None, domain=None, state=None):
-        start_time = time.time()
 
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        start_month = stdate_obj.month
-        start_year = stdate_obj.year
-        end_month = edate_obj.month
-        end_year = edate_obj.year
-
-        # Queryset to filter data
-        queryset = MonthlyProvider.objects.filter(
-            (Q(order_year__gt=start_year) |
-             (Q(order_year=start_year) & Q(order_month__gte=start_month))) &
-            (Q(order_year__lt=end_year) |
-             (Q(order_year=end_year) & Q(order_month__lte=end_month)))
-        )
-
-        if state:
-            queryset = queryset.filter(seller_state__iexact=state)
-
-        queryset = queryset.values('seller_state', 'seller_state_code').annotate(
-            active_sellers_count=Count('provider_key', distinct=True)
-        ).order_by('seller_state', 'seller_state_code')
-
-        df = pd.DataFrame(list(queryset))
-
-        end_time = time.time()
-        execution_time = end_time - start_time
-        print(f"Query execution time: {execution_time} seconds")
-
-        return df
 
     @log_function_call(ondcLogger)
     def fetch_overall_active_sellers(self, start_date, end_date, category=None,
                                      sub_category=None, domain=None, state=None):
-        start_time = time.time()
+
         stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
         edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
 
@@ -1172,6 +1063,18 @@ class DataAccessLayer:
 
         conditions = []
 
+        # if category and category != 'None':
+        #     conditions.append("AND category = %s")
+        #     parameters.append(category)
+        #
+        # if sub_category:
+        #     conditions.append("AND sub_category = %s")
+        #     parameters.append(sub_category)
+
+        # if domain:
+        #     conditions.append("AND domain_name = %s")
+        #     parameters.append(domain)
+
         if state:
             conditions.append("AND upper(seller_state) = upper(%s)")
             parameters.append(state)
@@ -1180,9 +1083,7 @@ class DataAccessLayer:
         query = query + conditions_str + " GROUP BY seller_state, seller_state_code"
 
         df = self.db_utility.execute_query(query, parameters)
-        end_time = time.time()
-        execution_time = end_time - start_time
-        print(f"Query execution time: {execution_time} seconds")
+
         return df
 
 

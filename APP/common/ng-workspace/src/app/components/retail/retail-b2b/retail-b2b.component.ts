@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AppService } from '@openData/app/core/api/app/app.service';
 
 @Component({
   selector: 'app-retail-b2b',
@@ -6,5 +7,4 @@ import { Component } from '@angular/core';
   styleUrl: './retail-b2b.component.scss'
 })
 export class RetailB2bComponent {
-
 }

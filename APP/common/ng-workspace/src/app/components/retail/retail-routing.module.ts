@@ -12,15 +12,11 @@ const routes: Routes = [
   },
   {
     path: 'b2b',
-    component: RetailB2bComponent,
-    canActivate: [ConfigGuard],
-    data: { configKey: 'ENABLE_STAGING_ROUTE' }
+    component: RetailB2bComponent
   },
   {
     path: 'b2c',
-    component: RetailB2cComponent,
-    canActivate: [ConfigGuard],
-    data: { configKey: 'ENABLE_STAGING_ROUTE' }
+    component: RetailB2cComponent
   }
 ];
 

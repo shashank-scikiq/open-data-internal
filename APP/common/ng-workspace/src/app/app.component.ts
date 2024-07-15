@@ -40,7 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   initData() {
-    // this.getDateRange();
+    this.getDateRange();
     this.appService.dateRange$.subscribe((value: any) => {
       this.dateRange = value;
     });

@@ -18,14 +18,7 @@
     </div>
 </div>
 
-<div id="inntraDistrictTree" class="relative" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 300px;">
-    @if(!isLoading && object.keys(treeData).length == 0) {
-        <div class="font-sm open-data-grey-500 loader-area absolute width-100 height-100 top-0 left-0">
-            No data to display.
-        </div>
-    }
-
-</div>
+<div id="inntraDistrictTree" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 300px;"></div>
 @if(isLoading) {
     <div class="loader-area absolute width-100 height-100 top-0 left-0">
         <div class="dot-loader"></div>
@@ -34,4 +27,8 @@
     </div>
 }
 
-
+@if(!isLoading && !object.keys(treeData).length ) {
+    <div class="font-sm open-data-grey-500 loader-area absolute width-100 height-100 top-0 left-0">
+        No data to display.
+    </div>
+}

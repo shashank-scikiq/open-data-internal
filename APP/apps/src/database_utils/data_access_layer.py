@@ -1,7 +1,7 @@
 import pandas as pd
 from apps.logging_conf import log_function_call, ondcLogger
 from decimal import Decimal, getcontext
-from apps.utils.constant import (B2B_SELLER_TABLE, B2B_DISTRICT_TABLE, LOGISTICS_DISTRICT_TABLE, MONTHLY_DISTRICT_TABLE,
+from apps.utils.constant import (B2B_DISTRICT_TABLE, LOGISTICS_DISTRICT_TABLE, MONTHLY_DISTRICT_TABLE,
                                  category_sub_query, sub_category_sub_query,
                                  domain_sub_query, delivery_state_sub_query, seller_state_sub_query, NO_DATA_MSG)
 from datetime import datetime

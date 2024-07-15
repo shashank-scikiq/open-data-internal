@@ -42,52 +42,53 @@ export class RightSidenavComponent implements OnInit {
         subSections: [
           {
             title: 'Retail',
-            type: 'default',
+            // type: 'default',
+            type: 'accordian',
             icon: 'fa-solid fa-cart-shopping',
             url: 'retail',
-            disabled: false
-            // options: [
-            //   {
-            //     title: 'Retail',
-            //     url: 'retail',
-            //     disabled: false,
-            //     external: false
-            //   },
-            //   {
-            //     title: 'Retail B2B',
-            //     url: 'retail/b2b/',
-            //     disabled: Boolean(this.isStagingEnabled == 'False'),
-            //     external: false
-            //   },
-            //   {
-            //     title: 'Retail B2C',
-            //     url: 'retail/b2c/',
-            //     disabled: Boolean(this.isStagingEnabled == 'False'),
-            //     external: false
-            //   }
-            // ]
+            disabled: false,
+            options: [
+              {
+                title: 'Retail',
+                url: 'retail',
+                disabled: false,
+                external: false
+              },
+              {
+                title: 'Retail B2B',
+                url: 'retail/b2b/',
+                disabled: false,
+                external: false
+              },
+              {
+                title: 'Retail B2C',
+                url: 'retail/b2c/',
+                disabled: false,
+                external: false
+              }
+            ]
           },
           {
             title: 'Logistics',
-            // type: 'accordian',
-            type: 'default',
+            type: 'accordian',
+            // type: 'default',
             icon: 'fa-solid fa-truck-arrow-right',
             url: 'logistics',
-            disabled: false
-            // options: [
-            //   {
-            //     title: 'Logistic Overall',
-            //     url: 'logistics',
-            //     disabled: Boolean(this.isStagingEnabled == 'False'),
-            //     external: false
-            //   },
-            //   {
-            //     title: 'Logistic Detail',
-            //     url: 'logistics/detail/',
-            //     disabled: Boolean(this.isStagingEnabled == 'False'),
-            //     external: false
-            //   }
-            // ]
+            disabled: false,
+            options: [
+              {
+                title: 'Logistic Overall',
+                url: 'logistics',
+                disabled: false,
+                external: false
+              },
+              {
+                title: 'Logistic Detail',
+                url: 'logistics/detail/',
+                disabled: false,
+                external: false
+              }
+            ]
           }
         ]
       },

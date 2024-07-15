@@ -5,6 +5,10 @@ from . import views
 from django.views.generic import TemplateView
 
 urlpatterns = [
+    # path('', TemplateView.as_view(template_name='common/web/index.html'), name='retail_overall'),
+    # path('', views.angular_app, name='angular_app'),
+    # re_path(r'^retail/?$', TemplateView.as_view(template_name='common/web/index.html'), name='retail_overall'),
+    # path('retail/overall', views.summary, name='dashboard'),
     path(r'api/logistics/overall/get-max-date/', views.FetchMaxDate.as_view(), name='get-max-date'),
 
     path('api/logistics/overall/map_state_data/', views.FetchMapStateData.as_view(), name='map_state_data'),

@@ -12,9 +12,7 @@ const routes: Routes = [
   },
   {
     path: 'detail',
-    component: LogisticSummaryComponent,
-    canActivate: [ConfigGuard],
-    data: { configKey: 'ENABLE_STAGING_ROUTE' }
+    component: LogisticSummaryComponent
   }
 ];
 

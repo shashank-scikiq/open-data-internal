@@ -67,6 +67,15 @@ export class LineChartComponent implements OnChanges, OnInit {
     },
     yaxis: [
         {
+            show: true,
+            showAlways: false,
+            showForNullSeries: true,
+            opposite: false,
+            reversed: false,
+            logarithmic: false,
+            logBase: 10,
+            forceNiceScale: false,
+            floating: false,
             tickAmount: 5,
             min: 0,
             labels: {
@@ -146,24 +155,8 @@ export class LineChartComponent implements OnChanges, OnInit {
     }
   }
 
-  roundUpToNearestPattern(number: any) {
-    if (number === 0) return 0;
-
-    const length = number.toString().length;
-    const factor = this.metrix == "map_total_zonal_commerce_metrics" ? Math.pow(10, length - 1) : Math.pow(10, length - 2);
-
-    // Divide the number by the factor, round it up, then multiply back by the factor
-    const rounded = Math.ceil(number / factor) * factor;
-
-    return rounded;
-}
-
   async updateOptions() {
     this.chartOptions.series = this.options.series;
-    if (this.chartOptions.series?.length) {
-      const max = Math.max(...this.chartOptions.series?.flatMap((item: any) => item.data));
-      this.chartOptions['yaxis'][0]['max'] = await this.roundUpToNearestPattern(max);
-    }
     this.chartOptions['colors'] = this.chartType == 'cumulative' ? ["#00b8d4"] : ['#FF7722', '#26a0fc', '#32cd32'];
     this.chartOptions['markers'] =  this.chartType == 'cumulative' ? { size: 3, strokeWidth: 2 } : {};
     this.chartOptions['tooltip'] = {
@@ -171,9 +164,9 @@ export class LineChartComponent implements OnChanges, OnInit {
       y: {
         formatter: (val: any) => {
           if (this.metrix == "map_total_zonal_commerce_metrics") {
-            return val ? `${val}%` : '0%';
+            return val + "%";
           }
-          return val ? val : 0;
+          return val;
         },
         title: {
           formatter: (seriesName: any) => seriesName,

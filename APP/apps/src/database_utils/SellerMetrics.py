@@ -34,7 +34,7 @@ class SellerMetric(Metric):
         self.top_card_delta(start_date, end_date, **kwargs)
     
 
-    def get_month_conditions(start_date, end_date):
+    def get_month_conditions(self, start_date, end_date):
         start_month = start_date.month
         end_month = end_date.month
         start_year = start_date.year
