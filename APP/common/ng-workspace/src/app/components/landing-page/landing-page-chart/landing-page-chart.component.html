@@ -1,0 +1,64 @@
+<!-- @if(!isLoading) {
+    <div class="chart-section">
+        <div class="chart-inner-section">
+            <p class="font-bolder font-lg open-data-grey-900">
+                {{options1.title}}
+            </p>
+            <div class="chart-container">
+                <apx-chart 
+                        [series]="options1.series" 
+                        [chart]="options1.chart" 
+                        [dataLabels]="options1.dataLabels"
+                        [stroke]="options1.stroke" 
+                        [xaxis]="options1.xaxis" 
+                        [grid]="options1.grid"
+                        [colors]="options1.colors"
+                        [markers]="options1.markers"
+                        [yaxis]="options1.yaxis"
+                        [legend]="{
+                            show: true,
+                            position: 'top',
+                            itemMargin: {
+                                horizontal: 24
+                            },
+                            fontSize: '14px',
+                            fontWeight: 700
+                        }"
+                        [tooltip]="options1.tooltip"
+                        >
+                    </apx-chart>
+            </div>
+        </div>
+    </div>
+} -->
+<div class="chart-section">
+    <div class="chart-inner-section">
+        <p class="margin-0 font-bolder font-lg open-data-grey-900">
+            {{chartTitle}}
+        </p>
+        @if(domainConfig) {
+        <div class="legend-section">
+            @for(domain of domainConfig.domains; track domain; let i = $index) {
+            <div [ngStyle]="{
+                            'background-color': domainConfig.colorLight[i],
+                            }" class="legend-container">
+                <i class="fa-solid fa-circle" [ngStyle]="{'color': domainConfig.colorDark[i]}"></i>
+                <p class="margin-0">{{domain}}</p>
+            </div>
+            }
+        </div>
+        <div class="filter-section">
+            <div class="filter-container">
+                <p class="text margin-0 open-data-grey-800">Filter by</p>
+                <nz-select nzsize="small" [(ngModel)]="selectedFilterValue" (ngModelChange)="updateSelection($event)">
+                    @for(option of options; track option) {
+                    <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                    }
+                </nz-select>
+            </div>
+            <p class="text margin-0 open-data-grey-800">Last updated at {{lastUpdatedAt}}</p>
+        </div>
+        }
+        <div id="main" style="width: 100%; height: 400px;"></div>
+    </div>
+</div>

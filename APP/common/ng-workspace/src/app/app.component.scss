@@ -1,0 +1,115 @@
+@import "colors";
+@import "breakpoints";
+
+mat-drawer-container {
+  // height: 100vh;
+  background-color: $white !important;
+  // overflow: hidden;
+
+  // min-height: 100vh;
+
+  // @include media-below("md") {
+  //   height: 100%;
+  //   overflow: auto;
+  // }
+}
+
+mat-drawer-content {
+  height: auto;
+  overflow: unset;
+  background: $white;
+  min-height: 100vh;
+
+  background-image: url("/static/assets/img/bg-overlay.svg");
+  background-repeat: no-repeat, repeat;
+  background-position: bottom -20px left;
+  background-attachment: fixed;
+}
+
+::ng-deep {
+  .mat-drawer:not(.mat-drawer-side) {
+    position: fixed;
+  }
+  .mat-drawer {
+    box-sizing: border-box;
+    position: fixed;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .mat-progress-spinner circle,
+  .mat-spinner circle {
+    stroke: $blue700;
+  }
+}
+
+.mat-drawer-transition.mat-drawer-opened {
+  height: 100vh;
+  overflow: unset;
+  overscroll-behavior-y: contain;
+}
+
+.mat-drawer-inner-container {
+  position: inherit;
+}
+
+.cdk-visually-hidden {
+  position: inherit;
+}
+
+::ng-deep .mat-drawer-transition .mat-drawer-backdrop {
+  box-sizing: border-box;
+  overflow-y: hidden;
+  position: fixed;
+}
+
+.mat-nav-list .mat-list-item {
+  color: $grey900;
+}
+
+::ng-deep {
+  .dot-loader {
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background-color: $blue700;
+    position: relative;
+    -webkit-animation: 1.2s grow ease-in-out infinite;
+    animation: 1.2s grow ease-in-out infinite;
+  }
+
+  .dot-loader--2 {
+    -webkit-animation: 1.2s grow ease-in-out infinite 0.15555s;
+    animation: 1.2s grow ease-in-out infinite 0.15555s;
+    margin: 0 20px;
+  }
+  .dot-loader--3 {
+    -webkit-animation: 1.2s grow ease-in-out infinite 0.3s;
+    animation: 1.2s grow ease-in-out infinite 0.3s;
+  }
+
+  @-webkit-keyframes grow {
+    0%,
+    40%,
+    100% {
+      -webkit-transform: scale(0);
+      transform: scale(0);
+    }
+    40% {
+      -webkit-transform: scale(1);
+      transform: scale(1);
+    }
+  }
+  @keyframes grow {
+    0%,
+    40%,
+    100% {
+      -webkit-transform: scale(0);
+      transform: scale(0);
+    }
+    40% {
+      -webkit-transform: scale(1);
+      transform: scale(1);
+    }
+  }
+}

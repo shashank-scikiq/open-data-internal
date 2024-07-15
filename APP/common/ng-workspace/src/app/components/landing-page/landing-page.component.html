@@ -1,0 +1,138 @@
+<div class="main-container">
+    <div class="bnr-container relative">
+        <div class="bnr-header-section">
+            <a routerLink="/" class="no-decor">
+                <img src="static/assets/img/ondc_logo.svg" alt="ONDC main logo">
+            </a>
+            <div class="right-section-container">
+                <div class="right-section">
+                    <a routerLink="retail" class="margin-0 no-decor">
+                        Retail
+                    </a>
+                </div>
+                <div class="right-section">
+                    <a routerLink="logistics" class="margin-0 no-decor">
+                        Logistics
+                    </a>
+                </div>
+                <div class="right-section cursor-pointer" nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu">
+                    <p class="margin-0">
+                        Quick Links
+                    </p>
+                    <i class="fa-solid fa-caret-down"></i>
+
+                </div>
+            </div>
+            <nz-dropdown-menu #menu="nzDropdownMenu">
+                <div nz-menu class="bnr-menu">
+                    <div nz-menu-item>
+                        <a href="https://docs.google.com/forms/d/1SqqmejmJm36yY5cwH9ZL9QtBbc64f2uRHcZUzi0wbBE/edit?ts=65dee03c"
+                            target="_blank" class="no-decor bnr-menu-item">
+                            <i class="fa-solid fa-message"></i>
+                            Feedback
+                        </a>
+                    </div>
+                    <div nz-menu-item>
+                        <a routerLink="data-dictionary" class="no-decor bnr-menu-item">
+                            <i class="fa-solid fa-folder-closed"></i>
+                            Data dictionary
+                        </a>
+                    </div>
+                    <div nz-menu-item>
+                        <a routerLink="license" class="no-decor bnr-menu-item">
+                            <i class="fa-solid fa-id-card"></i>
+                            License
+                        </a>
+                    </div>
+                </div>
+            </nz-dropdown-menu>
+        </div>
+
+        <div class="badge-section width-100">
+            <p class="net-cnt">
+                Total Network Orders till {{data?.lastUpdatedDate}}: 
+                <span class="net-count">{{data?.netOrderCount}}</span>
+            </p>
+        </div>
+
+        <div class="bnr-bottom-section">
+            <!-- <div class="section-width height-100 ">
+                
+            </div> -->
+            <div class="text-container">
+                <p class="title-section margin-0">ONDC Network <br />| Open Data Dashboard</p>
+                <p class="subtitle-section margin-0">Enabling transparency, fostering innovation and providing economic
+                    & social impact.</p>
+                <div class="btn-section">
+                    <a routerLink="retail" class="explore-btn no-decor">
+                        Retail Dashboard
+                        <i class="margin-left-2 fa-solid fa-arrow-right open-data-white"></i>
+                    </a>
+                    <div class="coming-soon-btn">
+                        <p class="margin-0">Mobility (Coming soon)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="section-width">
+                <app-landing-page-chart></app-landing-page-chart>
+            </div>
+        </div>
+
+        <!-- <div class="mouse"></div> -->
+    </div>
+    @if(data?.statsData) {
+    <div class="stats-wrapper">
+        <div class="title-section">
+            {{data.statsData.title}}
+        </div>
+
+        <div class="stats-list">
+            @for(stat of data.statsData.stats; track stat) {
+            <div class="stat-item">
+                <div class="relative">
+                    <img [src]="stat.icon" [alt]="stat.alt">
+                    <h3 class="font-bolder">{{stat.title}}</h3>
+                    <span>{{stat.subText}}</span>
+                </div>
+            </div>
+            }
+        </div>
+
+        <img src="static/assets/img/pattern.svg" class="bottom-img" alt="Vector illustration for business">
+    </div>
+    }
+
+    <div class="footer-section">
+        <div class="links-section">
+            @if(data?.footerLinks) {
+            @for(footerLink of data.footerLinks; track footerLink) {
+            <div class="links-container">
+                <p class="font-sm font-bold">{{footerLink.heading}}</p>
+
+                @for(link of footerLink.links; track link) {
+                <a [href]="link.url" class="no-decor font-xs open-data-grey-700" target="_blank">
+                    {{link.title}}
+                </a>
+                }
+            </div>
+            }
+            }
+        </div>
+        <div class="disclaimer-wrapper">
+            <a routerLink="/" class="no-decor">
+                <img src="static/assets/img/ondc_logo.svg" alt="ONDC footer logo">
+            </a>
+            <p class="copyright-text margin-0">ONDC | Open Network for Digital Commerce © 2024 </p>
+
+            <div class="social-container">
+                @if(data?.socials) {
+                @for(social of data.socials; track social) {
+                <a [href]="social.url" target="_blank" class="no-decor">
+                    <i [class]="social.icon"></i>
+                </a>
+                }
+                }
+            </div>
+        </div>
+    </div>
+</div>

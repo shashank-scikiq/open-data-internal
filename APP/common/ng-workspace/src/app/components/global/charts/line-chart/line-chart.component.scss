@@ -1,0 +1,33 @@
+@import "colors";
+
+.open-data-line-chart-container {
+  .apexcharts-xaxis {
+    display: none;
+  }
+
+  .show-xaxis .apexcharts-xaxis {
+    display: block !important;
+  }
+}
+::ng-deep .apexcharts-toolbar {
+  z-index: 0 !important;
+}
+
+.area-chart {
+  position: relative;
+
+  .area-chart-loader {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #ffffff57;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    place-content: center;
+    align-items: center;
+  }
+
+
+}
+

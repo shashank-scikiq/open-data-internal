@@ -1,0 +1,36 @@
+@import '../mixins/functions';
+
+@include config-utilities('font', 'font-weight',
+  'light' 300,
+  'regular' 400,
+  'bold' 500,
+  'bolder' 700
+);
+//Creates class like font-bold, font-light
+
+@include config-utilities('text', 'text-align',
+  'right' right,
+  'left'  left,
+  'center' center,
+  'justify' justify,
+);
+// Creates class like text-right, text-center
+
+@include config-utilities('text', 'text-transform',
+  'uppercase' uppercase,
+  'lowercase' lowercase,
+  'capitalize' capitalize
+);
+
+@include config-utilities('white-space', 'white-space',
+  'break-spaces' 'break-spaces',
+  'nowrap' nowrap,
+  'normal' normal,
+  'pre' pre,
+  'pre-wrap' 'pre-wrap',
+  'pre-line' 'pre-line',
+  'inherit' inherit,
+  'initial' initial,
+  'unset' unset,
+  'revert' revert
+);

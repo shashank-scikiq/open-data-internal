@@ -1,0 +1,130 @@
+@import './functions';
+
+$max: 20;
+$sides: ('top', 'right', 'left', 'bottom');
+$attributes: (
+  'x': (
+    'left',
+    'right',
+  ),
+  'y': (
+    'top',
+    'bottom',
+  ),
+);
+$spacing-utilities: (
+  margin: 4px,
+  padding: 8px,
+);
+
+@each $property, $spacer in $spacing-utilities {
+  @for $i from 0 through $max {
+    .#{$property}-#{$i} {
+      #{$property}: #{$spacer * $i};
+    }
+
+    @each $attribute, $values in $attributes {
+      .#{$property}-#{$attribute}-#{$i} {
+        #{$property}-#{nth($values, 1)}: #{$spacer * $i};
+        #{$property}-#{nth($values, 2)}: #{$spacer * $i};
+      }
+    }
+
+    @each $side in $sides {
+      .#{$property}-#{$side}-#{$i} {
+        #{$property}-#{$side}: #{$spacer * $i};
+      }
+    }
+  }
+}
+
+//Creates classes like margin-top-1, margin-top-2, margin-y-1, margin-x-2
+//Creates classes like padding-1, padding-x-1, padding-right-2
+
+@include config-utilities(
+  'align',
+  'vertical-align',
+  'baseline' baseline,
+  'top' top,
+  'bottom' bottom,
+  'middle' middle,
+  'text-top' text-top,
+  'text-bottom' text-bottom
+);
+// Creates vertical align classes like align-baseline align-top...
+
+@include config-utilities('width', 'width', '25' 25%, '50' 50%, '75' 75%, '100' 100%, 'auto' auto, 'inherit' inherit);
+// Creates width classes like width-100, width-auto...
+
+@include config-utilities('height', 'height', '25' 25%, '50' 50%, '75' 75%, '100' 100%, 'auto' auto, 'min' min-content);
+
+// Creates height classes like height-100, height-auto...
+@include config-utilities('height', 'height', '25vh' '25vh', '50vh' '50vh', '75vh' '75vh', '100vh' '100vh');
+// Creates height classes like height-100vh, height-50vh...
+//Todo: One map for all heights and widths
+
+@include config-utilities(
+  'margin',
+  'margin',
+  '1-auto' '8px auto',
+  '2-auto' '16px auto',
+  '3-auto' '24px auto',
+  '4-auto' '32px auto',
+  'auto-1' 'auto 8px',
+  'auto-2' 'auto 16px',
+  'auto-3' 'auto 24px',
+  'auto-4' 'auto 32px'
+);
+
+.no-decor {
+  &:focus-visible {
+    outline: none !important;
+  }
+  text-decoration: none !important;
+  color: inherit;
+}
+.no-decor-hover {
+  // deprecating soon
+  text-decoration: none !important;
+  color: inherit;
+  &:hover {
+    text-decoration: underline !important;
+  }
+  @include media_below('md') {
+    text-decoration: underline !important;
+  }
+}
+
+.margin-0 {
+  margin: 0;
+}
+
+.padding-0 {
+  padding: 0;
+}
+
+.margin-x-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.margin-y-auto {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.margin-auto {
+  margin: auto;
+}
+
+// TODO: Add all fit classes if needed
+
+.height-50vw {
+  height: 50vw;
+}
+// Mostly used in cover to maintain 2:1 aspect ratio
+
+.inherit-max-height {
+  max-height: inherit;
+}
+// TODO: Have a diff inherit file

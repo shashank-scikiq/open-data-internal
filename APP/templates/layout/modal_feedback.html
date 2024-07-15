@@ -1,0 +1,50 @@
+<div class="modal fade" id="feedbackForm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content tx-14">
+        <div class="modal-header bd-0-f pd-b-5">
+          <h6 class="modal-title" id="exampleModalLabel2">Feedback Form</h6>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="selectForm2" class="parsley-style-1" action="#" data-parsley-validate novalidate>
+        <div class="modal-body">
+            <!-- <form action="#" data-parsley-validate> -->
+              
+              <div class="w-100">
+                <div class="mg-b-30">
+                  <div id="fnWrapper" class="form-group parsley-input">
+                    <label>Name: <span class="tx-danger">*</span></label>
+                    <input type="text" name="name" class="form-control" placeholder="Enter your name" data-parsley-class-handler="#fnWrapper" required>
+                  </div>
+                  <div id="emWrapper" class="form-group parsley-input">
+                    <label>Email: <span class="tx-danger">*</span></label>
+                    <input type="email" name="email" class="form-control" placeholder="Enter your email" data-parsley-class-handler="#emWrapper" required>
+                  </div>
+                  <div id="sbWrapper" class="form-group parsley-input">
+                    <label>Subject: <span class="tx-danger">*</span></label>
+                    <input type="text" name="email" class="form-control" placeholder="Enter subject" data-parsley-class-handler="#sbWrapper" required>
+                  </div>
+                  <div id="msgWrapper" class="form-group parsley-input">
+                    <label>Message: <span class="tx-danger">*</span></label>
+                    <textarea type="text" name="message" class="form-control" rows="3" placeholder="Enter subject" data-parsley-class-handler="#msgWrapper" required></textarea>
+                  </div>
+                </div>
+                <!-- <button type="submit" class="btn btn-primary pd-x-20">Validate Form</button> -->
+                <!-- <div class="w-100">
+                  <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                    <button class="btn btn-secondary mg-l-10" type="cancel">Cancel</button>
+                  </div>
+                </div> -->
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary tx-13" data-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary tx-13">Submit</button>
+        </div>
+      </form>
+
+      </div>
+    </div>
+  </div>

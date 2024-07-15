@@ -1,0 +1,119 @@
+{   
+    "title": "Monthly Network Orders",
+    "series": [
+        {
+            "name": "KARNATAKA",
+            "data": [
+                2,
+                198283,
+                250087,
+                216750,
+                239641,
+                247839,
+                233359,
+                402119
+            ]
+        },
+        {
+            "name": "DELHI",
+            "data": [
+                2,
+                168564,
+                200228,
+                180792,
+                228627,
+                266279,
+                326874,
+                633928
+            ]
+        },
+        {
+            "name": "MAHARASHTRA",
+            "data": [
+                230638,
+                295855,
+                248410,
+                264641,
+                288997,
+                320601,
+                414069
+            ]
+        }
+    ],
+    "chart": {
+        "id": "chart2",
+        "type": "line",
+        "height": 380,
+        "toolbar": {
+            "autoSelected": "pan",
+            "show": false
+        }
+    },
+    "colors": [
+        "#00BAEC",
+        "#9B1FE8",
+        "#FF0080"
+    ],
+    "stroke": {
+        "width": 3
+    },
+    "grid": {
+        "show": false,
+        "borderColor": "#555",
+        "clipMarkers": false,
+        "yaxis": {
+            "lines": {
+                "show": true
+            }
+        },
+        "xaxis": {
+            "lines": {
+                "show": true
+            }
+        }
+    },
+    "dataLabels": {
+        "enabled": false
+    },
+    "fill": {
+        "type": "gradient",
+        "gradient": {
+            "shadeIntensity": 0.1,
+            "opacityFrom": 0,
+            "opacityTo": 0.9,
+            "stops": [
+                0,
+                90,
+                100
+            ]
+        }
+    },
+    "markers": {
+        "size": 5,
+        "colors": [
+            "#00BAEC",
+            "#9B1FE8",
+            "#FF0080"
+        ],
+        "strokeWidth": 3
+    },
+    "tooltip": {
+        "theme": "dark"
+    },
+    "xaxis": {
+        "categories": [
+            "Oct-23",
+            "Nov-23",
+            "Dec-23",
+            "Jan-24",
+            "Feb-24",
+            "Mar-24",
+            "Apr-24",
+            "May-24"
+        ]
+    },
+    "yaxis": {
+        "min": 0,
+        "tickAmount": 8
+    }
+}

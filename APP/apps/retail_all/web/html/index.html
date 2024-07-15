@@ -1,0 +1,44 @@
+{% extends "templates/layout/base.html" %}
+{% block title %}ONDC - Retail Overall{% endblock %}
+{% load static %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'css/custom-styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/responsive-styles.css' %}">
+
+    }
+{% endblock %}
+{% block pagetitle %}
+  {% include 'apps/retail_all/web/html/include/overall_title.html' %}
+{% endblock %}
+{% block top_card_filters %}
+  {% include 'apps/retail_all/web/html/include/summary_top_card_filters.html' with include_category=include_category %}
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+  {% include 'apps/retail_all/web/html/include/overall_summary_cards.html' with include_category=include_category %}
+  <div id="map_wrapper" class="mg-t-15 pos-relative">
+    <div id="indiaMaps">
+      {% include 'apps/retail_all/web/html/include/main_map.html' %}
+    </div>
+    <div id="mySidenav" class="summary_nav tx-11">
+      {% include 'apps/retail_all/web/html/include/right_panel_index.html' with include_category=include_category%}
+    </div>
+  </div>
+</div>
+{% include 'common/web/download_data/html/modal_download_data_table.html' with include_category=include_category %}
+{% endblock %}
+
+{% block javascript %}
+
+<script>var includeCategory = {{ include_category|lower }}; </script>
+
+<script defer type="module" src="{% static 'map_lib/state_map_script.js'%}"> </script>
+<script defer type="module" src="{% static 'map_lib/overall_india_map_script.js'%}"></script>
+
+<script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
+
+<script defer type="module" src="{% static 'map_lib/overall-custom-chart.js'%}"></script>
+<script src="{% static 'js/custom.js'%}"></script>
+{% endblock %}

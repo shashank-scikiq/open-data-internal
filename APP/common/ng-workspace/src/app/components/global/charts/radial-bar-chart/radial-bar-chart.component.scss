@@ -1,0 +1,27 @@
+@import 'colors';
+
+::ng-deep {
+    .radial-bar-tooltip-container {
+        display: flex;
+        flex-direction: column;
+        place-content: center;
+        align-items: center;
+
+        .header {
+            text-align: center;
+            font-size: 14px;
+            padding: 8px 8px 4px 8px;
+            border-bottom: 1px solid rgba(72, 94, 144, 0.16);
+            width: 100%;
+        }
+
+        .content-body {
+            text-align: center;
+            font-size: 12px;
+            max-width: 250px;
+            text-wrap: wrap;
+            padding: 4px 8px 8px;
+        }
+
+    }
+}

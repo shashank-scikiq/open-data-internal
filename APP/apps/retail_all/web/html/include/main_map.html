@@ -1,0 +1,100 @@
+{% load static %}
+<div class="mapTitles">
+  <div id="indiamap-casetype" class="map-nav-item">
+      <h3 class="tx-13 text-muted mg-b-5">Metrics</h3>
+      <div class="btn-group- flex-fill- w-100">
+        <button id="orders-metrics-btn" value="map_total_orders_metrics" class="btn btn-outline-orange btn-xs pd-x-10 metric-option active" data-toggle="tooltip" data-placement="top" title="Total Confirmed Orders ">
+          <img src="{% static 'img/buyer-icon.svg' %}" alt="Supply" class="icon-menu">
+        </button>
+        <button id="active-sellers-metrics-btn" value="map_total_active_sellers_metrics" class="btn btn-outline-primary btn-xs pd-x-10 metric-option mg-x-10" data-toggle="tooltip" data-placement="top" title="Active Sellers">
+          <img src="{% static 'img/sellers.png' %}" alt="Demand" class="icon-menu">
+        </button>
+        <button id="zonal-commerce-metrics-btn" value="map_total_zonal_commerce_metrics" class="btn btn-outline-success btn-xs pd-x-10 metric-option" data-toggle="tooltip" data-placement="top" title="Zonal Commerce">
+          <img src="{% static 'img/logistics-icon.svg' %}" alt="Logistics" class="icon-menu">
+        </button>
+    </div>
+  </div>
+  <div class="mapTitle" style="display: none;">
+    <div class="media">
+      <div class="media-body  mg-r-10 mg-md-r-10">
+        <h4 class="tx-18 tx-sm-18 tx-md-18 tx-normal tx-rubik mg-b-0"  id="indiaMapTitle">India</h4>
+        <a href="javascript:void(0)" class="link-01 changeStbtn tx-info" style="display: none;"><i class="mdi mdi-arrow-left  mg-r-0"></i> Back to India</a>
+      </div>
+      <div class="wd-40 ht-40 bg-primary tx-white d-flex align-items-center justify-content-center rounded op-6">
+        <img src="{% static 'img/map-pin.svg' %}" alt="India" class="ht-30">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="indiaMaps w-100" style="display: block;">
+  <div class="d-flex flex-column">
+    <div id="topStIcons"></div>
+    <svg class="map" id="indiamap">
+      <g id="state-border" class="">Loading map data...</g>
+      <g id="district-border" class="">Loading map data...</g>
+      <g id="india-chloro" class="">Loading map data...</g>
+      <g id="legend" class="">Loading map data...</g>
+      <g id="india-bubble" class="">Loading map data...</g>
+    </svg>
+    <p class="voucherinfo tx-11 tx-italic">**'Total Confirmed Orders' and 'Avg Items per Order' include Digital vouchers; all other metrics are for Physical Orders only</p>
+  </div>
+</div>
+
+<div class="stateMaps" style="display: none;">
+  <div id="stateMapLoader"></div>
+  <svg class="map" id="statemap">
+    <g id="each-state-border">Loading map data...</g>
+    <g id="each-state-chloro">Loading map data...</g>
+    <g id="each-state-bubble">Loading map data...</g>
+  </svg>
+</div>
+
+<div class="btnWrapper">
+  <a href="javascript:void(0)" class="downloadBtn" id="downloadDataBtnModal"> 
+  <i class="mdi mdi-table-arrow-down lh-0 tx-30 mg-r-10"></i>
+  <span>Download Data </span>
+  </a>
+  <div class="mapTypeStyles">
+    <div id="stHoverText"></div>
+    <div class="resmenu">
+        <div class="resmenu_bottom">
+          <div id="resmenu_wrapper" class="navigation">
+            <div id="btnprojection">
+              <div class="mapStyles">
+                <div class="d-flex">
+                  <div data-label="Map Style & Visualization" class="df-example w-100">
+                    <div id="indiamap-type" class="btn-group flex-fill w-100 map-nav-item mg-y-0">
+                      <button id="india-state-map-btn" value="state-border" class="btn btn-outline-primary btn-xs pd-x-5 active">State Map</button>
+                      <button id="india-district-map-btn" value="district-border" class="btn btn-outline-primary btn-xs pd-x-5">District Map</button>
+                    </div>
+                    <div id="indiamap-viz" class="btn-group flex-fill w-100 map-nav-item mg-t-10">
+                      <button id="chloro-viz-btn" value="chloro" class="btn btn-outline-info btn-xs pd-x-5 active">Chloropeth</button>
+                      <button id="bubble-viz-btn" value="bubble" class="btn btn-outline-info btn-xs pd-x-5">Bubble</button>
+                    </div>
+                  </div>
+                </div>
+              
+              </div>
+              <div id="statemap-viz" class="map-nav-item" style="display: none;">
+                <div data-label="Map Style &amp; Visualization" class="df-example w-100">
+                  <div class="btn-group flex-fill w-100">
+                    <button id="each-state-chloro-btn" value="chloro" class="btn btn-outline-info btn-xs pd-x-5 active">Chloropeth</button>
+                    <button id="each-state-bubble-btn" value="bubble" class="btn btn-outline-info btn-xs pd-x-5">Bubble</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="resmenu_top">
+        <a href="javascript:void(0)" class="resmenu_toggle tx-primary" onclick="toggleMenu()" data-toggle="tooltip" data-placement="top" title="Map Style & Visualization"><i class="mdi mdi-cog"></i></a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div id="mapLegends"></div>
+

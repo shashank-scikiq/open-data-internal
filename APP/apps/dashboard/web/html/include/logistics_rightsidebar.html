@@ -1,0 +1,85 @@
+<div class="row row-xs">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex flex-column justify-content-between pd-x-10 pd-y-6 bd-b-0-f">
+          <h6 class="mg-b-0 topstates">Top 3 States</h6>
+          <p class="tx-12 tx-color-03 mg-b-0">with Highest Intra State Confirmed Orders 
+            <i class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="top" title="Top 3 States with Highest Intra State Confirmed Orders "></i>
+          </p>
+          <div class="stateCallOut">
+          </div>
+
+        </div>
+        <div class="card-body pd-0" style="min-height: 195px;">
+          <div id="topStateChart_logistics" class="w-100"></div>
+          <div class="loadingTopStateHyperlocal"></div>
+
+        </div>
+        <div class="card-footer pd-x-10 pd-y-5">
+          <div class="text-nowrap text-muted tx-12 float-right mg-l-10 dateRangeTitle"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 mg-t-10">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex flex-column justify-content-between pd-x-10 pd-y-6 bd-b-0-f">
+          <h6 class="mg-b-0 topdistricts">Top 3 Districts</h6>
+          <p class="tx-12 tx-color-03 mg-b-0">with Highest Intra District Confirmed Orders 
+            <i class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="top" title="Top 3 Districts with Highest Intra State Confirmed Orders "></i>
+          </p>
+          <div class="distCallOut">
+          </div>
+
+        </div>
+        <div class="card-body pd-0" style="min-height: 195px;">
+          <div id="topDist_logistics" class="w-100"></div>
+          <div class="loadingTopStateHyperlocal"></div>
+
+        </div>
+        <div class="card-footer pd-x-10 pd-y-5">
+          <div class="text-nowrap text-muted tx-12 float-right mg-l-10 dateRangeTitle"></div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 mg-t-10">
+      <div class="card shadow-sm">
+        <div class="pd-10 card-header d-flex align-items-center justify-content-between">
+          <h6 class="mg-b-0">Zonal Commerce
+            <i class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="top" title="Zonal Commerce"></i>
+          </h6>
+          <div class="d-flex justify-content-between">
+            <div class="switches-container mg-r-10">
+              <input type="radio" id="switchState" name="switchPlan" value="State" checked="checked" />
+              <input type="radio" id="switchDistricts" name="switchPlan" value="Districts" />
+              <label for="switchState">State</label>
+              <label for="switchDistricts">Districts</label>
+              <div class="switch-wrapper">
+                <div class="switch">
+                  <div>State</div>
+                  <div>Districts</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="w-50 has-float-label">
+              <label for="filtersBymetrics" class="d-block mg-b-0 mg-r-5 text-nowrap tx-10-f">Delivered To
+                <i class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="top" title="Delivered To"></i>
+              </label>
+              <select class="custom-select custom-select-sm" id="filtersByRegion" style="max-width: 240px;">
+                <option value="active_sellers" selected="">Maharashtra</option>
+              </select>
+            </div>
+          </div>
+
+        </div>
+        <div class="card-body pd-10" style="min-height: 150px;">
+          <div id="treeLoader"></div>
+          <div id="inntraDistrictTree"></div>
+        </div>
+        <div class="card-footer pd-x-10 pd-y-5">
+          <div class="text-nowrap text-muted tx-12 float-right mg-l-10 dateRangeTitle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+

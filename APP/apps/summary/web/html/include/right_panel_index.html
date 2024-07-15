@@ -1,0 +1,18 @@
+{% include 'apps/summary/web/html/include/main_tabs.html' %}
+<div class="map-hover-data">
+  <div class="containerTab">
+    <div class="sectionTab">
+      <div class="scrollable-contentTab">
+        <div class="tab-content bd-0 pd-10" id="myTabContent">
+          <div class="tab-pane fade show active w-100" id="summary" role="tabpanel" aria-labelledby="summary-tab">
+            {% include 'apps/summary/web/html/include/demand_rightsidebar.html' with include_category=include_category %}
+          </div>
+          <div class="tab-pane fade w-100" id="logistics" role="tabpanel" aria-labelledby="logistics-tab">
+            {% include 'apps/summary/web/html/include/logistics_rightsidebar.html' with include_category=include_category %}
+          </div>
+        </div>
+      </div>          
+    </div>          
+  </div>          
+</div>          
+

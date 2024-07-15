@@ -1,0 +1,66 @@
+<div class="map-container">
+    @if(selectedState === 'TT'){<ng-container *ngIf="(mapStatewiseData && mapStateData); else mapLoadingView">
+        <app-india-map [metrix]="metrix" [mapVisualOptions]="mapVisualOptions" [mapStatewiseData]="mapStatewiseData"
+            [mapStateData]="mapStateData">
+        </app-india-map>
+    </ng-container>}
+
+    @if(selectedState != 'TT'){<ng-container *ngIf="mapStatewiseData && mapStateData; else mapLoadingView">
+        <app-state-map [metrix]="metrix" [mapVisualOptions]="mapVisualOptions" [mapStateData]="mapStateData">
+        </app-state-map>
+    </ng-container>}
+
+    <ng-template #mapLoadingView>
+        <div class="map-loader-container">
+            <div class="loader-container">
+                <mat-spinner></mat-spinner>
+            </div>
+        </div>
+    </ng-template>
+
+    @if(selectedState != 'TT'){
+    <div class="map-back-btn-container">
+        <div class="detail-section">
+            <p class="margin-0 font-md font-bolder">{{selectedState}}</p>
+            <div class="back-btn cursor-pointer" (click)="backToIndiaMap()">
+                <i class="font-sm fa-solid fa-arrow-left"></i>
+                Back to India
+            </div>
+        </div>
+        <i class="location-icon fa-solid fa-map-location-dot"></i>
+
+    </div>
+    }
+    <!-- <i class="margin-0 info-text">**'Total Orders' and 'Avg Items per Order' include Digital vouchers; all other metrics are for Physical Orders only</i> -->
+</div>
+@if((mapStatewiseData && mapStateData)){
+<div class="lower-map-section">
+    <div id="mapLegends">
+    </div>
+    <div class="map-control-section">
+        <div class="map-control-inner-section">
+            <p class="map-control-title">Map style & visualization</p>
+            @if(selectedState == 'TT'){
+            <div style="display: flex;">
+                @if(metrix=="map_total_active_sellers_metrics"){
+                <button [class.active]="mapVisualOptions.isStateMap" (click)="handleMapChange('state')"
+                    class="btn-lt map-type-button" style="width: 100%; border-radius: 8px !important;">State
+                    Map</button>
+                } @else {
+                <button [class.active]="mapVisualOptions.isStateMap" (click)="handleMapChange('state')"
+                    class="btn-lt map-type-button">State Map</button>
+
+                <button [class.active]="mapVisualOptions.isDistrictMap" (click)="handleMapChange('district')"
+                    class="btn-rgt map-type-button">District Map</button>
+                }
+            </div>}
+            <div style="display: flex;">
+                <button [class.active]="mapVisualOptions.isChloropeth" (click)="handleMapChange('chloropeth')"
+                    class="btn-lt map-visual-button">Chloropeth</button>
+                <button [class.active]="mapVisualOptions.isBubble" (click)="handleMapChange('bubble')"
+                    class="btn-rgt map-visual-button">Bubble</button>
+            </div>
+        </div>
+    </div>
+</div>
+}

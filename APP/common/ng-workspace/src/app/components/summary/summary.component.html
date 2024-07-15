@@ -1,0 +1,52 @@
+<div class="summary-main-container">
+    <div class="heading-section">
+        <div style="display: flex; flex-direction: column;" class="margin-y-1">
+            <h2 class="font-sm open-data-blue-700 margin-0 font-bolder">{{ pageTitle }}</h2>
+            @if(dateRange){
+                <p class="margin-0 font-xxs font-bold">
+                    {{dateRange[0] | date: 'MMM dd, yyyy'}} - {{ dateRange[1] | date: 'MMM dd, yyyy'}}
+                </p>
+            }
+        </div>
+        <app-month-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
+
+    </div>
+    <app-summary-header-card></app-summary-header-card>
+
+    <div class="detail-section-container">
+        <div  class="inner-map-section">
+            <div style="display: flex; flex-direction: column; gap: 4px; position: absolute;
+                top: 0;
+                left: 0;">
+                <p class="font-bold font-sm open-data-grey-700 margin-0">Metrics</p>
+                <div style="display: flex; gap: 8px;">
+                    <button mat-fab [ngClass]="{'metric-button': true, 'confirmed-orders-active': activeMetric === metrics[0].title}"
+                        (click)="handleClick(metrics[0])"
+                        nz-tooltip [nzTooltipPlacement]="['topLeft', 'leftTop']"
+                        nzTooltipTitle="Total Orders">
+                        <img src="static/assets/img/buyer-icon.svg" alt="Supply" class="icon-menu confirmed-orders-icon">
+                    </button>
+                    <button mat-fab [ngClass]="{'metric-button': true, 'active-seller-active': activeMetric === metrics[1].title}"
+                        (click)="handleClick(metrics[1])"
+                        nz-tooltip nzTooltipPlacement="top" 
+                        nzTooltipTitle="Active Sellers">
+                        <img src="static/assets/img/sellers.png" alt="Supply" class="icon-menu active-seller-icon">
+                    </button>
+                    <button mat-fab [ngClass]="{'metric-button': true, 'logistics-active': activeMetric === metrics[2].title}"
+                        (click)="handleClick(metrics[2])"
+                        nz-tooltip nzTooltipPlacement="top" 
+                        nzTooltipTitle="Zonal Commerce">
+                        <img src="static/assets/img/logistics-icon.svg" alt="Supply" class="icon-menu logistics-icon">
+                    </button>
+                </div>
+            </div>
+            <app-map [metrix]="activeMetric"></app-map>
+        </div>
+        <div class="width-100 map-meta-data-section">
+            <app-charts-section 
+                [metrix]="activeMetric"
+                (changeMatrix)="setMetrix($event)">
+            </app-charts-section>
+        </div>
+    </div>
+</div>

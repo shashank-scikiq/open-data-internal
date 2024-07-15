@@ -1,0 +1,31 @@
+
+<!-- @if(pathname == '/') {
+    <router-outlet></router-outlet>
+} @else { -->
+<mat-drawer-container #matdrawer (backdropClick)="closeBackdrop()">
+
+    <mat-drawer #rightnav role="navigation" position="start">
+        <app-right-sidenav (selectOption)="closeBackdrop()"></app-right-sidenav>
+    </mat-drawer>
+
+    <mat-drawer-content>
+        <ng-container>
+
+            <app-header (rightSidenav)="rightToggle()"/>
+    
+            <router-outlet></router-outlet>
+            <!-- <div class="margin-top-16">
+                <app-summary [dateRange]="dateRange"></app-summary>
+            </div> -->
+    
+            <!-- <button nz-button nzType="primary">Primary</button>
+            <button nz-button nzType="primary" [nzSize]="size" nzShape="round">
+                <span nz-icon nzType="download"></span>
+                Download
+            </button> -->
+        </ng-container>
+
+    </mat-drawer-content>
+</mat-drawer-container>
+
+<!-- } -->

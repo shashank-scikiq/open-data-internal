@@ -1,0 +1,103 @@
+@import '../abstracts/colors';
+
+// TODO: Move this to import later
+$button-text-height: 16px;
+
+$button-colors: (
+  'state'(
+    'primary': (
+      // state_name, background-color, color, border-thickness, border-color, border-radius, hover x 5, on-click x 2
+      ('inactive', $orange600, $white, 0, $black, 2, $orange500, $white, 0, $black, 2, $orange700, $white),
+      ('active', $white, $grey900, 1, $orange700, 2, $white, $grey900, 2, $orange500, 2, $orange700, $white),
+      ('loading', $orange700, $white, 0, $black, 2, $orange700, $white, 0, $black, 2, $orange700, $white),
+    ),
+    'secondary': (
+      ('inactive', $white, $grey900, 1, $grey200, 2, $white, $grey900, 1, $grey700, 2, $grey300, $grey900),
+      ('active', $white, $grey900, 1, $orange700, 2, $white, $grey900, 2, $orange500, 2, $grey300, $grey900),
+      ('loading', $grey300, $grey900, 2, $grey700, 2, $grey300, $grey900, 2, $grey700, 2, $grey300, $grey900),
+    ),
+    'tertiary': (
+      ('inactive', $white, $grey900, 0, $grey200, 2, $white, $grey900, 0, $grey700, 2, $grey300, $grey900),
+      ('active', $white, $grey900, 0, $orange700, 2, $white, $grey900, 0, $orange500, 2, $grey300, $grey900),
+      ('loading', $grey300, $grey900, 0, $grey700, 2, $grey300, $grey900, 0, $grey700, 2, $grey300, $grey900),
+    )
+  ),
+  'navigation'(
+    'primary': (
+      // state_name, background-color, color, border-thickness, border-color, border-radius, hover x 5, on-click x 2
+      ('inactive', $orange600, $white, 0, $black, 50, $orange500, $white, 0, $black, 2, $orange700, $white),
+      ('loading', $orange700, $white, 0, $white, 50, $orange700, $white, 0, $white, 2, $orange700, $white),
+    ),
+    'secondary': (
+      ('inactive', $white, $grey900, 1, $grey300, 50, $white, $grey900, 1, $grey700, 50, $grey300, $grey900),
+      ('loading', $grey300, $grey900, 2, $grey700, 50, $grey300, $grey900, 2, $grey700, 50, $grey300, $grey900),
+    ),
+    'tertiary': (
+      ('inactive', $white, $grey900, 0, $grey200, 50, $white, $grey900, 0, $grey700, 50, $grey300, $grey900),
+      ('loading', $grey300, $grey900, 0, $grey700, 50, $grey300, $grey900, 0, $grey700, 50, $grey300, $grey900),
+    )
+  ),
+  'toggle'( //different css for toggle buttons disabled states
+    'primary': (
+      // state_name, background-color, color, border-thickness, border-color, hover x 4, on-click x 2
+      ('inactive', $white, $grey900, 0, $black, 2, $grey200, $grey900, 0, $black, 2, $orange600, $white), //here, onClick is treated the same as active
+      ('active', $orange600, $white, 0, $black, 2, $orange500, $white, 0, $black, 2, $orange600, $white),
+    ),
+    'secondary': (
+      ('inactive', $white, $grey900, 0, $black, 2, $grey200, $grey900, 0, $black, 2, $grey700, $white),
+      ('active', $grey700, $white, 0, $black, 2, $grey500, $white, 0, $black, 2, $grey700, $white), //extra css needed for active-hover shadow
+    ),
+    'tertiary': (
+      ('inactive', $white, $grey900, 0, $black, 2, $grey200, $grey900, 0, $black, 2, $white, $grey900),
+      ('active', $white, $grey900, 0, $black, 2, $white, $grey900, 0, $black, 2, $white, $grey900), //extra css needed for border-bottom and font-weight in active and active-hover
+    )
+  )
+);
+
+
+@each $type, $btn-names in $button-colors {
+  @each $name, $btn-states in $btn-names {
+    @each $state in $btn-states {
+      .uni-#{$type}-button-#{$name}-#{nth($state, 1)} {
+        min-height: 36px;
+        min-width: 80px;
+        cursor: pointer;
+        padding: 0;
+        padding-left: $button-text-height;
+        padding-right: $button-text-height;
+        background-color: #{nth($state, 2)};
+        color: #{nth($state, 3)};
+        border: #{nth($state, 4)}px solid #{nth($state, 5)};
+        border-radius: #{nth($state, 6)}px;
+        // margin-top:8px;
+
+        &:hover {
+          background-color: #{nth($state, 7)};
+          color: #{nth($state, 8)};
+          border: #{nth($state, 9)}px solid #{nth($state, 10)};
+        }
+
+        &:active {
+          background-color: #{nth($state, 12)};
+          color: #{nth($state, 13)};
+          border: 0;
+        }
+
+        &:disabled,
+        &[disabled] {
+          background-color: $grey200;
+          color: $grey500;
+          cursor: not-allowed;
+        }
+
+        &:focus {
+          outline: 0;
+        }
+
+      i {
+          font-size: $button-text-height * 1.25;
+        }
+      }
+    }
+  }
+}

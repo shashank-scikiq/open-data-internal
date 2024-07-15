@@ -1,0 +1,10 @@
+.card-group {
+  display: flex;
+  flex-flow: wrap;
+  place-content: center;
+}
+
+.card-group-item {
+  display: flex;
+  padding: 1rem;
+}

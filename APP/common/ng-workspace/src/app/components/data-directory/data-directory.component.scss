@@ -1,0 +1,23 @@
+@import 'colors';
+@import 'breakpoints';
+
+.data-directory-main-container {
+    padding: 76px 16px 16px;
+
+    .table-section {
+        // margin: 16px 0;
+    }
+}
+
+::ng-deep {
+    .mat-mdc-tab-labels {
+        gap: 4px;
+    }
+    .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab {
+        background-color: rgba(72, 94, 144, 0.16);
+        border-color: rgba(72, 94, 144, 0.16);
+        color: #596882;
+        border-radius: 4px 4px 00 0;
+        flex-grow: unset !important;
+    }
+}

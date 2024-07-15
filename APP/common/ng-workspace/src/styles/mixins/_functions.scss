@@ -1,0 +1,41 @@
+@import '../base/breakpoints';
+
+@mixin config-utilities($prefix, $property, $values...) {
+  @each $i in $values {
+    .#{$prefix}-#{nth($i, 1)} {
+      #{$property}: #{nth($i, 2)};
+    }
+  }
+}
+
+@mixin config-utilities-with-breakpoint($prefix, $property, $values...) {
+  @each $value in $values {
+    .#{$prefix}-#{nth($value, 1)} {
+      #{$property}: #{nth($value, 2)};
+      @each $range-name, $range in $breakpoint-ranges {
+        &--#{$range-name} {
+          @include media-between(nth($range, 1), nth($range, 2)) {
+            #{$property}: #{nth($value, 2)};
+          }
+        }
+        &--n-#{$range-name} {
+          @include media-not-between(nth($range, 1), nth($range, 2)) {
+            #{$property}: #{nth($value, 2)};
+          }
+        }
+      }
+      @each $breakpoint-name, $breakpoint in $breakpoints {
+        &--gt-#{$breakpoint-name} {
+          @include media-above($breakpoint-name) {
+            #{$property}: #{nth($value, 2)};
+          }
+        }
+        &--lt-#{$breakpoint-name} {
+          @include media-below($breakpoint-name) {
+            #{$property}: #{nth($value, 2)};
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,101 @@
+@import "colors";
+@import "breakpoints";
+
+::ng-deep {
+    // #inntraDistrictTree {
+    //     display: flex;
+    //     place-content: center;
+    //     align-items: center;
+    //     svg {
+    //         height: 250px;
+    //         width: 100%;
+    //     }
+    // }
+
+    .node circle {
+        fill: #fff;
+        stroke: limegreen;
+        stroke-width: 3px;
+        cursor: pointer;
+    }
+    
+    .node text {
+        font: 12px sans-serif;
+    }
+    
+    .node-icon {
+
+        i {
+            font-size: 12px;
+            line-height: 22px;
+            color: #8c8c8c;
+            padding: 0 5px;
+        }
+    } 
+    .link {
+        fill: none;
+        stroke: #ccc;
+        stroke-width: 1.5px;
+        stroke-dasharray: 20, 10, 5, 5, 5, 10;
+        animation: dash 5s linear;
+        animation-iteration-count: infinite;
+        animation-direction: reverse;
+    }
+
+    @keyframes dash {
+        to {
+            stroke-dashoffset: 250;
+        }
+    }
+    @keyframes dashOffset {
+      to {
+        stroke-dashoffset: -11;
+      }
+    }
+}
+
+.options-container {
+    padding: 8px;
+    display: flex;
+    place-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(72, 94, 144, 0.16);
+
+    .switch-container {
+        border-radius: 4px;
+        background: #e2e5ed;
+        border: 1px solid #c0ccda;
+
+        padding: 2px;
+
+        display: flex;
+        align-items: center;
+        .btn {
+            min-width: 80px;
+            cursor: pointer;
+            border-radius: 4px;
+
+            &.disabled {
+                cursor: not-allowed !important;
+            }
+
+            &.active {
+                background-color: $blue700 !important;
+                color: $white;
+            }
+        }
+    }
+}
+
+.ant-select {
+    width: 200px !important;
+    border-radius: 4px !important;
+}
+
+.loader-area {
+    display: flex;
+    place-content: center;
+    align-items: center;
+    background: #ffffff57;
+  }
+

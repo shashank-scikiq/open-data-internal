@@ -1,0 +1,22 @@
+
+<div class="open-data-header-container">
+    <div class="header-right-container">
+        <mat-icon class="open-data-blue-700 cursor-pointer" (click)="toggleRightSidenav()">menu</mat-icon>
+        <a routerLink="" class="no-decor">
+            <img src="static/assets/img/ondc_logo.svg" alt="ondc-svg" class="cursor-pointer" />
+        </a>
+    </div>
+
+    <div class="header-right-container">
+        
+        @if(updatedDate && (activeRoute.includes('retail') || activeRoute.includes('logistics'))) {<mat-icon class="icon-updated" aria-hidden="false" aria-label="Example home icon" fontIcon="update" />
+        <p class="open-data-grey-900 font-bold margin-y-0 margin-right-5">
+            Last updated on
+            <span class="font-bolder open-data-blue-700">{{ updatedDate | date: 'MMM, yyyy' }}</span>
+        </p>}
+        <!-- <mat-icon class="open-data-blue-700 cursor-pointer" (click)="toggleRightSidenav()">menu</mat-icon> -->
+        <!-- <button mat-icon-button aria-label="menu icon" (click)="toggleRightSidenav()">
+            <i class="fa-solid fa-bars open-data-blue-700"></i>
+        </button> -->
+    </div>
+</div>

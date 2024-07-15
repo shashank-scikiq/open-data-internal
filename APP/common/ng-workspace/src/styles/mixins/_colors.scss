@@ -1,0 +1,71 @@
+@charset 'utf-8';
+@import '../abstracts/colors';
+
+$default-colors: (
+  'blue-400'  : $blue400,
+  'blue-500'  : $blue500,
+  'blue-600'  : $blue600,
+  'blue-700'  : $blue700,
+  'blue-800'  : $blue800,
+  'grey-100'  : $grey100,
+  'grey-200'  : $grey200,
+  'grey-300'  : $grey300,
+  'grey-400'  : $grey400,
+  'grey-500'  : $grey500,
+  'grey-550'  : $grey550,
+  'grey-600'  : $grey600,
+  'grey-700'  : $grey700,
+  'grey-800'  : $grey800,
+  'grey-850'  : $grey850,
+  'grey-900'  : $grey900,
+  'green-400' : $green400,
+  'green-500' : $green500,
+  'green-600' : $green600,
+  'green-700' : $green700,
+  'green-800' : $green800,
+  'orange-400': $orange400,
+  'orange-500': $orange500,
+  'orange-600': $orange600,
+  'orange-700': $orange700,
+  'orange-800': $orange800,
+  'red-400' : $red400,
+  'red-500' : $red500,
+  'red-600' : $red600,
+  'red-700'   : $red700,
+  'indigo-400' : $indigo400,
+  'indigo-500' : $indigo500,
+  'indigo-600' : $indigo600,
+  'indigo-700' : $indigo700,
+  'teal-400' : $teal400,
+  'teal-500' : $teal500,
+  'teal-600' : $teal600,
+  'teal-700' : $teal700,
+  'teal-900' : $teal900,
+  'purple-400' : $purple400,
+  'purple-500' : $purple500,
+  'purple-600' : $purple600,
+  'purple-700' : $purple700,
+  'yellow-400' : $yellow400,
+  'yellow-500' : $yellow500,
+  'yellow-600' : $yellow600,
+  'yellow-700' : $yellow700,
+  'yellow-800' : $yellow800,
+  'white'     : $white,
+  'light-grey': $lightgrey,
+  'black'     : $black,
+);
+
+
+@each $name, $hex in $default-colors {
+  .open-data-#{$name} {
+    color: $hex;
+  }
+
+  .open-data-bg-#{$name} {
+    background-color: $hex;
+  }
+
+  .border-#{$name} {
+    border-color: $hex;
+  }
+}

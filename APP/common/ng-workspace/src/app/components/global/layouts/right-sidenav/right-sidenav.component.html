@@ -1,0 +1,78 @@
+<div class="right-sidenav-main-container">
+    <div class="sidenav-header">
+        <a routerLink="/" (click)="closeNavigation()" class="no-decor">
+            <img src="static/assets/img/ondc_logo.svg" 
+                alt="ondc-svg" height="36px" 
+                class="cursor-pointer" />
+        </a>
+        <i (click)="closeNavigation()" 
+            class="fa-solid fa-close font-md font-bolder cursor-pointer open-data-grey-700">
+        </i>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="sidenav-body">
+        @for(section of sections; track section){
+            <div class="margin-bottom-3">
+                <p class="font-bold margin-y-2 font-xxs">
+                    {{section.title}}
+                </p>
+                <div>
+                    @for(subsection of section.subSections; track subsection) {
+                        @if(subsection.type == 'default') {
+                            @if(subsection?.disabled) {
+                                <p class="margin-0 cursor-not-allowed sidenav-option">
+                                    <i [class]="subsection.icon"></i>
+                                    <span class="margin-0">{{subsection.title}}</span>
+                                </p>
+                            } @else {
+                                @if(subsection?.external) {
+                                    <a [href]="subsection.url" class="no-decor cursor-pointer sidenav-option" target="_blank">
+                                        <i [class]="subsection.icon"></i>
+                                        <p class="margin-0">{{subsection.title}}</p>
+                                    </a>
+                                } @else {
+                                    <a [routerLink]="subsection.url" [class.active]="selectedUrl==subsection.url" (click)="closeNavigation()" class="no-decor cursor-pointer sidenav-option">
+                                        <i [class]="subsection.icon"></i>
+                                        <p class="margin-0">{{subsection.title}}</p>
+                                    </a>
+                                }
+                            }
+                        } @else if(subsection.title == 'Download data') {
+                            <div (click)="setOpenDownloadDataDialog()" class="no-decor cursor-pointer sidenav-option">
+                                <i [class]="subsection.icon"></i>
+                                <p class="margin-0">{{subsection.title}}</p>
+                            </div>
+                        } @else {
+                            <mat-expansion-panel>
+                                <mat-expansion-panel-header>
+                                    <mat-panel-title>
+                                        <div class="cursor-pointer option">
+                                            <i [class]="subsection.icon"></i>
+                                            <p class="margin-0">{{subsection.title}}</p>
+                                        </div>
+                                    </mat-panel-title>
+                                </mat-expansion-panel-header>
+
+                                <div>
+                                    @for(option of subsection.options; track option) {
+                                        @if(option?.disabled) {
+                                            <p class="margin-0 cursor-not-allowed sidenav-option">
+                                                {{option.title}}
+                                            </p>
+                                        } @else {
+                                            <a [routerLink]="option.url" (click)="closeNavigation()" class="cursor-pointer margin-0 sidenav-option" 
+                                                [class.active]="selectedUrl==option.url">
+                                                {{option.title}}
+                                            </a>
+                                        }
+                                    }
+                                </div>
+
+                            </mat-expansion-panel>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>

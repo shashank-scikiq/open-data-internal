@@ -1,0 +1,258 @@
+<div class="header-section">
+    <a routerLink="" class="no-decor">
+        <img src="static/assets/img/ondc_logo.svg" alt="ondc-svg" class="cursor-pointer" />
+    </a>
+</div>
+
+
+<div class="dq-report-main-container">
+    <mat-tab-group>
+        <mat-tab label="Data Sanity">
+            <div class="section-1-container">
+                <div class="section-charts">
+                    @if(section1Chart1Data) {
+                        <div class="section-block">
+                            <p class="margin-0 font-md font-bolder title">{{section1Chart1Data.title}}</p>
+                            <apx-chart class="width-100" [series]="section1Chart1Data.series" [chart]="chartOptions" [dataLabels]="{
+                                        enabled: false
+                                    }" [xaxis]="{
+                                        categories: section1Chart1Data.categories,
+                                        labels: {
+                                            show: false,
+                                            offsetX: 10
+                                        }
+                                    }" [legend]="chartOptions.legend" [noData]="{
+                                        text: 'No Data to Display'
+                                    }">
+                            </apx-chart>
+                        </div>
+                    }
+                    @if(section1Chart2Data) {
+                        <div class="section-block">
+                            <p class="margin-0 font-md font-bolder title">{{section1Chart2Data.title}}</p>
+                            <apx-chart class="width-100" [series]="section1Chart2Data.series" [chart]="chartOptions" [dataLabels]="{
+                                        enabled: false
+                                    }" [xaxis]="{
+                                        categories: section1Chart2Data.categories,
+                                        labels: {
+                                            show: false,
+                                            offsetX: 10
+                                        }
+                                    }" [legend]="chartOptions.legend" [noData]="{
+                                        text: 'No Data to Display'
+                                    }">
+                            </apx-chart>
+                        </div>
+                    }
+                </div>
+                
+
+                @if(section1TableData) {
+                    <div class="">
+                        <p class="margin-0 font-md font-bolder title">{{section1TableData.title}}</p>
+                        <div class="table-container">
+                            <nz-table [nzFrontPagination]="false" #middleTable nzSize="small"
+                                [nzData]="section1TableData.data">
+                                <thead>
+                                    <tr>
+                                        <th *ngFor="let header of (section1TableData.data.length ? object.keys(section1TableData.data[0]) : [])"
+                                            style="background-color: white; color: #8392a5; font-weight: 500;">{{header}}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let data of middleTable.data;  let i = index"
+                                        [ngStyle]="{'background': i%2 != 0 ? '#e5e9f2' : '#ffffff'}">
+                                        <td style="min-width: 120px"
+                                            *ngFor="let header of (section1TableData.data.length ? object.keys(section1TableData.data[0]) : [])">
+                                            {{
+                                            data[header]
+                                            }}</td>
+                                    </tr>
+                                </tbody>
+                            </nz-table>
+                        </div>
+                    </div>
+                }
+            </div>
+        </mat-tab>
+        <mat-tab label="Server Check">
+            section 2
+        </mat-tab>
+        <mat-tab label="Data Quality">
+            <div class="heading-section">
+                <p class="margin-0 font-md font-bolder">Data quality report</p>
+                @if(dateRange) {
+                <app-date-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
+                }
+            </div>
+
+            <div class="top-cards-section">
+                @if(topCards.length) {
+                @for(card of topCards; track card) {
+                <div class="card-container">
+                    <p class="title-text margin-0">{{ card.title }}</p>
+                    <div class="content-section">
+                        <p class="text margin-0">
+                            {{card.count}}
+                            <span [class]="'sub-text ' + (card.increased ? 'positive' : 'negative')">
+                                {{card.variancePercentage}}
+                                <i [class]="'fa-solid '+ (card.increased ? 'fa-arrow-up' : 'fa-arrow-down')"></i>
+                            </span>
+                            <span class="sub-text">
+                                {{card.varianceText}}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+                }
+                }
+            </div>
+            <div>
+                @if(radialCharts) {
+                <p>% Missing Data</p>
+                <div class="radial-charts-section">
+                    @for(chart of radialCharts; track chart) {
+                    <div class="card-container">
+                        <p class="margin-0">{{chart?.title}}</p>
+                        <apx-chart [series]="chart?.series" [plotOptions]="radialChartOption.plotOptions"
+                            [fill]="radialChartOption.fill" [chart]="radialChartOption.chart">
+                        </apx-chart>
+                    </div>
+                    }
+                </div>
+                }
+            </div>
+
+            <div class="detail-completed-section">
+                <p class="margin-0">Detail Completed</p>
+                <div>
+                    <p class="margin-0 font-xxs">Sellers with Highest Missing Provider ID.</p>
+                    <div class="highest-section">
+                        @for(data of detailCompletedHighestMissingPIDData; track data) {
+                        <div class="highest-container">
+                            <p class="margin-0 id">{{data.id}}</p>
+                            <p class="margin-0 percentage">{{data.count}}</p>
+                            <p [class]="'margin-0 sub-text ' + (data.increased ? 'positive' : 'negative')">
+                                {{data.variancePercentage}}
+                                <i [class]="'fa-solid '+ (data.increased ? 'fa-arrow-up' : 'fa-arrow-down')"></i>
+                                {{data.varianceText}}
+                            </p>
+                        </div>
+                        }
+                    </div>
+                </div>
+
+                @if(!isDetailCompletedTableDataloaded) {
+                <div class="loading-container">
+                    <div class="dot-loader"></div>
+                    <div class="dot-loader dot-loader--2"></div>
+                    <div class="dot-loader dot-loader--3"></div>
+                </div>
+                }
+                @else {
+                <div class="table-container">
+                    <nz-table [nzFrontPagination]="false" #middleTable nzSize="small"
+                        [nzData]="detailCompletedTableData">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let header of (detailCompletedTableData.length ? object.keys(detailCompletedTableData[0]) : [])"
+                                    style="background-color: white; color: #8392a5; font-weight: 500;">{{header}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of middleTable.data;  let i = index"
+                                [ngStyle]="{'background': i%2 != 0 ? '#e5e9f2' : '#ffffff'}">
+                                <td style="min-width: 120px"
+                                    *ngFor="let header of (detailCompletedTableData.length ? object.keys(detailCompletedTableData[0]) : [])">
+                                    {{
+                                    data[header]
+                                    }}</td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </div>
+                }
+
+            </div>
+
+            <div class="detail-completed-section">
+                <p class="margin-0">Detail Cancelled</p>
+                <p class="margin-0 font-xxs">Sellers with Highest Missing Item Category</p>
+
+                @if(!isDetailCompletedTableDataloaded) {
+                <div class="loading-container">
+                    <div class="dot-loader"></div>
+                    <div class="dot-loader dot-loader--2"></div>
+                    <div class="dot-loader dot-loader--3"></div>
+                </div>
+                }
+                @else {
+                <div class="table-container">
+                    <nz-table [nzFrontPagination]="false" #middleTable nzSize="small"
+                        [nzData]="detailCompletedTableData">
+                        <thead>
+                            <tr>
+                                <th *ngFor="let header of (detailCompletedTableData.length ? object.keys(detailCompletedTableData[0]) : [])"
+                                    style="background-color: white; color: #8392a5; font-weight: 500;">{{header}}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let data of middleTable.data;  let i = index"
+                                [ngStyle]="{'background': i%2 != 0 ? '#e5e9f2' : '#ffffff'}">
+                                <td style="min-width: 120px"
+                                    *ngFor="let header of (detailCompletedTableData.length ? object.keys(detailCompletedTableData[0]) : [])">
+                                    {{
+                                    data[header]
+                                    }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </nz-table>
+                </div>
+                }
+
+            </div>
+
+            <div class="trend-section">
+                <p>Trend</p>
+                <div class="trend-container">
+                    @if(trend1) {
+                    <div>
+                        <p>{{trend1?.title}}</p>
+
+                        <apx-chart class="width-100" [series]="trend1.series" [chart]="chartOptions" [dataLabels]="{
+                                    enabled: false
+                                  }" [xaxis]="{
+                                    categories: trend1.categories,
+                                    labels: {
+                                        show: false,
+                                        offsetX: 10
+                                    }
+                                }" [legend]="chartOptions.legend" [noData]="{
+                                    text: 'No Data to Display'
+                                  }">
+                        </apx-chart>
+                    </div>
+                    }
+                    @if(trend1) {
+                    <div>
+                        <p>{{trend2?.title}}</p>
+                        <apx-chart class="width-100" [series]="trend2.series" [chart]="chartOptions" [dataLabels]="{
+                                    enabled: false
+                                }" [xaxis]="{
+                                    categories: trend2.categories,
+                                    labels: {
+                                        show: false,
+                                        offsetX: 10
+                                    }
+                                }" [legend]="chartOptions.legend" [noData]="{
+                                    text: 'No Data to Display'
+                                }">
+                        </apx-chart>
+                    </div>
+                    }
+                </div>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>

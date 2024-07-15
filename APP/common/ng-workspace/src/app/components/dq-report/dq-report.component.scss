@@ -1,0 +1,227 @@
+@import 'colors';
+@import 'breakpoints';
+
+.header-section {
+    z-index: 4;
+    padding: 0px 8px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    height: 60px;
+    border-bottom: 1px solid rgba(72, 94, 144, 0.16);
+    display: flex;
+    flex-direction: row;
+    place-content: space-between;
+    align-items: center;
+    img {
+        height: 38px;
+    }
+}
+
+.section-1-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 16px 0;
+    overflow-x: hidden;
+
+    .section-charts {
+        display: flex;
+        flex-direction: row;
+        gap: 16px;
+        padding: 16px 0;
+        width: 100%;
+    }
+
+    .section-block {
+        border: 1px solid rgba(72, 94, 144, 0.16);
+        border-radius: 8px;
+        padding: 8px;
+        width: 50%;
+
+    }
+}
+
+.dq-report-main-container {
+    padding: 68px 16px 16px;
+    
+    @include media-below('md') {
+        padding: 76px 8px 8px;
+    }
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+        
+    .dq-report-container {
+        border: 1px solid rgba(72, 94, 144, 0.16);
+        border-radius: 8px;
+        padding: 16px;
+        
+    }
+
+    .dq-report-tl {
+        padding-bottom: 16px;
+    }
+
+    .dq-report-body {
+        padding: 16px 0;
+    }
+
+}
+
+.top-cards-section {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+
+    .card-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid rgba(72, 94, 144, 0.16);
+        border-radius: 0.25rem;
+        padding: 8px 12px;
+        min-width: 300px;
+    }
+
+    .title-text {
+        font-size: 14px;
+    }
+
+    .content-section {
+        display: flex;
+        align-content: center;
+        gap: 12px;
+
+        .text {
+            font-size: 20px;
+            
+            .sub-text {
+                font-size: 12px;
+            }
+            .positive {
+                color: #10b759;
+            }
+            .negative {
+                color: #dc3545;
+            }
+        }
+    }
+}
+
+.radial-charts-section {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    width: 100%;
+
+    .card-container {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        word-wrap: break-word;
+        background-color: #fff;
+        background-clip: border-box;
+        border: 1px solid rgba(72, 94, 144, 0.16);
+        border-radius: 0.25rem;
+        padding: 8px 12px;
+        min-width: 100px;
+    }
+}
+
+.heading-section {
+    display: flex;
+    place-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+}
+
+
+.detail-completed-section {
+    border: 1px solid rgba(72, 94, 144, 0.16);
+    padding: 16px;
+    border-radius: 8px;
+    background-color: white;
+    .highest-section {
+        display: flex;
+        gap: 12px;
+        width: 100%;
+        flex-wrap: wrap;
+
+        .highest-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+            max-width: 300px;
+
+            .id {
+                color: $grey800;
+                font-size: 14px;
+                line-height: 18px;
+            }
+
+            .percentage {
+                font-size: 24px;
+                line-height: 30px;
+            }
+            .sub-text {
+                font-size: 12px;
+            }
+            .positive {
+                color: #10b759;
+            }
+            .negative {
+                color: #dc3545;
+            }
+        }
+    }
+}
+
+.table-container {
+    margin: 12px 0;
+    border: 1px solid rgba(72, 94, 144, 0.16);
+    border-radius: 4px;
+}
+
+.loading-container {
+    height: 30vh;
+    display: flex;
+
+    place-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+
+.trend-section {
+    border: 1px solid rgba(72, 94, 144, 0.16);
+    padding: 16px;
+    border-radius: 8px;
+    background-color: white;
+
+    .trend-container {
+        display: flex;
+        gap: 24px;
+        flex-direction: column;
+    }
+}
+
+::ng-deep {
+    .mat-mdc-tab-labels {
+        gap: 4px;
+    }
+    .mat-mdc-tab-group.mat-mdc-tab-group-stretch-tabs>.mat-mdc-tab-header .mat-mdc-tab {
+        background-color: rgba(72, 94, 144, 0.16);
+        border-color: rgba(72, 94, 144, 0.16);
+        color: #596882;
+        border-radius: 4px 4px 00 0;
+        flex-grow: unset !important;
+    }
+}

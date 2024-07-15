@@ -1,0 +1,26 @@
+2024-03-30 02:24:26,769 - DataAccessLayer - ERROR - Exception occurred in fetch_cumulative_orders_statewise: "Column(s) ['intradistrict_orders_percentage', 'intrastate_orders_percentage'] do not exist"
+Traceback (most recent call last):
+  File "C:\DAAS\ondc_open_data\APP\apps\src\database_utils\data_access_layer.py", line 40, in wrapper
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\DAAS\ondc_open_data\APP\apps\src\database_utils\data_access_layer.py", line 179, in fetch_cumulative_orders_statewise
+    aggregated_df = filtered_df.groupby(['delivery_state_code', 'delivery_state'], as_index=False).agg(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\DAAS\SCIKIQ\ENV\open_dashboard\Lib\site-packages\pandas\core\groupby\generic.py", line 1445, in aggregate
+    result = op.agg()
+             ^^^^^^^^
+  File "C:\DAAS\SCIKIQ\ENV\open_dashboard\Lib\site-packages\pandas\core\apply.py", line 175, in agg
+    return self.agg_dict_like()
+           ^^^^^^^^^^^^^^^^^^^^
+  File "C:\DAAS\SCIKIQ\ENV\open_dashboard\Lib\site-packages\pandas\core\apply.py", line 406, in agg_dict_like
+    return self.agg_or_apply_dict_like(op_name="agg")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\DAAS\SCIKIQ\ENV\open_dashboard\Lib\site-packages\pandas\core\apply.py", line 1390, in agg_or_apply_dict_like
+    result_index, result_data = self.compute_dict_like(
+                                ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\DAAS\SCIKIQ\ENV\open_dashboard\Lib\site-packages\pandas\core\apply.py", line 445, in compute_dict_like
+    func = self.normalize_dictlike_arg(op_name, selected_obj, func)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\DAAS\SCIKIQ\ENV\open_dashboard\Lib\site-packages\pandas\core\apply.py", line 639, in normalize_dictlike_arg
+    raise KeyError(f"Column(s) {list(cols)} do not exist")
+KeyError: "Column(s) ['intradistrict_orders_percentage', 'intrastate_orders_percentage'] do not exist"

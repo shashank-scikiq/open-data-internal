@@ -1,0 +1,224 @@
+.bg-df-1 {
+  background-color: #0168fa;
+}
+
+.bg-df-2 {
+  background-color: #69b2f8;
+}
+
+.bg-df-3 {
+  background-color: #d1e6fa;
+}
+
+.bg-litecoin {
+  background-color: #325a98;
+}
+
+.stroke-wd-3 {
+  stroke-width: 3px;
+}
+
+.wd-12 {
+  width: 12px;
+}
+
+.ht-12 {
+  height: 12px;
+}
+
+.table-dashboard {
+  font-size: 13px;
+}
+
+.table-dashboard thead th,
+.table-dashboard tbody td {
+  border-color: #e5e9f2;
+  white-space: nowrap;
+}
+
+.table-dashboard thead th:first-child,
+.table-dashboard tbody td:first-child {
+  padding-left: 20px;
+}
+
+.table-dashboard thead th:last-child,
+.table-dashboard tbody td:last-child {
+  padding-right: 20px;
+}
+
+.table-dashboard thead th {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter UI", Roboto, sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .5px;
+  text-transform: uppercase;
+  color: #8392a5;
+}
+
+.table-dashboard-one tbody td {
+  padding-top: 5px;
+  padding-bottom: 5px;
+}
+
+.card-dashboard-table .table th,
+.card-dashboard-table .table td {
+  border-color: rgba(72, 94, 144, 0.16);
+  padding: 10px 15px;
+  font-size: 13px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.card-dashboard-table .table thead tr th:first-child {
+  border-left-width: 0;
+}
+
+.card-dashboard-table .table thead tr th:last-child {
+  border-right-width: 0;
+}
+
+.card-dashboard-table .table thead tr:first-child th {
+  border-top-width: 0;
+  font-size: 13px;
+  background-color: #f5f6fa;
+  text-align: left;
+}
+
+.card-dashboard-table .table thead tr:last-child th {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 8px 15px;
+  color: #8392a5;
+}
+
+.card-dashboard-table .table thead tr th:first-child,
+.card-dashboard-table .table tbody tr td:first-child {
+  text-align: left;
+}
+
+.card-dashboard-table .table strong {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter UI", Roboto, sans-serif;
+  font-weight: 500;
+}
+
+/* ---------- dashboard-three.html ------------ */
+.card-crypto .nav-line {
+  border-bottom-width: 0;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 10px;
+  letter-spacing: .5px;
+}
+
+.card-crypto .nav-line .nav-link+.nav-link {
+  margin-left: 10px;
+}
+
+.card-crypto .nav-line .nav-link.active::after {
+  height: 3px;
+  bottom: -10px;
+  border-radius: 0.25rem;
+  display: none;
+}
+
+@media (min-width: 576px) {
+  .card-crypto .nav-line .nav-link.active::after {
+    display: block;
+  }
+}
+
+.crypto {
+  position: relative;
+  padding: 20px;
+}
+
+.crypto-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+}
+
+.crypto-icon-sm {
+  height: 35px;
+  width: 35px;
+  font-size: 16px;
+}
+
+.crypto-bitcoin-cash {
+  line-height: 0;
+  transform: rotate(-40deg);
+}
+
+.chart-twelve .flot-chart {
+  height: 80px;
+  margin-left: -20px;
+  margin-right: -20px;
+}
+
+.list-label {
+  padding: 6px 20px;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-size: 10px;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter UI", Roboto, sans-serif;
+  background-color: #f5f6fa;
+  color: #8392a5;
+  letter-spacing: 1px;
+  border-top: 1px solid #e5e9f2;
+}
+
+.list-label:first-of-type {
+  border-top-width: 0;
+}
+
+.list-item {
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #e5e9f2;
+}
+
+.table-dashboard-two {
+  width: 100%;
+  font-size: 13px;
+}
+
+.table-dashboard-two tr+tr td {
+  border-top: 1px solid #e5e9f2;
+}
+
+.table-dashboard-two td {
+  vertical-align: top;
+  line-height: 1;
+  padding: 8px 0;
+}
+
+.table-dashboard-two td:first-child {
+  padding-left: 0;
+}
+
+.table-dashboard-two td:first-child div {
+  opacity: .7;
+}
+
+.table-dashboard-two td:nth-child(3),
+.table-dashboard-two td:last-child {
+  font-family: "Rubik", sans-serif;
+}
+
+.table-dashboard-two td:last-child {
+  color: #8392a5;
+}
+
+.off-canvas-overlay.show~.backdrop {
+    opacity: 1;
+    visibility: visible;
+    z-index: 999;
+}

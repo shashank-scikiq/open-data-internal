@@ -1,0 +1,107 @@
+$default-border-radius: 12px!default;
+$default-border-style: 1px solid #e6e6e6!default;
+$border-styles : (dotted, dashed, inset, hidden, solid, double, groove, ridge, outset);
+
+$border-radius-modifier: 4px;
+$max-border-spacer: 5;
+
+$border-variables: (
+  top: top,
+  bottom: bottom,
+  right: right,
+  left: left
+);
+
+$border-radius: (
+  top: ('top-right', 'top-left'),
+  right: ('top-right', 'bottom-right'),
+  left: ('top-left', 'bottom-left'),
+  bottom: ('bottom-left', 'bottom-right')
+);
+
+// Using !important so that it can override radius in angular elements too
+@for $index from 1 through 5 {
+  .border-width-#{$index} {
+    border-width: #{$index}px!important;
+  }
+
+  .border-radius-#{$index} {
+    border-radius: #{$index * $border-radius-modifier}!important;
+  }
+
+  @each $value in $border-variables {
+    .border-#{nth($value, 1)}-width-#{$index} {
+      border-#{nth($value, 2)}-width: #{$index}px!important;
+    }
+  }
+}
+//Creates border width classes like border-width-1, border-width-2
+
+@each $value in $border-styles {
+  .border-style-#{$value} {
+    border-style: $value;
+  }
+}
+//Creates border styles classes like border-style-solid, border-style-dashed, border-style-groove
+
+@each $value in $border-variables {
+  @for $i from 0 through 1 {
+    @if $i == 0  {
+      .border-#{nth($value, 1)}-#{$i} {
+        border-#{nth($value, 2)}: 0;
+      }
+    } @else {
+      .border-#{nth($value, 1)} {
+        border-#{nth($value, 2)}: #{$default-border-style};
+      }
+    }
+  }
+}
+// Creates border sides classes like border-top, border-right, border-top-0, border-bottom-0
+
+@each $side, $values in $border-radius {
+  .radius-#{$side}-0 {
+    border-#{nth($values, 1)}-radius: 0!important;
+    border-#{nth($values, 2)}-radius: 0!important;
+  }
+  .rounded-#{$side} {
+    border-#{nth($values, 1)}-radius: 12px;
+    border-#{nth($values, 2)}-radius: 12px;
+  }
+}
+//Creates classes liuke radius-top-0, radius-bottom-0, rounded-top, rounded-bottom
+
+@for $index from 1 through $max-border-spacer {
+    @each $side, $values in $border-radius {
+      .rounded-#{$side}-#{$index} {
+        border-#{nth($values, 1)}-radius: #{$index * $border-radius-modifier};
+        border-#{nth($values, 2)}-radius: #{$index * $border-radius-modifier};
+      }
+    }
+}
+//Creates classes like rounded-top-1, rounded-right-2...
+//todo: Should be radius-top-1, radius-right-2 but classes are in use
+
+.border {
+  border: $default-border-style;
+}
+
+.rounded-border {
+  border: $default-border-style;
+  border-radius: $default-border-radius;
+}
+
+.border-0 {
+  border: 0!important;
+}
+
+.circle {
+  border-radius: 50%;
+}
+
+.rounded-bottom-border {
+  border-bottom: $default-border-style;
+  border-radius: $default-border-radius;
+}
+
+

@@ -1,0 +1,12 @@
+
+<div class="open-data-date-range-picker relative">
+  <div class="label">Choose date range</div>
+    <nz-range-picker
+      id="filterMonthRange"
+      class="picker-section"
+      nzFormat="MMM dd, yyyy"
+      [nzAllowClear]="checkClear()"
+      [(ngModel)]="date" 
+      [nzDisabledDate]="disabledDate"
+      (ngModelChange)="onChange($event)" />
+  </div>

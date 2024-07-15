@@ -1,0 +1,46 @@
+﻿Section,Metric,Definition,Imputations if any/Disclaimers
+Overall,Retail,"Domains that include Retail, Giftcard, B2B, etc basis the NIC code",Detailed Domain Mapping
+Overall,Delivery District ,This metric is derived from the Delivery Pincode in the Order Data. The Delivery Pincode is mapped to the district according to the India Post pincode directory to determine the final district where the orders are scheduled to be delivered.,"Master District Map - 
+https://docs.google.com/spreadsheets/d/1PwRngglq23FqRonViZxKHW42DhALwU89E8OVkLrzWXY/edit#gid=1941418190"
+Overall,Delivery State,This metric is derived from the Delivery Pincode in the Order Data. The Delivery Pincode is mapped to the state according to the India Post pincode directory to determine the final state where the orders are scheduled to be delivered.,"Master District Map - 
+https://docs.google.com/spreadsheets/d/1PwRngglq23FqRonViZxKHW42DhALwU89E8OVkLrzWXY/edit#gid=1941418190"
+Overall,Seller Districts,This metrics is derived from the Seller Pincode in the Order Data. The Seller Pincode is mapped to the District according to the India Post pincode directory to determine the district from where the orders originated,"Master District Map - 
+https://docs.google.com/spreadsheets/d/1PwRngglq23FqRonViZxKHW42DhALwU89E8OVkLrzWXY/edit#gid=1941418190"
+Overall,"Category, Sub- Category","We use the following mapping for Category and Consolidated Category
+
+https://docs.google.com/spreadsheets/d/1H-wFtKwxkp-9788PLZdHPmbEZwcNs6EBAjo8zAAc6g4/edit#gid=568852683","We use the following mapping for Category and Consolidated Category-
+
+https://docs.google.com/spreadsheets/d/1H-wFtKwxkp-9788PLZdHPmbEZwcNs6EBAjo8zAAc6g4/edit#gid=568852683"
+Overall,Seller State,This metrics is derived from the Seller Pincode in the Order Data. The Seller Pincode is mapped to the State according to the India Post pincode directory to determine the district from where the orders originated,
+Top Card,Total Confirmed Orders,"Count of Distinct Network Order Id within the selected range. For filters, the total confirmed orders are within that selected category/sub_category, date range.",
+Top Card,% change from previous month,"Confirmed orders of the selected date range of the compared to the same date range for the previous month.
+Example : First week of Jan is 01/01/2024 to 08/01/2024 vs first week of Dec (last month)  01/12/2023 to 08/12/2023 ",
+Top Card,Avg. Items Per Order ,Total number of items ordered / Total unique orders ,
+Top Card,"Total Active Districts 
+",Unique count of Districts where the orders are scheduled to be delivered within the selected date range. Districts are fetched using districts mapping using Delivery pincode,
+Top Card,"Total Active Sellers 
+",Unique count of (Provider ID + Seller App) combination where the orders are scheduled to be delivered within the selected date range,
+Top Card,"Maximum #Orders At
+","Sort the Total Confirmed Orders  by State/Districts, basis the selected date range and other filter. It will show top districts within a state, if a state map is selected. Districts/ States are mapped using delivery pincode.",
+Top Card,"Maximum #Orders for Category
+","Sort the Total Confirmed Orders grouped at Category level, basis the selected date range and other filters selected. It will show the top category for the confirmed orders.",
+Summary Chart,"Top 3 States with Highest Orders
+
+","Sort the Total Confirmed Orders by State, basis the selected date range and other filters, the top 3 states order graphs were displayed. On a state map, it will display the selected state orders within the time range. ",
+Summary Chart,Number of States with Orders in the Range of,(Total Confirmed orders within a state divided by date range) to get avg orders per state. State Bins are calculated for the order ranges lying within that range,
+Summary Chart,Distribution of Orders by Category,"Percentage of Total confirmed orders within that category w.r.t Total confirmed Orders across the Network. By selecting a category, this will filter the dashboard with metrics for that category and the chart will show Percentage of Total orders within a sub category w.r.t Total Orders for the category. Simillarly if a sub category is selected, It will filter the dashboard for that sub category and the chart will show only sub category percentage within the sub category which will be 100%",
+Logistics,Intra state %,"If Delivery state is same as Seller state, it will treated as Intrastate orders. Percentage of Intrastate orders w.r.t Total Orders ",
+Logistics,Intra District %,"If Delivery district is same as Seller district, it will treated as intradistrict orders. Percentage of intradistrict orders w.r.t Total Orders ",
+Supply Chart,Number of States with Active Sellers in the Range of,(Total sellers within a state divided by date range) to get avg sellers per state. State Bins are calculated for the seller ranges lying within that range,
+Supply Chart,Top 3 States with Highest Number Of Active Sellers ,"Sort the Active Sellers by State, basis the date range and other filters selected. On a state map, it will display state sellers within the time range",
+Supply Chart,Maximum number of Orders originating from State ,Maximum Number of Total Confirmed Orders from a state using seller pincode get the state from districts mapping.,
+Supply Chart,Maximum number of Orders to State,Maximum Number of Total  Confirmed Orders to a state using delivery pincode get the state from districts mapping.,
+Key Data Insights,District with the Highest increase in the orders since last month,Data is grouped at district level using delivery pincode and district mapping. Delta Orders = Total MTD Orders - Prev MTD Orders. Percentage is calculated as 100* (Delta_Orders/Total_Prev_Orders). Sort the delta orders and fetch the maximum,
+Key Data Insights,District with the Highest increase in the orders since last week,Data is grouped at district level using delivery pincode and district mapping.Delta Orders = Total WTD Orders - Prev WTD Orders. Percentage is calculated as 100* (Delta_Orders/Total_Prev_Orders). Sort the delta orders and fetch the maximum,
+Key Data Insights,Sub-Category with the highest Increase in the Order Volume in the Last Month,Data is grouped at sub category level. Delta Orders = Total MTD Orders grouped at sub_category - Prev MTD Orders grouped at sub category. Percentage is calculated as 100* (Delta Orders/Total PrevOrders). Sort the delta orders within a sub cat and fetch the maximum,
+Key Data Insights,State with the Highest increase in the orders since last month,Data is grouped at state level using delivery pincode and district mapping.Delta Orders = Total MTD Orders - Prev MTD Orders. Percentage is calculated as 100* (Delta Orders/Total Prev Orders). Sort the delta orders and fetch the maximum,
+Key Data Insights,State with the Highest increase in the orders since last week,Data is grouped at state level using delivery pincode and district mapping. Delta Orders = Total WTD Orders - Prev WTD Orders. Percentage is calculated as 100* (Delta Orders/Total Prev Orders). Sort the delta orders and fetch the maximum,
+Key Data Insights,District with highest increase in Intradistrict Orders,Data is mapped to district and state using district mapping. Intradistrict orders are total confirmed orders  where delivery district is same as seller district. Highest for the MTD is fetched,
+Key Data Insights,District with highest increase in Intrastate Orders,Data is mapped to district and state using district mapping. Intrastate orders are total confirmed orders where delivery state is same as seller state. Highest for the MTD is fetched,
+Key Data Insights,80% of the Orders are done by x% of the Active Sellers,"
+Total Orders are calculated, along with orders by individual sellers. The cumulative orders of each sellers are compared to the total orders, and sellers with cumulative orders less than or equal to 80% are identified. The percentage of sellers with cumulative orders below 80% is obtained by dividing the count of such sellers by the total number of sellers and multiplying by 100.",

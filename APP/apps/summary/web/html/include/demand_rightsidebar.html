@@ -1,0 +1,66 @@
+<div class="row row-xs">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between pos-relative pd-x-10 pd-y-6 bd-b-0-f">
+          <div class="">
+            <h6 class="mg-b-0">Overall Trend for India</h6>
+            <p class="tx-12 tx-color-03 mg-b-0">Confirmed Orders
+              <i class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="top" title="Sort the Total Confirmed Orders  (distinct count of Network Order Id) by State, basis the date range and other filters selected. On a state map, it will display only that state orders within the time range"></i>
+            </p>
+          </div>
+        </div>
+        <div class="card-body pd-0 w-100" style="min-height: 145px;">
+          <div id="cumulativeChart_order_summary" class="w-100"></div>
+          <div class="loading_cumulativeChart"></div>
+        </div>
+        <div class="card-footer pd-x-10 pd-y-5">
+          <div class="d-flex justify-content-between">
+            <div class="flex-1 w-100">
+            </div>
+            <div class="text-nowrap text-muted tx-12 float-right mg-l-10 dateRangeTitle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 mg-t-10">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex flex-column justify-content-between pos-relative pd-x-10 pd-y-6 bd-b-0-f">
+          <h6 class="mg-b-0 topstates">Top 3 States</h6>
+          <p class="tx-12 tx-color-03 mg-b-0">with Highest Confirmed Orders
+            <i class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="top" title="Sort the Total Confirmed Orders  (distinct count of Network Order Id) by State, basis the date range and other filters selected. On a state map, it will display only that state orders within the time range"></i>
+          </p>
+        </div>
+        <div class="card-body pd-0 w-100" style="min-height: 145px;">
+          <div id="topStateChart_order_summary" class="w-100"></div>
+          <div class="loading_topStateChart_order"></div>
+        </div>
+        <div class="card-footer pd-x-10 pd-y-5">
+          <div class="d-flex justify-content-between">
+            <div class="flex-1 w-100">
+            </div>
+            <div class="text-nowrap text-muted tx-12 float-right mg-l-10 dateRangeTitle"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-12 mg-t-10">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex flex-column justify-content-between pd-x-10 pd-y-6 bd-b-0-f">
+          <h6 class="mg-b-0 topdistricts">Top 3 Districts</h6>
+          <p class="tx-12 tx-color-03 mg-b-0">with Highest Confirmed Orders
+            <i class="mdi mdi-information-outline" data-toggle="tooltip" data-placement="top" title="Highest Confirmed Orders "></i>
+          </p>
+        </div>
+        <div class="card-body pd-0" style="min-height: 145px;">
+          <div id="topDist_order_summary" class="w-100"></div>
+          <div class="loading_topDist_order"></div>
+        </div>
+        <div class="card-footer pd-x-10 pd-y-5">
+          <div class="text-nowrap text-muted tx-12 float-right mg-l-10 dateRangeTitle"></div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+

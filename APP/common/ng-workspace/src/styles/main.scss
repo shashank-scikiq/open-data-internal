@@ -1,0 +1,85 @@
+@import './abstracts/colors';
+@import './abstracts/fonts';
+
+@import './base/breakpoints';
+@import './base/typography';
+
+@import './components/buttons';
+@import './components/card';
+@import './components/toast';
+
+@import './layout/coordinates';
+@import './layout/overflow';
+@import './layout/positions';
+
+@import './mixins/borders';
+@import './mixins/colors';
+@import './mixins/buttons';
+@import './mixins/display';
+@import './mixins/flex';
+@import './mixins/functions';
+@import './mixins/hovers';
+@import './mixins/shadows';
+@import './mixins/utilities';
+
+@import './themes/default';
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400&display=swap');
+html, body {
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  font-size: 16px;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-default {
+  cursor: default;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+.default-font-weight {
+  font-weight: 400;
+}
+
+::ng-deep {
+  .mat-form-field-appearance-outline .mat-form-field-outline {
+    color: #D3D3D3!important;
+  }
+
+  .mat-form-field-label {
+    color: rgba(0,0,0,.6)!important;
+  }
+
+  .mat-input-element {
+    caret-color: #545454!important;
+  }
+
+  .mat-form-field-appearance-legacy .mat-form-field-ripple,
+  .mat-form-field-appearance-fill .mat-form-field-ripple {
+    height: 1px!important;
+    background-color: rgba(0,0,0,.12)!important;
+  }
+
+  .mat-form-field-appearance-legacy .mat-hint,
+  .mat-form-field-appearance-fill .mat-hint {
+    color: #707070!important;
+  }
+
+  .mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-start,
+  .mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-end,
+  .mat-form-field-appearance-outline .mat-form-field-outline-thick .mat-form-field-outline-gap {
+    border-width: 1px!important;
+  }
+
+  .mat-dialog-container {
+    border-radius: 12px!important;
+  }
+}

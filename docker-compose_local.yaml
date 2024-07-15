@@ -1,0 +1,31 @@
+services:
+  db_update_local:
+    container_name: db_update_local
+    build:
+      context: .
+      dockerfile: db.Dockerfile
+    image: db_update_local:version_3.8.1
+    env_file:
+      - aws_common.env
+    environment:
+      - POSTGRES_SCHEMA=dev
+      - EMAIL_ENV=localhost
+  
+  webapp_local:
+    container_name: webapp_local
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    image: webapp_local:version_3.8.1
+    ports:
+      - "8081:8001"
+    env_file:
+      - aws_common.env
+    restart: unless-stopped
+    environment:
+     - POSTGRES_SCHEMA=prod
+
+networks:
+  my_custom_network:
+    name: OD_DB
+    driver: bridge

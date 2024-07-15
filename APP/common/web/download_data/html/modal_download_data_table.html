@@ -1,0 +1,59 @@
+<div class="modal fade" id="downloadTableData" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+  <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content tx-14">
+          <!-- Modal header -->
+          <div class="modal-header bd-0-f pd-b-5">
+              <h6 class="modal-title" id="exampleModalLabel2">Download Data Table</h6>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <!-- Modal body -->
+          <div class="modal-body p-0">
+              <!-- Tabs -->
+              <ul class="nav nav-tabs tx-11" id="downloadDataTable" role="tablist">
+                  <li class="nav-item mg-l-15">
+                      <a class="nav-link ht-30-f pd-x-7-f active" id="state-tab" cat="State wise orders" data-toggle="tab" href="#categoryTabContent" role="tab" aria-controls="profile" aria-selected="false">State wise orders (Physical Orders)</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link ht-30-f pd-x-7-f" id="district-tab" cat="District wise orders" data-toggle="tab" href="#categoryTabContent" role="tab" aria-controls="profile" aria-selected="false">District wise orders (Physical Orders)</a>
+                  </li>
+                  {% if include_category %}
+
+                      <li class="nav-item">
+                        <a class="nav-link ht-30-f pd-x-7-f" id="category-tab" cat="Category wise orders" data-toggle="tab" href="#categoryTabContent" role="tab" aria-controls="home" aria-selected="true">Category wise orders</a>
+                    </li>
+                  {% endif %}
+
+                  <li class="nav-item">
+                    <a class="nav-link ht-30-f pd-x-7-f" id="digital-voucher-tab" cat="Digital Voucher" data-toggle="tab" href="#categoryTabContent" role="tab" aria-controls="home" aria-selected="true">Digital Voucher</a>
+                </li>
+
+
+              </ul>
+              <!-- Tab content -->
+              <div class="tab-content bd-t-0 pd-t-0 pd-b-10-f" id="myTabContent" style="min-height: 200px;">
+                  <!-- Table for all tabs -->
+                  <div class="tab-pane fade show active" id="categoryTabContent" role="tabpanel" aria-labelledby="category-tab">
+                    <div class="table-responsive">
+                        <table class="table bd-0 table-striped table-dashboard m-0 w-100" id="data-table">
+                            <!-- Table headers -->
+                            <thead>
+                                <tr>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                          </table>
+                    </div>
+                        <div id="tableLoader"></div>
+                  </div>
+              </div>
+          </div>
+          <!-- Modal footer -->
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary tx-13" id="closeDownloadTable">Close</button>
+              <button type="button" class="btn btn-primary tx-13" id="downloadButton">Download Data</button>
+          </div>
+      </div>
+  </div>
+</div>

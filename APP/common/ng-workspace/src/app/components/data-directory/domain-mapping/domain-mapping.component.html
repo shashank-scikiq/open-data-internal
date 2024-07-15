@@ -1,0 +1,55 @@
+<div class="relative data-container">
+  @if(pincodeData.length) {
+  <div class="search-section">
+    <p class="font-sm margin-0">Search:</p>
+    <input nz-input placeholder="Search..." (keyup)="search($event)" />
+  </div>
+  }
+
+
+  <nz-table nzShowSizeChanger [nzData]="filteredPincodeData.length ? filteredPincodeData.slice(
+          (pageSize * (pageIndex - 1)), 
+          pageSize * pageIndex
+        ) : []" [nzFrontPagination]="false" [nzBordered]="true" [nzLoading]="loading"
+    [nzTotal]="filteredPincodeData.length < pincodeData.length ? filteredPincodeData.length : pincodeData.length"
+    [nzPageSize]="pageSize" [nzPageIndex]="pageIndex" (nzQueryParams)="onQueryParamsChange($event)">
+    <thead>
+      <tr>
+        @for(header of headers; track header; let i = $index) {
+        <th [nzColumnKey]="header" [nzSortFn]="true" (nzSortOrderChange)="sort(header, $event, i)">
+          {{header}}
+        </th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of filteredPincodeData.slice(
+            (pageSize * (pageIndex - 1)), 
+            pageSize * pageIndex
+          ); let i=index">
+        @for(ele of data; track ele) {
+        <td [ngStyle]="{'background': i%2 ==0 ? '#fff' : '#e5e9f2'}">{{ele}}</td>
+        }
+      </tr>
+    </tbody>
+  </nz-table>
+
+  @if(pincodeData.length) {
+  <div class="font-xs count-info-section">
+    @if(pincodeData.length == filteredPincodeData.length) {
+    Showing {{(pageSize * (pageIndex - 1)) + 1}} to {{
+    (pageSize * pageIndex) > pincodeData.length ? pincodeData.length : pageSize * pageIndex
+    }} of
+    {{pincodeData.length}} entries
+
+    } @else {
+    Showing {{(pageSize * (pageIndex - 1)) + 1}} to {{
+    (pageSize * pageIndex) > pincodeData.length ? pincodeData.length : pageSize * pageIndex
+    }} of
+    {{filteredPincodeData.length}} entries (filtered from {{pincodeData.length}} total entries)
+    }
+  </div>
+  }
+
+
+</div>

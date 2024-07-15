@@ -1,0 +1,49 @@
+$white: #ffffff;
+
+%snackbar {
+  color     : $white;
+  max-width : 100vw !important;
+  width     : 100vw;
+  margin    : 0 !important;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+$snackbar-types: (
+  'green': (
+    background-color: #3d994d
+  ),
+  'red': (
+    background-color: #c9252d
+  ),
+  'orange': (
+    background-color: #ff8f40
+  ),
+  'blue': (
+    background-color: #007bff
+  ),
+);
+
+
+@each $key, $config in $snackbar-types {
+  .#{$key}-snackbar {
+    @extend %snackbar;
+    background-color: map-get($config, 'background-color') !important;
+
+    .mat-simple-snackbar {
+      place-content: center !important;
+
+      .mat-simple-snackbar-action {
+        color: $white;
+        
+        button {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+.no-border {
+  border-radius: unset !important;
+}

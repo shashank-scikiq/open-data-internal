@@ -1,0 +1,122 @@
+@import 'breakpoints';
+
+.summary-main-container {
+    padding: 60px 16px 0;
+
+    height: 100vh;
+    overflow: hidden;
+
+    min-height: 100vh;
+
+    @include media-below("md") {
+        height: 100%;
+        overflow: auto;
+    }
+    .heading-section {
+        display: flex;
+        place-content: space-between;
+        align-items: center;
+    }
+
+
+    .info-icon {
+        font-size: 16px;
+        line-height: 16px;
+        color: #A0A5AB;
+        height: 16px;
+        width: 16px;
+    }
+
+    .upper-cards-container {
+        display: flex;
+        place-content: space-between;
+        padding: 8px 16px;
+        box-shadow: 0 10px 35px rgba(0, 0, 0, .1);
+        border-radius: 6px;
+    }
+
+    .detail-section-container {
+        display: flex;
+        flex-direction: row;
+        place-content: space-evenly;
+
+        .inner-map-section {
+            display: flex; 
+            align-items: center; 
+            place-content: center; 
+            position: relative; 
+            height: calc(100vh - 248px); 
+            width: 60%;
+        }
+
+        @include media-below('md') {
+            flex-direction: column;
+            gap: 24px;
+
+            .inner-map-section {
+                height: 100%;
+                width: 100%;
+            }
+        }
+    }
+
+    // .mat-mdc-tooltip .mdc-tooltip__surface {
+    //     padding: 16px !important;
+    // } 
+}
+
+.map-meta-data-section {
+    max-width: 600px;
+    width: 40%;
+    margin-bottom: 12px;
+
+    @include media-below('md') {
+        max-width: none;
+        width: 100%;
+    }
+}
+
+.metric-button {
+    border-radius: 4px !important;
+    box-shadow: none !important;
+    height: 48px;
+    width: 48px;
+    background-color: rgba(108,117,125,.06274509803921569);
+
+    &:hover {
+        background-color: rgba(108,117,125,.12549019607843137);
+    }
+
+    &.confirmed-orders-active {
+        background-color: #ff772263 !important;
+    }
+
+    &.active-seller-active {
+        background-color: #1c75bc57 !important;
+    }
+
+    &.logistics-active {
+        background-color: #10b75957 !important;
+    }
+}
+
+.icon-menu {
+    height: 32px;
+    object-fit: cover;
+    border-radius: 6px;
+    // margin: 0px 0px 3px 0px;
+    // filter: invert(48%) sepia(67%) saturate(827%) hue-rotate(172deg) brightness(100%) contrast(98%);
+    &.confirmed-orders-active {}
+}
+
+.active-seller-icon {
+    filter: invert(33%) sepia(95%) saturate(947%) hue-rotate(180deg) brightness(93%) contrast(86%);
+}
+
+.confirmed-orders-icon {
+    filter: invert(39%) sepia(42%) saturate(7327%) hue-rotate(12deg) brightness(102%) contrast(92%);
+}
+
+.logistics-icon {
+    filter: invert(50%) sepia(32%) saturate(2419%) hue-rotate(111deg) brightness(96%) contrast(87%);
+}

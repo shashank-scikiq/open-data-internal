@@ -1,0 +1,61 @@
+name: Deploy To EKS
+
+on:
+  push:
+    branches: [ "main" ]
+
+# aws env from secrets
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  AWS_DEFAULT_REGION: ap-south-1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [ 3.11 ]
+
+    steps:
+      - name: get short git commit sha
+        id: commit
+        uses: prompt/actions-commit-hash@v2
+
+      - name: checkout
+        uses: actions/checkout@v2
+
+      - name: docker login to ECR
+        run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app
+
+      - name: build image
+        # docker build --platform linux/x86_64 -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${version} .
+        run: docker build --platform linux/x86_64 -f app.Dockerfile -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }} .
+
+      - name: build cron image
+        # docker build --platform linux/x86_64 -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${version} .
+        run: docker build --platform linux/x86_64 -f db.Dockerfile -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:crondbv${{ steps.commit.outputs.short }} .
+
+      - name: push image to ECR
+        run: docker push 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }}
+
+      - name: push cron image to ECR
+        run: docker push 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:crondbv${{ steps.commit.outputs.short }}
+
+      - name: configure kubectl
+        run: aws eks --region ap-south-1 update-kubeconfig --name ondc-prod-prod-eks-cluster
+
+      - name: replace image in k8 deployment
+        # replace whole line of stating with image to image: 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }}
+        run: |
+          sed -i 's|image:.*|image: 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }}|' k8-deployment.yaml
+          cat k8-deployment.yaml
+          kubectl apply -f k8-deployment.yaml
+
+      - name: replace cron image in k8 deployment
+        run: |
+          sed -i 's|image:.*|image: 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:crondbv${{ steps.commit.outputs.short }}|' k8-cron-deployment.yaml
+          cat k8-cron-deployment.yaml
+          kubectl apply -f k8-cron-deployment.yaml  
+          

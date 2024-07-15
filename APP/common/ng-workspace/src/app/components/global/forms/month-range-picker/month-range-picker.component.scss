@@ -1,0 +1,47 @@
+@import "colors";
+
+.open-data-month-range-picker {
+    position: relative;
+
+    .picker-section {
+        border-radius: 4px;
+        width: 240px;
+    }
+
+    .label {
+        position: absolute;
+        cursor: text;
+        font-size: 75%;
+        opacity: 1;
+        -webkit-transition: all .2s;
+        transition: all .2s;
+        top: -.5em;
+        left: .5rem;
+        z-index: 1;
+        line-height: 1;
+        padding: 0 4px;
+        background-color: $white;
+        color: $grey700;
+    }
+
+
+
+}
+::ng-deep {
+    .ant-picker {
+        color: $blue700 !important;
+        // color: black;
+    }
+
+    .ant-picker-panel-container .ant-picker-panels {
+        @media (max-width: 600px) {
+            flex-direction: column;
+        }
+    }
+
+    .ant-picker-decade-panel .ant-picker-content, .ant-picker-month-panel 
+    .ant-picker-content, .ant-picker-quarter-panel 
+    .ant-picker-content, .ant-picker-year-panel .ant-picker-content {
+        height: 180px !important;
+    }
+}

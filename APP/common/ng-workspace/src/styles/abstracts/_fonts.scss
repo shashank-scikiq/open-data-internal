@@ -1,0 +1,59 @@
+@import 'breakpoints';
+
+$static-line-height-modifier: 0.25;
+$dynamic-line-height-modifier: 0.5;
+
+$font-sizes: (
+  'xxs': (
+    value: 0.8rem,
+    has-responsive-size: false,
+  ),
+  'xs': (
+    value: 0.9rem,
+    has-responsive-size: true,
+    responsive-size: 0.8rem,
+  ),
+  'sm': (
+    value: 1rem,
+    has-responsive-size: true,
+    responsive-size: 0.9rem,
+  ),
+  'md': (
+    value: 1.3rem,
+    has-responsive-size: true,
+    responsive-size: 1rem,
+  ),
+  'lg': (
+    value: 1.6rem,
+    has-responsive-size: true,
+    responsive-size: 1.3rem,
+  ),
+  'xl': (
+    value: 2rem,
+    has-responsive-size: true,
+    responsive-size: 1.6rem,
+  ),
+);
+
+@each $key, $config in $font-sizes {
+  .font-#{$key} {
+    font-size: map-get($config, 'value');
+    line-height: map-get($config, 'value') + $dynamic-line-height-modifier;
+
+    @if map-has-key($config, 'has-responsive-size') {
+      @include media-below('md') {
+        font-size: map-get($config, 'responsive-size');
+        line-height: map-get($config, 'value') + $dynamic-line-height-modifier;
+      }
+    }
+  }
+
+  .font-#{$key}-static {
+    font-size: map-get($config, 'value');
+    line-height: map-get($config, 'value') + $static-line-height-modifier;
+  }
+  // for 16px, line-height will be 18px
+}
+
+// Dynamic font classes with media queries and line-height like font-sm, font-md
+// Static font classes with no media queries like font-sm-static, font-md-static

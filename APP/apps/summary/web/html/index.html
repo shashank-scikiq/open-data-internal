@@ -1,0 +1,38 @@
+{% extends "templates/layout/base.html" %}
+{% block title %}ONDC{% endblock %}
+{% load static %}
+
+{% block stylesheet %}
+  <link rel="stylesheet" href="{% static 'css/summary-styles.css' %}">
+  <link rel="stylesheet" href="{% static 'css/summary-responsive-styles.css' %}">
+
+{% endblock %}
+{% block pagetitle %}
+  {% include 'apps/summary/web/html/include/summary_title.html' %}
+{% endblock %}
+{% block top_card_filters %}
+  {% include 'apps/summary/web/html/include/summary_top_card_filters.html' with include_category=include_category %}
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+  {% include 'apps/summary/web/html/include/summary_cards.html' %}
+  <div id="map_wrapper" class="mg-t-15 pos-relative">
+    <div id="indiaMaps">
+      {% include 'apps/summary/web/html/include/summary_map.html' %}
+    </div>
+  </div>
+</div>
+{% include 'common/web/download_data/html/modal_download_data_table_b2b.html' %}
+{% endblock %}
+
+{% block javascript %}
+<script>var includeCategory = {{ include_category|lower }}; </script>
+
+<script defer type="module" src="{% static 'map_lib/state_map_script.js'%}"> </script>
+<script defer type="module" src="{% static 'map_lib/summary_india_map_script.js'%}"></script>
+
+<script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
+<script defer type="module" src="{% static 'map_lib/retail_b2b_custom-chart.js'%}"></script>
+<script src="{% static 'js/custom.js'%}"></script>
+{% endblock %}

@@ -1,0 +1,114 @@
+<div class="summary-main-container">
+    <div class="heading-section">
+        <div>
+            <h4 class="open-data-blue-700 margin-0 heading">{{ pageTitle }}
+                <!-- <span class="sub-text">Including Digital Vouchers</span> -->
+            </h4>
+            <!-- @if(dateRange){
+            @if(pageTitle == "Retail") {
+            <p class="margin-0 date-range-title">
+                {{dateRange[0] | date: 'MMM, yyyy'}} - {{ dateRange[1] | date: 'MMM, yyyy'}}
+            </p>
+            } @else {
+            <p class="margin-0 date-range-title">
+                {{dateRange[0] | date: 'MMM dd, yyyy'}} - {{ dateRange[1] | date: 'MMM dd, yyyy'}}
+            </p>
+            }
+            } -->
+        </div>
+        <div class="heading-section-btn-container">
+            
+            @if(this.isStagingEnabled == 'False') {
+            <app-month-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
+            } @else {
+            <app-date-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
+            }
+            <!-- <div class="btn" nz-tooltip nzTooltipPlacement="top"
+            nzTooltipTitle="Download data" (click)="openDownloadDialog()">
+                <i class="fa-solid fa-download"></i>
+            </div> -->
+        </div>
+
+    </div>
+
+    @if(dateRange) {
+        <app-detail-header-card></app-detail-header-card>
+    
+        <div class="detail-section-container">
+            <div class="inner-map-section">
+                <div class="metrics-container">
+                    <p class="font-bold open-data-grey-600 margin-0" style="font-size: 13px;">Metrics</p>
+                    <div class="options-section">
+                        <button mat-fab
+                            [ngClass]="{'metric-button confirmed-orders': true, 'confirmed-orders-active': activeMetric === metrics[0].title}"
+                            (click)="handleClick(metrics[0])" nz-tooltip [nzTooltipPlacement]="['topLeft', 'leftTop']"
+                            nzTooltipTitle="Total Orders">
+                            <img src="static/assets/img/buyer-icon.svg" alt="Supply"
+                                class="icon-menu confirmed-orders-icon">
+                        </button>
+                        @if(pageTitle !== "Retail B2B") {
+                            @if(pageTitle !== "Logistics") {
+                                <button mat-fab
+                                    [ngClass]="{'metric-button active-seller': true, 'active-seller-active': activeMetric === metrics[1].title}"
+                                    (click)="handleClick(metrics[1])" nz-tooltip nzTooltipPlacement="top"
+                                    nzTooltipTitle="Registered Sellers">
+                                    <img src="static/assets/img/sellers.png" alt="Supply" class="icon-menu active-seller-icon">
+                                </button>
+                            }
+                        <button mat-fab
+                            [ngClass]="{'metric-button logistics': true, 'logistics-active': activeMetric === metrics[2].title}"
+                            (click)="handleClick(metrics[2])" nz-tooltip nzTooltipPlacement="top"
+                            nzTooltipTitle="Zonal Commerce">
+                            <img src="static/assets/img/logistics-icon.svg" alt="Supply" class="icon-menu logistics-icon">
+                        </button>
+                        }
+                    </div>
+                </div>
+                <app-map [metrix]="activeMetric"></app-map>
+            </div>
+            @if(pageTitle !== "Retail B2B") {
+    
+            <div class="width-100 map-meta-data-section">
+                <div class="charts-main-container invisible-scrollbar">
+                    <div class="chart-metrix-section">
+                        <div class="btn-container">
+                            <div [ngClass]="{'btn': true, 'active': activeMetric == 'map_total_orders_metrics'}"
+                                (click)="handleClick(metrics[0])">
+                                <img src="static/assets/img/buyer-icon.svg" alt="Order">
+                                <p class="margin-0 text">Orders</p>
+                            </div>
+                            @if(pageTitle !== "Logistics") {
+                                <div [ngClass]="{'btn': true, 'active': activeMetric == 'map_total_active_sellers_metrics'}"
+                                    (click)="handleClick(metrics[1])">
+                                    <img src="static/assets/img/sellers.png" alt="Seller">
+                                    <p class="margin-0 text">Supply</p>
+                                </div>
+                            }
+                            <div [ngClass]="{'btn': true, 'active': activeMetric == 'map_total_zonal_commerce_metrics'}"
+                                (click)="handleClick(metrics[2])">
+                                <img src="static/assets/img/logistics-icon.svg" alt="Logistic">
+                                <p class="margin-0 text">Zonal Commerce</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="charts-section invisible-scrollbar">
+    
+                        <app-detail-charts-section [metrix]="activeMetric" [selectedState]="selectedState" (changeMatrix)="setMetrix($event)">
+                        </app-detail-charts-section>
+                    </div>
+                </div>
+            </div>
+            }
+            <!-- <div class="download-btn">
+                <button mat-raised-button (click)="openDownloadDialog()">
+                    <div class="button-label">
+                        <i class="fa-solid fa-file-arrow-down btn-icon"></i>
+                        <p class="margin-0 btn-text">Download Data</p>
+                    </div>
+                </button>
+            </div> -->
+        </div>
+    } @else {
+        waiting for date range
+    }
+</div>

@@ -1,0 +1,23 @@
+<div class="area-chart">
+    @if(!isLoading) { 
+        <apx-chart
+            [series]="chartOptions.series" 
+            [plotOptions]="chartOptions.plotOptions"
+            [labels]="chartOptions.labels"
+            [fill]="chartOptions.fill"
+            [stroke]="chartOptions.stroke" 
+            [chart]="chartOptions.chart" 
+            [tooltip]="chartOptions.tooltip"
+            
+            >
+        </apx-chart> 
+    }
+
+    <!-- @if(isLoading) {
+        <div class="area-chart-loader">
+            <div class="dot-loader"></div>
+            <div class="dot-loader dot-loader--2"></div>
+            <div class="dot-loader dot-loader--3"></div>
+        </div>
+    } -->
+</div>

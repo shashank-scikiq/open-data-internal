@@ -1,0 +1,203 @@
+<!-- <div class="charts-main-container invisible-scrollbar">
+    <div class="chart-metrix-section">
+        <div class="btn-container">
+            <div [ngClass]="{'btn': true, 'active': metrix == 'map_total_orders_metrics'}"
+                (click)="changeMetrix('map_total_orders_metrics')">
+                <img src="static/assets/img/buyer-icon.svg" alt="Order">
+                <p class="margin-0 text">Orders</p>
+            </div>
+            <div [ngClass]="{'btn': true, 'active': metrix == 'map_total_active_sellers_metrics'}"
+                (click)="changeMetrix('map_total_active_sellers_metrics')">
+                <img src="static/assets/img/sellers.png" alt="Seller">
+                <p class="margin-0 text">Supply</p>
+            </div>
+            <div [ngClass]="{'btn': true, 'active': metrix == 'map_total_zonal_commerce_metrics'}"
+                (click)="changeMetrix('map_total_zonal_commerce_metrics')">
+                <img src="static/assets/img/logistics-icon.svg" alt="Logistic">
+                <p class="margin-0 text">Zonal Commerce</p>
+            </div>
+        </div>
+    </div>
+</div> -->
+<!-- <div class="charts-section invisible-scrollbar"> -->
+    @if(overallOrdersData && metrix !== "map_total_zonal_commerce_metrics") {
+    <div class="chart-container">
+        <div class="card-title-section">
+            <p class="font-xs font-bold margin-y-0 open-data-grey-900">Overall Trend for India</p>
+            <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                {{cummulativeData[metrix].subtitle}}
+                <span class="cursor-pointer">
+                    <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
+                    [nzTooltipTitle]="cummulativeData[metrix].tooltip"></i>
+                </span>
+            </p>
+        </div>
+        <app-line-chart chartType="cumulative" [options]="overallOrdersData" [isLoading]="isLoadingOverall">
+        </app-line-chart>
+        <!-- @if(dateRange){<p class="font-xxs font-bold text-right margin-0">{{dateRange[0] | date: 'MMM, yyyy'}} - {{
+            dateRange[1] | date: 'MMM, yyyy'}}</p>} -->
+            
+    </div>
+    }
+
+    @if(stateOrdersData) {
+    <div class="chart-container">
+        <div class="card-title-section">
+            <p class="font-xs font-bold margin-y-0 open-data-grey-900">{{ selectedState == 'TT' ?  'Top 3 States' : selectedState }}</p>
+            <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                {{topStateData[metrix].subtitle}}
+                <span class="cursor-pointer">
+                    <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
+                    [nzTooltipTitle]="topStateData[metrix].tooltip">
+                    </i>
+                </span>
+            </p>
+        </div>
+        <app-line-chart [chartType]="selectedState == 'TT' ? 'multi' : 'cumulative'" [options]="stateOrdersData" [isLoading]="isLoadingTopState">
+        </app-line-chart>
+        <!-- @if(dateRange){<p class="font-xxs font-bold text-right margin-0">{{dateRange[0] | date: 'MMM, yyyy'}} - {{
+            dateRange[1] | date: 'MMM, yyyy'}}</p>} -->
+    </div>
+    }
+
+    @if(districtOrdersData) {
+    <div class="chart-container">
+        <div class="card-title-section">
+            <p class="font-xs font-bold margin-y-0 open-data-grey-900">Top 3 Districts {{ selectedState == 'TT' ?  '' : ' of ' + selectedState }}</p>
+            <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                {{topDistrictData[metrix].subtitle}}
+                <span class="cursor-pointer">
+                    <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right"
+                        [nzTooltipTitle]="topDistrictData[metrix].tooltip">
+                    </i>
+                </span>
+            </p>
+        </div>
+        <app-line-chart chartType="multi" [options]="districtOrdersData" [isLoading]="isLoadingTopDistrict">
+        </app-line-chart>
+        <!-- @if(dateRange){<p class="font-xxs font-bold text-right margin-0">{{dateRange[0] | date: 'MMM, yyyy'}} - {{
+            dateRange[1] | date: 'MMM, yyyy'}}</p>} -->
+    </div>
+    }
+
+
+    @if(activeUrl.includes("retail/b2c") && metrix != "map_total_zonal_commerce_metrics") {
+
+        <!-- b2c cards -->
+        @if(metrixMaxData.length) {
+            <div class="card-detail-container">
+                @if(isLoadingMaxData) {
+                    <div class="loader-area">
+                        <div class="dot-loader"></div>
+                        <div class="dot-loader dot-loader--2"></div>
+                        <div class="dot-loader dot-loader--3"></div>
+                    </div>
+                }
+                @for(data of metrixMaxData; track data) {
+                    <div class="card">
+                        <div class="card-header-section">
+                            <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">Maximum number of Confirmed Orders to {{data.record_type}}</p>
+                        </div>
+        
+                        <div class="card-body-section">
+                            @if(metrix=='map_total_active_sellers_metrics') {
+                                <div class="seller-card-body-icon">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                            } @else {
+                                <div class="order-card-body-icon">
+                                    <i class="fa-solid fa-cart-shopping"></i>
+                                </div>
+                            }
+                            <div class="card-body-text-container">
+                                <p class="font-bolder margin-0 title">
+                                    {{data.location}}
+                                </p>
+                                <p class="margin-0 count open-data-blue-700">{{metrix == "map_total_active_sellers_metrics" ? data.seller_count : data.value }}</p>
+                                <span class="font-xxs open-data-grey-600 font-bold">/ Ever In a day</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+
+        @if(stateWiseBin && selectedState == 'TT') {
+            <div class="order-detail-section">
+                <div class="card-header-section font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                    Number of States with Orders in the Range of <span class="cursor-pointer">
+                        <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right"
+                            nzTooltipTitle='(Total delivered orders within a state divided by date range) to get avg orders per state. 
+                            State Bins are calculated for the order ranges lying within that range'>
+                        </i>
+                    </span>
+                </div>
+    
+                <div class="card-body-section margin-top-2 relative">
+                    <div class="inner-card">
+                        <p class="margin-0 text-center font-bold">< 1,000 <br/>
+                            <span class="font-normal open-data-grey-700">
+                                {{matrixUri[metrix]}} per day
+                            </span>
+                        </p>
+                        <app-radial-bar-chart [data]="stateWiseBin['\< 1,000']">
+                        </app-radial-bar-chart>
+                    </div>
+                    <div class="inner-card">
+                        <p class="margin-0 text-center font-bold">1,000 - 5,000<br/>
+                            <span class="font-normal open-data-grey-700">
+                                {{matrixUri[metrix]}} per day
+                            </span>
+                        </p>
+                        <app-radial-bar-chart [data]="stateWiseBin['1,000 - 5,000']">
+                        </app-radial-bar-chart>
+                    </div>
+                    <div class="inner-card">
+                        <p class="margin-0 text-center font-bold">5,000 - 10,000<br/>
+                            <span class="font-normal open-data-grey-700">
+                                {{matrixUri[metrix]}} per day
+                            </span>
+                        </p>
+                        <app-radial-bar-chart [data]="stateWiseBin['5,000 - 10,000']">
+                        </app-radial-bar-chart>
+                    </div>
+                    <div class="inner-card">
+                        <p class="margin-0 text-center font-bold">> 10,000<br/>
+                            <span class="font-normal open-data-grey-700">
+                                {{matrixUri[metrix]}} per day
+                            </span>
+                        </p>
+                        <app-radial-bar-chart [data]="stateWiseBin['> 1,000']">
+                        </app-radial-bar-chart>
+                    </div>
+
+                    @if(isLoadingStateWiseBin) {
+                        <div class="loader-area">
+                            <div class="dot-loader"></div>
+                            <div class="dot-loader dot-loader--2"></div>
+                            <div class="dot-loader dot-loader--3"></div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        
+        
+        <!--  -->
+    }
+
+    @if(metrix == 'map_total_zonal_commerce_metrics' && (
+        activeUrl.includes('/retail') || activeUrl.includes('/retail/b2c') || activeUrl.includes('/logistics'))
+        ) {
+        <div class="order-detail-section">
+            <div class="card-header-section font-xs">
+                Zonal Commerce 
+            </div>
+
+            <div class="card-body-section">
+                <app-tree-chart class="width-100"></app-tree-chart>
+            </div>
+        </div>
+    }
+<!-- </div> -->

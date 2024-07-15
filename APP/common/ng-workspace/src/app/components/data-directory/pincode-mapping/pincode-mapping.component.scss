@@ -1,0 +1,31 @@
+@import 'colors';
+@import 'breakpoints';
+
+
+.data-container {
+    border: 2px solid #f4f4f4;
+    border-radius: 8px;
+    padding: 12px;
+
+    @include media-below('md') {
+        padding: 4px;
+    }
+}
+
+.search-section {
+    margin-left: auto;
+    margin-bottom: 12px;
+    max-width: 250px;display: flex;
+    place-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.count-info-section {
+    position: absolute;
+    bottom: 16px;
+
+    @include media-below('md') {
+        position: unset;
+    }
+}

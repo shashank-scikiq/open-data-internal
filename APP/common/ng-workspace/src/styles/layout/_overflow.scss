@@ -1,0 +1,23 @@
+$overflow-values: (
+  'auto' 'auto',
+  'hidden' 'hidden',
+  'scroll' 'scroll',
+  'initial' 'initial',
+  'visible' 'visible',
+  'overlay' 'overlay'
+);
+
+$overflow-props: 'overflow', 'overflow-x', 'overflow-y';
+
+@each $prop in $overflow-props {
+  @include config-utilities($prop, $prop, $overflow-values...);
+  // Creates classes for overflow
+}
+
+// .invisible-scrollbar {
+//   scrollbar-width: none; //moz
+
+//   &::-webkit-scrollbar {
+//     display: none; //chromium
+//   }
+// }

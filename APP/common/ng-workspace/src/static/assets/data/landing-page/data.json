@@ -1,0 +1,130 @@
+{   
+    "lastUpdatedDate": "02-07-2024",
+    "netOrderCount": "74,139,815",
+    "socials": [
+        {
+            "icon": "fa-brands fa-linkedin-in",
+            "url": "https://www.linkedin.com/company/open-network-for-digital-commerce"
+        },
+        {
+            "icon": "fa-brands fa-instagram",
+            "url": "https://www.instagram.com/ondc_official/"
+        },
+        {
+            "icon": "fa-brands fa-youtube",
+            "url": "https://www.youtube.com/@ondc1300"
+        },
+        {
+            "icon": "fa-brands fa-facebook-f",
+            "url": "https://www.facebook.com/pages/category/Nonprofit-organization/ONDC-Ltd-103148322189702/"
+        },
+        {
+            "icon": "fa-brands fa-x-twitter",
+            "url": "https://twitter.com/ONDC_Official"
+        },
+        {
+            "icon": "fa-brands fa-discord",
+            "url": "https://discord.com/invite/wQc8eJeF"
+        }
+    ],
+    "footerLinks": [
+        {
+            "heading": "About ONDC",
+            "links": [
+                {
+                    "title": "Overview",
+                    "url": "https://ondc.org/about-ondc/"
+                },
+                {
+                    "title": "Board Of Directors",
+                    "url": "https://ondc.org/about-ondc/#advisory"
+                }
+            ]
+        },
+        {
+            "heading": "ONDC Participants",
+            "links": [
+                {
+                    "title": "Network Participants",
+                    "url": "https://ondc.org/network-participants/#network"
+                },
+                {
+                    "title": "Ecosystem Participants",
+                    "url": "https://ondc.org/network-participants/#echo"
+                }
+            ]
+        },
+        {
+            "heading": "Roles you can play",
+            "links": [
+                {
+                    "title": "Buyer Network Participant",
+                    "url": "https://ondc.org/roles-you-can-play/#buyerapp"
+                },
+                {
+                    "title": "Seller Network Participant",
+                    "url": "https://ondc.org/roles-you-can-play/#sellerapp"
+                },
+                {
+                    "title": "Gateway",
+                    "url": "https://ondc.org/roles-you-can-play/#gateway"
+                },
+                {
+                    "title": "Technology Service Provider",
+                    "url": "https://ondc.org/roles-you-can-play/#tech-service"
+                }
+            ]
+        },
+        {
+            "heading": "Help & Support",
+            "links": [
+                {
+                    "title": "Contact Us",
+                    "url": "https://ondc.org/contact-ondc/"
+                },
+                {
+                    "title": "Privacy Policy",
+                    "url": "https://ondc.org/privacy-policy/"
+                },
+                {
+                    "title": "Cookie Policy",
+                    "url": "https://ondc.org/cookie-policy/"
+                },
+                {
+                    "title": "Terms and Conditions",
+                    "url": "https://ondc.org/terms-and-conditions/"
+                },
+                {
+                    "title": "FAQs",
+                    "url": "https://ondc.org/faq/"
+                }
+            ]
+        }
+    ],
+
+    "statsData": {
+        "title": "Our Network's Impact",
+        "stats": [
+            {
+                "title": "10",
+                "subText": "Domains Live",
+                "icon": "static/assets/img/stat-domains.svg",
+                "alt": "Stat domains ONDC"
+                
+            },
+            {
+                "title": "106",
+                "subText": "Network Participants Live",
+                "icon": "static/assets/img/stat-np.svg",
+                "alt": "Cities Live Alpha"
+                
+            },
+            {
+                "title": "5.68+ Lakh",
+                "subText": "Sellers / Service Providers",
+                "icon": "static/assets/img/stat-reach.svg",
+                "alt": "Sellers and Service Providers"
+            }
+        ]
+    }
+}

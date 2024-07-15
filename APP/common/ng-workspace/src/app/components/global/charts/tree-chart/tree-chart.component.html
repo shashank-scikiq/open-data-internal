@@ -1,0 +1,37 @@
+<div class="options-container">
+    <div class="switch-container">
+        <div class="btn text-center font-xxs"  [class.disabled]="selectedType != 'states'"
+            [class.active]="selectedType == 'states'">States</div>
+        <div class="btn text-center font-xxs" [class.disabled]="selectedType != 'districts'"
+            [class.active]="selectedType == 'districts'">Districts</div>
+    </div>
+
+    <div class="selection-section">
+        <nz-select nzsize="small" 
+        
+        [(ngModel)]="selectedValue"
+          (ngModelChange)="updateSelection($event)">
+            @for(option of options; track option) {
+                <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+            }
+          </nz-select>
+    </div>
+</div>
+
+<div id="inntraDistrictTree" class="relative" style="display: flex; justify-content: center; align-items: center; width: 100%; height: 300px;">
+    @if(!isLoading && object.keys(treeData).length == 0) {
+        <div class="font-sm open-data-grey-500 loader-area absolute width-100 height-100 top-0 left-0">
+            No data to display.
+        </div>
+    }
+
+</div>
+@if(isLoading) {
+    <div class="loader-area absolute width-100 height-100 top-0 left-0">
+        <div class="dot-loader"></div>
+        <div class="dot-loader dot-loader--2"></div>
+        <div class="dot-loader dot-loader--3"></div>
+    </div>
+}
+
+

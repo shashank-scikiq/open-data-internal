@@ -1,0 +1,59 @@
+$default-shadows: (
+  none: none,
+  1: (
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 6px rgba(0, 0, 0, 0.16),
+  ),
+  2: (
+    0 1px 3px rgba(0, 0, 0, 0.12),
+    0 1px 2px rgba(0, 0, 0, 0.24),
+  ),
+  3: (
+    0 2px 6px rgba(0, 0, 0, 0.16),
+    0 1px 2px rgba(0, 0, 0, 0.23),
+  ),
+  4: (
+    0 3px 6px rgba(0, 0, 0, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.23),
+  ),
+  5: (
+    0 4px 8px rgba(0, 0, 0, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.23),
+  ),
+  6: (
+    0 6px 12px rgba(0, 0, 0, 0.16),
+    0 2px 4px rgba(0, 0, 0, 0.23),
+  ),
+  7: (
+    0 8px 16px rgba(0, 0, 0, 0.16),
+    0 3px 6px rgba(0, 0, 0, 0.23),
+  ),
+  8: (
+    0 10px 20px rgba(0, 0, 0, 0.19),
+    0 3px 6px rgba(0, 0, 0, 0.23),
+  ),
+  9: (
+    0 11px 22px rgba(0, 0, 0, 0.19),
+    0 3px 6px rgba(0, 0, 0, 0.23),
+  ),
+  10: (
+    0 12px 24px rgba(0, 0, 0, 0.21),
+    0 8px 8px rgba(0, 0, 0, 0.23),
+  ),
+  11: (
+    0 13px 26px rgba(0, 0, 0, 0.23),
+    0 9px 9px rgba(0, 0, 0, 0.23),
+  ),
+  12: (
+    0 14px 28px rgba(0, 0, 0, 0.25),
+    0 10px 10px rgba(0, 0, 0, 0.22),
+  ),
+) !default;
+
+@each $index, $value in $default-shadows {
+  .box-shadow-#{$index} {
+    box-shadow: #{$value};
+  }
+}
+// Creates shadow classes like box-shadow-1 and so on
+// To be used when in need of shadow without hover

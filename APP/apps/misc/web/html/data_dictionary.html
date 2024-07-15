@@ -1,0 +1,135 @@
+{% extends "templates/layout/base_misc.html" %}
+{% block title %}ONDC - Data Dictionary{% endblock %}
+{% load static %}
+
+{% block stylesheet %}
+    <link rel="stylesheet" href="{% static 'plugins/datatables/css/jquery.dataTables.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main_style.css' %}">
+    <style>
+        body {
+            background-image: unset;
+        }
+        .td-wrap{
+            word-wrap: break-word;
+        }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+<div class="pd-y-20">
+    <div class="card">
+        <div class="card-header pd-x-0-f pd-b-0-f bd-b-0">
+            <ul class="nav nav-tabs" role="listitem">
+                <li class="nav-item mg-l-20">
+                    <a class="nav-link active" id="data-dictionary-tab" data-toggle="tab" href="#data-dictionary"
+                        role="tab" aria-controls="data-dictionary" aria-selected="true">Data Dictionary</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="pincode-mapping-tab" data-toggle="tab" href="#pincode-mapping"
+                        role="tab" aria-controls="pincode-mapping" aria-selected="false">Pincode Mapping</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="domain-mapping-tab" data-toggle="tab" href="#domain-mapping" role="tab"
+                        aria-controls="domain-mapping" aria-selected="false">Domain Mapping</a>
+                </li>
+            </ul>
+    
+        </div>
+        <div class="card-body p-0">
+            <div class="tab-content pd-20">
+                <div class="tab-pane fade show active" id="data-dictionary" role="tabpanel" aria-labelledby="data-dictionary-tab">
+                    <div class="table-responsive">
+                        <table id="data-dictionary-table" class="table table-dashboard-one" style="width:100%">
+                            <thead>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="pincode-mapping" role="tabpanel" aria-labelledby="pincode-mapping-tab">
+                    <div class="table-responsive">
+                        <table id="pincode-mapping-table" class="table table-dashboard" style="width:100%">
+                            <thead>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="domain-mapping" role="tabpanel" aria-labelledby="domain-mapping-tab">
+                    <table id="domain-mapping-table" class="table table-dashboard" style="width:100%">
+                        <thead>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+    
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+<div id="loaders" class="overlay" style="display: none;">
+    <span class="loader-dot"></span>
+</div>
+
+{% block javascript %}
+    <script src="{% static 'plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/utils.js'%}"></script>
+
+    <script src="{% static 'js/custom.js'%}"></script>
+
+    <script>
+    function initializeDataTable(tabId, jsonData) {
+        $('#' + tabId + ' table').DataTable({
+            data: jsonData.rows,
+            columns: jsonData.headers.map(function (header) {
+                return {
+                    title: header
+                };
+            })
+        });
+        $('#loaders').hide();
+    }
+
+    function fetchDataAndInitialize(apiUrl, tabId) {
+        $('#loaders').show();
+        $.getJSON(apiUrl, function (data) {
+            initializeDataTable(tabId, data);
+        });
+    }
+
+    var currentTabId;
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        currentTabId = $(e.target).attr('href').substring(1);
+
+        if (!$('#' + currentTabId + ' table').hasClass('dataTable')) {
+            switch (currentTabId) {
+                case 'data-dictionary':
+                    fetchDataAndInitialize('/api/data_dictionary/', currentTabId);
+                    break;
+                case 'pincode-mapping':
+                    fetchDataAndInitialize('/api/pincode/', currentTabId);
+                    break;
+                case 'domain-mapping':
+                    fetchDataAndInitialize('/api/domain/', currentTabId);
+                    break;
+            }
+        }
+    });
+
+    $(document).ready(function () {
+        fetchDataAndInitialize('/api/data_dictionary/', 'data-dictionary');
+    });
+
+    </script>
+{% endblock %}
+
+
+
+

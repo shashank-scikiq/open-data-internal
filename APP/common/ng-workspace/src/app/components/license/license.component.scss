@@ -1,0 +1,26 @@
+@import 'colors';
+@import 'breakpoints';
+
+.license-main-container {
+    padding: 76px 16px 16px;
+    
+    @include media-below('md') {
+        padding: 76px 8px 8px;
+    }
+        
+    .license-container {
+        border: 1px solid rgba(72, 94, 144, 0.16);
+        border-radius: 8px;
+        padding: 16px;
+        
+    }
+
+    .license-tl {
+        padding-bottom: 16px;
+    }
+
+    .license-body {
+        padding: 16px 0;
+    }
+
+}

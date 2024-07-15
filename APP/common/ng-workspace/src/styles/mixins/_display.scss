@@ -1,0 +1,31 @@
+@import './functions';
+
+@include config-utilities-with-breakpoint('fx', 'display',
+  'block' block,
+  'flex' flex,
+  'contents' contents,
+  'grid' grid,
+  'inline-block' inline-block,
+  'inline-flex' inline-flex,
+  'none' none,
+);
+// Creates display classes for all breakpoint ranges
+
+@include config-utilities('fit', 'object-fit',
+  'cover' cover,
+  'fill' fill,
+  'contain' contain,
+  'none' none,
+  'inherit' inherit,
+);
+
+// Creates classes like fit-cover, fit-contain, fit-fill...
+
+
+
+.bottom-margin {
+  margin-bottom: 16px;
+  @include media-below('md') {
+    margin-bottom: 8px;
+  }
+}

@@ -1,0 +1,14 @@
+
+<div class="open-data-month-range-picker">
+   <!-- .ant-picker-panel-container .ant-picker-panels -->
+  <div class="label">Choose month range</div>
+  <nz-range-picker
+    id="filterMonthRange"
+    class="picker-section"
+    nzMode="month"
+    nzFormat="MMM, yyyy"
+    [nzAllowClear]="checkClear()"
+    [(ngModel)]="date"
+    [nzDisabledDate]="disabledDate"
+    (ngModelChange)="onChange($event)" />
+</div>

@@ -1,0 +1,35 @@
+/* Will contain all the hover effects utilized over the website */
+@import "./shadows";
+@import "./display";
+
+// Add pointer on hover
+.pointer:hover {
+  cursor: pointer;
+}
+
+.hover-expand {
+  .hidden-child {
+    @extend .fx-none;
+  }
+  &:hover .hidden-child {
+    @extend .fx-inline-block;
+  }
+}
+
+.hover-to-show:hover + hidden-till-hover {
+  @extend .fx-inline-block;
+}
+.hidden-till-hover {
+  @extend .fx-none;
+  &:hover {
+    @extend .fx-inline-block;
+  }
+}
+
+@each $index, $value in $default-shadows {
+  .hover-shadow-#{$index}:hover {
+    box-shadow: #{$value};
+  }
+}
+// Creates shadow classes like hover-shadow-1 and so on
+// To be used when in need of shadow on hover
