@@ -721,6 +721,7 @@ async function fetchCategorySellersMetrics(startDate, endDate, category, subCate
 }
 
 
+createSunburstChart('Retail', '2023-11-01', '2024-03-01', null, 'Frozen Snacks');
 export async function createSunburstChart(domainName, startDate, endDate, category, subCategory) {
   const SessionStatename = localStorage.getItem('statename');
   let itemMetricsData;
@@ -734,7 +735,11 @@ export async function createSunburstChart(domainName, startDate, endDate, catego
   const { ids, labels, parents, values, percent } = itemMetricsData;
 
   if (!labels || labels.length === 0) {
-    $("#catSubburst_order_summary").html("<div class='nodata d-flex flex-column align-items-center'><i class='mdi mdi-information-outline'></i> No Data to Display</div>");
+    $("#catSubburst_order_summary").html(`
+      <div class='nodata d-flex flex-column align-items-center'>
+        <i class='mdi mdi-information-outline'></i> 
+        No Data to Display
+      </div>`);
     return;
   }else {
     $("#catSubburst_order_summary .nodata").remove();
@@ -776,7 +781,7 @@ export async function createSunburstChart(domainName, startDate, endDate, catego
   });
 }
 
-
+createSunburstChartsellers('Retail', '2023-11-01', '2024-03-01', null, null);
 export async function createSunburstChartsellers(domainName, startDate, endDate, category, subCategory) {
   const SessionStatename = localStorage.getItem('statename');
   let itemMetricsData;
@@ -1445,7 +1450,7 @@ $(document).ready(function() {
     let defaultMaxDate;
     if (includeCategory){
         function fetchAndUpdateCategoryList() {
-            fetch('/categories')
+            fetch('/api/categories/')
                 .then(response => response.json())
                 .then(data => {
                     allData = data;
@@ -1561,7 +1566,7 @@ $(document).ready(function() {
     }
 
     $.ajax({
-        url: 'get-max-date/',
+        url: 'api/get-max-date/',
         method: 'GET',
         success: function(data) {
             defaultMaxDate = moment(data.max_date);

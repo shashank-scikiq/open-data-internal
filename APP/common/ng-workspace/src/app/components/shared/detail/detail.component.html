@@ -2,26 +2,14 @@
     <div class="heading-section">
         <div>
             <h4 class="open-data-blue-700 margin-0 heading">{{ pageTitle }}
-                <!-- <span class="sub-text">Including Digital Vouchers</span> -->
             </h4>
-            <!-- @if(dateRange){
-            @if(pageTitle == "Retail") {
-            <p class="margin-0 date-range-title">
-                {{dateRange[0] | date: 'MMM, yyyy'}} - {{ dateRange[1] | date: 'MMM, yyyy'}}
-            </p>
-            } @else {
-            <p class="margin-0 date-range-title">
-                {{dateRange[0] | date: 'MMM dd, yyyy'}} - {{ dateRange[1] | date: 'MMM dd, yyyy'}}
-            </p>
-            }
-            } -->
         </div>
         <div class="heading-section-btn-container">
-            
-            <!-- @if(this.isStagingEnabled == 'False') {
-            <app-month-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
-            } @else { -->
+
             <app-date-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
+            @if(pageTitle == "Retail B2C") {
+                <app-detail-category-filter></app-detail-category-filter>
+            }
             <!-- } -->
             <!-- <div class="btn" nz-tooltip nzTooltipPlacement="top"
             nzTooltipTitle="Download data" (click)="openDownloadDialog()">

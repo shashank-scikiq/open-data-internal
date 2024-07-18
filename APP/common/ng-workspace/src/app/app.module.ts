@@ -26,12 +26,13 @@ import { SharedModule } from './components/shared/shared.module';
 import { PincodeMappingComponent } from './components/data-directory/pincode-mapping/pincode-mapping.component';
 import { DomainMappingComponent } from './components/data-directory/domain-mapping/domain-mapping.component';
 import { DataDirectoryDetailComponent } from './components/data-directory/data-directory-detail/data-directory-detail.component';
-import { DqReportComponent } from './components/dq-report/dq-report.component';
+// import { DqReportComponent } from './components/dq-report/dq-report.component';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { CommonLayoutComponent } from './components/common-layout/common-layout.component';
 import { LayoutComponent } from './layout/layout.component';
 import { LandingPageChartComponent } from './components/landing-page/landing-page-chart/landing-page-chart.component';
 import { DatePickerComponent } from './components/global/forms/date-picker/date-picker.component';
+// import { PlotlyModule } from 'angular-plotly.js';
 
 
 @NgModule({
@@ -44,7 +45,7 @@ import { DatePickerComponent } from './components/global/forms/date-picker/date-
     PincodeMappingComponent,
     DomainMappingComponent,
     DataDirectoryDetailComponent,
-    DqReportComponent,
+    // DqReportComponent,S
     LandingPageComponent,
     CommonLayoutComponent,
     LayoutComponent,
@@ -61,7 +62,8 @@ import { DatePickerComponent } from './components/global/forms/date-picker/date-
     NgApexchartsModule,
     LogisticModule,
     RetailModule,
-    SharedModule
+    SharedModule,
+    // PlotlyModule
   ],
   providers: [
     provideAnimationsAsync(),

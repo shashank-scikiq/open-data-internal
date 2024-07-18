@@ -9,7 +9,6 @@ import { AppApiMap } from '../../utils/global';
   providedIn: 'root'
 })
 export class AppService {
-
   private baseUrl: string | null = null;
 
   currentUrl = new BehaviorSubject<any>('');
@@ -24,12 +23,17 @@ export class AppService {
   isDownloadDataDialogOpen = new BehaviorSubject<boolean>(false);
   isDownloadDataDialogOpen$ = this.isDownloadDataDialogOpen.asObservable();
 
-
   dateRange = new BehaviorSubject<any>(null);
   choosableDateRange = new BehaviorSubject<any>(null);
   public maxDate: BehaviorSubject<any>;
   dateRange$ = this.dateRange.asObservable();
   choosableDateRange$ = this.choosableDateRange.asObservable();
+
+  selectedCategory: string = 'All';
+  selectedSubCategory: string = 'All';
+  filterUpdated = new BehaviorSubject<any>(false);
+  filterUpdated$ = this.filterUpdated.asObservable();
+
   private cancelStatewiseBinPrevious$ = new Subject<void>();
   private cancelSummaryCardDataPrevious$ = new Subject<void>();
   private cancelTopSellersDataPrevious$ = new Subject<void>();
@@ -42,10 +46,22 @@ export class AppService {
 
   stateAndDistrictData = new BehaviorSubject<any>(null);
 
-
   constructor(private http: HttpClient) {
     this.baseUrl = `${environment.serverUrl}`;
     this.maxDate = new BehaviorSubject<any>(null);
+  }
+
+  getCategories() {
+    return this.http.get(`${this.baseUrl}api/retail/b2c/categories/`);
+  }
+
+  setFilters(category: string, subcategory: string) {
+    this.selectedCategory = category;
+    this.selectedSubCategory = subcategory;
+  }
+
+  setFilterUpdated(val: any) {
+    this.filterUpdated.next(val);
   }
 
   setMetrix(value: any) {
@@ -130,7 +146,9 @@ export class AppService {
     let [startDate, endDate] = this.getFormattedDateRange();
     const params = {
       startDate,
-      endDate
+      endDate,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory
     }
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_card_delta/`,
@@ -147,7 +165,9 @@ export class AppService {
     const params = {
       startDate,
       endDate,
-      state
+      state,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory
     }
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_state_${uri}/`,
@@ -165,7 +185,9 @@ export class AppService {
     const params = {
       startDate,
       endDate,
-      state
+      state,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory
     }
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_district_${uri}/`,
@@ -178,7 +200,9 @@ export class AppService {
   getOverallOrders(uri: string) {
     this.cancelOverallOrdersPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
-    const params = {startDate, endDate}
+    const params = {startDate, endDate,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory}
 
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_cummulative_${uri}/`,
@@ -195,7 +219,9 @@ export class AppService {
   getMapStateData() {
     this.cancelMapStateDataPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { endDate, startDate }
+    const params = { endDate, startDate,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory }
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/map_statewise_data/`,
       {params}).pipe(
@@ -206,7 +232,9 @@ export class AppService {
   getOrderMetricsSummary() {
     this.cancelOrderMetricsSummaryPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { startDate, endDate }
+    const params = { startDate, endDate,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory }
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/map_state_data/`,
       {params}
@@ -251,7 +279,9 @@ export class AppService {
 
     const params = {
       startDate, endDate, 
-      state: state == 'TT' ? '' : state
+      state: state == 'TT' ? '' : state,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory
     }
 
     return this.http.get(this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/max_${uri}/`, {params}).pipe(
@@ -266,7 +296,9 @@ export class AppService {
     const params = {
       startDate, endDate, 
       state: (state ? state : ''),
-      district_name: district ? district : ''
+      district_name: district ? district : '',
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory
     }
     return this.http.get(this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_seller_${uri}/`, {params}).pipe(
       takeUntil(this.cancelTopSellersDataPrevious$)
@@ -276,95 +308,26 @@ export class AppService {
   getStatewiseBin(uri: string) {
     this.cancelStatewiseBinPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { startDate, endDate }
+    const params = { startDate, endDate,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory }
     return this.http.get(this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/${uri}_per_state/`, {params}).pipe(
       takeUntil(this.cancelStatewiseBinPrevious$)
     );
   }
+
+  private cancelMetrixSunBurstChartDataPrevious$ = new Subject<void>();
+  getMetrixSunBurstChartData(uri: string, state: string) {
+    this.cancelMetrixSunBurstChartDataPrevious$.next();
+    let [startDate, endDate] = this.getFormattedDateRange();
+    state = state.replaceAll(' ', '+');
+    const params = { startDate, endDate, state: state == 'TT' ? '' : state,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory }
+    return this.http.get(this.baseUrl + `api/retail/b2c/category_penetration_${uri}/`, {params}).pipe(
+      takeUntil(this.cancelMetrixSunBurstChartDataPrevious$)
+    );
+  }
   
-  // dq-apis
-  private cancelTrend1Previous$ = new Subject<void>();
-  getTrend1Data() {
-    this.cancelTrend1Previous$.next();
-    let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { startDate, endDate }
-    return this.http.get(this.baseUrl + `api/dq_report/trend_1/`, {params}).pipe(
-      takeUntil(this.cancelTrend1Previous$)
-    );
-  }
-
-  private cancelTrend2Previous$ = new Subject<void>();
-  getTrend2Data() {
-    this.cancelTrend2Previous$.next();
-    let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { startDate, endDate }
-    return this.http.get(this.baseUrl + `api/dq_report/trend_2/`, {params}).pipe(
-      takeUntil(this.cancelTrend2Previous$)
-    );
-  }
-
-  private cancelDetailCompletedTableDataPrevious$ = new Subject<void>();
-  getDetailCompletedTableData() {
-    this.cancelDetailCompletedTableDataPrevious$.next();
-    let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { startDate, endDate }
-    return this.http.get(this.baseUrl + `api/dq_report/detail_completed_table_data/`, {params}).pipe(
-      takeUntil(this.cancelDetailCompletedTableDataPrevious$)
-    );
-  }
-
-
-  private cancelDetailCancelTableDataPrevious$ = new Subject<void>();
-  getDetailCancelTableData() {
-    this.cancelDetailCancelTableDataPrevious$.next();
-    let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { startDate, endDate }
-    return this.http.get(this.baseUrl + `api/dq_report/detail_cancel_table_data/`, {params}).pipe(
-      takeUntil(this.cancelDetailCancelTableDataPrevious$)
-    );
-  }
-
-  private cancelHighestMissingPIDPrevious$ = new Subject<void>();
-  getCancelHighestMissingData() {
-    this.cancelHighestMissingPIDPrevious$.next();
-    let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { startDate, endDate }
-    return this.http.get(this.baseUrl + `api/dq_report/cancel_highest_missing_pid_data/`, {params}).pipe(
-      takeUntil(this.cancelHighestMissingPIDPrevious$)
-    );
-  }
-
-
-  private cancelRadialChartrevious$ = new Subject<void>();
-  getRadialChartData() {
-    this.cancelRadialChartrevious$.next();
-    let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { date: '2024-05-08' }
-    return this.http.get(this.baseUrl + `api/dq/missing_percentage/`, {params}).pipe(
-      takeUntil(this.cancelRadialChartrevious$)
-    );
-  }
-
-  private cancelDQTopCardPrevious$ = new Subject<void>();
-  getDQTopCardData() {
-    this.cancelDQTopCardPrevious$.next();
-    let [startDate, endDate] = this.getFormattedDateRange();
-    const params = { startDate, endDate }
-    return this.http.get(this.baseUrl + `api/dq_report/top_card/`, {params}).pipe(
-      takeUntil(this.cancelDQTopCardPrevious$)
-    );
-  }
-
-
-  getDataSanityChart1Data() {
-    return this.http.get(this.baseUrl + `api/dq_report/data_sanity/chart1/`);
-  }
-
-  getDataSanityChart2Data() {
-    return this.http.get(this.baseUrl + `api/dq_report/data_sanity/chart2/`);
-  }
-
-  getDataSanityTableData() {
-    return this.http.get(this.baseUrl + `api/dq_report/data_sanity/table/`);
-  }
+  
 }

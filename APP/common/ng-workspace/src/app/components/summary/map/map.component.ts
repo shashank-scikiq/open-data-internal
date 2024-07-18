@@ -35,6 +35,14 @@ export class MapComponent implements OnInit, OnChanges {
       this.fetchMapStateData();
       this.fetchOrderMetricsSummary();
     });
+    this.appService.filterUpdated$.subscribe((val) => {
+      if (val) {
+        this.mapStateData = null;
+        this.mapStatewiseData = null;
+        this.fetchMapStateData();
+        this.fetchOrderMetricsSummary();
+      }
+    });
     this.mapService.selectedState$.subscribe((state: string) => {
       if (state != this.selectedState)
       this.selectedState = state;

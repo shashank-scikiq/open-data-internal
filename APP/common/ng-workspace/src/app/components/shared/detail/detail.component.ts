@@ -40,10 +40,13 @@ export class DetailComponent implements OnInit {
     public dialog: MatDialog,
     private mapService: MapService,
     private configService: ConfigService
-  ) {}
+  ) {
+    this.appService.setFilterUpdated(false);
+  }
 
 
   ngOnInit() {
+    this.appService.setFilters('All', 'All');
     this.isStagingEnabled = this.configService.get('ENABLE_STAGING_ROUTE');
     this.appService.dateRange$.subscribe((value) => {
       this.dateRange = value;

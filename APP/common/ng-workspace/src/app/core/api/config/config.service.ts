@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import * as crypto from 'crypto-js';
+// import * as crypto from 'crypto-js';
 import { BehaviorSubject } from 'rxjs';
 import { environment } from '@openData/env/environment';
 
@@ -25,7 +25,7 @@ export class ConfigService {
 
     private verifyConfig() {
         const configString = JSON.stringify(this.config);
-        const computedSignature = crypto.HmacSHA256(configString, this.secretKey).toString();
+        // const computedSignature = crypto.HmacSHA256(configString, this.secretKey).toString();
 
         // if (computedSignature !== this.signature) {
         //     console.error('Configuration signature mismatch!');

@@ -24,6 +24,12 @@ export class DetailHeaderCardComponent implements OnInit {
     this.appService.dateRange$.subscribe(() => {
       this.getCardData();
     });
+    this.appService.filterUpdated$.subscribe((val: any) => {
+      if (val) {
+        this.getCardData();
+      }
+    });
+    
     this.mapService.selectedState$.subscribe((val: string) => {
       this.selectedStateCode = val == 'TT' ? val : StateCode[val];
       if (this.topCardsDelta)

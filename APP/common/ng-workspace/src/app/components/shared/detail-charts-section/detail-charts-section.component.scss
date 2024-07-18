@@ -149,6 +149,12 @@
     }
 }
 
+.chart-body {
+    padding: 0 10%;
+    height: 100%;
+    min-height: 120px;
+}
+
 ::ng-deep {
 
     .charts-main-container {

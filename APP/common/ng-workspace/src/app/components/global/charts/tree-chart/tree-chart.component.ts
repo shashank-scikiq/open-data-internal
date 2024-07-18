@@ -47,6 +47,12 @@ export class TreeChartComponent implements OnInit {
       this.initChart();
     })
 
+    this.appService.filterUpdated$.subscribe((val: any) => {
+      if (val) {
+        this.initChart();
+      }
+    })
+
     this.mapService.selectedState$.subscribe(
       (state: any) => {
         this.selectedState = state;

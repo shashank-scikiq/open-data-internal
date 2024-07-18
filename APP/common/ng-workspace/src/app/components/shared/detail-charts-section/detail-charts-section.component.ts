@@ -91,9 +91,22 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
     }
   }
 
+  sunburstData: any = {
+    map_total_orders_metrics: {
+      subtitle: 'with Highest Confirmed Orders',
+      tooltip: 'Highest Confirmed Orders '
+    },
+    map_total_active_sellers_metrics: {
+      subtitle: 'with Highest Number Of Registered Sellers',
+      tooltip: 'Districts Highest Number Of Registered Sellers'
+    }
+  }
+
+  metrixSunBurstChartData: any = {};
+  isLoadingSunBurstChartData: boolean = false;
+
   constructor(
-    private appService: AppService,
-    private mapService: MapService
+    private appService: AppService
   ) { }
 
   ngOnInit() {
@@ -104,6 +117,12 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
       this.dateRange = val;
       this.initCardData();
     });
+
+    this.appService.filterUpdated$.subscribe((val: any) => {
+      if (val) {
+        this.initCardData();
+      }
+    })
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -119,6 +138,7 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
     this.getStatewiseBin();
     this.getTopStateOrdersData();
     this.getTopDistrictOrdersData();
+    this.getSunBurstChartData();
   }
 
   getStatewiseBin() {
@@ -185,14 +205,11 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
 
 
   getMaxData() {
-    if (this.metrix == "map_total_zonal_commerce_metrics") {
+    if (this.metrix == "map_total_zonal_commerce_metrics" || !this.activeUrl.includes('retail/b2c')) {
       this.metrixMaxData = [];
       return;
     }
 
-    if (!this.activeUrl.includes('retail/b2c')) {
-      return;
-    }
     this.isLoadingMaxData = true;
     this.appService.getMetrixMaxData(this.matrixUri[this.metrix], this.selectedState).subscribe(
       (response: any) => {
@@ -203,6 +220,27 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
       }, (error: Error) => {
         console.log(error);
         this.isLoadingMaxData = false;
+      }
+    )
+  }
+
+  getSunBurstChartData() {
+    if (this.metrix == "map_total_zonal_commerce_metrics" || !this.activeUrl.includes('retail/b2c')) {
+      this.metrixSunBurstChartData = {};
+      this.isLoadingSunBurstChartData = false;
+      return;
+    }
+
+    this.isLoadingSunBurstChartData = true;
+    this.appService.getMetrixSunBurstChartData(this.matrixUri[this.metrix], this.selectedState).subscribe(
+      (response: any) => {
+        if (response) {
+          this.metrixSunBurstChartData = response;
+          this.isLoadingSunBurstChartData = false;
+        }
+      }, (error: Error) => {
+        console.log(error);
+        this.isLoadingSunBurstChartData = false;
       }
     )
   }

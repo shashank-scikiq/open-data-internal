@@ -106,96 +106,96 @@ export class DqReportComponent implements OnInit {
     this.appService.dateRange$.subscribe((value) => {
       this.dateRange = value;
 
-      this.initBoard();
+      // this.initBoard();
 
-      this.initSanityData();
+      // this.initSanityData();
     })
   }
 
-  initSanityData() {
-    this.appService.getDataSanityChart1Data().subscribe(
-      (res: any) => {
-        this.section1Chart1Data = res;
-      },
-      (error: Error) => {
-        console.log(error);
-      }
-    )
-    this.appService.getDataSanityChart2Data().subscribe(
-      (res: any) => {
-        this.section1Chart2Data = res;
-      },
-      (error: Error) => {
-        console.log(error);
-      }
-    )
-    this.appService.getDataSanityTableData().subscribe(
-      (res: any) => {
-        this.section1TableData = res;
-      },
-      (error: Error) => {
-        console.log(error);
-      }
-    )
-  }
+  // initSanityData() {
+  //   this.appService.getDataSanityChart1Data().subscribe(
+  //     (res: any) => {
+  //       this.section1Chart1Data = res;
+  //     },
+  //     (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   )
+  //   this.appService.getDataSanityChart2Data().subscribe(
+  //     (res: any) => {
+  //       this.section1Chart2Data = res;
+  //     },
+  //     (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   )
+  //   this.appService.getDataSanityTableData().subscribe(
+  //     (res: any) => {
+  //       this.section1TableData = res;
+  //     },
+  //     (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   )
+  // }
 
-  initBoard() {
-    this.appService.getTrend1Data().subscribe(
-      (response: any) => {
-        this.trend1 = response;
-      }, (error: Error) => {
-        console.log(error);
-      }
-    );
+  // initBoard() {
+  //   this.appService.getTrend1Data().subscribe(
+  //     (response: any) => {
+  //       this.trend1 = response;
+  //     }, (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   );
 
-    this.appService.getTrend2Data().subscribe(
-      (response: any) => {
-        this.trend2 = response;
-      }, (error: Error) => {
-        console.log(error);
-      }
-    );
+  //   this.appService.getTrend2Data().subscribe(
+  //     (response: any) => {
+  //       this.trend2 = response;
+  //     }, (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   );
 
-    this.appService.getDetailCompletedTableData().subscribe(
-      (response: any) => {
-        this.detailCompletedTableData = response;
-      }, (error: Error) => {
-        console.log(error);
-      }
-    );
+  //   this.appService.getDetailCompletedTableData().subscribe(
+  //     (response: any) => {
+  //       this.detailCompletedTableData = response;
+  //     }, (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   );
 
-    this.appService.getDetailCancelTableData().subscribe(
-      (response: any) => {
-        this.detailCancelledTableData = response;
-      }, (error: Error) => {
-        console.log(error);
-      }
-    );
+  //   this.appService.getDetailCancelTableData().subscribe(
+  //     (response: any) => {
+  //       this.detailCancelledTableData = response;
+  //     }, (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   );
 
-    this.appService.getCancelHighestMissingData().subscribe(
-      (response: any) => {
-        this.detailCompletedHighestMissingPIDData = response;
-      }, (error: Error) => {
-        console.log(error);
-      }
-    );
+  //   this.appService.getCancelHighestMissingData().subscribe(
+  //     (response: any) => {
+  //       this.detailCompletedHighestMissingPIDData = response;
+  //     }, (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   );
 
-    this.appService.getRadialChartData().subscribe(
-      (response: any) => {
-        this.radialCharts = response;
-      }, (error: Error) => {
-        console.log(error);
-      }
-    );
+  //   this.appService.getRadialChartData().subscribe(
+  //     (response: any) => {
+  //       this.radialCharts = response;
+  //     }, (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   );
 
-    this.appService.getDQTopCardData().subscribe(
-      (response: any) => {
-        this.topCards = response;
-      }, (error: Error) => {
-        console.log(error);
-      }
-    );
-  }
+  //   this.appService.getDQTopCardData().subscribe(
+  //     (response: any) => {
+  //       this.topCards = response;
+  //     }, (error: Error) => {
+  //       console.log(error);
+  //     }
+  //   );
+  // }
 
   setDateRange(value: any) {
     this.appService.setDateRange(value);

@@ -891,7 +891,7 @@ class FetchMapStateData(BaseDataAPI):
             formatted_data = self.map_state_data_format(merged)
             json_data = json.dumps(formatted_data, cls=CustomJSONEncoder)
 
-            cache.set(p_d, json_data, 60 * 60)
+            # cache.set(p_d, json_data, 60 * 60)
 
         else:
             json_data = resp_data

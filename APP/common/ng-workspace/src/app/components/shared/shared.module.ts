@@ -16,6 +16,9 @@ import { DateRangePickerComponent } from '../global/forms/date-range-picker/date
 import { DownloadDialogComponent } from '../global/dialogs/download-dialog/download-dialog.component';
 import { TreeChartComponent } from '../global/charts/tree-chart/tree-chart.component';
 import { RadialBarChartComponent } from '../global/charts/radial-bar-chart/radial-bar-chart.component';
+import { SunburstChartComponent } from '../global/charts/sunburst-chart/sunburst-chart.component';
+import { DetailCategoryFilterComponent } from './detail-category-filter/detail-category-filter.component';
+// import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
   declarations: [
@@ -30,14 +33,17 @@ import { RadialBarChartComponent } from '../global/charts/radial-bar-chart/radia
     LineChartComponent,
     TreeChartComponent,
     DownloadDialogComponent,
-    RadialBarChartComponent
+    RadialBarChartComponent,
+    SunburstChartComponent,
+    DetailCategoryFilterComponent
   ],
   imports: [
     CommonModule,
     ZorroModule,
     MaterialModule,
     NgApexchartsModule,
-    FormsModule
+    FormsModule,
+    // PlotlyModule
   ],
   exports: [
     DetailComponent,
@@ -51,7 +57,9 @@ import { RadialBarChartComponent } from '../global/charts/radial-bar-chart/radia
     TreeChartComponent,
     IndiaMapComponent,
     DownloadDialogComponent,
-    RadialBarChartComponent
+    RadialBarChartComponent,
+    SunburstChartComponent,
+    DetailCategoryFilterComponent
   ]
 })
 export class SharedModule { }

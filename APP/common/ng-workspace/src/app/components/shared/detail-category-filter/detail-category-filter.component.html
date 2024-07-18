@@ -1,0 +1,35 @@
+<div class="filter-container relative">
+    <div class="header-section cursor-pointer" (click)="toggleOptions()">
+        Filters
+
+        <i [class]="'fa-solid ' + (showOptions ? 'fa-xmark' : 'fa-filter')"></i>
+    </div>
+    @if(showOptions) {
+        <div class="body-section absolute">
+            <div>
+                <p class="margin-0 font-xxs open-data-grey-800">Category</p>
+                <nz-select nzsize="small"
+                    [(ngModel)]="selectedCategory"
+                    (ngModelChange)="setChoosedSubCategory('c', $event)">
+                        @for(option of categoryOptions; track option) {
+                            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                        }
+              </nz-select>
+            </div>
+            <div>
+                <p class="margin-0 font-xxs open-data-grey-800">Sub Category</p>
+                <nz-select nzsize="small"
+                    [(ngModel)]="selectedSubCategory"
+                    (ngModelChange)="setChoosedSubCategory('sc', $event)">
+                        @for(option of subCategoryOptions; track option) {
+                            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                        }
+              </nz-select>
+            </div>
+            <div class="btn-section">
+                <div class="apply-btn font-xxs" (click)="apply()">Apply</div>
+                <div class="cancel-btn font-xxs" (click)="close()">Cancel</div>
+            </div>
+        </div>
+    }
+</div>

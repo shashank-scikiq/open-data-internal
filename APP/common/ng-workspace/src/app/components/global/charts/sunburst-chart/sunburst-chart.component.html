@@ -1,0 +1,11 @@
+@if(!chartData?.labels?.length) {
+    <div class="no-data-section">
+        No data to display
+    </div>
+}
+<div 
+    id='sunburst-chart' 
+    [ngStyle]="{'display': chartData?.labels?.length ? 'block' : 'none'}"
+    class="sunburst-chart">
+</div>
+
