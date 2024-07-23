@@ -91,7 +91,7 @@ class BaseDataAPI(APIView):
             end_date = request.query_params.get('endDate')
 
         category = request.query_params.get('category', None)
-        if category in ('undefined', 'all', 'None'):
+        if category in ('undefined', 'all', 'None', 'All'):
             category = None
         sub_category = request.query_params.get('subCategory', None)
         if sub_category in constant.sub_category_none_values:

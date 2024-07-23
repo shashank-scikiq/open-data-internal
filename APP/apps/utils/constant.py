@@ -4,7 +4,7 @@ DISTRICT_TABLE = os.environ.get("DISTRICT_TBL")
 SUB_CATEGORY_TABLE = os.environ.get("SUB_CATEGORY_TBL")
 CATEGORY_TABLE = os.environ.get("CATEGORY_TBL")
 
-sub_category_none_values = ('undefined', 'all', 'None', 'Select Sub-Category')
+sub_category_none_values = ('undefined', 'all', 'None', 'Select Sub-Category', 'All')
 chart_date_format = '%d-%b'
 
 date_error_msg = {"error": "Start date and end date are required."}
