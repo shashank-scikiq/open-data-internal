@@ -889,14 +889,13 @@ class FetchMapStateData(BaseDataAPI):
                 merged[col] = pd.to_numeric(merged[col], errors='coerce')
 
             formatted_data = self.map_state_data_format(merged)
-            json_data = json.dumps(formatted_data, cls=CustomJSONEncoder)
+            json_data = formatted_data
 
-            # cache.set(p_d, json_data, 60 * 60)
+            cache.set(p_d, json_data, 60 * 60)
 
         else:
             json_data = resp_data
-
-        return HttpResponse(json_data, content_type='application/json')
+        return JsonResponse(json_data, safe=False)
 
 
 class FetchTopStatesHyperlocal(BaseDataAPI):
