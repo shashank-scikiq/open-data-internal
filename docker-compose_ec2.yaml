@@ -1,49 +1,4 @@
 services:
-  db_update_80:
-    container_name: db_update_80
-    build:
-      context: .
-      dockerfile: db.Dockerfile
-    image: db_update_dev:version_3.9.2
-    env_file:
-      - /home/shashank_daaslabs/Software/ec2_common.env
-    environment:
-      - POSTGRES_SCHEMA=ec2_dev
-      - EMAIL_ENV=EC2
-    volumes:
-      - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/ec2_common.env:/mnt/env/ec2_common.env
-
-  db_update_81:
-    container_name: db_update_81
-    build:
-      context: .
-      dockerfile: db.Dockerfile
-    image: db_update_test:version_3.9.2
-    env_file:
-      - /home/shashank_daaslabs/Software/ec2_common.env
-    environment:
-      - POSTGRES_SCHEMA=ec2_stage
-      - EMAIL_ENV=staging_env
-    volumes:
-      - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/ec2_common.env:/mnt/env/ec2_common.env
-
-  db_update_82:
-    container_name: db_update_82
-    build:
-      context: .
-      dockerfile: db.Dockerfile
-    image: db_update_test:version_3.9.2
-    env_file:
-      - /home/shashank_daaslabs/Software/ec2_common.env
-    environment:
-      - POSTGRES_SCHEMA=ec2_prod
-      - EMAIL_ENV=Production
-    volumes:
-      - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/ec2_common.env:/mnt/env/ec2_common.env
-
   webapp_80:
     container_name: webapp_80
     build:
