@@ -50,8 +50,8 @@ current_mtd AS (
         delivery_state,
         delivery_district,
         COALESCE(SUM(total_orders_delivered), 0) AS mtd_order_demand,
-        SUM(intrastate_orders) AS mtd_intrastate_orders,
-        SUM(intradistrict_orders) AS mtd_intradistrict_orders
+        COALESCE(SUM(intrastate_orders), 0) AS mtd_intrastate_orders,
+        COALESCE(SUM(intradistrict_orders), 0) AS mtd_intradistrict_orders
     FROM 
         POSTGRES_SCHEMA.DISTRICT_TBL, max_date
     WHERE 
@@ -64,8 +64,8 @@ prev_mtd AS (
         delivery_state,
         delivery_district,
         COALESCE(SUM(total_orders_delivered), 0) AS mtd_order_demand,
-        SUM(intrastate_orders) AS mtd_intrastate_orders,
-        SUM(intradistrict_orders) AS mtd_intradistrict_orders
+        COALESCE(SUM(intrastate_orders), 0) AS mtd_intrastate_orders,
+        COALESCE(SUM(intradistrict_orders), 0) AS mtd_intradistrict_orders
     FROM 
         POSTGRES_SCHEMA.DISTRICT_TBL, max_date
     WHERE 
@@ -78,8 +78,8 @@ current_wtd AS (
         delivery_state,
         delivery_district,
         COALESCE(SUM(total_orders_delivered), 0) AS wtd_order_demand,
-        SUM(intrastate_orders) AS wtd_intrastate_orders,
-        SUM(intradistrict_orders) AS wtd_intradistrict_orders
+        COALESCE(SUM(intrastate_orders), 0) AS wtd_intrastate_orders,
+        COALESCE(SUM(intradistrict_orders), 0) AS wtd_intradistrict_orders
     FROM 
         POSTGRES_SCHEMA.DISTRICT_TBL, max_date
     WHERE 
@@ -92,8 +92,8 @@ prev_wtd AS (
         delivery_state,
         delivery_district,
         COALESCE(SUM(total_orders_delivered), 0) AS wtd_order_demand,
-        SUM(intrastate_orders) AS wtd_intrastate_orders,
-        SUM(intradistrict_orders) AS wtd_intradistrict_orders
+        COALESCE(SUM(intrastate_orders), 0) AS wtd_intrastate_orders,
+        COALESCE(SUM(intradistrict_orders), 0) AS wtd_intradistrict_orders
     FROM 
         POSTGRES_SCHEMA.DISTRICT_TBL, max_date
     WHERE 
@@ -108,55 +108,55 @@ SELECT
     COALESCE(p.mtd_order_demand, 0) AS prev_mtd_demand,
     COALESCE(cw.wtd_order_demand, 0) AS current_wtd_demand,
     COALESCE(p.mtd_intrastate_orders, 0) AS prev_mtd_intrastate,
-    COALESCE(c.mtd_intrastate_orders,0) AS current_mtd_intrastate,
-    COALESCE(c.mtd_intradistrict_orders,0) AS current_mtd_intradistrict,
+    COALESCE(c.mtd_intrastate_orders, 0) AS current_mtd_intrastate,
+    COALESCE(c.mtd_intradistrict_orders, 0) AS current_mtd_intradistrict,
     COALESCE(p.mtd_intradistrict_orders, 0) AS prev_mtd_intradistrict,
-    COALESCE(cw.wtd_intrastate_orders,0) AS current_wtd_intrastate,
-    COALESCE(cw.wtd_intradistrict_orders,0) AS current_wtd_intradistrict,
+    COALESCE(cw.wtd_intrastate_orders, 0) AS current_wtd_intrastate,
+    COALESCE(cw.wtd_intradistrict_orders, 0) AS current_wtd_intradistrict,
     COALESCE(pw.wtd_order_demand, 0) AS prev_wtd_demand,
     COALESCE(pw.wtd_intrastate_orders, 0) AS prev_wtd_intrastate,
     COALESCE(pw.wtd_intradistrict_orders, 0) AS prev_wtd_intradistrict,
     COALESCE(c.mtd_order_demand, 0) - COALESCE(p.mtd_order_demand, 0) AS total_gain,
     COALESCE(c.mtd_intrastate_orders, 0) - COALESCE(p.mtd_intrastate_orders, 0) AS intrastate_gain,
     COALESCE(c.mtd_intradistrict_orders, 0) - COALESCE(p.mtd_intradistrict_orders, 0) AS intradistrict_gain,
-    COALESCE(cw.wtd_order_demand,0) - COALESCE(pw.wtd_order_demand, 0) AS wtd_total_gain,
-    COALESCE(cw.wtd_intrastate_orders,0) - COALESCE(pw.wtd_intrastate_orders, 0) AS wtd_intrastate_gain,
-    COALESCE(cw.wtd_intradistrict_orders,0) - COALESCE(pw.wtd_intradistrict_orders, 0) AS wtd_intradistrict_gain,
+    COALESCE(cw.wtd_order_demand, 0) - COALESCE(pw.wtd_order_demand, 0) AS wtd_total_gain,
+    COALESCE(cw.wtd_intrastate_orders, 0) - COALESCE(pw.wtd_intrastate_orders, 0) AS wtd_intrastate_gain,
+    COALESCE(cw.wtd_intradistrict_orders, 0) - COALESCE(pw.wtd_intradistrict_orders, 0) AS wtd_intradistrict_gain,
     CASE
-        WHEN p.mtd_order_demand IS NULL OR p.mtd_order_demand = 0 THEN
-            COALESCE((100.0 * (c.mtd_order_demand - COALESCE(p.mtd_order_demand, 0))),100)
+        WHEN COALESCE(p.mtd_order_demand, 0) = 0 THEN
+            100.0
         ELSE
-            COALESCE(round(100.0 * (c.mtd_order_demand - COALESCE(p.mtd_order_demand, 0)) / p.mtd_order_demand, 0),0)
+            ROUND(100.0 * (COALESCE(c.mtd_order_demand, 0) - COALESCE(p.mtd_order_demand, 0)) / NULLIF(p.mtd_order_demand, 0), 2)
     END AS total_gain_percent,
     CASE
-        WHEN p.mtd_intrastate_orders IS NULL OR p.mtd_intrastate_orders = 0 THEN
-            COALESCE((100.0 * (c.mtd_intrastate_orders - COALESCE(p.mtd_intrastate_orders, 0))),100)
+        WHEN COALESCE(p.mtd_intrastate_orders, 0) = 0 THEN
+            100.0
         ELSE
-            COALESCE(round(100.0 * (c.mtd_intrastate_orders - COALESCE(p.mtd_intrastate_orders, 0)) / p.mtd_intrastate_orders, 0),0)
+            ROUND(100.0 * (COALESCE(c.mtd_intrastate_orders, 0) - COALESCE(p.mtd_intrastate_orders, 0)) / NULLIF(p.mtd_intrastate_orders, 0), 2)
     END AS intrastate_gain_percent,
     CASE
-        WHEN p.mtd_intradistrict_orders IS NULL OR p.mtd_intradistrict_orders = 0 THEN
-            COALESCE((100.0 * (c.mtd_intradistrict_orders - COALESCE(p.mtd_intradistrict_orders, 0))),100)
+        WHEN COALESCE(p.mtd_intradistrict_orders, 0) = 0 THEN
+            100.0
         ELSE
-            COALESCE(round(100.0 * (c.mtd_intradistrict_orders - COALESCE(p.mtd_intradistrict_orders, 0)) / p.mtd_intradistrict_orders, 0),0)
+            ROUND(100.0 * (COALESCE(c.mtd_intradistrict_orders, 0) - COALESCE(p.mtd_intradistrict_orders, 0)) / NULLIF(p.mtd_intradistrict_orders, 0), 2)
     END AS intradistrict_gain_percent,
     CASE
-        WHEN pw.wtd_order_demand IS NULL OR pw.wtd_order_demand = 0 THEN
-            COALESCE((100.0 * (cw.wtd_order_demand - COALESCE(pw.wtd_order_demand, 0))),100)
+        WHEN COALESCE(pw.wtd_order_demand, 0) = 0 THEN
+            100.0
         ELSE
-            COALESCE(round(100.0 * (cw.wtd_order_demand - COALESCE(pw.wtd_order_demand, 0)) / pw.wtd_order_demand, 0),0)
+            ROUND(100.0 * (COALESCE(cw.wtd_order_demand, 0) - COALESCE(pw.wtd_order_demand, 0)) / NULLIF(pw.wtd_order_demand, 0), 2)
     END AS wtd_total_gain_percent,
     CASE
-        WHEN pw.wtd_intrastate_orders IS NULL OR pw.wtd_intrastate_orders = 0 THEN
-            COALESCE((100.0 * (cw.wtd_intrastate_orders - COALESCE(pw.wtd_intrastate_orders, 0))),100)
+        WHEN COALESCE(pw.wtd_intrastate_orders, 0) = 0 THEN
+            100.0
         ELSE
-            COALESCE(round(100.0 * (cw.wtd_intrastate_orders - COALESCE(pw.wtd_intrastate_orders, 0)) / pw.wtd_intrastate_orders, 0),0)
+            ROUND(100.0 * (COALESCE(cw.wtd_intrastate_orders, 0) - COALESCE(pw.wtd_intrastate_orders, 0)) / NULLIF(pw.wtd_intrastate_orders, 0), 2)
     END AS wtd_intrastate_gain_percent,
     CASE
-        WHEN pw.wtd_intradistrict_orders IS NULL OR pw.wtd_intradistrict_orders = 0 THEN
-            COALESCE((100.0 * (cw.wtd_intradistrict_orders - COALESCE(pw.wtd_intradistrict_orders, 0))),100)
+        WHEN COALESCE(pw.wtd_intradistrict_orders, 0) = 0 THEN
+            100.0
         ELSE
-            COALESCE(round(100.0 * (cw.wtd_intradistrict_orders - COALESCE(pw.wtd_intradistrict_orders, 0)) / pw.wtd_intradistrict_orders, 0),0)
+            ROUND(100.0 * (COALESCE(cw.wtd_intradistrict_orders, 0) - COALESCE(pw.wtd_intradistrict_orders, 0)) / NULLIF(pw.wtd_intradistrict_orders, 0), 2)
     END AS wtd_intradistrict_gain_percent,
     TO_CHAR(md.current_mtd_start, 'Mon DD, YYYY') || ' to ' || TO_CHAR(md.current_mtd_end, 'Mon DD, YYYY') AS current_period,
     TO_CHAR(md.prev_mtd_start, 'Mon DD, YYYY') || ' to ' || TO_CHAR(md.prev_mtd_end, 'Mon DD, YYYY') AS prev_period,

@@ -68,7 +68,7 @@ async def fetch_date_range():
 async def dump_data_for_day(date: datetime.date):
     cols = ["provider_key", "order_date", "category", "sub_category", "Pincode"]
     tmp_df = pd.DataFrame(columns=cols)
-    query = f"""select concat("Seller App", concat('__',provider_id)) as provider_key,
+    query = f"""select concat(trim("Seller App"), concat('__',trim(provider_id))) as provider_key,
             "Date" as order_date, category, "Sub - Category" as sub_category,
             pin_code as "Pincode"
             from {src_schema}.{src_no_table} 

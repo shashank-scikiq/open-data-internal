@@ -3,7 +3,7 @@ import pandas as pd
 import asyncio
 import os
 from dotenv import load_dotenv
-from datetime import datetime, timedelta
+from datetime import datetime
 from utils import timing_decorator
 from get_start_date_tables import get_date_ranges
 from botocore.exceptions import ClientError
@@ -15,6 +15,7 @@ import sys
 import env_defs as ed
 
 
+load_dotenv(ed.env_file)
 src_schema = os.getenv("SRC_SCHEMA_NAME")
 src_no_table = os.getenv("SRC_NO_TBL_NAME")
 src_logger = log_config.start_log()
@@ -24,6 +25,7 @@ tgt_table = os.getenv("SELLER_TBL")
 mp = os.getenv("MONTHLY_PROVIDERS_TBL")
 sem = 2  # Adjust the concurrency limit to a lower value
 semaphore = asyncio.Semaphore(10) # For Postgresql operation. 
+
 
 # Extract the Data from AWS Athena. 
 # ======================================================================================
@@ -128,8 +130,8 @@ async def dump_data(tbl_name: str, dump_loc: str, date_range: list, read_script_
     database = 'default'
     output_location = os.getenv('S3_STAGING_DIR')
     region_name = os.getenv('AWS_REGION')
-
-    completed_read = utils.read_clean_script(ed.script_loc + "/" + read_script_file, ed.env_file)
+      
+    completed_read = utils.read_clean_script(ed.script_loc + "/" + read_script_file, ed.req_envs)
     
     async def process_date(date_val):
 
@@ -144,10 +146,10 @@ async def dump_data(tbl_name: str, dump_loc: str, date_range: list, read_script_
         df.to_parquet(ed.raw_files + filename)
         print(f"Execution time: {duration} seconds")
         print(f"Number of rows returned: {row_count}")
+
         
     date_chunks = chunk_date_ranges(date_range, chunk_size=10)
     for chunk in date_chunks:
-        # print(chunk)
         tasks = [process_date(date_val[0]) for date_val in chunk]
         # tasks = [process_date(date_val) for date_val in chunk]
         await asyncio.gather(*tasks)
@@ -258,5 +260,17 @@ async def query_no_tables():
 
 
 if __name__ == "__main__":
-    asyncio.run(query_no_tables())
-    # asyncio.run(query_athena_db())
+    try:
+        os.path.exists(ed.dump_loc)
+    except Exception as e:
+        print(f"{ed.dump_loc} not found.")
+        raise e
+    else:
+        print(f"Will Dump data to {ed.dump_loc}.")
+        print(ed.dump_loc)
+        print(ed.raw_files)
+        print(ed.processed_files)
+        print(ed.total_orders)
+        print(os.getenv('DATA_DUMP_LOC'))
+        # asyncio.run(query_no_tables())
+        asyncio.run(query_athena_db())

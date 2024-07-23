@@ -13,7 +13,7 @@ select
         'Missing' as seller_district,
         'Missing' as seller_state,
         'Missing' as seller_state_code,
-        sum(total_orders_delivered) as total_orders_delivered,
+        COALESCE(sum(total_orders_delivered),0) as total_orders_delivered,
         0 as intrastate_orders,
         0 as intradistrict_orders
 from POSTGRES_SCHEMA.RV_DISTRICT_TBL 
@@ -36,9 +36,9 @@ UNION
         seller_district,
         seller_state,
         seller_state_code,
-        sum(total_orders_delivered) as total_orders_delivered,
-        sum(intrastate_orders) as intrastate_orders,
-        sum(intradistrict_orders) as intradistrict_orders
+        COALESCE(sum(total_orders_delivered),0) as total_orders_delivered,
+        COALESCE(sum(intrastate_orders),0) as intrastate_orders,
+        COALESCE(sum(intradistrict_orders),0) as intradistrict_orders
 from POSTGRES_SCHEMA.DISTRICT_TBL 
 group by date_part('month', order_date), date_part('year', order_date),
 delivery_district,
@@ -58,7 +58,7 @@ select
         'Missing' as seller_district,
         'Missing' as seller_state,
         'Missing' as seller_state_code,
-        sum(total_orders_delivered) as total_orders_delivered,
+        COALESCE(sum(total_orders_delivered),0) as total_orders_delivered,
         0 as intrastate_orders,
         0 as intradistrict_orders
 from POSTGRES_SCHEMA.B2B_DISTRICT_TBL
@@ -81,9 +81,9 @@ delivery_district,
         seller_district,
         seller_state,
         seller_state_code,
-        sum(total_orders_delivered) as total_orders_delivered,
-        sum(intrastate_orders) as intrastate_orders,
-        sum(intradistrict_orders) as intradistrict_orders
+        COALESCE(sum(total_orders_delivered),0) as total_orders_delivered,
+        COALESCE(sum(intrastate_orders),0) as intrastate_orders,
+        COALESCE(sum(intradistrict_orders),0) as intradistrict_orders
 from POSTGRES_SCHEMA.LOGISTICS_DISTRICT_TBL
 group by date_part('month', order_date), date_part('year', order_date),
 delivery_district,

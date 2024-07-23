@@ -46,13 +46,13 @@ AggregatedOrders AS (
         seller_district,
         seller_state_code,
         MAX(seller_state) AS seller_state,
-        COUNT(DISTINCT network_order_id) AS total_orders_delivered,
-        COUNT(DISTINCT delivery_pincode) AS pincode_count,
-        SUM(total_items) AS total_items,
-        SUM(CASE WHEN delivery_state = seller_state THEN 1 ELSE 0 END) AS intrastate_orders,
-        SUM(CASE WHEN delivery_state <> seller_state THEN 1 ELSE 0 END) AS interstate_orders,
-        SUM(CASE WHEN delivery_district = seller_district THEN 1 ELSE 0 END) AS intradistrict_orders,
-        SUM(CASE WHEN delivery_district <> seller_district THEN 1 ELSE 0 END) AS interdistrict_orders
+        COALESCE(COUNT(DISTINCT network_order_id),0) AS total_orders_delivered,
+        COALESCE(COUNT(DISTINCT delivery_pincode),0) AS pincode_count,
+        COALESCE(SUM(total_items),0) AS total_items,
+        COALESCE(SUM(CASE WHEN delivery_state = seller_state THEN 1 ELSE 0 END),0) AS intrastate_orders,
+        COALESCE(SUM(CASE WHEN delivery_state <> seller_state THEN 1 ELSE 0 END),0) AS interstate_orders,
+        COALESCE(SUM(CASE WHEN delivery_district = seller_district THEN 1 ELSE 0 END),0) AS intradistrict_orders,
+        COALESCE(SUM(CASE WHEN delivery_district <> seller_district THEN 1 ELSE 0 END),0) AS interdistrict_orders
     FROM
         DetailedOrders
     GROUP BY
@@ -76,10 +76,10 @@ SELECT
     intradistrict_orders,
     interdistrict_orders,
     CASE WHEN total_orders_delivered > 0 THEN
-        ROUND(100.0 * intrastate_orders / total_orders_delivered, 2)
+        ROUND(100.0 * intrastate_orders / COALESCE(total_orders_delivered,1), 2)
     ELSE 0 END AS intrastate_orders_percentage,
     CASE WHEN total_orders_delivered > 0 THEN
-        ROUND(100.0 * intradistrict_orders / total_orders_delivered, 2)
+        ROUND(100.0 * intradistrict_orders / COALESCE(total_orders_delivered,1), 2)
     ELSE 0 END AS intradistrict_orders_percentage
 FROM
     AggregatedOrders

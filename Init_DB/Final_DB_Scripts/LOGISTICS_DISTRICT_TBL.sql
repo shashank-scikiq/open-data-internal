@@ -13,7 +13,7 @@ WITH OrderLevelAggregation AS (
 	        seller_district,
 	        seller_state_code,
 	        concat(order_id, transaction_id, bap_id, bpp_id, cast(order_date as varchar)) as network_order_id,
-	        COUNT(DISTINCT delivery_pincode) AS pincode_count
+	        COALESCE(COUNT(DISTINCT delivery_pincode),0) AS pincode_count
 	    FROM POSTGRES_SCHEMA.AGG_TBL_LOG a
 	    GROUP BY
 	         order_date, delivery_district, delivery_state,
@@ -29,12 +29,12 @@ WITH OrderLevelAggregation AS (
 	        seller_state_code,
 	        MAX(delivery_state) as delivery_state,
 	        MAX(seller_state) as seller_state,
-	        COUNT(distinct network_order_id) AS total_orders_delivered,
-	        SUM(pincode_count) AS pincode_count,
-	        SUM(CASE WHEN delivery_state = seller_state THEN 1 ELSE 0 END) AS intrastate_orders,
-	        SUM(CASE WHEN delivery_state <> seller_state THEN 1 ELSE 0 END) AS interstate_orders,
-	        SUM(CASE WHEN delivery_district = seller_district THEN 1 ELSE 0 END) AS intradistrict_orders,
-	        SUM(CASE WHEN delivery_district <> seller_district THEN 1 ELSE 0 END) AS interdistrict_orders
+	        COALESCE(COUNT(distinct network_order_id),0) AS total_orders_delivered,
+	        COALESCE(SUM(pincode_count),0) AS pincode_count,
+	        COALESCE(SUM(CASE WHEN delivery_state = seller_state THEN 1 ELSE 0 END),0) AS intrastate_orders,
+	        COALESCE(SUM(CASE WHEN delivery_state <> seller_state THEN 1 ELSE 0 END),0) AS interstate_orders,
+	        COALESCE(SUM(CASE WHEN delivery_district = seller_district THEN 1 ELSE 0 END),0) AS intradistrict_orders,
+	        COALESCE(SUM(CASE WHEN delivery_district <> seller_district THEN 1 ELSE 0 END),0) AS interdistrict_orders
 	    FROM OrderLevelAggregation
 	    GROUP BY
 	         order_date, delivery_district, delivery_state_code, seller_district, seller_state_code
@@ -47,11 +47,11 @@ WITH OrderLevelAggregation AS (
     MAX(seller_state) AS seller_state,
     seller_district,
     seller_state_code,
-    SUM(total_orders_delivered) AS total_orders_delivered,
-    SUM(pincode_count) AS pincode_count,
-    SUM(intrastate_orders) AS intrastate_orders,
-    SUM(intradistrict_orders) AS intradistrict_orders,
-    SUM(interstate_orders) AS interstate_orders,
+    COALESCE(SUM(total_orders_delivered),0) AS total_orders_delivered,
+    COALESCE(SUM(pincode_count),0) AS pincode_count,
+    COALESCE(SUM(intrastate_orders),0) AS intrastate_orders,
+    COALESCE(SUM(intradistrict_orders),0) AS intradistrict_orders,
+    COALESCE(SUM(interstate_orders),0) AS interstate_orders,
     ROUND(100.0 * SUM(intrastate_orders) / COALESCE(NULLIF(SUM(total_orders_delivered), 0), 1), 2) AS intrastate_orders_percentage,
     ROUND(100.0 * SUM(intradistrict_orders) / COALESCE(NULLIF(SUM(total_orders_delivered), 0), 1), 2) AS intradistrict_orders_percentage
 FROM

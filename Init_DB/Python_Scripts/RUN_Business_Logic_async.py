@@ -38,7 +38,8 @@ async def get_database_connection(source_params: str):
 @timing_decorator
 async def run_script(script_file: str):
     db_conn = await get_database_connection(pg_url)
-    to_run = utils.read_clean_script(script_file, ed.env_file)
+    # to_run = utils.read_clean_script(script_file, ed.env_file)
+    to_run = utils.read_clean_script(script_file, ed.req_envs)
     try:
         await db_conn.execute(to_run)
         print(f"Script {script_file} executed successfully.")

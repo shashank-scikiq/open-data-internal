@@ -10,7 +10,6 @@ import sys
 
 app_logger = log_config.start_log()
 
-
 if chk_req_envs(ed.req_envs):
     app_logger.info("Environment Variables Loaded.")
 elif load_dotenv(ed.env_file):
@@ -19,16 +18,16 @@ else:
     app_logger.error("Error loading environment files.")
     app_logger.error("Exiting.")
     sys.exit()
-    
 
 tbl_dt = {
-    f"{os.getenv('ATH_TBL_B2C')}":"""date(date_parse("O_Created Date & Time",'%Y-%m-%dT%H:%i:%s'))""",
+    f"{os.getenv('ATH_TBL_B2C')}": """date(date_parse("O_Created Date & Time",'%Y-%m-%dT%H:%i:%s'))""",
     f"{os.getenv('ATH_TBL_B2B')}": """date(date_parse("O_Created Date & Time",'%Y-%m-%dT%H:%i:%s'))""",
     f"{os.getenv('ATH_TBL_VOUCHER')}": """date("o_created_at_date")""",
-    f"{os.getenv('ATH_TBL_LOG')}" : """date("order_created_at")"""
+    f"{os.getenv('ATH_TBL_LOG')}": """date("order_created_at")"""
 }
 
-async def run_gen_qry(date_field_name: str ="",tbl_name: str = "", mnth=6, validate_data=True) -> str:
+
+async def run_gen_qry(date_field_name: str = "", tbl_name: str = "", mnth=6, validate_data=True) -> str:
     try:
         conn_src_athena = connect(
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY"),
@@ -68,6 +67,7 @@ async def run_gen_qry(date_field_name: str ="",tbl_name: str = "", mnth=6, valid
                 conn_src_athena.close()
                 return tbl_name, out
 
+
 @timing_decorator
 async def get_date_ranges():
     result_dict = {}
@@ -78,21 +78,20 @@ async def get_date_ranges():
     for x, y in result:
         dt_count[x] = len(y)
         result_dict[x] = y
-        
+
     print(dt_count)
-    
+
     return result_dict
 
 
 @timing_decorator
 async def is_there_data_in_aws(mnth: str):
-    result_dict={}
+    result_dict = {}
     tasks = [run_gen_qry(dt_field, tbl_name, mnth=mnth, validate_data=True) for tbl_name, dt_field in tbl_dt.items()]
     result = await asyncio.gather(*tasks)
     for x, y in result:
         result_dict[x] = y[0]
     return result_dict
-
 
 # async def main():
 #     date_ranges = await get_date_ranges()
