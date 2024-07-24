@@ -9,6 +9,7 @@ import { NzCarouselModule } from 'ng-zorro-antd/carousel';
 import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzDrawerModule } from 'ng-zorro-antd/drawer';
 
 @NgModule({
   declarations: [],
@@ -22,7 +23,8 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
     NzCarouselModule,
     NzInputModule,
     NzSelectModule,
-    NzDropDownModule
+    NzDropDownModule,
+    NzDrawerModule
   ],
   exports: [
     NzButtonModule,
@@ -34,7 +36,8 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
     NzCarouselModule,
     NzInputModule,
     NzSelectModule,
-    NzDropDownModule
+    NzDropDownModule,
+    NzDrawerModule
   ]
 })
 export class ZorroModule { }

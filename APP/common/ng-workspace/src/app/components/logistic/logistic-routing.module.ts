@@ -2,8 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LogisticOverallComponent } from './logistic-overall/logistic-overall.component';
 import { LogisticSummaryComponent } from './logistic-summary/logistic-summary.component';
-import { ConfigGuard } from '@openData/app/core/guards/config/config.guard';
-
 
 const routes: Routes = [
   {

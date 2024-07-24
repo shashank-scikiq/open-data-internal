@@ -1,4 +1,8 @@
-import { Component, ViewEncapsulation, ElementRef, Input, OnChanges, OnInit, SimpleChanges, ViewChild, HostListener, EventEmitter, Output, Renderer2 } from '@angular/core';
+import { 
+  Component, ViewEncapsulation, ElementRef, Input, OnChanges, 
+  OnInit, SimpleChanges, ViewChild, HostListener, EventEmitter, 
+  Output, Renderer2, OnDestroy 
+} from '@angular/core';
 import * as d3 from "d3";
 import * as topojson from 'topojson-client';
 import { StateCode, getDistrictTooltipContent, getStateTooltipContent, NOCASEDATA } from '@openData/app/core/utils/map';
@@ -13,14 +17,12 @@ import { AppService } from '@openData/app/core/api/app/app.service';
   styleUrl: './india-map.component.scss',
   encapsulation: ViewEncapsulation.None
 })
-export class IndiaMapComponent implements OnInit, OnChanges {
+export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
   @Input() metrix: any = 'map_total_orders_metrics';
   @Input() mapStateData: any;
   @Input() mapStatewiseData: any;
   @Input() mapVisualOptions: any = {};
   @Output() setDistrictView = new EventEmitter<any>();
-
-
 
   showTooltip: boolean = false;
   mapDataInitialized: boolean = false;
@@ -33,8 +35,6 @@ export class IndiaMapComponent implements OnInit, OnChanges {
   state_meshData: any = {};
   stateSortedData: any = [];
   districtSortedData: any = [];
-
-
 
   chloroplethcolormapper3: any = {
     map_total_orders_metrics: ["#ffffff", "#FF7722"],
@@ -714,4 +714,7 @@ export class IndiaMapComponent implements OnInit, OnChanges {
     }
   }
 
+  ngOnDestroy(): void {
+    this.removeSvgContent();
+  }
 }

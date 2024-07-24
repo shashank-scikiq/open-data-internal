@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { RetailOverallComponent } from './retail-overall/retail-overall.component';
 import { RetailB2bComponent } from './retail-b2b/retail-b2b.component';
 import { RetailB2cComponent } from './retail-b2c/retail-b2c.component';
-import { ConfigGuard } from '@openData/app/core/guards/config/config.guard';
 
 const routes: Routes = [
   {

@@ -4,9 +4,7 @@ import os
 
 import psycopg2
 import json
-from collections import defaultdict
 import pandas as pd
-from django.conf import settings
 
 def fetch_data_from_db():
     # Connect to your database
@@ -105,14 +103,3 @@ def write_json_to_file(json_data, file_path):
             json.dump(json_data, file, indent=4)
     except Exception as e:
         print(e)
-
-
-def load_landing_page_data():
-    json_file_path = f"{settings.BASE_DIR}/common/web/assets/data/landing-page/echart.json"
-    json_data = read_json_from_file(json_file_path)
-
-    db_data = fetch_data_from_db()
-    formated_data = top_chart_format(db_data)
-    updated_json = update_json_with_db_data(json_data, formated_data)
-
-    write_json_to_file(updated_json, json_file_path)

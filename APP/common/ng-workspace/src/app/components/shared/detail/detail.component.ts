@@ -3,7 +3,6 @@ import { AppService } from '@openData/app/core/api/app/app.service';
 import { DownloadDialogComponent } from '../../global/dialogs/download-dialog/download-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { MapService } from '@openData/app/core/api/map/map.service';
-import { ConfigService } from '@openData/app/core/api/config/config.service';
 
 @Component({
   selector: 'app-detail',
@@ -39,7 +38,6 @@ export class DetailComponent implements OnInit {
     private appService: AppService,
     public dialog: MatDialog,
     private mapService: MapService,
-    private configService: ConfigService
   ) {
     this.appService.setFilterUpdated(false);
   }
@@ -47,7 +45,7 @@ export class DetailComponent implements OnInit {
 
   ngOnInit() {
     this.appService.setFilters('All', 'All');
-    this.isStagingEnabled = this.configService.get('ENABLE_STAGING_ROUTE');
+    // this.isStagingEnabled = this.configService.get('ENABLE_STAGING_ROUTE');
     this.appService.dateRange$.subscribe((value) => {
       this.dateRange = value;
     })

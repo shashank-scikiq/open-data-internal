@@ -60,6 +60,10 @@ export class AppService {
     this.selectedSubCategory = subcategory;
   }
 
+  getLandingPageEchartData() {
+    return this.http.get(`${this.baseUrl}api/landing-page/echart/`);
+  }
+
   setFilterUpdated(val: any) {
     this.filterUpdated.next(val);
   }

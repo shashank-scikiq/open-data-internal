@@ -3,7 +3,6 @@ import { MatDrawer, MatDrawerContainer } from '@angular/material/sidenav';
 import { NzButtonSize } from 'ng-zorro-antd/button';
 import { AppService } from './core/api/app/app.service';
 import { NavigationEnd, Router } from '@angular/router';
-import { ConfigService } from './core/api/config/config.service';
 import { Subject } from 'rxjs';
 
 @Component({
@@ -26,17 +25,10 @@ export class AppComponent implements OnInit, OnDestroy {
   constructor(
     private appService: AppService,
     private router: Router,
-    private configService: ConfigService
   ) { }
 
   ngOnInit() {
-    this.configService.configured$.subscribe(
-      (resp: boolean) => {
-        if (resp) {
-          this.initData();
-        }
-      }, (error: Error) => console.log(error)
-    )
+    this.initData()
   }
 
   initData() {

@@ -4,7 +4,6 @@ import { NzButtonSize } from 'ng-zorro-antd/button';
 import { AppService } from '../core/api/app/app.service';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { ConfigService } from '../core/api/config/config.service';
 
 @Component({
   selector: 'app-layout',
@@ -27,7 +26,6 @@ export class LayoutComponent implements OnInit, OnDestroy {
   constructor(
     private appService: AppService,
     private router: Router,
-    private configService: ConfigService
   ) { 
   }
 
@@ -41,13 +39,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
         console.log(error);
       }
     )
-    this.configService.configured$.subscribe(
-      (resp: boolean) => {
-        if (resp) {
-          this.initData();
-        }
-      }, (error: Error) => console.log(error)
-    )
+    this.initData();
 
     this.pathname = window.location.pathname;
   }

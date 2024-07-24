@@ -1,7 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { AppService } from '@openData/app/core/api/app/app.service';
-import { ConfigService } from '@openData/app/core/api/config/config.service';
 
 @Component({
   selector: 'app-right-sidenav',
@@ -13,7 +12,6 @@ export class RightSidenavComponent implements OnInit {
   sections: any = [];
 
   constructor(
-    private configService: ConfigService,
     private appService: AppService
   ) { }
 
@@ -22,7 +20,7 @@ export class RightSidenavComponent implements OnInit {
 
   
   ngOnInit(): void {
-    this.isStagingEnabled = this.configService.get('ENABLE_STAGING_ROUTE');
+    // this.isStagingEnabled = this.configService.get('ENABLE_STAGING_ROUTE');
 
     this.sections = [
       // {

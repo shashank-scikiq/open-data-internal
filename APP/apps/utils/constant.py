@@ -66,3 +66,8 @@ download_table_col_reference = {
     'items': 'Total Confirmed Items',
     'orders': 'Confirmed Orders'
 }
+
+CACHE_EXPIRY = int(os.getenv('CACHE_EXPIRY'))
+
+LANDING_PAGE_ECHART_TABLE = os.getenv('LANDING_PAGE_ECHART_TBL')
+LANDING_PAGE_ECHART_CONFIG = os.getenv('LANDING_PAGE_ECHART_CONFIG')

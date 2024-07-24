@@ -18,6 +18,7 @@ import { TreeChartComponent } from '../global/charts/tree-chart/tree-chart.compo
 import { RadialBarChartComponent } from '../global/charts/radial-bar-chart/radial-bar-chart.component';
 import { SunburstChartComponent } from '../global/charts/sunburst-chart/sunburst-chart.component';
 import { DetailCategoryFilterComponent } from './detail-category-filter/detail-category-filter.component';
+import { KeyInsightsComponent } from './key-insights/key-insights.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -35,7 +36,8 @@ import { DetailCategoryFilterComponent } from './detail-category-filter/detail-c
     DownloadDialogComponent,
     RadialBarChartComponent,
     SunburstChartComponent,
-    DetailCategoryFilterComponent
+    DetailCategoryFilterComponent,
+    KeyInsightsComponent
   ],
   imports: [
     CommonModule,

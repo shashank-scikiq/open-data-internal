@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LicenseComponent } from './components/license/license.component';
 import { DataDirectoryComponent } from './components/data-directory/data-directory.component';
-import { ConfigGuard } from './core/guards/config/config.guard';
 import { DqReportComponent } from './components/dq-report/dq-report.component';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { LayoutComponent } from './layout/layout.component';

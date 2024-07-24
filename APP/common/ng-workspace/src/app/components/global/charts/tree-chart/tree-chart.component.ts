@@ -14,7 +14,7 @@ export class TreeChartComponent implements OnInit {
   metrix: any = 'map_total_orders_metrics';
   selectedState: any;
   isLoading: boolean = false;
-  
+
   selectedStateOption: string = '';
   selectedDistrictOption: string = '';
   treeData: any = {};
@@ -65,7 +65,7 @@ export class TreeChartComponent implements OnInit {
         } else {
           this.selectedType = 'districts';
           const data = this.appService.getStateAndDistrictData();
-          
+
           this.districtOptions = data[this.selectedState?.toUpperCase()];
           this.districtOptions.sort();
           this.options = this.districtOptions;
@@ -82,7 +82,7 @@ export class TreeChartComponent implements OnInit {
     if (!this.selectedDistrictOption && !this.selectedStateOption) {
       return;
     }
-    if (this.metrix !='map_total_zonal_commerce_metrics')
+    if (this.metrix != 'map_total_zonal_commerce_metrics')
       return;
     this.topSellerSubscription$.next();
     this.isLoading = true;
@@ -111,15 +111,18 @@ export class TreeChartComponent implements OnInit {
 
   create_chart() {
     const container: any = d3.select("#inntraDistrictTree");
+    if(!container.node()) {
+      return;
+    }
     const containerWidth: any = container.node().getBoundingClientRect().width;
     const width_wd = containerWidth; // Use the container's width
     const margin_mr = { top: 0, right: 0, bottom: 0, left: 0 }, // Remove left margin
       width_w = width_wd - margin_mr.left - margin_mr.right,
       height_t = 250 - margin_mr.top - margin_mr.bottom;
-  
+
     d3.select("#inntraDistrictTree").selectAll("*").remove();
     let path = null;
-  
+
     let svg_d3 = container
       .append("svg")
       .attr("width", width_wd)
@@ -127,23 +130,23 @@ export class TreeChartComponent implements OnInit {
       .append("g")
       .attr("class", "intd")
       .attr("transform", "translate(" + ((width_wd / 2) + 70) + "," + margin_mr.top + ")");
-  
+
     let i = 0,
       duration = 750,
       root: any;
-  
+
     let treemap = d3.tree().size([height_t, width_w]);
-  
+
     root = d3.hierarchy(this.treeData, function (d) {
       return d.children;
     });
     root.x0 = height_t / 2;
     root.y0 = 0;
-  
+
     root.children.forEach(collapse);
-  
+
     update(root);
-  
+
     function collapse(d: any) {
       if (d.children) {
         d._children = d.children;
@@ -151,21 +154,21 @@ export class TreeChartComponent implements OnInit {
         d.children = null;
       }
     }
-  
+
     function update(source: any) {
       let treeData = treemap(root);
-  
+
       let nodes = treeData.descendants(),
         links = treeData.descendants().slice(1);
-  
+
       nodes.forEach(function (d: any) {
         d.y = d.depth * -80;
       });
-  
+
       let node = svg_d3.selectAll("g.node").data(nodes, function (d: any) {
         return d.id || (d.id = ++i);
       });
-  
+
       let nodeEnter: any = node
         .enter()
         .append("g")
@@ -174,7 +177,7 @@ export class TreeChartComponent implements OnInit {
           return "translate(" + source.y0 + "," + source.x0 + ")";
         })
         .on("click", click);
-  
+
       nodeEnter
         .append("circle")
         .attr("class", "node")
@@ -182,7 +185,7 @@ export class TreeChartComponent implements OnInit {
         .style("fill", function (d: any) {
           return d._children ? "lightgreen" : "#fff";
         });
-  
+
       nodeEnter
         .append("foreignObject")
         .attr("x", function (d: any) {
@@ -199,7 +202,7 @@ export class TreeChartComponent implements OnInit {
             return '<i class="fa-solid fa-truck-arrow-right"></i>';
           }
         });
-  
+
       nodeEnter
         .append("text")
         .attr("dy", ".35em")
@@ -212,16 +215,16 @@ export class TreeChartComponent implements OnInit {
         .text(function (d: any) {
           return d.data.name;
         });
-  
+
       let nodeUpdate = nodeEnter.merge(node);
-  
+
       nodeUpdate
         .transition()
         .duration(duration)
         .attr("transform", function (d: any) {
           return "translate(" + d.y + "," + d.x + ")";
         });
-  
+
       nodeUpdate
         .select("circle.node")
         .attr("r", 12)
@@ -229,19 +232,19 @@ export class TreeChartComponent implements OnInit {
           return d._children ? "lightgreen" : "#fff";
         })
         .attr("cursor", "pointer");
-  
+
       let nodeExit = node.exit().transition().duration(duration).attr("transform", function (d: any) {
         return "translate(" + source.y + "," + source.x + ")";
       }).remove();
-  
+
       nodeExit.select("circle").attr("r", 1e-6);
-  
+
       nodeExit.select("text").style("fill-opacity", 1e-6);
-  
+
       let link: any = svg_d3.selectAll("path.link").data(links, function (d: any) {
         return d.id;
       });
-  
+
       let linkEnter = link
         .enter()
         .insert("path", "g")
@@ -250,35 +253,35 @@ export class TreeChartComponent implements OnInit {
           const o = { x: source.x0, y: source.y0 };
           return diagonal(o, o);
         });
-  
+
       let linkUpdate = linkEnter.merge(link);
-  
+
       linkUpdate
         .transition()
         .duration(duration)
         .attr("d", function (d: any) {
           return diagonal(d, d.parent);
         });
-  
+
       let linkExit = link.exit().transition().duration(duration).attr("d", function (d: any) {
         const o = { x: source.x, y: source.y };
         return diagonal(o, o);
       }).remove();
-  
+
       nodes.forEach(function (d: any) {
         d.x0 = d.x;
         d.y0 = d.y;
       });
-  
+
       function diagonal(s: any, d: any) {
         path = `M ${s.y} ${s.x}
               C ${(s.y + d.y) / 2} ${s.x},
                 ${(s.y + d.y) / 2} ${d.x},
                 ${d.y} ${d.x}`;
-  
+
         return path;
       }
-  
+
       function click(d: any) {
         if (d.children) {
           d._children = d.children;
@@ -292,6 +295,4 @@ export class TreeChartComponent implements OnInit {
     }
     this.isLoading = false;
   }
-  
-  
 }

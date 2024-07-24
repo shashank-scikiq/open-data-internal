@@ -1,32 +1,6 @@
-// import { Component, OnInit } from '@angular/core';
-
-// @Component({
-//   selector: 'app-landing-page-chart',
-//   templateUrl: './landing-page-chart.component.html',
-//   styleUrl: './landing-page-chart.component.scss'
-// })
-// export class LandingPageChartComponent implements OnInit {
-//   options1: any;
-
-//   isLoading: boolean = false;
-
-//   ngOnInit() {
-//     this.isLoading = true;
-//     this.loadChartData();
-//   }
-
-
-//   async loadChartData() {
-//     let data = await fetch('static/assets/data/landing-page/chart.json');
-//     this.options1 = await data.json();
-//     this.isLoading = false;
-//   }
-// }
-
-
 import { Component, HostListener, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { color, interval } from 'd3';
+import { AppService } from '@openData/app/core/api/app/app.service';
 
 declare var echarts: any;
 
@@ -43,13 +17,13 @@ export class LandingPageChartComponent implements OnInit {
   selectedFilterValue: string = 'Start Date';
   options: string[] = ['Last 6 Months', 'Last 9 Months', 'Last 12 Months', 'Start Date'];
 
-  constructor(private http: HttpClient) { }
+  constructor(private appService: AppService) { }
 
   ngOnInit(): void {
-    this.http.get(`static/assets/data/landing-page/echart.json`).subscribe((_rawData: any) => {
-      this.domainConfig = _rawData.domainConfig;
+    this.appService.getLandingPageEchartData().subscribe((_rawData: any) => {
+      this.domainConfig = _rawData.chartConfig.domainConfig;
       this.data = _rawData.data;
-      this.chartTitle = _rawData.chartTitle;
+      this.chartTitle = _rawData.chartConfig.chartTitle;
       this.lastUpdatedAt = _rawData.lastUpdatedAt;
       this.run();
     });
@@ -84,8 +58,8 @@ export class LandingPageChartComponent implements OnInit {
 
       const _rawData = this.data.map((element: any, index: number) => {
         if (index > 0) {
-          element[2] = new Date(element[2])
-          element[3] = parseInt(element[3])
+          element[1] = new Date(element[1])
+          element[2] = parseInt(element[2])
         }
         if (this.selectedFilterValue == 'Start Date') {
           return element;
@@ -99,7 +73,7 @@ export class LandingPageChartComponent implements OnInit {
           dateFilter = Date.now() - (13 * 30 * 24 * 60 * 60 * 1000);
         }
 
-        if (dateFilter && element[2] > dateFilter || index == 0) {
+        if (dateFilter && element[1] > dateFilter || index == 0) {
           return element
         }
       })
@@ -143,7 +117,7 @@ export class LandingPageChartComponent implements OnInit {
             fontSize: 10,
             position: 'left'
             , formatter: function (params: any) {
-              return params.value[1] + ' : ' + params.value[3].toLocaleString();
+              return params.value[1] + ' : ' + params.value[2].toLocaleString();
             },
             // fontSize: 10, // Set the font size
             fontWeight: 'bold'
@@ -189,7 +163,7 @@ export class LandingPageChartComponent implements OnInit {
               let output = '<div class="custom-toottip" style="background-color: white; padding: 10px; color:black">';
 
               // Extracting the date from the first parameter (assuming all parameters have the same date)
-              let date = new Date(params[0].value[2]);
+              let date = new Date(params[0].value[1]);
               let monthYear = date.toLocaleString('en-US', { month: 'long', year: 'numeric' });
 
               // Displaying the formatted date
@@ -197,7 +171,7 @@ export class LandingPageChartComponent implements OnInit {
 
               // Adding data for each series
               params.forEach(function (param: any) {
-                output += param.marker + ' ' + param.seriesName + ': <b>' + parseInt(param.value[3]).toLocaleString() + '</b><br>';
+                output += param.marker + ' ' + param.seriesName + ': <b>' + parseInt(param.value[2]).toLocaleString() + '</b><br>';
               });
 
               output += '</div>';
@@ -296,7 +270,6 @@ export class LandingPageChartComponent implements OnInit {
           splitLine: {
             show: true, // Show both horizontal and vertical grid lines
           },
-
         },
         grid: {
           left: 50,
@@ -375,8 +348,5 @@ export class LandingPageChartComponent implements OnInit {
 
     // Adjust tooltip size on window resize
     window.addEventListener('resize', adjustTooltipSize);
-
   }
-
-
 }

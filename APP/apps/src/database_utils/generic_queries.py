@@ -1,6 +1,6 @@
 from apps.utils.constant import (DIM_CATEGORIES,
                                  DIM_DISTRICTS, DIM_DATES,
-                                 B2B_DIM_DATES, PINCODE_TABLE,
+                                 B2B_DIM_DATES, PINCODE_TABLE, LANDING_PAGE_ECHART_TABLE,
                                  LOGISTICS_DISTRICT_TABLE, MONTHLY_DISTRICT_TABLE)
 
 fetch_district_list_query = f'''
@@ -75,3 +75,7 @@ pincode_query = f''' select
                     "Districtname" as "District", 
                     "Pincode"
                 from {PINCODE_TABLE} order by "Statecode"'''
+
+landing_page_echart_data_query = f'''
+    select domain, date, weekly_average from {LANDING_PAGE_ECHART_TABLE}
+'''

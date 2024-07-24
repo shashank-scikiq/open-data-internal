@@ -38,6 +38,9 @@ export class DetailCategoryFilterComponent implements OnInit {
     if (type == 'sc') {
       if (this.selectedCategory == 'All' && option !== 'All') {
         this.selectedCategory = this.categories.find((category: any) => category.sub_category === option).category;
+        this.subCategoryOptions = [...new Set( ['All', ...this.categories
+          .filter((item: any) => item.category === this.selectedCategory)
+          .map((item: any) => item.sub_category)])];
       }
     } else {
       if (option == 'All') {
@@ -47,7 +50,6 @@ export class DetailCategoryFilterComponent implements OnInit {
         .filter((item: any) => item.category === option)
         .map((item: any) => item.sub_category)])];
       }
-      console.log(this.subCategoryOptions);
       this.selectedSubCategory = 'All';
     }
   }
