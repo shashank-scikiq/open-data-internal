@@ -8,13 +8,13 @@ services:
     ports:
       - "8081:8001"
     env_file:
-      - aws_common.env
+      - webapp.env
     restart: unless-stopped
     environment:
      - POSTGRES_SCHEMA=loc_dev
-    volumes:
-      - /home/sraj/Documents/OD_DB_Files:/mnt/data
-      - /home/sraj/Documents/GitHub/OD_Webapp/aws_common.env:/mnt/env/aws_common.env
+     - DEPLOYMENT_TYPE="stage"
+     - ADD_RV_TO_B2C=1
+     - INCL_CAT_SCAT=1
 
 networks:
   my_custom_network:

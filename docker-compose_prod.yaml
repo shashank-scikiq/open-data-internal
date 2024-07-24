@@ -8,13 +8,13 @@ services:
     ports:
       - "8081:8001"
     env_file:
-      - /home/shashank_daaslabs/Software/aws_stage.env
+      - /home/shashank_daaslabs/Software/webapp_stage.env
     restart: unless-stopped
     environment:
       - POSTGRES_SCHEMA=stage
-    volumes:
-      - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/aws_stage.env:/mnt/env/aws_stage.env
+      - DEPLOYMENT_TYPE="stage"
+      - ADD_RV_TO_B2C=1
+      - INCL_CAT_SCAT=1
   
   webapp_prod:
     container_name: webapp_prod
@@ -25,10 +25,15 @@ services:
     ports:
       - "8081:8001"
     env_file:
-      - /home/shashank_daaslabs/Software/aws_prod.env
+      - /home/shashank_daaslabs/Software/webapp_prod.env
     restart: unless-stopped
     environment:
       - POSTGRES_SCHEMA=prod
-    volumes:
-      - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/aws_prod.env:/mnt/env/aws_prod.env
+      - DEPLOYMENT_TYPE="prod"
+      - ADD_RV_TO_B2C=1
+      - INCL_CAT_SCAT=0
+
+networks:
+  my_custom_network:
+    name: OD_DB
+    driver: bridge
