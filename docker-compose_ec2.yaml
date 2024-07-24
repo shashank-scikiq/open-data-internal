@@ -12,7 +12,7 @@ services:
     restart: unless-stopped
     environment:
       - POSTGRES_SCHEMA=dev_v3
-      - DEPLOYMENT_TYPE="stage"
+      - DEPLOYMENT_TYPE=stage
       - ADD_RV_TO_B2C=1
       - INCL_CAT_SCAT=1
 
@@ -29,7 +29,7 @@ services:
     restart: unless-stopped
     environment:
       - POSTGRES_SCHEMA=dev_v3
-      - DEPLOYMENT_TYPE="stage"
+      - DEPLOYMENT_TYPE=stage
       - ADD_RV_TO_B2C=1
       - INCL_CAT_SCAT=1
 
@@ -46,7 +46,7 @@ services:
     restart: unless-stopped
     environment:
       - POSTGRES_SCHEMA=dev_v3
-      - DEPLOYMENT_TYPE="prod"
+      - DEPLOYMENT_TYPE=prod
       - ADD_RV_TO_B2C=1
       - INCL_CAT_SCAT=0
 
