@@ -16,3 +16,21 @@ Init_DB/poetry.lock
 APP/static/*
 **.ipynb_checkpoints
 *.parquet
+
+**/node_modules
+npm-debug.log
+yarn-error.log
+
+# Compiled output
+**/dist
+/tmp
+/out-tsc
+/bazel-out
+
+**/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
