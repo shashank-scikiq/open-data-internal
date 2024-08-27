@@ -279,7 +279,7 @@ export class AppService {
   getMetrixMaxData(uri: string, state: string) {
     this.cancelMetrixMaxDataPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
-    state = state.replaceAll(' ', '+');
+    // state = state.replaceAll(' ', '+');
 
     const params = {
       startDate, endDate, 

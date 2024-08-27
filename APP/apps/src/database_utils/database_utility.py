@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Ensure settings are properly configured
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'APP.django_setup.settings')
 django.setup()
 
@@ -71,7 +70,3 @@ class DatabaseUtility:
         except Exception as e:
             print(f"Error executing query_dict: {e}")
             return []
-
-# Usage example (ensure Django settings are configured):
-# db_util = DatabaseUtility()
-# df = db_util.execute_query("SELECT * FROM my_table WHERE some_column = %s", [some_value])

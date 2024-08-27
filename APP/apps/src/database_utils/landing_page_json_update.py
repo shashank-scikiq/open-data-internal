@@ -7,7 +7,6 @@ import json
 import pandas as pd
 
 def fetch_data_from_db():
-    # Connect to your database
     conn = psycopg2.connect(
         dbname=os.getenv('POSTGRES_DB'),
         user=os.getenv('POSTGRES_USER'),
@@ -34,7 +33,6 @@ def fetch_data_from_db():
     """
 
     cur.execute(query)
-    # data = cur.fetchall()
     df = pd.DataFrame(cur.fetchall(), columns=[desc[0] for desc in cur.description])
 
     cur.close()
@@ -55,7 +53,6 @@ def top_chart_format(df):
         "categories": df['order_date'].dt.strftime('%b-%y').unique().tolist()
     }
 
-    # Prepare a dictionary to store total orders per domain per month
     domain_data = {}
     for index, row in df.iterrows():
         domain = row['domain']
@@ -67,7 +64,6 @@ def top_chart_format(df):
 
         domain_data[domain][month_year] = total_orders
 
-    # Prepare series data for each domain
     for domain in df['domain'].unique():
         if domain == '' or domain == 'Missing':
             continue

@@ -13,6 +13,7 @@ export class DetailHeaderCardComponent implements OnInit {
   isLoading: boolean = false;
   selectedStateCode: string = 'TT';
   topCardsDelta: any = {};
+  tooltipText: any = {};
   prevDateRange: string = '';
 
   constructor(
@@ -50,6 +51,7 @@ export class DetailHeaderCardComponent implements OnInit {
       (response: any) => {
         if (Object.keys(response.top_card_data).length) {
           this.topCardsDelta = response.top_card_data;
+          this.tooltipText = response.tooltip_text,
           this.prevDateRange = response.prev_date_range;
           this.updateTopCardsDelta();
         }

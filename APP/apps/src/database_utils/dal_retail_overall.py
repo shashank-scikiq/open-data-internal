@@ -1,39 +1,35 @@
 __author__ = "Shashank Katyayan"
 
-import os
-
-import pandas as pd
-from apps.logging_conf import log_function_call, ondcLogger
-from decimal import Decimal, getcontext
-from apps.utils.constant import (MONTHLY_DISTRICT_TABLE,
-                                 category_sub_query, sub_category_sub_query,
-                                 domain_sub_query, delivery_state_sub_query, NO_DATA_MSG)
 from datetime import datetime
-
+import json
+from apps.logging_conf import log_function_call, ondcLogger
+from decimal import getcontext
 from apps.utils import constant
-
+from apps.utils.constant import MONTHLY_DISTRICT_TABLE
 
 getcontext().prec = 4
+
+
+class DotDict(dict):
+    def __getattr__(self, attr):
+        return self.get(attr)
+
+    def __setattr__(self, attr, value):
+        self[attr] = value
+
+    def __delattr__(self, attr):
+        del self[attr]
 
 
 class DataAccessLayer:
 
     def __init__(self, db_utility):
         self.db_utility = db_utility
-        self.numeric_columns = ['total_orders_delivered', 'total_items', 'intradistrict_orders', 'intrastate_orders']
-        self.sunburst_numeric_col = 'total_orders_delivered'
 
-
-
-
-    @log_function_call(ondcLogger)
-    def fetch_total_orders_summary(self, start_date, end_date, category=None,
-                                   sub_category=None, domain=None, state=None):
-        table_name = constant.MONTHLY_DISTRICT_TABLE
+    def get_query_month_parameters(self, start_date, end_date):
         stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
         edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
 
-        # Extract month and year
         start_month = stdate_obj.month
         start_year = stdate_obj.year
         end_month = edate_obj.month
@@ -45,6 +41,153 @@ class DataAccessLayer:
             'end_month': end_month,
             'end_year': end_year
         }
+        return parameters
+
+    @log_function_call(ondcLogger)
+    def fetch_top_district_sellers(self, start_date, end_date, category=None, sub_category=None,
+                                            domain=None, state=None):
+
+        table_name = constant.MONTHLY_PROVIDERS
+        if domain == 'Logistics':
+            table_name = constant.LOGISTICS_MONTHLY_PROVIDERS
+
+        parameters = self.get_query_month_parameters(start_date, end_date)
+
+        query = f"""
+            WITH TopDistricts AS (
+                SELECT 
+                    seller_district,
+                    COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
+                FROM 
+                    {table_name}
+                WHERE
+                    (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
+                    AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
+                    AND seller_district <> 'Undefined'
+                    AND seller_district IS NOT NULL
+                    AND seller_district <> ''
+        """
+
+        if state:
+            query += " AND COALESCE(UPPER(seller_state), 'MISSING') = UPPER(%(state)s)"
+            parameters['state'] = state.upper()
+
+        query += f"""
+                GROUP BY 
+                    seller_district
+                HAVING COUNT(DISTINCT TRIM(LOWER(provider_key))) > 0  -- Add any necessary masking logic here
+                ORDER BY 
+                    active_sellers_count DESC
+                LIMIT 3
+            ),
+            FinalResult AS (
+                SELECT 
+                    om.order_month AS order_month,
+                    om.order_year AS order_year,
+                    om.seller_district AS district,
+                    COUNT(DISTINCT TRIM(LOWER(om.provider_key))) AS active_sellers_count
+                FROM 
+                    {table_name} om
+                INNER JOIN 
+                    TopDistricts td ON om.seller_district = td.seller_district
+                WHERE
+                    (om.order_year > %(start_year)s OR (om.order_year = %(start_year)s AND om.order_month >= %(start_month)s))
+                    AND (om.order_year < %(end_year)s OR (om.order_year = %(end_year)s AND om.order_month <= %(end_month)s))
+        """
+
+        if state:
+            query += " AND COALESCE(UPPER(om.seller_state), 'MISSING') = UPPER(%(state)s)"
+            parameters['state'] = state.upper()
+
+        query += """
+                GROUP BY 
+                    om.order_month, om.order_year, om.seller_district
+                ORDER BY 
+                    om.order_year, om.order_month, COUNT(DISTINCT TRIM(LOWER(provider_key))) DESC
+            )
+            SELECT * FROM FinalResult;
+        """
+
+        df = self.db_utility.execute_query(query, parameters)
+        return df
+
+    @log_function_call(ondcLogger)
+    def fetch_top_state_sellers(self, start_date, end_date, category=None, sub_category=None,
+                                          domain=None, state=None):
+        base_table = constant.MONTHLY_PROVIDERS
+        if domain == 'Logistics':
+            base_table = constant.LOGISTICS_MONTHLY_PROVIDERS
+
+        parameters = self.get_query_month_parameters(start_date, end_date)
+
+        query = f'''
+            WITH StateSellerCounts AS (
+                SELECT 
+                    COALESCE(seller_state, 'MISSING') AS seller_state,
+                    COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
+                FROM 
+                    {base_table}
+                WHERE
+                    (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
+                    AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
+                    AND seller_state <> ''
+                    AND seller_state is not null
+        '''
+
+        if state:
+            query += " AND COALESCE(UPPER(seller_state), 'MISSING') = UPPER(%(state)s)"
+            parameters['state'] = state.upper()
+
+        query += f'''
+                GROUP BY 
+                    seller_state
+            ),
+            RankedStates AS (
+                SELECT
+                    seller_state,
+                    active_sellers_count,
+                    RANK() OVER (ORDER BY active_sellers_count DESC) AS state_rank
+                FROM
+                    StateSellerCounts
+                WHERE active_sellers_count > 0  -- Add any necessary masking logic here
+                LIMIT 3
+            )
+            SELECT 
+                om.order_month AS order_month,
+                om.order_year AS order_year,
+                COALESCE(om.seller_state, 'MISSING') AS state,
+                COUNT(DISTINCT TRIM(LOWER(om.provider_key))) AS active_sellers_count,
+                rs.state_rank
+            FROM 
+                {base_table} om
+            INNER JOIN 
+                RankedStates rs ON COALESCE(om.seller_state, 'MISSING') = rs.seller_state
+            WHERE
+                (om.order_year > %(start_year)s OR (om.order_year = %(start_year)s AND om.order_month >= %(start_month)s))
+                AND (om.order_year < %(end_year)s OR (om.order_year = %(end_year)s AND om.order_month <= %(end_month)s))
+        '''
+
+        if state:
+            query += " AND COALESCE(UPPER(om.seller_state), 'MISSING') = UPPER(%(state)s)"
+            parameters['state'] = state.upper()
+
+        query += '''
+            GROUP BY 
+                om.order_month, om.order_year, om.seller_state, rs.state_rank
+            ORDER BY 
+                rs.state_rank, om.order_year, om.order_month
+        '''
+
+        df = self.db_utility.execute_query(query, parameters)
+        return df
+
+    @log_function_call(ondcLogger)
+    def fetch_total_orders_summary(self, start_date, end_date, category=None,
+                                   sub_category=None, domain=None, state=None):
+        domain = 'Retail' if domain is None else domain
+
+        table_name = constant.MONTHLY_DISTRICT_TABLE
+        parameters = self.get_query_month_parameters(start_date, end_date)
 
         query = """
             WITH DistrictRanking AS (
@@ -94,7 +237,7 @@ class DataAccessLayer:
                 SELECT
                     delivery_state_code AS delivery_state_code,
                     delivery_state AS delivery_state,
-                    COUNT(DISTINCT delivery_district) AS total_districts,
+                    COUNT(DISTINCT CONCAT(delivery_state, '_', delivery_district)) as total_districts,
                     SUM(total_orders_delivered) AS delivered_orders
                 FROM
                     {table_name}
@@ -196,34 +339,21 @@ class DataAccessLayer:
         orders_count = self.db_utility.execute_query(query, parameters)
         return orders_count
 
-
     @log_function_call(ondcLogger)
     def fetch_total_orders_summary_prev(self, start_date, end_date, category=None,
                                         sub_category=None, domain=None, state=None):
 
+        domain = 'Retail' if domain is None else domain
+
         table_name = constant.MONTHLY_DISTRICT_TABLE
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        start_year = stdate_obj.year
-        end_month = edate_obj.month
-        end_year = edate_obj.year
-
-        parameters = {
-            'start_month': start_month,
-            'start_year': start_year,
-            'end_month': end_month,
-            'end_year': end_year
-        }
+        parameters = self.get_query_month_parameters(start_date, end_date)
 
         query = f"""
             WITH ActiveSellers AS (
                 SELECT
                     ds.seller_state AS seller_state_code,
                     ds.seller_state AS seller_state,
-                    COUNT(DISTINCT ds.provider_key) AS total_active_sellers
+                    COUNT(DISTINCT TRIM(LOWER(ds.provider_key)))  AS total_active_sellers
                 FROM
                     {constant.MONTHLY_PROVIDERS} ds
                 WHERE
@@ -325,26 +455,12 @@ class DataAccessLayer:
         orders_count = self.db_utility.execute_query(query, parameters)
         return orders_count
 
-
     @log_function_call(ondcLogger)
     def fetch_retail_overall_orders(self, start_date, end_date, category=None,
-                                    sub_category=None, domain_name=None, state=None):
+                                    sub_category=None, domain_name='Retail', state=None):
+        domain_name = 'Retail' if domain_name is None else domain_name
         selected_view = constant.MONTHLY_DISTRICT_TABLE
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        end_month = edate_obj.month
-        start_year = stdate_obj.year
-        end_year = edate_obj.year
-
-        parameters = {
-            'start_month': start_month,
-            'start_year': start_year,
-            'end_month': end_month,
-            'end_year': end_year
-        }
+        parameters = self.get_query_month_parameters(start_date, end_date)
 
         query = f"""
             SELECT 
@@ -380,22 +496,11 @@ class DataAccessLayer:
     def fetch_retail_overall_top_states_orders(self, start_date, end_date, category=None,
                                                sub_category=None, domain_name=None, state=None):
         try:
-            selected_view = MONTHLY_DISTRICT_TABLE  # Replace with actual table name
-            stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-            edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
 
-            # Extract month and year
-            start_month = stdate_obj.month
-            end_month = edate_obj.month
-            start_year = stdate_obj.year
-            end_year = edate_obj.year
+            domain_name = 'Retail' if domain_name is None else domain_name
 
-            parameters = {
-                'start_year': start_year,
-                'start_month': start_month,
-                'end_year': end_year,
-                'end_month': end_month
-            }
+            selected_view = MONTHLY_DISTRICT_TABLE
+            parameters = self.get_query_month_parameters(start_date, end_date)
 
             query = f'''
                 WITH TopStates AS (
@@ -465,17 +570,10 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_overall_top_district_orders(self, start_date, end_date, category=None,
                                           sub_category=None, domain=None, state=None):
+        domain = 'Retail' if domain is None else domain
 
         selected_view = constant.MONTHLY_DISTRICT_TABLE
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        start_year = stdate_obj.year
-        end_month = edate_obj.month
-        end_year = edate_obj.year
-
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
         query_template = """
             WITH 
             TopDistricts AS (
@@ -517,7 +615,8 @@ class DataAccessLayer:
 
         conditions = []
         final_conditions = []
-        parameters = [start_year, start_year, start_month, end_year, end_year, end_month]
+        parameters = [params.start_year, params.start_year, params.start_month,
+                      params.end_year, params.end_year, params.end_month]
 
         if domain:
             conditions.append("AND domain_name = %s")
@@ -527,7 +626,8 @@ class DataAccessLayer:
             conditions.append("AND upper(delivery_state) = upper(%s)")
             parameters.append(state)
 
-        parameters.extend([start_year, start_year, start_month, end_year, end_year, end_month])
+        parameters.extend([params.start_year, params.start_year, params.start_month,
+                           params.end_year, params.end_year, params.end_month])
 
         if domain:
             final_conditions.append("AND foslm.domain_name = %s")
@@ -546,25 +646,12 @@ class DataAccessLayer:
         df = self.db_utility.execute_query(query, parameters)
 
         return df
+
     @log_function_call(ondcLogger)
     def fetch_overall_cumulative_sellers(self, start_date, end_date, category=None,
                                          sub_category=None, domain_name=None, state=None):
         table_name = constant.MONTHLY_PROVIDERS
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        end_month = edate_obj.month
-        start_year = stdate_obj.year
-        end_year = edate_obj.year
-
-        parameters = {
-            'start_month': start_month,
-            'start_year': start_year,
-            'end_month': end_month,
-            'end_year': end_year
-        }
+        parameters = self.get_query_month_parameters(start_date, end_date)
 
         query = f"""
             SELECT 
@@ -578,10 +665,6 @@ class DataAccessLayer:
                 AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
         """
 
-        # if domain_name:
-        #     query += " AND domain_name = %(domain_name)s"
-        #     parameters['domain_name'] = domain_name
-
         if state:
             query += " AND delivery_state = %(state)s"
             parameters['state'] = state
@@ -594,17 +677,12 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_overall_top_states_hyperlocal_orders(self, start_date, end_date, category=None, sub_category=None,
                                                    domain_name=None, state=None):
+        domain_name = 'Retail' if domain_name is None else domain_name
+
         selected_view = constant.MONTHLY_DISTRICT_TABLE
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        end_month = edate_obj.month
-        start_year = stdate_obj.year
-        end_year = edate_obj.year
-
-        parameters = [start_year, start_year, start_month, end_year, end_year, end_month]
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
+        parameters = [params.start_year, params.start_year, params.start_month,
+                      params.end_year, params.end_year, params.end_month]
 
         base_query = f"""
             WITH TopStates AS (
@@ -619,6 +697,7 @@ class DataAccessLayer:
                     (order_year > %s OR (order_year = %s AND order_month >= %s))
                     AND (order_year < %s OR (order_year = %s AND order_month <= %s))
                     AND delivery_state != 'MISSING'
+                    AND delivery_state is not NULL
         """
 
         if domain_name:
@@ -632,8 +711,10 @@ class DataAccessLayer:
         base_query += f"""
                 GROUP BY 
                     delivery_state
+                HAVING SUM(total_orders_delivered) >= 1
                 ORDER BY 
-                    intrastate_orders_percentage DESC
+                    intrastate_orders_percentage DESC,
+                    delivery_state ASC
                 LIMIT 3
             ),
             FinalResult AS (
@@ -652,7 +733,8 @@ class DataAccessLayer:
                     AND (om.order_year < %s OR (om.order_year = %s AND om.order_month <= %s))
         """
 
-        parameters.extend([start_year, start_year, start_month, end_year, end_year, end_month])
+        parameters.extend([params.start_year, params.start_year, params.start_month,
+                           params.end_year, params.end_year, params.end_month])
 
         if domain_name:
             base_query += " AND om.domain_name = %s"
@@ -666,9 +748,11 @@ class DataAccessLayer:
                 GROUP BY 
                     om.order_month, om.order_year, om.delivery_state
                 ORDER BY 
-                    om.order_year, om.order_month, intrastate_orders_percentage DESC
+                    om.order_year, om.order_month, intrastate_orders_percentage DESC, 
+                    om.delivery_state ASC 
             )
-            select * from FinalResult
+            select * from FinalResult 
+            where intrastate_orders_percentage > 0
         """
 
         base_query = base_query.format(selected_view=selected_view)
@@ -676,29 +760,12 @@ class DataAccessLayer:
 
         return df
 
-
-
-
     @log_function_call(ondcLogger)
     def fetch_overall_top_district_hyperlocal_orders(self, start_date, end_date, category=None, sub_category=None,
                                                      domain_name=None, state=None):
-
+        domain_name = 'Retail' if domain_name is None else domain_name
         selected_view = constant.MONTHLY_DISTRICT_TABLE
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        end_month = edate_obj.month
-        start_year = stdate_obj.year
-        end_year = edate_obj.year
-
-        parameters = {
-            'start_month': start_month,
-            'start_year': start_year,
-            'end_month': end_month,
-            'end_year': end_year
-        }
+        parameters = self.get_query_month_parameters(start_date, end_date)
 
         base_query = f"""
             WITH TopDistricts AS (
@@ -714,6 +781,7 @@ class DataAccessLayer:
                     AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
                     AND delivery_district <> '' AND UPPER(delivery_district) <> 'UNDEFINED'
                     AND delivery_district IS NOT NULL
+                    AND delivery_district <> ''
         """
 
         if domain_name:
@@ -727,6 +795,7 @@ class DataAccessLayer:
         base_query += f"""
                 GROUP BY 
                     delivery_district
+                HAVING SUM(total_orders_delivered) >= 1
                 ORDER BY 
                     intradistrict_percentage DESC
                 LIMIT 3
@@ -760,7 +829,8 @@ class DataAccessLayer:
                 ORDER BY 
                     om.order_year, om.order_month, intrastate_orders_percentage DESC
             )
-            SELECT * FROM FinalResult;
+            SELECT * FROM FinalResult 
+            where intrastate_orders_percentage > 0
         """
 
         base_query = base_query.format(selected_view=selected_view)
@@ -772,12 +842,15 @@ class DataAccessLayer:
     def fetch_overall_top5_seller_states(self, start_date, end_date, category=None, sub_category=None, domain=None,
                                  state=None):
 
-        table_name = constant.DISTRICT_TABLE
+        domain = 'Retail' if domain is None else domain
+        table_name = constant.MONTHLY_DISTRICT_TABLE
 
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
         query = f"""
             SELECT 
                 sub.delivery_state,
-                COALESCE(NULLIF(TRIM(sub.seller_state), ''), 'Missing') AS seller_state,
+                -- COALESCE(NULLIF(TRIM(sub.seller_state), ''), 'Missing') AS seller_state,
+                sub.seller_state,
                 sub.order_demand,
                 ROUND(sub.flow_percentage,2) as flow_percentage
             FROM (
@@ -797,31 +870,43 @@ class DataAccessLayer:
                         swdlo.delivery_state, 
                         SUM(swdlo.total_orders_delivered) AS total_orders 
                     FROM {table_name} swdlo
-                    WHERE swdlo.order_date BETWEEN %s AND %s
-                      AND swdlo.delivery_state <> ''
+                    where (swdlo.order_year > %s OR (swdlo.order_year = %s AND swdlo.order_month >= %s))
+                    AND (swdlo.order_year < %s OR (swdlo.order_year = %s AND swdlo.order_month <= %s))
+                    AND swdlo.domain_name = 'Retail'
+                     -- AND swdlo.delivery_state <> ''
         """
 
-        parameters = [start_date, end_date]
+        parameters = [params.start_year, params.start_year, params.start_month,
+                      params.end_year, params.end_year, params.end_month]
 
 
         query += """
                     GROUP BY swdlo.delivery_state
                 ) total ON om.delivery_state = total.delivery_state
                 WHERE 
-                 om.order_date BETWEEN %s AND %s
+                 (om.order_year > %s OR (om.order_year = %s AND om.order_month >= %s))
+                    AND (om.order_year < %s OR (om.order_year = %s AND om.order_month <= %s))
+                    
         """
 
-        parameters.extend([start_date, end_date])
+        parameters.extend([params.start_year, params.start_year, params.start_month,
+                           params.end_year, params.end_year, params.end_month])
 
         if state:
             query += constant.tdr_delivery_state_sub_query
             parameters.append(state)
+
+        if domain:
+            query += constant.tdr_domain_sub_query
+            parameters.append(domain)
 
         query += """
                 GROUP BY 
                     om.delivery_state, om.seller_state, total.total_orders
             ) sub
             WHERE sub.rn <= 4
+            and sub.seller_state != ''
+            and sub.seller_state is not NULL
             ORDER BY sub.delivery_state, sub.flow_percentage DESC;
         """
 
@@ -832,12 +917,15 @@ class DataAccessLayer:
     def fetch_overall_top5_seller_districts(self, start_date, end_date, category=None, sub_category=None, domain=None,
                                     state=None, district=None):
 
-        table_name = constant.DISTRICT_TABLE
+        domain = 'Retail' if domain is None else domain
+        table_name = constant.MONTHLY_DISTRICT_TABLE
 
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
         query = f"""
             SELECT 
                 sub.delivery_district,
-                COALESCE(NULLIF(TRIM(sub.seller_district), ''), 'Missing') AS seller_district,
+                -- COALESCE(NULLIF(TRIM(sub.seller_district), ''), 'Missing') AS seller_district,
+                sub.seller_district,
                 sub.order_demand,
                 ROUND(sub.flow_percentage, 2) AS flow_percentage
             FROM (
@@ -857,23 +945,34 @@ class DataAccessLayer:
                         swdlo.delivery_district, 
                         SUM(swdlo.total_orders_delivered) AS total_orders 
                     FROM {table_name} swdlo
-                    WHERE swdlo.order_date BETWEEN %s AND %s
-                      AND swdlo.delivery_district <> ''
+                    WHERE (swdlo.order_year > %s OR (swdlo.order_year = %s AND swdlo.order_month >= %s))
+                    AND (swdlo.order_year < %s OR (swdlo.order_year = %s AND swdlo.order_month <= %s))
+                    AND swdlo.domain_name = 'Retail'
+                    AND swdlo.delivery_district <> ''
+                    AND swdlo.seller_district <> ''
+                    AND swdlo.seller_district is not NULL
         """
 
-        parameters = [start_date, end_date]
+        parameters = [params.start_year, params.start_year, params.start_month,
+                      params.end_year, params.end_year, params.end_month]
 
         if state:
             query += constant.swdlo_delivery_st_sq
             parameters.append(state)
 
+        if domain:
+            query += constant.swdlo_domain_sub_query
+            parameters.append(domain)
+
         query += """
                     GROUP BY swdlo.delivery_district
                 ) total ON upper(om.delivery_district) = upper(total.delivery_district)
-                WHERE om.order_date BETWEEN %s AND %s
+                where (om.order_year > %s OR (om.order_year = %s AND om.order_month >= %s))
+                    AND (om.order_year < %s OR (om.order_year = %s AND om.order_month <= %s))
         """
 
-        parameters.extend([start_date, end_date])
+        parameters.extend([params.start_year, params.start_year, params.start_month,
+                           params.end_year, params.end_year, params.end_month])
 
         if state:
             query += constant.tdr_delivery_state_sub_query
@@ -881,12 +980,16 @@ class DataAccessLayer:
         if district:
             query += " AND upper(om.delivery_district) = upper(%s)"
             parameters.append(district)
+        if domain:
+            query += " AND om.domain_name = %s"
+            parameters.append(domain)
 
         query += """
                 GROUP BY 
                     om.delivery_district, om.seller_district, total.total_orders
             ) sub
             WHERE sub.rn <= 4
+            and sub.seller_district != ''
             ORDER BY sub.delivery_district, sub.flow_percentage DESC;
         """
 
@@ -894,105 +997,42 @@ class DataAccessLayer:
         return df
 
     @log_function_call(ondcLogger)
-    def fetch_most_orders_delivered_to_summary(self, start_date, end_date, category=None,
-                                           sub_category=None, domain=None, state=None):
+    def fetch_district_count(self, start_date, end_date,
+                                                  category=None, sub_category=None,
+                                                  domain=None, state=None):
+        domain = 'Retail' if domain is None else domain
 
-        # Convert string to datetime object
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
+        table_name = constant.MONTHLY_DISTRICT_TABLE
+        query = f'''
+                    SELECT 
+                        delivery_state_code AS delivery_state_code,
+                        delivery_state AS delivery_state,
+                        count(distinct concat(delivery_state, delivery_district)) AS district_count
+                    FROM {table_name}
+                    WHERE 
+                        (order_year = %s AND order_month = %s)
+                    
+                '''
 
-        # Extract month and year
-        start_month = stdate_obj.month
-        end_month = edate_obj.month
-        start_year = stdate_obj.year
-        end_year = edate_obj.year
+        parameters = [params.end_year, params.end_month]
 
-        table_name = MONTHLY_DISTRICT_TABLE
-
-        parameters = [start_month, start_year, end_month, end_year,]
-        where_conditions = " AND swdlo.delivery_state IS NOT NULL AND swdlo.delivery_state <> ''"
-
-        if category and category != 'None':
-            where_conditions += " AND swdlo.category = %s"
-            parameters.append(category)
-        if sub_category:
-            where_conditions += " AND swdlo.sub_category = %s"
-            parameters.append(sub_category)
         if domain:
-            where_conditions += " AND swdlo.domain = %s"
+            query += " AND domain_name = %s"
             parameters.append(domain)
-        if state:
-            where_conditions += " AND upper(swdlo.delivery_state) = upper(%s)"
-            parameters.append(state)
+        query += " group by delivery_state_code, delivery_state"
+        district_count = self.db_utility.execute_query(query, parameters)
 
-        if not state:
-            query = f"""
-                    SELECT
-                        swdlo.delivery_state,
-                        SUM(swdlo.total_orders_delivered) AS total_orders_in_state
-                    FROM
-                        {table_name} swdlo
-                    WHERE
-                        swdlo.order_month >= %s AND swdlo.order_year >= %s AND
-                        swdlo.order_month <= %s AND swdlo.order_year >= %s 
-                        {where_conditions}
-                    GROUP BY
-                        swdlo.delivery_state
-                    ORDER BY
-                        total_orders_in_state DESC
-                    LIMIT 1;
-                """
-        else:
-            query = f"""
-                    WITH StateDistricts AS (
-                        SELECT
-                            swdlo.delivery_district,
-                            SUM(swdlo.total_orders_delivered) AS total_orders_in_district
-                        FROM
-                            {table_name} swdlo
-                        WHERE
-                            swdlo.order_date BETWEEN %s AND %s
-                            {where_conditions}
-                        GROUP BY
-                            swdlo.delivery_district
-                        ORDER BY
-                            total_orders_in_district DESC
-                        LIMIT 1
-                    )
-                    SELECT
-                        delivery_district AS top_district,
-                        total_orders_in_district
-                    FROM
-                        StateDistricts;
-                """
-
-        most_delivering_areas = self.db_utility.execute_query(query, parameters, return_type='sql')
-
-        value = NO_DATA_MSG
-
-        try:
-            if most_delivering_areas and isinstance(most_delivering_areas, list) and most_delivering_areas[0]:
-                value = most_delivering_areas[0][0]
-        except Exception as e:
-            print(f"Error: {e}")
-
-        return value
-
+        return district_count
 
     @log_function_call(ondcLogger)
     def fetch_cumulative_orders_statedata_summary(self, start_date, end_date,
                                                   category=None, sub_category=None,
                                                   domain=None, state=None):
-        # Convert string to datetime object
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
 
-        # Extract month and year
-        start_month = stdate_obj.month
-        start_year = stdate_obj.year
-        end_month = edate_obj.month
-        end_year = edate_obj.year
+        domain = 'Retail' if domain is None else domain
 
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
         table_name = constant.MONTHLY_DISTRICT_TABLE
         query = f'''
             SELECT 
@@ -1008,7 +1048,8 @@ class DataAccessLayer:
                 AND (order_year < %s OR (order_year = %s AND order_month <= %s))
         '''
 
-        parameters = [start_year, start_year, start_month, end_year, end_year, end_month]
+        parameters = [params.start_year, params.start_year, params.start_month,
+                      params.end_year, params.end_year, params.end_month]
 
         conditions = []
 
@@ -1030,50 +1071,31 @@ class DataAccessLayer:
 
         return aggregated_df
 
-
-
     @log_function_call(ondcLogger)
     def fetch_overall_active_sellers(self, start_date, end_date, category=None,
                                      sub_category=None, domain=None, state=None):
 
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        start_year = stdate_obj.year
-        end_month = edate_obj.month
-        end_year = edate_obj.year
-
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
         table_name = constant.MONTHLY_PROVIDERS
 
         query = f"""
             SELECT 
                 seller_state AS seller_state,
                 seller_state_code AS seller_state_code,
-                COUNT(DISTINCT provider_key) AS active_sellers_count
+                COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
             FROM 
                 {table_name}
             WHERE
                 (order_year > %s OR (order_year = %s AND order_month >= %s))
                 AND (order_year < %s OR (order_year = %s AND order_month <= %s))
+                AND seller_state <> ''
+                AND seller_state is not null
         """
 
-        parameters = [start_year, start_year, start_month, end_year, end_year, end_month]
+        parameters = [params.start_year, params.start_year, params.start_month,
+                      params.end_year, params.end_year, params.end_month]
 
         conditions = []
-
-        # if category and category != 'None':
-        #     conditions.append("AND category = %s")
-        #     parameters.append(category)
-        #
-        # if sub_category:
-        #     conditions.append("AND sub_category = %s")
-        #     parameters.append(sub_category)
-
-        # if domain:
-        #     conditions.append("AND domain_name = %s")
-        #     parameters.append(domain)
 
         if state:
             conditions.append("AND upper(seller_state) = upper(%s)")
@@ -1086,130 +1108,51 @@ class DataAccessLayer:
 
         return df
 
-
     @log_function_call(ondcLogger)
     def fetch_overall_active_sellers_statedata(self, start_date, end_date,
                                                category=None, sub_category=None,
                                                domain=None, state=None):
-
         table_name = constant.MONTHLY_PROVIDERS
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        start_year = stdate_obj.year
-        end_month = edate_obj.month
-        end_year = edate_obj.year
-
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
         query = f"""
             SELECT 
                 seller_state AS seller_state,
                 seller_state_code AS seller_state_code,
-                seller_district AS seller_district,
-                COUNT(DISTINCT provider_key) AS active_sellers_count
+                -- seller_district AS seller_district,
+                COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
             FROM 
                 {table_name}
             WHERE
                 (order_year > %s OR (order_year = %s AND order_month >= %s))
                 AND (order_year < %s OR (order_year = %s AND order_month <= %s))
+                AND seller_state <> ''
+                AND seller_state is not null
+                AND seller_district is not null
+                AND seller_district <> ''
         """
 
-        parameters = [start_year, start_year, start_month, end_year, end_year, end_month]
+        parameters = [params.start_year, params.start_year, params.start_month,
+                      params.end_year, params.end_year, params.end_month]
 
         conditions = []
-
-        # if category and category != 'None':
-        #     conditions.append("AND category = %s")
-        #     parameters.append(category)
-        #
-        # if sub_category:
-        #     conditions.append("AND sub_category = %s")
-        #     parameters.append(sub_category)
-        #
-        # if domain:
-        #     conditions.append("AND domain_name = %s")
-        #     parameters.append(domain)
 
         if state:
             conditions.append("AND upper(seller_state) = upper(%s)")
             parameters.append(state)
 
         conditions_str = ' '.join(conditions)
-        query = query + conditions_str + " GROUP BY seller_district, seller_state, seller_state_code"
+        query = query + conditions_str + " GROUP BY  seller_state, seller_state_code"
 
         df = self.db_utility.execute_query(query, parameters)
 
         return df
 
-
-    @log_function_call(ondcLogger)
-    def fetch_district_count_summary(self,  start_date, end_date, category=None,
-                                 sub_category=None, domain=None, state=None):
-        table_name = MONTHLY_DISTRICT_TABLE
-        # Convert string to datetime object
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        end_month = edate_obj.month
-        start_year = stdate_obj.year
-        end_year = edate_obj.year
-
-        query = f"""
-                       select 
-                       count(distinct delivery_district) as delivery_district_count
-                    FROM 
-                        {table_name}
-                    WHERE
-                        order_month >= %s AND order_year >= %s AND
-                        order_month <= %s AND order_year >= %s 
-                """
-
-        parameters = [ start_month, start_year, end_month, end_year]
-
-        if category and category != 'None':
-            query += category_sub_query
-            parameters.append(category)
-
-        if sub_category:
-            query += sub_category_sub_query
-            parameters.append(sub_category)
-
-        if domain:
-            query += domain_sub_query
-            parameters.append(domain)
-
-        if state:
-            query += delivery_state_sub_query
-            parameters.append(state)
-
-        districts_count = self.db_utility.execute_query(query, parameters, return_type='sql')
-        if isinstance(districts_count, list) and districts_count:
-            try:
-                return districts_count[0][0]
-            except Exception as e:
-                print(f"Error: {e}")
-                return 0
-        else:
-            return 0
-
-
     @log_function_call(ondcLogger)
     def fetch_cumulative_orders_statewise_summary(self, start_date, end_date,
                                                   category=None, sub_category=None, domain=None, state=None):
-        table_name = constant.MONTHLY_DISTRICT_TABLE  # Ensure you import this constant from your constants module
-        # Convert string to datetime object
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        # Extract month and year
-        start_month = stdate_obj.month
-        start_year = stdate_obj.year
-        end_month = edate_obj.month
-        end_year = edate_obj.year
-
+        domain = 'Retail' if domain is None else domain
+        table_name = constant.MONTHLY_DISTRICT_TABLE
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
         query = f"""
                 SELECT 
                     delivery_state_code AS delivery_state_code,
@@ -1223,7 +1166,8 @@ class DataAccessLayer:
                     AND (order_year < %s OR (order_year = %s AND order_month <= %s))
             """
 
-        parameters = [start_year, start_year, start_month, end_year, end_year, end_month]
+        parameters = [params.start_year, params.start_year, params.start_month,
+                      params.end_year, params.end_year, params.end_month]
 
         conditions = []
 

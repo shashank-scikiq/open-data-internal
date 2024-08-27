@@ -2,14 +2,13 @@
 import logging
 import functools
 import os
-import time
 from rest_framework.response import Response
 from rest_framework.request import Request
 import uuid
 import re
 from django.views.generic import View
 import sys
-
+import apps.utils.constant as constant
 
 class NotFoundException(Exception):
     pass
@@ -63,10 +62,12 @@ def responsejson1(status, msg="", data=[], type="json", request_id=-1):
 def configure_logging():
     logger = logging.getLogger()  # Get the root logger
 
-    log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
-    enable_console_log = os.getenv('ENABLE_CONSOLE_LOG', 'true').lower() in ('true', '1', 't')
-
-    logger.setLevel(logging.DEBUG)
+    log_level = constant.LOG_LEVEL
+    enable_console_log = constant.enable_console_log
+    if log_level in ('DEBUG', 'INFO'):
+        logger.setLevel(logging.DEBUG)
+    else:
+        logger.setLevel(logging.ERROR)
 
     # Formatter
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')

@@ -7,7 +7,7 @@
         </div>
         <div class="heading-section-btn-container">
 
-            <app-date-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
+            <app-month-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
             @if(pageTitle == "Retail B2C") {
                 <app-detail-category-filter></app-detail-category-filter>
             }

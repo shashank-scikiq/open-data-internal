@@ -29,4 +29,4 @@ urlpatterns +=[
     re_path(r'^(?:.*)/?$', angular_app, name='angular_app'),
 ]
 
-handler404 = 'apps.dashboard.dashboard_app.views.custom_404'
+# handler404 = 'apps.dashboard.dashboard_app.views.custom_404'

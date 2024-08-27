@@ -1,6 +1,6 @@
 from apps.utils.constant import (DIM_CATEGORIES,
                                  DIM_DISTRICTS, DIM_DATES,
-                                 B2B_DIM_DATES, PINCODE_TABLE, LANDING_PAGE_ECHART_TABLE,
+                                 PINCODE_TABLE,
                                  LOGISTICS_DISTRICT_TABLE, MONTHLY_DISTRICT_TABLE)
 
 fetch_district_list_query = f'''
@@ -9,20 +9,7 @@ fetch_district_list_query = f'''
     '''
 
 
-fetch_category_list_query = f'''
-                select 
-                category  as category,
-                sub_category 
-                from {DIM_CATEGORIES}
-                group by 1,2
-        '''
-
-
-
 fetch_max_date_query = f'''select min(order_date) as min_date, max(order_date) as max_date from {DIM_DATES}'''
-
-
-max_date_retail_b2b = f'''select min(order_date) as min_date, max(order_date) as max_date from {B2B_DIM_DATES}'''
 
 max_date_retail_overall = f'''
                                 WITH DateBounds AS (
@@ -76,6 +63,10 @@ pincode_query = f''' select
                     "Pincode"
                 from {PINCODE_TABLE} order by "Statecode"'''
 
-landing_page_echart_data_query = f'''
-    select domain, date, weekly_average from {LANDING_PAGE_ECHART_TABLE}
-'''
+fetch_category_list_query = f'''
+                select 
+                category  as category,
+                sub_category 
+                from {DIM_CATEGORIES}
+                group by 1,2
+        '''

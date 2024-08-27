@@ -30,7 +30,7 @@
         <p class="margin-0 heading-text font-bolder card-text-center">
             {{cardData.heading | titlecase}}
             <span class="card-text-center cursor-pointer">
-                <mat-icon class="info-icon" [matTooltip]="cardData.tooltipText">
+                <mat-icon class="info-icon" [matTooltip]="tooltipText[cardData.heading]">
                     info
                 </mat-icon>
             </span>
@@ -55,7 +55,7 @@
         <p class="margin-0 font-sm  heading-text font-bolder card-text-center">
             {{cardData.heading}}
             <span class="card-text-center cursor-pointer">
-                <mat-icon class="info-icon" [matTooltip]="cardData.tooltipText">
+                <mat-icon class="info-icon" [matTooltip]="tooltipText[cardData.heading]">
                     info
                 </mat-icon>
             </span>
@@ -73,7 +73,7 @@
             <p class="margin-0 heading-text font-bolder card-text-center">
                 {{cardData.heading | titlecase}}
                 <span class="card-text-center cursor-pointer">
-                    <mat-icon class="info-icon" [matTooltip]="cardData.tooltipText">
+                    <mat-icon class="info-icon" [matTooltip]="tooltipText[cardData.heading]">
                         info
                     </mat-icon>
                 </span>
@@ -97,7 +97,7 @@
             <p class="margin-0 font-sm  heading-text font-bolder card-text-center">
                 {{cardData.heading}}
                 <span class="card-text-center cursor-pointer">
-                    <mat-icon class="info-icon" [matTooltip]="cardData.tooltipText">
+                    <mat-icon class="info-icon" [matTooltip]="tooltipText[cardData.heading]">
                         info
                     </mat-icon>
                 </span>

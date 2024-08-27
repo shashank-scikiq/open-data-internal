@@ -11,7 +11,7 @@ from apps.utils import constant
 from apps.src.database_utils.database_utility import DatabaseUtility
 
 from apps.logging_conf import exceptionAPI, ondcLogger
-from apps.src.database_utils.generic_queries import pincode_query, landing_page_echart_data_query
+from apps.src.database_utils.generic_queries import pincode_query #landing_page_echart_data_query
 load_dotenv()
 
 sub_category_none_values = ('undefined', 'all', 'None', 'Select Sub-Category')
