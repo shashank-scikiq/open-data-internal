@@ -55,16 +55,20 @@
 
                                 <div>
                                     @for(option of subsection.options; track option) {
-                                        @if(option?.disabled) {
-                                            <p class="margin-0 cursor-not-allowed sidenav-option">
-                                                {{option.title}}
-                                            </p>
-                                        } @else {
-                                            <a [routerLink]="option.url" (click)="closeNavigation()" class="cursor-pointer margin-0 sidenav-option" 
-                                                [class.active]="selectedUrl==option.url">
-                                                {{option.title}}
-                                            </a>
-                                        }
+                                        
+                                            @if(option?.disabled) {
+                                                <p class="margin-0 cursor-not-allowed sidenav-option">
+                                                    <i class="fa-solid fa-l margin-bottom-3"></i>
+                                                    {{option.title}}
+                                                </p>
+                                            } @else {
+                                                <a [routerLink]="option.url" (click)="closeNavigation()" class="cursor-pointer margin-0 sidenav-option" 
+                                                    [class.active]="selectedUrl==option.url">
+                                                    <i class="fa-solid fa-l margin-bottom-3"></i>
+                                                    {{option.title}}
+                                                </a>
+                                            }
+                        
                                     }
                                 </div>
 

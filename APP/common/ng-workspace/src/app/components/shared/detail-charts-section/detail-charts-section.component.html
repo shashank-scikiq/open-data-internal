@@ -1,3 +1,32 @@
+@if(metrix !== 'map_total_zonal_commerce_metrics' && (activeUrl.includes('/retail/b2c'))
+    ) {
+        <div class="chart-container">
+            <div class="card-title-section">
+                <p class="font-xs font-bold margin-y-0 open-data-grey-900">Distribution of Active Sellers</p>
+                <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                    By Category
+                    <span class="cursor-pointer">
+                        <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
+                        nzTooltipTitle="Percentage of Total Confirmed Orders within that category w.r.t Total Delivered Orders across the Network. By selecting a category, this will filter the dashboard with metrics for that category and the chart will show Percentage of Total Confirmed Orders  within a sub_category w.r.t Total Orders for the category. Similarly if a sub category is selected, It will filter the dashboard for that sub category and the chart will show only sub_category percentage within the sub category which will be 100%"></i>
+                    </span>
+                </p>
+            </div>
+            <div class="chart-body relative">
+                @if(!isLoadingSunBurstChartData) {
+                    <app-sunburst-chart 
+                        [chartData]="metrixSunBurstChartData">
+                    </app-sunburst-chart>
+                } @else {
+                    <div class="loader-area">
+                        <div class="dot-loader"></div>
+                        <div class="dot-loader dot-loader--2"></div>
+                        <div class="dot-loader dot-loader--3"></div>
+                    </div>
+                }
+            </div>
+        </div>
+}
+
 @if(overallOrdersData && metrix !== "map_total_zonal_commerce_metrics") {
 <div class="chart-container">
     <div class="card-title-section">
@@ -153,34 +182,7 @@
         </div>
     }
 }
-@if(metrix !== 'map_total_zonal_commerce_metrics' && (activeUrl.includes('/retail/b2c'))
-    ) {
-        <div class="chart-container">
-            <div class="card-title-section">
-                <p class="font-xs font-bold margin-y-0 open-data-grey-900">Distribution of Active Sellers</p>
-                <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
-                    By Category
-                    <span class="cursor-pointer">
-                        <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
-                        nzTooltipTitle="Percentage of Total Confirmed Orders within that category w.r.t Total Delivered Orders across the Network. By selecting a category, this will filter the dashboard with metrics for that category and the chart will show Percentage of Total Confirmed Orders  within a sub_category w.r.t Total Orders for the category. Similarly if a sub category is selected, It will filter the dashboard for that sub category and the chart will show only sub_category percentage within the sub category which will be 100%"></i>
-                    </span>
-                </p>
-            </div>
-            <div class="chart-body relative">
-                @if(!isLoadingSunBurstChartData) {
-                    <app-sunburst-chart 
-                        [chartData]="metrixSunBurstChartData">
-                    </app-sunburst-chart>
-                } @else {
-                    <div class="loader-area">
-                        <div class="dot-loader"></div>
-                        <div class="dot-loader dot-loader--2"></div>
-                        <div class="dot-loader dot-loader--3"></div>
-                    </div>
-                }
-            </div>
-        </div>
-}
+
 
 @if(metrix == 'map_total_zonal_commerce_metrics' && (
     activeUrl.includes('/retail') || activeUrl.includes('/retail/b2c') || activeUrl.includes('/logistics'))
