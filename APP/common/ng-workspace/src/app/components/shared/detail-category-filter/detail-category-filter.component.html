@@ -1,6 +1,6 @@
 <div class="filter-container relative">
     <div class="header-section cursor-pointer" (click)="toggleOptions()">
-        Filters
+        {{choosedCategory != 'All' ? choosedCategory + ' (' + choosedSubCategory + ')' : 'Filters'}}
 
         <i [class]="'fa-solid ' + (showOptions ? 'fa-xmark' : 'fa-filter')"></i>
     </div>

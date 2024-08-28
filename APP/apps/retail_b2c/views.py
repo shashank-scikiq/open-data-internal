@@ -80,7 +80,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         self.tooltip_text = {
             "Total Orders": 'Count of Distinct Network Order Id within the selected range.',
             "Districts": 'Unique count of Districts where orders have been delivered in the latest month within the date range. Districts are fetched using districts mapping using End pincode',
-            "Registered sellers": 'Unique count of combination of (Provider ID + Seller App) within the date range',
+            "Total sellers": 'Unique count of combination of (Provider ID + Seller App) within the date range',
             "records the highest order count": 'Maximum Orders by State/Districts, basis the date range. It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.'
 
         }
@@ -212,7 +212,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                             
                         ),
                         self.create_metric_data(
-                            int(row['total_active_sellers_current']), 'Registered sellers', row['sellers_count_delta']
+                            int(row['total_active_sellers_current']), 'Total sellers', row['sellers_count_delta']
                             
                         ),
                         self.create_max_orders_delivered_area_data(
@@ -244,7 +244,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                             'Districts', 0
                         ),
                         self.create_metric_data(
-                            row['total_active_sellers_current'], 'Registered sellers', 0
+                            row['total_active_sellers_current'], 'Total sellers', 0
                         ),
                         self.create_max_orders_delivered_area_data(
                             row['most_ordering_district'])
@@ -258,10 +258,10 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                 }
 
     def create_metric_data(self, count, heading, delta):
-        if heading == 'Registered sellers' and count <3:
+        if heading == 'Total sellers' and count <3:
             return {
                 "type": 'max_state',
-                "heading": 'Registered sellers',
+                "heading": 'Total sellers',
                 "mainText": 'No Data To Display'
             }
         else:
@@ -682,7 +682,7 @@ class FetchCategoryPenetrationOrders(SummaryBaseDataAPI):
 
 class FetchCategoryPenetrationSellers(SummaryBaseDataAPI):
     """
-    API view for fetching category penetration orders.
+    API view for fetching category penetration sellers.
     """
 
     @exceptionAPI(ondcLogger)

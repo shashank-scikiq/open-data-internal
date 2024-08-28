@@ -1547,7 +1547,7 @@ class DataAccessLayer:
                     END AS sub_category,
                     COUNT(distinct trim(lower(provider_key))) AS active_sellers_count  
                 FROM 
-                    {constant.MONTHLY_PROVIDERS}
+                    dim_providers
                 WHERE 
                      order_date between %s and %s domain_name = 'Retail' and sub_domain = 'B2C'
             '''
@@ -1578,7 +1578,7 @@ class DataAccessLayer:
                         'ALL' AS sub_category,
                         COUNT(distinct provider_key) AS active_sellers_count  
                     FROM 
-                        {constant.MONTHLY_PROVIDERS}
+                        dim_providers
                     WHERE 
                          order_date between %s and %s
                 '''

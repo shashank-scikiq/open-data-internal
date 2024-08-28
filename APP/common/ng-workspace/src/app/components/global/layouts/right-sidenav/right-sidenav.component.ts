@@ -47,29 +47,34 @@ export class RightSidenavComponent implements OnInit {
             disabled: false,
             options: [
               {
-                title: 'Retail',
+                title: 'Overall',
                 url: 'retail',
                 disabled: false,
                 external: false
               },
               {
-                title: 'Retail B2B',
+                title: 'B2B',
                 url: 'retail/b2b/',
                 disabled: false,
                 external: false
               },
               {
-                title: 'Retail B2C',
+                title: 'B2C',
                 url: 'retail/b2c/',
                 disabled: false,
+                external: false
+              },
+              {
+                title: 'Gift Voucher',
+                disabled: true,
                 external: false
               }
             ]
           },
           {
             title: 'Logistics',
-            type: 'accordian',
-            // type: 'default',
+            // type: 'accordian',
+            type: 'default',
             icon: 'fa-solid fa-truck-arrow-right',
             url: 'logistics',
             disabled: false,
