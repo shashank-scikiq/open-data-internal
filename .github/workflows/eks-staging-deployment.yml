@@ -33,9 +33,9 @@ jobs:
         # docker build --platform linux/x86_64 -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${version} .
         run: docker build --platform linux/x86_64 -f app.Dockerfile -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }} .
 
-      - name: build cron image
-        # docker build --platform linux/x86_64 -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${version} .
-        run: docker build --platform linux/x86_64 -f db.Dockerfile -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:crondbv${{ steps.commit.outputs.short }} .
+#      - name: build cron image
+#        # docker build --platform linux/x86_64 -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${version} .
+#        run: docker build --platform linux/x86_64 -f db.Dockerfile -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:crondbv${{ steps.commit.outputs.short }} .
 
       - name: push image to ECR
         run: docker push 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }}
@@ -53,9 +53,9 @@ jobs:
           cat k8-deployment-staging.yaml
           kubectl apply -f k8-deployment-staging.yaml
 
-      - name: replace cron stage image in k8 deployment
-        run: |
-          sed -i 's|image:.*|image: 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:crondbv${{ steps.commit.outputs.short }}|' k8-cron-deployment-staging.yaml
-          cat k8-cron-deployment-staging.yaml
-          kubectl apply -f k8-cron-deployment-staging.yaml  
+#      - name: replace cron stage image in k8 deployment
+#        run: |
+#          sed -i 's|image:.*|image: 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:crondbv${{ steps.commit.outputs.short }}|' k8-cron-deployment-staging.yaml
+#          cat k8-cron-deployment-staging.yaml
+#          kubectl apply -f k8-cron-deployment-staging.yaml
           
