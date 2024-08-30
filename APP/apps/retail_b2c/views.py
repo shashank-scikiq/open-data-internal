@@ -69,6 +69,8 @@ def fetch_state_list():
 
 def safe_divide(a, b, default=1):
     try:
+        if not a or not b:
+            return 0.00
         return np.divide(a, b)
     except Exception as e:
         return default
@@ -81,8 +83,8 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             "Total Orders": 'Count of Distinct Network Order Id within the selected range.',
             "Districts": 'Unique count of Districts where orders have been delivered in the latest month within the date range. Districts are fetched using districts mapping using End pincode',
             "Total sellers": 'Unique count of combination of (Provider ID + Seller App) within the date range',
-            "records the highest order count": 'Maximum Orders by State/Districts, basis the date range. It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.'
-
+            "records the highest order count": 'Maximum Orders by State/Districts, basis the date range. It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.',
+            "No. of items per order": "Average items per orders"
         }
     @exceptionAPI(ondcLogger)
     def get(self, request, *args):
@@ -173,6 +175,15 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             100 * safe_divide(merged_df['total_districts_current'] - merged_df['total_districts_previous'],
                               merged_df['total_districts_previous']), round_off_offset
         )
+
+
+        avg_items_res = safe_divide(
+            merged_df['avg_items_per_order_in_district_current'] - 
+            merged_df['avg_items_per_order_in_district_previous'],
+            merged_df['avg_items_per_order_in_district_previous']
+        )
+
+        
         merged_df['orders_count_delta'] = np.round(
             100 * safe_divide(merged_df['delivered_orders_current'] - merged_df['delivered_orders_previous'],
                               merged_df['delivered_orders_previous']), round_off_offset
@@ -181,12 +192,15 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             100 * safe_divide(merged_df['total_active_sellers_current'] - merged_df['total_active_sellers_previous'],
                               merged_df['total_active_sellers_previous']), round_off_offset
         )
+        merged_df['avg_items_per_order_delta'] = np.round(
+            100 * (avg_items_res if type(avg_items_res) == int else avg_items_res.astype(float)), round_off_offset
+        ) 
 
         merged_df = merged_df.replace([np.inf, -np.inf], 100).replace([np.nan], 0).fillna(0)
 
         return merged_df.drop(
             ['delivered_orders_previous', 'total_districts_previous', 'total_active_sellers_previous',
-             'delivery_state_code_previous'], axis=1
+             'delivery_state_code_previous', 'avg_items_per_order_in_district_previous'], axis=1
         )
 
     def format_response_data(self, merged_df, previous_start_date, previous_end_date, district_count, delta_req=1):
@@ -206,6 +220,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                             int(row['delivered_orders_current']), 'Total Orders', row['orders_count_delta']
                             
                         ),
+                        
                         self.create_metric_data(
                             int(district_count[district_count['delivery_state_code'] == state_code]['district_count'].sum()),
                             'Districts', 0
@@ -213,6 +228,10 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                         ),
                         self.create_metric_data(
                             int(row['total_active_sellers_current']), 'Total sellers', row['sellers_count_delta']
+                            
+                        ),
+                        self.create_metric_data(
+                            row['avg_items_per_order_in_district_current'], 'No. of items per order', row['avg_items_per_order_delta']
                             
                         ),
                         self.create_max_orders_delivered_area_data(
@@ -239,12 +258,16 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                         self.create_metric_data(
                             row['delivered_orders_current'], 'Total Orders', 0
                         ),
+                        
                         self.create_metric_data(
                             district_count[district_count['delivery_state_code'] == state_code]['district_count'].sum(),
                             'Districts', 0
                         ),
                         self.create_metric_data(
                             row['total_active_sellers_current'], 'Total sellers', 0
+                        ),
+                        self.create_metric_data(
+                            row['avg_items_per_order_in_district_current'], 'No. of items per order', 0
                         ),
                         self.create_max_orders_delivered_area_data(
                             row['most_ordering_district'])

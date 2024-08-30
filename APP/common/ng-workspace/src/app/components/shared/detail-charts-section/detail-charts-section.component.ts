@@ -40,6 +40,8 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
   overallOrdersData: any = {};
   districtOrdersData: any = {};
   metrixMaxData: any = [];
+  selectedCategory: string = '';
+  selectedSubCategory: string = '';
 
   stateWiseBin: any;
 
@@ -116,11 +118,15 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
     this.appService.dateRange$.subscribe((val: any) => {
       this.dateRange = val;
       this.initCardData();
+      this.getSunBurstChartData();
     });
 
     this.appService.filterUpdated$.subscribe((val: any) => {
-      if (val) {
+      if (val.updated) {
         this.initCardData();
+        if (val.means == 'choosed') {
+          this.getSunBurstChartData();
+        }
       }
     })
   }
@@ -128,6 +134,7 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (this.dateRange.length) {
       this.initCardData();
+      this.getSunBurstChartData();
     }
   }
 
@@ -138,7 +145,7 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
     // this.getStatewiseBin();
     this.getTopStateOrdersData();
     this.getTopDistrictOrdersData();
-    this.getSunBurstChartData();
+    // this.getSunBurstChartData();
   }
 
   getStatewiseBin() {
@@ -243,5 +250,14 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
         this.isLoadingSunBurstChartData = false;
       }
     )
+  }
+
+  updateSelectedCategory(option: any) {
+    if (option == this.appService.selectedCategory) {
+      this.appService.setFilters('All', 'All')
+    } else {
+      this.appService.setFilters(option, 'All');
+    }
+    this.appService.setFilterUpdated({updated: true, means: 'click'});
   }
 }

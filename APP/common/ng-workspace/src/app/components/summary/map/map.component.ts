@@ -36,7 +36,7 @@ export class MapComponent implements OnInit, OnChanges {
       this.fetchOrderMetricsSummary();
     });
     this.appService.filterUpdated$.subscribe((val) => {
-      if (val) {
+      if (val.updated) {
         this.mapStateData = null;
         this.mapStatewiseData = null;
         this.fetchMapStateData();

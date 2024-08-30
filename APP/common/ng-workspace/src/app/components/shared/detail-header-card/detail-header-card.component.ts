@@ -26,7 +26,7 @@ export class DetailHeaderCardComponent implements OnInit {
       this.getCardData();
     });
     this.appService.filterUpdated$.subscribe((val: any) => {
-      if (val) {
+      if (val.updated) {
         this.getCardData();
       }
     });

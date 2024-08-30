@@ -31,8 +31,13 @@ export class AppService {
 
   selectedCategory: string = 'All';
   selectedSubCategory: string = 'All';
-  filterUpdated = new BehaviorSubject<any>(false);
+  filters = new BehaviorSubject<any>({
+    category: 'All',
+    subCategory: 'All' 
+  });
+  filterUpdated = new BehaviorSubject<any>({updated: false, means: ''});
   filterUpdated$ = this.filterUpdated.asObservable();
+  filters$ = this.filters.asObservable()
 
   private cancelStatewiseBinPrevious$ = new Subject<void>();
   private cancelSummaryCardDataPrevious$ = new Subject<void>();
@@ -55,9 +60,13 @@ export class AppService {
     return this.http.get(`${this.baseUrl}api/retail/b2c/categories/`);
   }
 
-  setFilters(category: string, subcategory: string) {
+  setFilters(category: string, subCategory: string) {
     this.selectedCategory = category;
-    this.selectedSubCategory = subcategory;
+    this.selectedSubCategory = subCategory;
+    this.filters.next({
+      category,
+      subCategory
+    })
   }
 
   getLandingPageEchartData() {

@@ -25,6 +25,12 @@ export class DetailCategoryFilterComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.appService.filters$.subscribe((val: any) => {
+      this.selectedCategory = val.category;
+      this.selectedSubCategory = val.subCategory;
+      this.choosedCategory = this.selectedCategory;
+    this.choosedSubCategory = this.selectedSubCategory;
+    })
     this.appService.getCategories().subscribe(
       (response: any) => {
         this.categories = response;
@@ -63,7 +69,7 @@ export class DetailCategoryFilterComponent implements OnInit {
     this.choosedSubCategory = this.selectedSubCategory;
     this.appService.setFilters(this.choosedCategory, this.choosedSubCategory);
     this.showOptions = false;
-    this.appService.setFilterUpdated(true);
+    this.appService.setFilterUpdated({updated: true, means: 'choosed'});
   }
 
   close() {

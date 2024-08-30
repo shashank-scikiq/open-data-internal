@@ -69,10 +69,10 @@ class DataAccessLayer:
             query += " AND COALESCE(UPPER(seller_state), 'MISSING') = UPPER(%(state)s)"
             parameters['state'] = state.upper()
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
 
         query += f"""
@@ -102,10 +102,10 @@ class DataAccessLayer:
             query += " AND COALESCE(UPPER(om.seller_state), 'MISSING') = UPPER(%(state)s)"
             parameters['state'] = state.upper()
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
 
         query += """
@@ -145,10 +145,10 @@ class DataAccessLayer:
             query += " AND COALESCE(UPPER(seller_state), 'MISSING') = UPPER(%(state)s)"
             parameters['state'] = state.upper()
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
 
         query += f'''
@@ -184,10 +184,10 @@ class DataAccessLayer:
             query += " AND COALESCE(UPPER(om.seller_state), 'MISSING') = UPPER(%(state)s)"
             parameters['state'] = state.upper()
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
 
         query += '''
@@ -222,6 +222,10 @@ class DataAccessLayer:
                     delivery_state,
                     delivery_district,
                     SUM(total_orders_delivered) AS total_orders_in_district,
+                    case 
+                        when sum(total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(total_items)/sum(total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district,
                     ROW_NUMBER() OVER (PARTITION BY delivery_state ORDER BY SUM(total_orders_delivered) DESC) AS rank_in_state
                 FROM
                     {table_name}
@@ -235,11 +239,11 @@ class DataAccessLayer:
             query += " AND domain_name = %(domain)s and sub_domain = 'B2C'"
             parameters['domain'] = domain
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
             parameters['category'] = category
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
             parameters['sub_category'] = sub_category
 
@@ -263,10 +267,10 @@ class DataAccessLayer:
             query += " AND seller_state = %(state)s"
             parameters['state'] = state
         
-        # if category and category != 'None':
+        # if bool(category) and (category != 'None'):
         #     query += " AND category=%(category)s"
 
-        # if sub_category and sub_category != 'None':
+        # if bool(sub_category) and (sub_category != 'None'):
         #     query += " AND sub_category=%(sub_category)s"
 
         query += """
@@ -278,7 +282,11 @@ class DataAccessLayer:
                     delivery_state_code AS delivery_state_code,
                     delivery_state AS delivery_state,
                     COUNT(DISTINCT CONCAT(delivery_state, '_', delivery_district)) as total_districts,
-                    SUM(total_orders_delivered) AS delivered_orders
+                    SUM(total_orders_delivered) AS delivered_orders,
+                    case 
+                        when sum(total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(total_items)/sum(total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district
                 FROM
                     {table_name}
                 WHERE
@@ -290,10 +298,10 @@ class DataAccessLayer:
         if domain:
             query += " AND domain_name = %(domain)s and sub_domain = 'B2C'"
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
 
         query += """
@@ -305,6 +313,10 @@ class DataAccessLayer:
                     delivery_state_code AS delivery_state_code,
                     delivery_state,
                     SUM(total_orders_delivered) AS total_orders_in_state,
+                    case 
+                        when sum(total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(total_items)/sum(total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district,
                     ROW_NUMBER() OVER (ORDER BY SUM(total_orders_delivered) DESC) AS rank_in_state
                 FROM
                     {table_name}
@@ -317,10 +329,10 @@ class DataAccessLayer:
         if domain:
             query += " AND domain_name = %(domain)s and sub_domain = 'B2C'"
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
 
         query += f"""
@@ -344,7 +356,11 @@ class DataAccessLayer:
                     'TT' AS delivery_state_code,
                     'TOTAL' AS delivery_state,
                     COUNT(DISTINCT CONCAT(delivery_state, '_', delivery_district)) AS total_districts,
-                    SUM(total_orders_delivered) AS delivered_orders
+                    SUM(total_orders_delivered) AS delivered_orders,
+                    case 
+                        when sum(total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(total_items)/sum(total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district
                 FROM
                     {table_name}
                 WHERE
@@ -356,10 +372,10 @@ class DataAccessLayer:
             query += " AND domain_name = %(domain)s and sub_domain='B2C'"
             parameters['domain'] = domain
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
 
         query += """
@@ -369,6 +385,7 @@ class DataAccessLayer:
                 COALESCE(AD.delivery_state, 'Missing') AS delivery_state,
                 AD.total_districts,
                 AD.delivered_orders,
+                AD.avg_items_per_order_in_district,
                 COALESCE(ASel.total_active_sellers, 0) AS total_active_sellers,
                 DR.delivery_district AS most_ordering_district
             FROM
@@ -383,6 +400,7 @@ class DataAccessLayer:
                 'TOTAL' AS delivery_state,
                 ADT.total_districts,
                 ADT.delivered_orders,
+                ADT.avg_items_per_order_in_district,
                 COALESCE(ASelt.total_active_sellers, 0) AS total_active_sellers,
                 SRnk.delivery_state AS most_ordering_district
             FROM
@@ -394,6 +412,7 @@ class DataAccessLayer:
         """
 
         query = query.format(table_name=table_name)
+
         orders_count = self.db_utility.execute_query(query, parameters)
         return orders_count
 
@@ -427,10 +446,10 @@ class DataAccessLayer:
             query += " AND ds.seller_state = %(state)s"
             parameters['state'] = state
         
-        # if category and category != 'None':
+        # if bool(category) and (category != 'None'):
         #     query += " AND category=%(category)s"
 
-        # if sub_category and sub_category != 'None':
+        # if bool(sub_category) and (sub_category != 'None'):
         #     query += " AND sub_category=%(sub_category)s"
 
         query += """
@@ -441,6 +460,10 @@ class DataAccessLayer:
                     swdlo.delivery_state_code AS delivery_state_code,
                     swdlo.delivery_state AS delivery_state,
                     COUNT(DISTINCT swdlo.delivery_district) AS total_districts,
+                    case 
+                        when sum(swdlo.total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(swdlo.total_items)/sum(swdlo.total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district,
                     SUM(swdlo.total_orders_delivered) AS delivered_orders
                 FROM
                     {table_name} swdlo
@@ -454,11 +477,11 @@ class DataAccessLayer:
             query += " AND swdlo.domain_name = %(domain)s and sub_domain='B2C'"
             parameters['domain'] = domain
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
             parameters['category'] = category
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
             parameters['sub_category'] = sub_category
         
@@ -481,6 +504,10 @@ class DataAccessLayer:
                     'TT' AS delivery_state_code,
                     'TOTAL' AS delivery_state,
                     COUNT(DISTINCT CONCAT(delivery_state, '_', delivery_district)) AS total_districts,
+                    case 
+                        when sum(swdlo.total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(swdlo.total_items)/sum(swdlo.total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district,
                     SUM(swdlo.total_orders_delivered) AS delivered_orders
                 FROM
                     {table_name} swdlo
@@ -493,10 +520,10 @@ class DataAccessLayer:
             query += " AND swdlo.domain_name = %(domain)s and sub_domain='B2C'"
             parameters['domain'] = domain
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
 
         query += """
@@ -506,6 +533,7 @@ class DataAccessLayer:
                 COALESCE(AD.delivery_state, 'Missing') AS delivery_state,
                 AD.total_districts,
                 AD.delivered_orders,
+                AD.avg_items_per_order_in_district,
                 COALESCE(
                     CASE
                         WHEN ASel.total_active_sellers < 3 THEN 0
@@ -521,6 +549,7 @@ class DataAccessLayer:
                 'TOTAL' AS delivery_state,
                 ADT.total_districts,
                 ADT.delivered_orders,
+                ADT.avg_items_per_order_in_district,
                 COALESCE(
                     CASE
                         WHEN ASelt.total_active_sellers < 3 THEN 0
@@ -568,11 +597,11 @@ class DataAccessLayer:
             query += " AND delivery_state = %(state)s"
             parameters['state'] = state
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
             parameters['category'] = category
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
             parameters['sub_category'] = sub_category
 
@@ -622,11 +651,11 @@ class DataAccessLayer:
                 query += " AND domain_name = %(domain_name)s and sub_domain='B2C'"
                 parameters['domain_name'] = domain_name
             
-            if category and category != 'None':
+            if bool(category) and (category != 'None'):
                 query += " AND category=%(category)s"
                 parameters['category'] = category
 
-            if sub_category and sub_category != 'None':
+            if bool(sub_category) and (sub_category != 'None'):
                 query += " AND sub_category=%(sub_category)s"
                 parameters['sub_category'] = sub_category
 
@@ -658,10 +687,10 @@ class DataAccessLayer:
             if domain_name and domain_name != 'None':
                 query += " AND om.domain_name = %(domain_name)s and sub_domain='B2C'"
             
-            if category and category != 'None':
+            if bool(category) and (category != 'None'):
                 query += " AND category=%(category)s"
 
-            if sub_category and sub_category != 'None':
+            if bool(sub_category) and (sub_category != 'None'):
                 query += " AND sub_category=%(sub_category)s"
 
             query += '''
@@ -749,11 +778,11 @@ class DataAccessLayer:
             conditions.append("AND upper(delivery_state) = upper(%s)")
             parameters.append(state)
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             conditions.append(" AND category=%s")
             parameters.append(category)
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             conditions.append(" AND sub_category=%s")
             parameters.append(sub_category)
 
@@ -768,11 +797,11 @@ class DataAccessLayer:
             final_conditions.append("AND foslm.sub_domain = %s")
             parameters.append(sub_domain)
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             final_conditions.append(" AND foslm.category=%s")
             parameters.append(category)
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             final_conditions.append(" AND foslm.sub_category=%s")
             parameters.append(sub_category)
 
@@ -812,11 +841,11 @@ class DataAccessLayer:
             query += " AND delivery_state = %(state)s"
             parameters['state'] = state
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%(category)s"
             parameters['category'] = category
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%(sub_category)s"
             parameters['sub_category'] = sub_category
 
@@ -865,11 +894,11 @@ class DataAccessLayer:
             base_query += " AND sub_domain = %s"
             parameters.append(sub_domain)
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             base_query += " AND category=%s"
             parameters.append(category)
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             base_query += " AND sub_category=%s"
             parameters.append(sub_category)
 
@@ -917,10 +946,10 @@ class DataAccessLayer:
             base_query += " AND upper(om.delivery_state) = upper(%s)"
             parameters.append(state)
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             base_query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             base_query += " AND sub_category=%(sub_category)s"
 
         base_query += """
@@ -974,11 +1003,11 @@ class DataAccessLayer:
         
         base_query += " AND sub_domain = 'B2C'"
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             base_query += " AND category=%(category)s"
             parameters['category'] = category
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             base_query += " AND sub_category=%(sub_category)s"
             parameters['sub_category'] = sub_category
         
@@ -1019,10 +1048,10 @@ class DataAccessLayer:
         if state:
             base_query += " AND upper(om.delivery_state) = upper(%(state)s)"
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             base_query += " AND category=%(category)s"
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             base_query += " AND sub_category=%(sub_category)s"
 
         base_query += """
@@ -1059,7 +1088,7 @@ class DataAccessLayer:
                 -- COALESCE(NULLIF(TRIM(sub.seller_state), ''), 'Missing') AS seller_state,
                 sub.seller_state,
                 sub.order_demand,
-                ROUND(sub.flow_percentage,2) as flow_percentage
+                sub.flow_percentage as flow_percentage
             FROM (
                 SELECT 
                     om.delivery_state,
@@ -1107,13 +1136,13 @@ class DataAccessLayer:
             query += constant.tdr_domain_sub_query
             parameters.append(domain)
         
-        query += " AND sub_domain = 'B2C'"
+        query += " AND om.sub_domain = 'B2C'"
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%s"
             parameters.append(category)
         
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%s"
             parameters.append(sub_category)
 
@@ -1126,7 +1155,8 @@ class DataAccessLayer:
             and sub.seller_state is not NULL
             ORDER BY sub.delivery_state, sub.flow_percentage DESC;
         """
-
+        # import pdb 
+        # pdb.set_trace()
         df = self.db_utility.execute_query(query, parameters)
         return df
 
@@ -1149,7 +1179,7 @@ class DataAccessLayer:
                 -- COALESCE(NULLIF(TRIM(sub.seller_district), ''), 'Missing') AS seller_district,
                 sub.seller_district,
                 sub.order_demand,
-                ROUND(sub.flow_percentage, 2) AS flow_percentage
+                sub.flow_percentage AS flow_percentage
             FROM (
                 SELECT 
                     om.delivery_district,
@@ -1189,11 +1219,11 @@ class DataAccessLayer:
         
         query += " And sub_domain='B2C'"
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%s"
             parameters.append(category)
         
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%s"
             parameters.append(sub_category)
 
@@ -1219,11 +1249,11 @@ class DataAccessLayer:
             query += " AND om.domain_name = %s"
             parameters.append(domain)
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%s"
             parameters.append(category)
     
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%s"
             parameters.append(sub_category)
 
@@ -1269,11 +1299,11 @@ class DataAccessLayer:
         query += " AND domain_name = %s AND sub_domain = 'B2C'"
         parameters.append(domain)
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " AND category=%s"
             parameters.append(category)
         
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " AND sub_category=%s"
             parameters.append(sub_category)
 
@@ -1324,10 +1354,10 @@ class DataAccessLayer:
             conditions.append("AND upper(delivery_state) = upper(%s)")
             parameters.append(state)
         
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             conditions.append(" AND category=%s")
             parameters.append(category)
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             conditions.append(" AND sub_category=%s")
             parameters.append(sub_category)
 
@@ -1374,10 +1404,10 @@ class DataAccessLayer:
             conditions.append("AND upper(seller_state) = upper(%s)")
             parameters.append(state)
         
-        # if category and category != 'None':
+        # if bool(category) and (category != 'None'):
         #     conditions.append(" AND category=%s")
         #     parameters.append(category)
-        # if sub_category and sub_category != 'None':
+        # if bool(sub_category) and (sub_category != 'None'):
         #     conditions.append(" AND sub_category=%s")
         #     parameters.append(sub_category)
 
@@ -1420,10 +1450,10 @@ class DataAccessLayer:
             conditions.append("AND upper(seller_state) = upper(%s)")
             parameters.append(state)
         
-        # if category and category != 'None':
+        # if bool(category) and (category != 'None'):
         #     conditions.append(" AND category=%s")
         #     parameters.append(category)
-        # if sub_category and sub_category != 'None':
+        # if bool(sub_category) and (sub_category != 'None'):
         #     conditions.append(" AND sub_category=%s")
         #     parameters.append(sub_category)
 
@@ -1472,7 +1502,7 @@ class DataAccessLayer:
             conditions.append("AND upper(delivery_state) = upper(%s)")
             parameters.append(state)
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             conditions.append("AND category = %s")
             parameters.append(category)
 
@@ -1494,8 +1524,9 @@ class DataAccessLayer:
                                           state=None):
         selected_view = constant.SUB_CATEGORY_PENETRATION_TABLE
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
-        parameters = [params.start_year, params.start_year, params.start_month,
-                      params.end_year, params.end_year, params.end_month]
+        # parameters = [params.start_year, params.start_year, params.start_month,
+        #               params.end_year, params.end_year, params.end_month]
+        parameters = [start_date, end_date]
 
         query = f'''
             SELECT 
@@ -1505,15 +1536,15 @@ class DataAccessLayer:
             FROM 
                 {selected_view} 
             WHERE 
-                (order_year > %s OR (order_year = %s AND order_month >= %s))
-                AND (order_year < %s OR (order_year = %s AND order_month <= %s))
-                and domain_name = 'Retail' and sub_domain = 'B2C'
+                order_date between %s and %s
         '''
+                # (order_year > %s OR (order_year = %s AND order_month >= %s))
+                # AND (order_year < %s OR (order_year = %s AND order_month <= %s))
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += " And category=%s"
             parameters.append(category)
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += " And sub_category=%s"
             parameters.append(sub_category)
         if state:
@@ -1549,19 +1580,20 @@ class DataAccessLayer:
                 FROM 
                     dim_providers
                 WHERE 
-                     order_date between %s and %s domain_name = 'Retail' and sub_domain = 'B2C'
+                    order_date between %s and %s
             '''
+                    # domain_name = 'Retail' and sub_domain = 'B2C' and order_date between %s and %s
 
         parameters = [start_date, end_date]
 
-        if category and category != 'None':
-            query += " And category=%s"
+        if bool(category) and (category != 'None'):
+            query_sub_cat += " And category=%s"
             parameters.append(category)
-        if sub_category and sub_category != 'None':
-            query += " And sub_category=%s"
+        if bool(sub_category) and (sub_category != 'None'):
+            query_sub_cat += " And sub_category=%s"
             parameters.append(sub_category)
         if state:
-            query += " AND upper(seller_state) = upper(%s)"
+            query_sub_cat += " AND upper(seller_state) = upper(%s)"
             parameters.append(state)
 
         query_sub_cat += '''
@@ -1580,7 +1612,7 @@ class DataAccessLayer:
                     FROM 
                         dim_providers
                     WHERE 
-                         order_date between %s and %s
+                        order_date between %s and %s
                 '''
 
         parameters.append(start_date)
@@ -1610,6 +1642,7 @@ class DataAccessLayer:
         query = f''' {query_sub_cat}
                             UNION 
                         {query_all}'''
+
         
         df = self.db_utility.execute_query(query, parameters)
         return df
@@ -1651,10 +1684,10 @@ class DataAccessLayer:
                 and delivery_state <> ''
         """
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += constant.category_sub_query
             parameters.append(category)
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += constant.sub_category_sub_query
             parameters.append(sub_category)
         if domain_name:
@@ -1721,11 +1754,11 @@ class DataAccessLayer:
             query += constant.delivery_state_sub_query
             params.append(state)
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += constant.category_sub_query
             params.append(category)
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += constant.sub_category_sub_query
             params.append(sub_category)
 
@@ -1798,11 +1831,11 @@ class DataAccessLayer:
             query += constant.delivery_state_sub_query
             params.append(state)
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += constant.category_sub_query
             params.append(category)
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += constant.sub_category_sub_query
             params.append(sub_category)
 
@@ -1868,11 +1901,11 @@ class DataAccessLayer:
             query += constant.seller_state_sub_query
             params.append(state)
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += constant.category_sub_query
             params.append(category)
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += constant.sub_category_sub_query
             params.append(sub_category)
 
@@ -1934,11 +1967,11 @@ class DataAccessLayer:
             query += constant.seller_state_sub_query
             params.append(state)
 
-        if category and category != 'None':
+        if bool(category) and (category != 'None'):
             query += constant.category_sub_query
             params.append(category)
 
-        if sub_category and sub_category != 'None':
+        if bool(sub_category) and (sub_category != 'None'):
             query += constant.sub_category_sub_query
             params.append(sub_category)
 

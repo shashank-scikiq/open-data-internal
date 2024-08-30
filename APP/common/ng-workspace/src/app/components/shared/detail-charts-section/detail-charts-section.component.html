@@ -14,7 +14,8 @@
             <div class="chart-body relative">
                 @if(!isLoadingSunBurstChartData) {
                     <app-sunburst-chart 
-                        [chartData]="metrixSunBurstChartData">
+                        [chartData]="metrixSunBurstChartData"
+                        (clickedCategory)="updateSelectedCategory($event)">
                     </app-sunburst-chart>
                 } @else {
                     <div class="loader-area">

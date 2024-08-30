@@ -1,5 +1,4 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
 import { AppService } from '@openData/app/core/api/app/app.service';
 
 @Component({
@@ -54,13 +53,13 @@ export class RightSidenavComponent implements OnInit {
               },
               {
                 title: 'B2B',
-                url: 'retail/b2b/',
+                url: 'retail/b2b',
                 disabled: false,
                 external: false
               },
               {
                 title: 'B2C',
-                url: 'retail/b2c/',
+                url: 'retail/b2c',
                 disabled: false,
                 external: false
               },
@@ -87,7 +86,7 @@ export class RightSidenavComponent implements OnInit {
               },
               {
                 title: 'Logistic Detail',
-                url: 'logistics/detail/',
+                url: 'logistics/detail',
                 disabled: false,
                 external: false
               }
