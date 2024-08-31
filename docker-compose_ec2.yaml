@@ -11,4 +11,4 @@ services:
       - /home/shashank_daaslabs/Software/aws_stage.env
     restart: unless-stopped
     environment:
-     - POSTGRES_SCHEMA=ec2_stage
+      - POSTGRES_SCHEMA=ec2_all
