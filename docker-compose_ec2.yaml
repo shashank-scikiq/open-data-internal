@@ -4,16 +4,11 @@ services:
     build:
       context: .
       dockerfile: app.Dockerfile
-    image: webapp_local:version_3.8.1
+    image: webapp_local:version_4.0.1
     ports:
       - "8081:8001"
     env_file:
-      - aws_common.env
+      - /home/shashank_daaslabs/Software/aws_stage.env
     restart: unless-stopped
     environment:
-     - POSTGRES_SCHEMA=prod
-
-networks:
-  my_custom_network:
-    name: OD_DB
-    driver: bridge
+     - POSTGRES_SCHEMA=ec2_stage
