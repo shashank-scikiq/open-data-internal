@@ -67,9 +67,9 @@ export class LandingPageChartComponent implements OnInit {
         let dateFilter;
         if (this.selectedFilterValue == 'Last 6 Months') {
           dateFilter = Date.now() - (7 * 30 * 24 * 60 * 60 * 1000);
-        } else if(this.selectedFilterValue == 'Last 9 Months') {
+        } else if (this.selectedFilterValue == 'Last 9 Months') {
           dateFilter = Date.now() - (10 * 30 * 24 * 60 * 60 * 1000);
-        } else if(this.selectedFilterValue == 'Last 12 Months') {
+        } else if (this.selectedFilterValue == 'Last 12 Months') {
           dateFilter = Date.now() - (13 * 30 * 24 * 60 * 60 * 1000);
         }
 
@@ -139,11 +139,11 @@ export class LandingPageChartComponent implements OnInit {
       });
       option = {
         // backgroundColor: '#cfcfcf', // Set the background color here
-        animationDuration: 5000,
+        animationDuration: 6000,
         dataset: [
           {
             id: 'dataset_raw',
-            source: _rawData,
+            source: _rawData
           },
           ...datasetWithFilters
         ],
@@ -156,6 +156,8 @@ export class LandingPageChartComponent implements OnInit {
           }
         },
         tooltip: { // data on hover
+          show: 'true',
+          confine: 'true',
           order: 'valueDesc',
           trigger: 'axis',
           formatter: function (params: any) {
@@ -204,15 +206,26 @@ export class LandingPageChartComponent implements OnInit {
         xAxis: {
           type: 'time',
           nameLocation: 'middle',
-          boundaryGap: false, // To display the first Month value (boolean will not work for time so use %)
-          // splitLine: {
-          //   show: true,  // Show both horizontal and vertical grid lines
-          // },
+          boundaryGap: '0%', // To display the first Month value (boolean will not work for time so use %)
+          splitLine: {
+            show: true,  // Show both horizontal and vertical grid lines
+            lineStyle: {
+              color: 'white', // Set the color of the grid lines
+              width: 1, // Set the width of the grid lines
+              type: 'solid' // Set the type of the grid lines: solid, dashed, or dotted
+            }
+          },
+          axisLine: {
+            lineStyle: {
+              color: 'white', // Set the color of the axis line
+              width: 1, // Set the width of the axis line
+              type: 'solid' // Set the type of the axis line: solid, dashed, or dotted
+            }
+          },
           axisLabel: {
-            interval: 0,
-            color: '#19486D',
+            color: 'White',
             fontWeight: 'bold',
-            showMaxLabel: true,
+            showMaxLabel: true, 
             formatter: function (value: any) {
               // Custom formatting logic for axis labels to show only the mm-yyyy part
               let monthNames = ["Jan'", "Feb'", "Mar'", "Apr'", "May'", "Jun'", "Jul'", "Aug'", "Sep'", "Oct'", "Nov'", "Dec'"];
@@ -220,15 +233,9 @@ export class LandingPageChartComponent implements OnInit {
               let label_mob = monthNames[parseInt(echarts.format.formatTime('MM', value)) - 1] + echarts.format.formatTime('yy', value);
 
               if (window.innerWidth >= 768) {
-                /*if (label === "Apr'24") 
-                  return "Apr'24\n(Expected)";
-                else*/
                 return label
               }
               else {
-                /*if (label_mob === "Apr'24") 
-                  return "Apr'24\n(Expected)";
-                else*/
                 return label_mob
               }
 
@@ -252,24 +259,31 @@ export class LandingPageChartComponent implements OnInit {
           },
         },
         yAxis: {
-          name: "in millions",
+          name: "'1000",
           nameTextStyle: {
-            fontWeight: 'bold' // This makes the y-axis name bold
+            fontWeight: 'bold', // This makes the y-axis name bold
+            color: 'White'
           },
           min: 1000,
           axisLabel: {
-            color: '#19486D',
+            color: 'white',
             fontWeight: 'bold',
             fontSize: (window.innerWidth <= 768) ? '10px' : '12px',
             formatter: function (value: any) {
               // Format the y-axis labels to display values in millions
               //return (value / 1000).toFixed(0) + 'K';
-              return (value / 1000000).toFixed(0);
+              return (value / 1000).toFixed(0);
             }
           },
           splitLine: {
             show: true, // Show both horizontal and vertical grid lines
-          },
+            lineStyle: {
+              color: 'white', // Set the color of the grid lines
+              width: 1, // Set the width of the grid lines
+              type: 'solid' // Set the type of the grid lines: solid, dashed, or dotted
+            }
+          }
+
         },
         grid: {
           left: 50,
@@ -277,7 +291,6 @@ export class LandingPageChartComponent implements OnInit {
           bottom: 90,
           top: 40,
         },
-        color: this.domainConfig.colorDark,
         series: seriesList
       };
 

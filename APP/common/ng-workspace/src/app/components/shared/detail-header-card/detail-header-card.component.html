@@ -1,69 +1,84 @@
 @if(isLoading) {
-<div class="upper-cards-container">
-    <div class="upper-card" style="display: flex; flex-direction: column; gap: 4px;">
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-    </div>
-    <div class="upper-card" style="display: flex; flex-direction: column; gap: 4px;">
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-    </div>
-    <div class="upper-card" style="display: flex; flex-direction: column; gap: 4px;">
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-    </div>
-    <div class="upper-card" style="display: flex; flex-direction: column; gap: 4px;">
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-        <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
-    </div>
-</div>
-} @else {
-<div class="upper-cards-container">
-    @for(cardData of upperCardData; track cardData;let first = $first, last = $last) {
-    @if(cardData.type == 'default') {
-    <div class="upper-card">
-        <p class="margin-0 font-bolder upper-card-count">{{formatNumber(cardData.count)}}</p>
-        <p class="margin-0 heading-text font-bolder card-text-center">
-            {{cardData.heading | titlecase}}
-            <span class="card-text-center cursor-pointer">
-                <mat-icon class="info-icon" [matTooltip]="tooltipText[cardData.heading]">
-                    info
-                </mat-icon>
-            </span>
-        </p>
-
-        <div class="card-text-center">
-            <mat-icon [ngStyle]="{'color': cardData.positive ? '#10b759' : 'red'}"
-                [fontIcon]="cardData.positive ? 'trending_up' : 'trending_down'"></mat-icon>
-
-            <p class="margin-0 font-bold open-data-grey-600 heading-subtext">
-                <span [ngStyle]="{'color': cardData.positive ? '#10b759': 'red'}" class="font-bolder font-xs">
-                    {{cardData.percentageCount}} %
-                </span>
-                {{prevDateRange}}
-            </p>
+    <div class="card-section-shadow upper-cards-section">
+        <div class="upper-cards-container" style="min-width: 100%;">
+            <div class="upper-card-skeleton">
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+            </div>
+            <div class="upper-card-skeleton">
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+            </div>
+            <div class="upper-card-skeleton">
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+            </div>
+            <div class="upper-card-skeleton">
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+                <div class="progress" style="height: 20px; width: 100%; border-radius: 12px"></div>
+            </div>
         </div>
     </div>
-    } @else {
-    <div class="upper-card">
-        <p class="margin-0 font-bolder upper-card-text">{{cardData.mainText | titlecase}}</p>
-
-        <p class="margin-0 font-sm  heading-text font-bolder card-text-center">
-            {{cardData.heading}}
-            <span class="card-text-center cursor-pointer">
-                <mat-icon class="info-icon" [matTooltip]="tooltipText[cardData.heading]">
-                    info
-                </mat-icon>
-            </span>
-        </p>
+} @else {
+    <div class="card-section-shadow relative">
+        <div class="upper-cards-section relative" #slider> 
+            <div class="upper-cards-container"  [ngStyle]="{'padding': scrollEnabled ? '0 24px' : 'auto'}">
+        
+                @for(cardData of upperCardData; track cardData;let first = $first, last = $last) {
+                    @if(cardData.type == 'default') {
+                        <div class="upper-card">
+                            <p class="margin-0 font-bolder upper-card-count">{{formatNumber(cardData.count)}}</p>
+                            <p class="margin-0 heading-text font-bolder card-text-center">
+                                {{cardData.heading | titlecase}}
+                                <span class="card-text-center cursor-pointer">
+                                    <mat-icon class="info-icon" [matTooltip]="tooltipText[cardData.heading]">
+                                        info
+                                    </mat-icon>
+                                </span>
+                            </p>
+            
+                            <div class="card-text-center">
+                                <mat-icon [ngStyle]="{'color': cardData.positive ? '#10b759' : 'red'}"
+                                    [fontIcon]="cardData.positive ? 'trending_up' : 'trending_down'"></mat-icon>
+            
+                                <p class="margin-0 font-bold open-data-grey-600 heading-subtext">
+                                    <span [ngStyle]="{'color': cardData.positive ? '#10b759': 'red'}" class="font-bolder font-xs">
+                                        {{cardData.percentageCount}} %
+                                    </span>
+                                    {{prevDateRange}}
+                                </p>
+                            </div>
+                        </div>
+                    } @else {
+                        <div class="upper-card">
+                            <p class="margin-0 font-bolder upper-card-text">{{cardData.mainText | titlecase}}</p>
+            
+                            <p class="margin-0 font-sm  heading-text font-bolder card-text-center">
+                                {{cardData.heading}}
+                                <span class="card-text-center cursor-pointer">
+                                    <mat-icon class="info-icon" [matTooltip]="tooltipText[cardData.heading]">
+                                        info
+                                    </mat-icon>
+                                </span>
+                            </p>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        @if(scrollEnabled) {
+            <div class="absolute left-scroll-btn" (click)="scrollLeft()">
+                <i class="fa-solid fa-angle-left"></i>
+            </div>
+            <div class="absolute right-scroll-btn" (click)="scrollRight()">
+                <i class="fa-solid fa-angle-right"></i>
+            </div>
+        }
     </div>
-    }
-    }
-</div>
 
 <nz-carousel nzAutoPlays nzDotPosition="bottom" style="margin: 24px auto;">
     @for(cardData of upperCardData; track cardData;let first = $first, last = $last) {

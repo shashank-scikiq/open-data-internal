@@ -1,35 +1,54 @@
-<div class="filter-container relative">
-    <div class="header-section cursor-pointer" (click)="toggleOptions()">
-        {{choosedCategory != 'All' ? choosedCategory + ' (' + choosedSubCategory + ')' : 'Filters'}}
-
-        <i [class]="'fa-solid ' + (showOptions ? 'fa-xmark' : 'fa-filter')"></i>
+<div class="filter-main-container">
+    <div class="filter-container relative">
+        <div class="header-section cursor-pointer" (click)="toggleOptions()">
+            <!-- {{choosedCategory != 'All' ? choosedCategory + ' (' + choosedSubCategory + ')' : 'Filters'}} -->
+            Filters
+            <i [class]="'fa-solid ' + (showOptions ? 'fa-xmark' : 'fa-filter')"></i>
+        </div>
+        @if(showOptions) {
+            <div class="body-section absolute">
+                <div>
+                    <p class="margin-0 font-xxs open-data-grey-800">Category</p>
+                    <nz-select nzsize="small"
+                        [(ngModel)]="selectedCategory"
+                        (ngModelChange)="setChoosedSubCategory('c', $event)">
+                            @for(option of categoryOptions; track option) {
+                                <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                            }
+                  </nz-select>
+                </div>
+                <div>
+                    <p class="margin-0 font-xxs open-data-grey-800">Sub Category</p>
+                    <nz-select nzsize="small"
+                        [(ngModel)]="selectedSubCategory"
+                        (ngModelChange)="setChoosedSubCategory('sc', $event)">
+                            @for(option of subCategoryOptions; track option) {
+                                <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                            }
+                  </nz-select>
+                </div>
+                <div class="btn-section">
+                    <div class="apply-btn font-xxs" (click)="apply()">Apply</div>
+                    <div class="cancel-btn font-xxs" (click)="close()">Cancel</div>
+                </div>
+            </div>
+        }
     </div>
-    @if(showOptions) {
-        <div class="body-section absolute">
-            <div>
-                <p class="margin-0 font-xxs open-data-grey-800">Category</p>
-                <nz-select nzsize="small"
-                    [(ngModel)]="selectedCategory"
-                    (ngModelChange)="setChoosedSubCategory('c', $event)">
-                        @for(option of categoryOptions; track option) {
-                            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
-                        }
-              </nz-select>
-            </div>
-            <div>
-                <p class="margin-0 font-xxs open-data-grey-800">Sub Category</p>
-                <nz-select nzsize="small"
-                    [(ngModel)]="selectedSubCategory"
-                    (ngModelChange)="setChoosedSubCategory('sc', $event)">
-                        @for(option of subCategoryOptions; track option) {
-                            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
-                        }
-              </nz-select>
-            </div>
-            <div class="btn-section">
-                <div class="apply-btn font-xxs" (click)="apply()">Apply</div>
-                <div class="cancel-btn font-xxs" (click)="close()">Cancel</div>
-            </div>
+
+    @if(choosedCategory && choosedCategory !== 'All') {
+        <div class="category-chip">
+            <p class="margin-0 font-bolder font-xxs" nz-tooltip nzTooltipPlacement="bottom" 
+            [nzTooltipTitle]="choosedCategory">Category: <span class="font-bold">{{choosedCategory}}</span></p>
+            <i class="fa-regular fa-circle-xmark margin-left-2 open-data-blue-700 cursor-pointer" (click)="removeChoice('category')"></i>
+        </div>
+    }
+
+    @if(choosedSubCategory && choosedSubCategory !== 'All') {
+        <div class="category-chip">
+            <p class="margin-0 font-bolder font-xxs" nz-tooltip nzTooltipPlacement="bottom" 
+            [nzTooltipTitle]="choosedSubCategory">Sub Category: <span class="font-bold">{{choosedSubCategory}}</span></p>
+            <i class="fa-regular fa-circle-xmark margin-left-2 open-data-blue-700 cursor-pointer" (click)="removeChoice('subCategory')"></i>
         </div>
     }
 </div>
+

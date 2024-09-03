@@ -61,13 +61,15 @@ export class SunburstChartComponent implements OnInit {
       gd.on('plotly_sunburstclick', (data: any) => {
         const pt = data.points[0];
         // const path = ((pt.currentPath ?? '/') + pt.label).replace('Root', '')
-        // console.log(pt)                // path of the clicked element 
+        console.log(data, "clicked")                // path of the clicked element 
 
         // const clickedTexts = path.split('/');
 
         if (pt.parent == "" && [... new Set(this.chartData.parents )].length != 2) {
-          this.clickedCategory.emit(pt.label);
-        }        
+          this.clickedCategory.emit({option: [pt.label], type: 'category'});
+        } else {
+          this.clickedCategory.emit({option: [pt.parent, pt.label], type: 'subCategory'});
+        }       
       })
     });
     

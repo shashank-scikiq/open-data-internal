@@ -5,7 +5,7 @@
                 <img src="static/assets/img/ondc_logo.svg" alt="ONDC main logo">
             </a>
             <div class="right-section-container">
-                <div class="right-section">
+                <!-- <div class="right-section">
                     <a routerLink="retail" class="margin-0 no-decor">
                         Retail
                     </a>
@@ -14,7 +14,7 @@
                     <a routerLink="logistics" class="margin-0 no-decor">
                         Logistics
                     </a>
-                </div>
+                </div> -->
                 <div class="right-section cursor-pointer" nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu">
                     <p class="margin-0">
                         Quick Links
@@ -32,12 +32,12 @@
                             Feedback
                         </a>
                     </div>
-                    <div nz-menu-item>
+                    <!-- <div nz-menu-item>
                         <a routerLink="data-dictionary" class="no-decor bnr-menu-item">
                             <i class="fa-solid fa-folder-closed"></i>
                             Data dictionary
                         </a>
-                    </div>
+                    </div> -->
                     <div nz-menu-item>
                         <a routerLink="license" class="no-decor bnr-menu-item">
                             <i class="fa-solid fa-id-card"></i>
@@ -50,8 +50,8 @@
 
         <div class="badge-section width-100">
             <p class="net-cnt">
-                Total Network Orders till {{data?.lastUpdatedDate}}: 
-                <span class="net-count">{{data?.netOrderCount}}</span>
+                Total Network Orders till {{bannerData?.updatedAt}}: 
+                <span class="net-count">{{bannerData?.order_count.toLocaleString()}}</span>
             </p>
         </div>
 
@@ -60,7 +60,7 @@
                 
             </div> -->
             <div class="text-container">
-                <p class="title-section margin-0">ONDC Network <br />| Open Data Dashboard</p>
+                <p class="title-section margin-0">ONDC Network <br />| Open Data</p>
                 <p class="subtitle-section margin-0">Enabling transparency, fostering innovation and providing economic
                     & social impact.</p>
                 <div class="btn-section">
@@ -68,9 +68,14 @@
                         Retail Dashboard
                         <i class="margin-left-2 fa-solid fa-arrow-right open-data-white"></i>
                     </a>
-                    <div class="coming-soon-btn">
-                        <p class="margin-0">Mobility (Coming soon)</p>
-                    </div>
+                    <a routerLink="logistics" class="explore-btn no-decor">
+                        Logistics Dashboard
+                        <i class="margin-left-2 fa-solid fa-arrow-right open-data-white"></i>
+                    </a>
+                    <!-- <div class="mobility-btn coming-soon-btn">
+                        <p class="margin-0">Mobility </p>
+                            <span class="coming-soon">Coming Soon!</span>
+                    </div> -->
                 </div>
             </div>
             <div class="section-width">

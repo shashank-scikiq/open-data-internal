@@ -1,7 +1,8 @@
-from apps.utils.constant import (DIM_CATEGORIES,
-                                 DIM_DISTRICTS, DIM_DATES,
-                                 PINCODE_TABLE,
-                                 LOGISTICS_DISTRICT_TABLE, MONTHLY_DISTRICT_TABLE)
+from apps.utils.constant import (
+    DIM_CATEGORIES, DIM_DISTRICTS, DIM_DATES, PINCODE_TABLE,
+    LANDING_PAGE_ECHART_DATA_TILL, LANDING_PAGE_ECHART_TABLE,
+    LOGISTICS_DISTRICT_TABLE, MONTHLY_DISTRICT_TABLE
+)
 
 fetch_district_list_query = f'''
         SELECT delivery_state, delivery_district 
@@ -70,3 +71,14 @@ fetch_category_list_query = f'''
                 from {DIM_CATEGORIES}
                 group by 1,2
         '''
+
+landing_page_echart_data_query = f'''
+    select domain, month as date, order_count as weekly_average from 
+        {LANDING_PAGE_ECHART_TABLE} 
+    where month <= '{LANDING_PAGE_ECHART_DATA_TILL}'
+'''
+landing_page_cumulative_orders_query = f'''
+    select sum(order_count) as total_orders from 
+        {LANDING_PAGE_ECHART_TABLE} 
+    where domain='ONDC Network - All Domains' and month <= '{LANDING_PAGE_ECHART_DATA_TILL}'
+'''

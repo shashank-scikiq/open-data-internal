@@ -92,6 +92,9 @@ class SummaryBaseDataAPI(APIView):
         state = request.query_params.get('state', None)
         if state == 'None' or state == 'undefined' or state == 'null':
             state = None
+        
+        seller_type = request.query_params.get('sellerType', 'Total')
+
 
         return {
             "start_date": start_date,
@@ -99,7 +102,8 @@ class SummaryBaseDataAPI(APIView):
             "domain_name": domain_name,
             "state": state,
             "category": category,
-            "sub_category": sub_category
+            "sub_category": sub_category,
+            "seller_type": seller_type
         }
 
 

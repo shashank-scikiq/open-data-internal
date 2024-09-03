@@ -330,4 +330,27 @@
     }
 }
 
+.options-container {
+    margin: 12px 8px;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid rgba(72, 94, 144, 0.16);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+
+    .options{
+        padding: 8px;
+        width: 100%;
+        text-align: center;
+        cursor: pointer;
+
+    }
+
+    .selected {
+        background-color: $blue700;
+        color: white;
+    }
+}
+
 

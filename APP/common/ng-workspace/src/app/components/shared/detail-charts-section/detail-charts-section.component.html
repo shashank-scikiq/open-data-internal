@@ -1,8 +1,30 @@
+@if(metrix === 'map_total_active_sellers_metrics' && (activeUrl.includes('/retail/b2c'))) {
+    <div class="options-container">
+        <div (click)="updateSupplySelection('Total')" 
+            [ngClass]="{'options' : true, 'selected': selectedSupplyOptions == 'Total'}">
+            Total Sellers
+        </div>
+        <div (click)="updateSupplySelection('Active')" 
+            [ngClass]="{'options' : true, 'selected': selectedSupplyOptions == 'Active'}">
+            Active Sellers
+        </div>
+    </div>
+}
+
 @if(metrix !== 'map_total_zonal_commerce_metrics' && (activeUrl.includes('/retail/b2c'))
     ) {
         <div class="chart-container">
             <div class="card-title-section">
-                <p class="font-xs font-bold margin-y-0 open-data-grey-900">Distribution of Active Sellers</p>
+                @if(metrix.includes('sellers')) {
+                    <p class="font-xs font-bold margin-y-0 open-data-grey-900">
+                        Distribution of {{selectedSupplyOptions}} Sellers
+                    </p>
+                } @else {
+                    <p class="font-xs font-bold margin-y-0 open-data-grey-900">
+                        Distribution of Orders
+                    </p>
+                }
+
                 <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
                     By Category
                     <span class="cursor-pointer">
@@ -33,10 +55,10 @@
     <div class="card-title-section">
         <p class="font-xs font-bold margin-y-0 open-data-grey-900">Overall Trend for India</p>
         <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
-            {{cummulativeData[metrix].subtitle}}
+            {{cummulativeData[metrix].subtitle.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')}}
             <span class="cursor-pointer">
                 <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
-                [nzTooltipTitle]="cummulativeData[metrix].tooltip"></i>
+                [nzTooltipTitle]="cummulativeData[metrix].tooltip.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')"></i>
             </span>
         </p>
     </div>
@@ -50,10 +72,10 @@
     <div class="card-title-section">
         <p class="font-xs font-bold margin-y-0 open-data-grey-900">{{ selectedState == 'TT' ?  'Top 3 States' : selectedState }}</p>
         <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
-            {{topStateData[metrix].subtitle}}
+            {{topStateData[metrix].subtitle.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')}}
             <span class="cursor-pointer">
                 <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
-                [nzTooltipTitle]="topStateData[metrix].tooltip">
+                [nzTooltipTitle]="topStateData[metrix].tooltip.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')">
                 </i>
             </span>
         </p>
@@ -68,10 +90,10 @@
     <div class="card-title-section">
         <p class="font-xs font-bold margin-y-0 open-data-grey-900">Top 3 Districts {{ selectedState == 'TT' ?  '' : ' of ' + selectedState }}</p>
         <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
-            {{topDistrictData[metrix].subtitle}}
+            {{topDistrictData[metrix].subtitle.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')}}
             <span class="cursor-pointer">
                 <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right"
-                    [nzTooltipTitle]="topDistrictData[metrix].tooltip">
+                    [nzTooltipTitle]="topDistrictData[metrix].tooltip.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')">
                 </i>
             </span>
         </p>
@@ -97,7 +119,9 @@
             @for(data of metrixMaxData; track data) {
                 <div class="card">
                     <div class="card-header-section">
-                        <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">Maximum number of Confirmed Orders to {{data.record_type}}</p>
+                        <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                            Maximum number of Confirmed Orders to {{data.record_type}}
+                        </p>
                     </div>
     
                     <div class="card-body-section">

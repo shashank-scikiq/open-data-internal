@@ -51,6 +51,8 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
   isLoadingMaxData: boolean = false;
   isLoadingStateWiseBin: boolean = false;
 
+  selectedSupplyOptions: 'Total' | 'Active' = 'Total';
+
   activeUrl: any = '';
 
   cummulativeData: any = {
@@ -59,18 +61,21 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
       tooltip: 'Sort the Total Orders  (distinct count of Network Order Id) by State, basis the date range and other filters selected. On a state map, it will display only that state orders within the time range'
     },
     map_total_active_sellers_metrics: {
-      subtitle: 'Registered Sellers',
-      tooltip: 'Sort the Total Orders  (distinct count of Network Order Id) by State, basis the date range and other filters selected. On a state map, it will display only that state orders within the time range',
+      subtitle: `SELLER_TYPE`,
+      tooltip: `Sort the ${this.selectedSupplyOptions} Orders (distinct count of Network Order Id) by State, basis the date range and other filters selected. 
+        On a state map, it will display only that state orders within the time range`,
     }
   }
   topStateData: any = {
     map_total_orders_metrics: {
       subtitle: 'with Highest Confirmed Orders',
-      tooltip: 'Sort the Total Orders  (distinct count of Network Order Id) by State, basis the date range and other filters selected. On a state map, it will display only that state orders within the time range'
+      tooltip: `Sort the Total Orders (distinct count of Network Order Id) by State, basis the date range and other filters selected. 
+        On a state map, it will display only that state orders within the time range`
     },
     map_total_active_sellers_metrics: {
-      subtitle: 'with Highest Number Of Registered Sellers',
-      tooltip: 'Sort the Registered Sellers by State, basis the date range and other filters selected. On a state map, it will display only that state sellers within the time range'
+      subtitle: `with Highest Number Of SELLER_TYPE`,
+      tooltip: `Sort the SELLER_TYPE by State, basis the date range and other filters selected. 
+        On a state map, it will display only that state sellers within the time range`
     },
     map_total_zonal_commerce_metrics: {
       subtitle: 'with Highest Intra State Confirmed Orders',
@@ -84,8 +89,8 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
       tooltip: 'Highest Confirmed Orders '
     },
     map_total_active_sellers_metrics: {
-      subtitle: 'with Highest Number Of Registered Sellers',
-      tooltip: 'Districts Highest Number Of Registered Sellers'
+      subtitle: `with Highest Number Of SELLER_TYPE`,
+      tooltip: `Districts Highest Number Of SELLER_TYPE`
     },
     map_total_zonal_commerce_metrics: {
       subtitle: 'with Highest Intra District Confirmed Orders',
@@ -99,8 +104,8 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
       tooltip: 'Highest Confirmed Orders '
     },
     map_total_active_sellers_metrics: {
-      subtitle: 'with Highest Number Of Registered Sellers',
-      tooltip: 'Districts Highest Number Of Registered Sellers'
+      subtitle: `with Highest Number Of SELLER_TYPE`,
+      tooltip: `Districts Highest Number Of SELLER_TYPE`
     }
   }
 
@@ -132,15 +137,19 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['metrix'] && changes['metrix']['currentValue'] !== changes['metrix']['previousValue']) {
+      this.selectedSupplyOptions = 'Total';
+    }
     if (this.dateRange.length) {
       this.initCardData();
       this.getSunBurstChartData();
+
     }
   }
 
   initCardData() {
     if (this.metrix != "map_total_zonal_commerce_metrics")
-      this.getOverallOrdersData();
+      this.getOverallData();
     // this.getMaxData();
     // this.getStatewiseBin();
     this.getTopStateOrdersData();
@@ -165,7 +174,8 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
 
   getTopStateOrdersData() {
     this.isLoadingTopState = true;
-    this.appService.getTopStateOrders(this.matrixUri[this.metrix], this.selectedState).subscribe(
+    this.appService.getTopStateOrders(this.matrixUri[this.metrix], this.selectedState,
+      this.metrix.includes('sellers') ? this.selectedSupplyOptions : null).subscribe(
       (response: any) => {
         this.stateOrdersData = response;
         this.isLoadingTopState = false;
@@ -176,9 +186,12 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
     )
   }
 
-  getOverallOrdersData() {
+  getOverallData() {
     this.isLoadingOverall = true;
-    this.appService.getOverallOrders(this.matrixUri[this.metrix]).subscribe(
+    this.appService.getOverallData(
+      this.matrixUri[this.metrix], 
+      this.metrix.includes('sellers') ? this.selectedSupplyOptions : null
+    ).subscribe(
       (response: any) => {
         this.overallOrdersData = response;
         this.isLoadingOverall = false;
@@ -189,9 +202,16 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
     )
   }
 
+  updateSupplySelection(type: 'Total' | 'Active') {
+    this.selectedSupplyOptions = type;
+    this.initCardData();
+    this.getSunBurstChartData();
+  }
+
   getTopDistrictOrdersData() {
     this.isLoadingTopDistrict = true;
-    this.appService.getTopDistrictOrders(this.matrixUri[this.metrix], this.selectedState).subscribe(
+    this.appService.getTopDistrictOrders(this.matrixUri[this.metrix], this.selectedState, 
+      this.metrix.includes('sellers') ? this.selectedSupplyOptions : null).subscribe(
       (response: any) => {
         this.districtOrdersData = response;
         this.isLoadingTopDistrict = false;
@@ -239,7 +259,8 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
     }
 
     this.isLoadingSunBurstChartData = true;
-    this.appService.getMetrixSunBurstChartData(this.matrixUri[this.metrix], this.selectedState).subscribe(
+    this.appService.getMetrixSunBurstChartData(this.matrixUri[this.metrix], this.selectedState, 
+      this.metrix.includes('sellers') ? this.selectedSupplyOptions : null).subscribe(
       (response: any) => {
         if (response) {
           this.metrixSunBurstChartData = response;
@@ -252,12 +273,25 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
     )
   }
 
-  updateSelectedCategory(option: any) {
-    if (option == this.appService.selectedCategory) {
-      this.appService.setFilters('All', 'All')
+  updateSelectedCategory(event: any) {
+
+    const option = event.option;
+    const type = event.type;
+
+    if (type == 'category') {
+      if (option[0] == this.appService.selectedCategory) {
+        this.appService.setFilters('All', 'All')
+      } else {
+        this.appService.setFilters(option[0], 'All');
+      }
+      this.appService.setFilterUpdated({updated: true, type: 'category', means: 'click'});
     } else {
-      this.appService.setFilters(option, 'All');
+      if (option[1] == this.appService.selectedSubCategory) {
+        this.appService.setFilters(option[0], 'All')
+      } else {
+        this.appService.setFilters(option[0], option[1]);
+      }
+      this.appService.setFilterUpdated({updated: true, type: 'subCategory', means: 'click'});
     }
-    this.appService.setFilterUpdated({updated: true, means: 'click'});
   }
 }

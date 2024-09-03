@@ -2,7 +2,9 @@
 @import "colors";
 
 .summary-main-container {
-    padding: 60px 10px 0;
+    display: flex;
+    flex-direction: column;
+    padding: 60px 10px 8px;
 
     height: 100vh;
     overflow: hidden;
@@ -10,11 +12,11 @@
     min-height: 100vh;
 
     @media (resolution: 1.25dppx) {
-        padding: 60px 20px 0;
+        padding: 60px 20px 8px;
     }
 
     @include media-below('lg') {
-        padding: 45px 10px 0;
+        padding: 45px 10px 8px;
     }
 
     @include media-below("md") {
@@ -78,6 +80,7 @@
         flex-direction: row;
         place-content: space-evenly;
         position: relative;
+        flex-grow: 1;
 
         .inner-map-section {
             display: flex;
@@ -85,7 +88,8 @@
             align-items: center; 
             place-content: center; 
             position: relative; 
-            height: calc(100vh - 248px); 
+            // height: calc(100vh - 248px); 
+            height: inherit;
             // width: calc(100vw - 632px);
             // width: 100%;
             flex-grow: 1;
@@ -94,14 +98,14 @@
                 align-items: flex-start;
             }
 
-            @media (resolution: 1.25dppx) { 
-                // width: calc(100vw - 532px);
-                height: calc(100vh - 210px);
-            }
-            @media (max-width: 1280px) {
-                height: calc(100vh - 208px);
-                // width: calc(100vw - 482px);
-            }
+            // @media (resolution: 1.25dppx) { 
+            //     // width: calc(100vw - 532px);
+            //     height: calc(100vh - 210px);
+            // }
+            // @media (max-width: 1280px) {
+            //     height: calc(100vh - 208px);
+            //     // width: calc(100vw - 482px);
+            // }
         }
 
         .metrics-container {
@@ -149,7 +153,9 @@
 
 .map-meta-data-section {
     width: 600px;
-    margin-bottom: 12px;
+    // margin-bottom: 12px;
+    position: relative;
+    height: inherit;
 
     @media (resolution: 1.25dppx) {
         width: 500px;
@@ -293,26 +299,30 @@
 }
 
 .charts-main-container {
-    height: calc(100vh - 248px);
+    // height: calc(100vh - 248px);
     // overflow-y: scroll;
     box-shadow: -2px 0px 6px -4px rgba(0, 0, 0, 0.35) !important;
     border-radius: 4px;
     position: relative;
     background-color: $white;
+    height: 100%;
+    position: absolute;
+    width: 100%;
 
     @include media-below("md") {
-        height: 100%;
+        // height: 100%;
+        position: unset;
     }
 
-    @media (resolution: 1.25dppx) {
-        height: calc(100vh - 210px);
-    }
-    @media (max-width: 1280px) {
-        height: calc(100vh - 208px);
-    }
-    @include media-below('md') {
-        height: 100%;
-    }
+    // @media (resolution: 1.25dppx) {
+    //     height: calc(100vh - 210px);
+    // }
+    // @media (max-width: 1280px) {
+    //     height: calc(100vh - 208px);
+    // }
+    // @include media-below('md') {
+    //     height: 100%;
+    // }
 
     .chart-metrix-section {
         width: 100%;
@@ -431,7 +441,7 @@
     display: flex;
     gap: 12px;
     flex-direction: column;
-    padding-top: 84px;
+    // padding-top: 84px;
     height: inherit;
     overflow-y: scroll;
     overflow-x: hidden;

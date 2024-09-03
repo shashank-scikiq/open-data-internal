@@ -20,16 +20,23 @@ export class DetailCategoryFilterComponent implements OnInit {
 
   constructor(private appService: AppService) {}
 
-  updateOptions() {
-    // this.categories
-  }
-
   ngOnInit(): void {
     this.appService.filters$.subscribe((val: any) => {
       this.selectedCategory = val.category;
       this.selectedSubCategory = val.subCategory;
       this.choosedCategory = this.selectedCategory;
-    this.choosedSubCategory = this.selectedSubCategory;
+      this.choosedSubCategory = this.selectedSubCategory;
+    })
+    this.appService.filterUpdated$.subscribe((val: any) => {
+      if (val?.means == 'click' && val?.updated) {
+        const filter: any = this.appService.filters.value;
+        if (val.type == 'category') {
+          this.setChoosedSubCategory('c', filter.category);
+        }
+        if (val.type == 'subCategory') {
+          this.setChoosedSubCategory('sc', filter.subCategory);
+        }
+      }
     })
     this.appService.getCategories().subscribe(
       (response: any) => {
@@ -40,7 +47,18 @@ export class DetailCategoryFilterComponent implements OnInit {
     )
   }
 
-  setChoosedSubCategory(type: string, option: string) {
+  removeChoice(type: string) {
+    if (type == 'category') {
+      this.appService.setFilters('All', 'All');
+      this.appService.setFilterUpdated({updated: true, type: 'category', means: 'choosed'});
+    }
+    if (type == 'subCategory') {
+      this.appService.setFilters(this.choosedCategory, 'All')
+      this.appService.setFilterUpdated({updated: true, type: 'subCategory', means: 'choosed'});
+    }
+  }
+
+  setChoosedSubCategory(type: string, option: any) {
     if (type == 'sc') {
       if (this.selectedCategory == 'All' && option !== 'All') {
         this.selectedCategory = this.categories.find((category: any) => category.sub_category === option).category;
