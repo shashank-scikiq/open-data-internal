@@ -150,8 +150,8 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
   initCardData() {
     if (this.metrix != "map_total_zonal_commerce_metrics")
       this.getOverallData();
-    // this.getMaxData();
-    // this.getStatewiseBin();
+    this.getMaxData();
+    this.getStatewiseBin();
     this.getTopStateOrdersData();
     this.getTopDistrictOrdersData();
     // this.getSunBurstChartData();

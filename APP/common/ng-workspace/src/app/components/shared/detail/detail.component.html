@@ -60,6 +60,11 @@
                     </div>
                 </div>
                 <app-map [metrix]="activeMetric"></app-map>
+
+                <a [routerLink]="'/key-insight'" class="absolute key-insights-btn cursor-pointer">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    Key data insights
+                </a>
             </div>
             @if(pageTitle !== "Retail B2B") {
     

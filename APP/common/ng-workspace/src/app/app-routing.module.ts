@@ -5,6 +5,7 @@ import { DataDirectoryComponent } from './components/data-directory/data-directo
 import { DqReportComponent } from './components/dq-report/dq-report.component';
 import { LandingPageComponent } from './components/landing-page/landing-page.component';
 import { LayoutComponent } from './layout/layout.component';
+import { KeyInsightsComponent } from './components/shared/key-insights/key-insights.component';
 
 const routes: Routes = [
   {
@@ -31,6 +32,10 @@ const routes: Routes = [
       {
         path: 'license',
         component: LicenseComponent
+      },
+      {
+        path: 'key-insight',
+        component: KeyInsightsComponent
       },
       // {
       //   path: 'dq-report',

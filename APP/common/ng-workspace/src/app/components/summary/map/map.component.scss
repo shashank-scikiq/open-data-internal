@@ -6,8 +6,8 @@
     background-color: rgba(255, 255, 255, 0.407);
     padding: 8px;
     position: absolute;
-    bottom: 0;
-    right: 0;
+    bottom: 56px;
+    right: 8px;
 
     background-color: rgba(255, 255, 255, 0.4);
     border: 1px solid rgba(72, 94, 144, 0.16);
@@ -15,6 +15,7 @@
     @include media-below('md') {
         position: unset;
         width: fit-content;
+        bottom: 0;
     }
 
     .map-control-inner-section {

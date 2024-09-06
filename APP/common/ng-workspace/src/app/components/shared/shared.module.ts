@@ -19,6 +19,8 @@ import { RadialBarChartComponent } from '../global/charts/radial-bar-chart/radia
 import { SunburstChartComponent } from '../global/charts/sunburst-chart/sunburst-chart.component';
 import { DetailCategoryFilterComponent } from './detail-category-filter/detail-category-filter.component';
 import { KeyInsightsComponent } from './key-insights/key-insights.component';
+import { ColumnChartComponent } from '../global/charts/column-chart/column-chart.component';
+import { RouterModule } from '@angular/router';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -32,6 +34,7 @@ import { KeyInsightsComponent } from './key-insights/key-insights.component';
     IndiaMapComponent,
     DetailChartsSectionComponent,
     LineChartComponent,
+    ColumnChartComponent,
     TreeChartComponent,
     DownloadDialogComponent,
     RadialBarChartComponent,
@@ -46,6 +49,7 @@ import { KeyInsightsComponent } from './key-insights/key-insights.component';
     NgApexchartsModule,
     FormsModule,
     // PlotlyModule
+    RouterModule
   ],
   exports: [
     DetailComponent,
@@ -56,6 +60,7 @@ import { KeyInsightsComponent } from './key-insights/key-insights.component';
     StateMapComponent,
     DetailChartsSectionComponent,
     LineChartComponent,
+    ColumnChartComponent,
     TreeChartComponent,
     IndiaMapComponent,
     DownloadDialogComponent,

@@ -361,5 +361,8 @@ export class AppService {
     return this.http.get(`${this.baseUrl}api/landing-page/cumulative_orders/`);
   }
   
+  getKeyInsights() {
+    return this.http.get(`${this.baseUrl}api/v2/key-insight-data/`)
+  }
   
 }

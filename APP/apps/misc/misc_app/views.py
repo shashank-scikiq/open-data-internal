@@ -90,7 +90,7 @@ def data_dictionary_page(request):
 def prepare_echart_data_for_landing_page(df):
     columns = df.columns.tolist()
     data = [[i[0].strip(), i[1].strftime('%Y-%m-%d'), i[2]] for i in df.values.tolist()]
-    last_updated_date = df['date'].max().strftime('%B %d, %Y')
+    last_updated_date = df['date'].max().strftime('%B %Y')
 
     echart_config = json.loads(constant.LANDING_PAGE_ECHART_CONFIG).get('config', {})
 
@@ -119,5 +119,41 @@ def landing_page_echart_data(request):
         resp_data = data
 
     return JsonResponse(resp_data, safe=False)
+
+
+def key_insights(request):
+    return JsonResponse({
+        'insights': [
+            {
+                'cardText': 'Active Sellers with most orders',
+                'title': "Almost 7% of active sellers",
+                'subText': "are contributing to 80% orders with ONDC."
+            },
+            {
+                'cardText': 'Sub category with highest order threshold',
+                'title': "How many active sellers contribute to 80% orders?",
+                'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
+            },
+            {
+                'cardText': 'District with highest order threshold',
+                'title': "How many active sellers contribute to 80% orders?",
+                'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
+            },
+            {
+                'cardText': "Sub category with declining order's count since last month",
+                'title': "How many active sellers contribute to 80% orders?",
+                'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
+            },
+            # {
+            #     'cardText': "District with declining order's count since last month",
+            #     'title': "How many active sellers contribute to 80% orders?",
+            #     'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
+            # },
+            {
+                'cardText': "Total sellers Vs Active sellers",
+                'title': "How many active sellers contribute to 80% orders?",
+                'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
+            }
+        ]}, safe=False)
 
 

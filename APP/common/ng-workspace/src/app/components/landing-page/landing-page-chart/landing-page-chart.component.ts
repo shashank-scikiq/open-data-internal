@@ -11,7 +11,7 @@ declare var echarts: any;
 })
 export class LandingPageChartComponent implements OnInit {
   domainConfig: any;
-  private data: any;
+  private data: any = null;
   lastUpdatedAt: any;
   chartTitle: string = '';
   selectedFilterValue: string = 'Start Date';
@@ -48,6 +48,9 @@ export class LandingPageChartComponent implements OnInit {
   }
 
   run() {
+    if (!this.data) {
+      return
+    }
     let seriesList: any = [];
     let option: any = {};
     const chartDom = document.getElementById('main')!;
@@ -160,7 +163,7 @@ export class LandingPageChartComponent implements OnInit {
           confine: 'true',
           order: 'valueDesc',
           trigger: 'axis',
-          formatter: function (params: any) {
+          formatter: (params: any) => {
 
               let output = '<div class="custom-toottip" style="background-color: white; padding: 10px; color:black">';
 
@@ -172,8 +175,11 @@ export class LandingPageChartComponent implements OnInit {
               output += '<div style="font-weight: bold;color:white; background-color: #1C75BC;  padding: 10px 0 10px 10px; margin: -10px -10px 5px -10px;">' + monthYear + '</div>';
 
               // Adding data for each series
-              params.forEach(function (param: any) {
-                output += param.marker + ' ' + param.seriesName + ': <b>' + parseInt(param.value[2]).toLocaleString() + '</b><br>';
+              params.forEach((param: any) => {
+                const marker = `<span style="display:inline-block;margin-right:4px;border-radius:10px;width:10px;height:10px;background-color:${
+                  this.getLineColour(param.seriesName)?.color
+                };"></span>`
+                output += marker + ' ' + param.seriesName + ': <b>' + parseInt(param.value[2]).toLocaleString() + '</b><br>';
               });
 
               output += '</div>';
