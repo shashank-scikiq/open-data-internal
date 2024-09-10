@@ -363,7 +363,9 @@ class DataAccessLayer:
                 AD.delivered_orders,
                 AD.avg_items_per_order_in_district,
                 COALESCE(ASel.total_sellers, 0) AS total_sellers,
-                COALESCE(ASel.active_sellers, 0) AS active_sellers,
+                case when ASel.active_sellers = 0 or ASel.total_sellers = 0 then 0
+                    else round((ASel.active_sellers/ASel.total_sellers)*100, 2) end
+                AS active_sellers,
                 DR.delivery_district AS most_ordering_district
             FROM
                 AggregatedData AD
@@ -379,7 +381,9 @@ class DataAccessLayer:
                 ADT.delivered_orders,
                 ADT.avg_items_per_order_in_district,
                 COALESCE(ASelt.total_sellers, 0) AS total_sellers,
-                COALESCE(ASelt.active_sellers, 0) AS active_sellers,
+                case when ASelt.active_sellers = 0 or ASelt.total_sellers = 0 then 0
+                    else round((ASelt.active_sellers/ASelt.total_sellers)*100, 2) end
+                AS active_sellers,
                 SRnk.delivery_state AS most_ordering_district
             FROM
                 AggregatedDataTotal ADT
@@ -388,7 +392,6 @@ class DataAccessLayer:
             LEFT JOIN
                 StateRanking SRnk ON SRnk.rank_in_state = 1
         """
-
         query = query.format(table_name=table_name)
 
         orders_count = self.db_utility.execute_query(query, parameters)
@@ -523,11 +526,9 @@ class DataAccessLayer:
                         WHEN ASel.total_sellers < 3 THEN 0
                         ELSE ASel.total_sellers
                     END, 0) AS total_sellers,
-                COALESCE(
-                    CASE
-                        WHEN ASel.active_sellers < 3 THEN 0
-                        ELSE ASel.active_sellers
-                    END, 0) AS active_sellers
+                                case when ASel.active_sellers <= 3 or ASel.total_sellers = 0 then 0
+                    else round((ASel.active_sellers/ASel.total_sellers)*100, 2) end
+                AS active_sellers
             FROM
                 AggregatedData AD
             LEFT JOIN
@@ -544,11 +545,11 @@ class DataAccessLayer:
                         WHEN ASelt.total_sellers < 3 THEN 0
                         ELSE ASelt.total_sellers
                     END, 0) AS total_sellers,
-                COALESCE(
-                    CASE
-                        WHEN ASelt.active_sellers < 3 THEN 0
-                        ELSE ASelt.active_sellers
-                    END, 0) AS active_sellers
+                
+                
+                case when ASelt.active_sellers <= 3 or ASelt.total_sellers = 0 then 0
+                    else round((ASelt.active_sellers/ASelt.total_sellers)*100, 2) end
+                AS active_sellers
             FROM
                 AggregatedDataTotal ADT
             LEFT JOIN
@@ -1569,7 +1570,6 @@ class DataAccessLayer:
             ORDER BY 
                 order_demand DESC;
         '''
-
         df = self.db_utility.execute_query(query, parameters)
         return df
 

@@ -125,34 +125,52 @@ def key_insights(request):
     return JsonResponse({
         'insights': [
             {
-                'cardText': 'Active Sellers with most orders',
-                'title': "Almost 7% of active sellers",
-                'subText': "are contributing to 80% orders with ONDC."
+                'cardText': 'What % of active sellers contribute to 80% of the total Orders?',
+                'title': "7% of the Active Sellers ",
+                'subText': "contribute to 80% of the orders.",
+                'metaData': False
             },
             {
-                'cardText': 'Sub category with highest order threshold',
-                'title': "How many active sellers contribute to 80% orders?",
-                'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
+                'cardText': 'What % of the total sellers are active with atleast 1 order?',
+                'title': '10% of the total Sellers ',
+                'subText': "have completed atleast 1 order.",
+                'metaData': False
             },
             {
-                'cardText': 'District with highest order threshold',
-                'title': "How many active sellers contribute to 80% orders?",
-                'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
+                'cardText': 'What are the top 5 subcategories in retail, that contribute to the highest number of orders on the Network ?',
+                'title': '',
+                'subText': "",
+                'metaData': False,
+                'query': """    
+                    SELECT 
+                        sum(aa.total_orders_delivered) as total_orders_delivered, aa.sub_category, aa.category
+                        FROM ec2_all.sub_cat_district_wise_monthly_aggregates aa where domain_name = 'Retail' and order_year = 2024 and order_month = 8
+                        group by domain_name, sub_category, category
+                        order by total_orders_delivered desc, aa.category
+                    limit 5
+                """
             },
             {
-                'cardText': "Sub category with declining order's count since last month",
-                'title': "How many active sellers contribute to 80% orders?",
-                'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
+                'cardText': 'What are the top 3 sub categories that show highest growth since the last Month ? ',
+                'title': "",
+                'subText': "",
+                'metaData': False,
+                'query': """
+                    select upper(sub_category) as sub_category,
+                        current_period,
+                        prev_period,
+                        gain_percent
+                        from ec2_all.key_insights_sub_category
+                        where current_mtd_demand > 1
+                        order by gain_percent desc
+                        limit 3
+                    """
             },
-            # {
-            #     'cardText': "District with declining order's count since last month",
-            #     'title': "How many active sellers contribute to 80% orders?",
-            #     'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
-            # },
             {
-                'cardText': "Total sellers Vs Active sellers",
-                'title': "How many active sellers contribute to 80% orders?",
-                'subText': "There are 7% of active sellers who are contributing to 80% orders with ONDC."
+                'cardText': 'What is the distribution of states across Orders completed?',
+                'title': "",
+                'subText': "",
+                'metaData': False
             }
         ]}, safe=False)
 

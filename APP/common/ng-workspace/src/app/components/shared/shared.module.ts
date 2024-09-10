@@ -21,6 +21,7 @@ import { DetailCategoryFilterComponent } from './detail-category-filter/detail-c
 import { KeyInsightsComponent } from './key-insights/key-insights.component';
 import { ColumnChartComponent } from '../global/charts/column-chart/column-chart.component';
 import { RouterModule } from '@angular/router';
+import { BarChartComponent } from '../global/charts/bar-chart/bar-chart.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -40,7 +41,8 @@ import { RouterModule } from '@angular/router';
     RadialBarChartComponent,
     SunburstChartComponent,
     DetailCategoryFilterComponent,
-    KeyInsightsComponent
+    KeyInsightsComponent,
+    BarChartComponent
   ],
   imports: [
     CommonModule,
@@ -66,7 +68,8 @@ import { RouterModule } from '@angular/router';
     DownloadDialogComponent,
     RadialBarChartComponent,
     SunburstChartComponent,
-    DetailCategoryFilterComponent
+    DetailCategoryFilterComponent,
+    BarChartComponent
   ]
 })
 export class SharedModule { }

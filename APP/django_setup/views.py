@@ -14,7 +14,7 @@ from datetime import datetime
 def prepare_echart_data_for_landing_page(df):
     columns = df.columns.tolist()
     data = [[i[0].strip(), i[1].strftime('%Y-%m-%d'), i[2]] for i in df.values.tolist()]
-    last_updated_date = df['date'].max().strftime('%B %d, %Y')
+    last_updated_date = df['date'].max().strftime('%B %Y')
 
     echart_config = json.loads(constant.LANDING_PAGE_ECHART_CONFIG).get('config', {})
 
@@ -60,7 +60,7 @@ def landing_page_cumulative_orders(request):
         db_util = DatabaseUtility(alias='default')
         df = db_util.execute_query(landing_page_cumulative_orders_query, return_type='df')
         resp_data = {
-            "updatedAt": datetime.strptime(constant.LANDING_PAGE_ECHART_DATA_TILL, "%Y-%m-%d").strftime("%B %d, %Y"),
+            "updatedAt": datetime.strptime(constant.LANDING_PAGE_ECHART_DATA_TILL, "%Y-%m-%d").strftime("%B %Y"),
             "order_count": int(df.values.tolist()[0][0]) 
         }
         cache.set(p_d, resp_data, constant.CACHE_EXPIRY)

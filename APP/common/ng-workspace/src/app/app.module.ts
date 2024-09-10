@@ -45,7 +45,7 @@ import { DatePickerComponent } from './components/global/forms/date-picker/date-
     PincodeMappingComponent,
     DomainMappingComponent,
     DataDirectoryDetailComponent,
-    // DqReportComponent,S
+    // DqReportComponent,
     LandingPageComponent,
     CommonLayoutComponent,
     LayoutComponent,

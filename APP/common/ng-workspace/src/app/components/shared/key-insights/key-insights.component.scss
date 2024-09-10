@@ -5,9 +5,10 @@
 }
 
 .key-insight-main-container {
-    padding: 80px 20px;
+    padding: 48px 20px;
 
     .carousel {
+      padding: 48px 0;
         display: flex;
         width: 100%;
         height: 100%;
@@ -40,7 +41,7 @@
           width: 270px;
           height: 270px;
           border-radius: 12px;
-          padding: 12px;
+          padding: 12px 24px;
           box-shadow: 0px 2px 8px 0px rgba(50, 50, 50, 0.5);
           position: absolute;
           transition: all .3s ease-in;
@@ -116,35 +117,65 @@
           text-align: center;
         }
 
-        .title {
-          animation: anim-info-title .5s ease-out 0s;
-          font-size: 1.25rem;
-          font-weight: 700;
-          line-height: 1.5625rem;
-          margin-top: 10px;
-          text-align: center;
-          color: $grey900;
-        }
+      }
+      .title {
+        animation: anim-info-head .5s ease-out 0s;
+        font-size: 1.25rem;
+        font-weight: 700;
+        line-height: 1.5625rem;
+        margin-top: 10px;
+        text-align: center;
+        color: $grey900;
+      }
 
-        .sub-title {
-          animation: anim-info-desc .5s ease-out 0s;
-          font-size: .875rem;
-          line-height: 1.0625rem;
-          margin-top: 20px;
-          text-align: center;
-          width: 100%;
-          color: $grey800;
-        }
+      .sub-title {
+        animation: anim-info-head .5s ease-out 0s;
+        font-size: .875rem;
+        line-height: 1.0625rem;
+        margin-top: 8px;
+        text-align: center;
+        width: 100%;
+        color: $grey800;
+      }
 
-        @keyframes anim-info-head {
-          0% {
-              margin-top: 30px;
-              opacity: 0;
-          }
-          100% {
-              margin-top: 0;
-              opacity: 1;
-          }
+      .view-btn {
+        padding: 8px 16px;
+        border-radius: 24px;
+        border: 2px solid $blue800;
+        background: $blue600;
+        color: white;
+        font-weight: 700;
+        margin-top: 12px;
+        cursor: pointer;
+      }
+
+      @keyframes anim-info-head {
+        0% {
+            margin-top: 30px;
+            opacity: 0;
+        }
+        100% {
+            margin-top: 0;
+            opacity: 1;
         }
       }
+
+      .meta-data-container {
+        margin: 12px auto;
+        width: 100%;
+        max-width: 720px;
+      }
+}
+
+.card-body-section {
+
+  display: flex;
+  flex-wrap: wrap;
+  place-content: space-evenly;
+  width: 640px;
+  margin: auto;
+  .inner-card {
+      width: 200px;
+
+  }
 }

@@ -9,19 +9,19 @@ export class ColumnChartComponent implements OnInit {
   chartOptions: any = {
     series: [
       {
-        name: "Active sellers %",
-        data: [2232, 1232, 1532, 1732, 1432]
-      },
-      {
         name: "Total sellers",
         data: [2345, 2445, 2545, 2355, 2605]
+      },
+      {
+        name: "Active sellers %",
+        data: [2232, 1232, 1532, 1732, 1432]
       }
       
     ],
     chart: {
       type: "bar",
-      height: 350,
-      stacked: true,
+      height: 280,
+      // stacked: true,
       toolbar: {
         show: false
       },
@@ -33,11 +33,11 @@ export class ColumnChartComponent implements OnInit {
       {
         breakpoint: 480,
         options: {
-          legend: {
-            position: "bottom",
-            offsetX: -10,
-            offsetY: 0
-          }
+          // legend: {
+          //   position: "bottom",
+          //   offsetX: -10,
+          //   offsetY: 0
+          // }
         }
       }
     ],
@@ -95,10 +95,10 @@ export class ColumnChartComponent implements OnInit {
             }
           }
         ],
-    legend: {
-      position: "top",
-      offsetY: 40
-    },
+    // legend: {
+    //   position: "top",
+    //   offsetY: 40
+    // },
     fill: {
       opacity: 1
     },
@@ -114,69 +114,6 @@ export class ColumnChartComponent implements OnInit {
       // },
     }
   };
-
-  // chartOptions = {
-  //   series: [
-  //     {
-  //       name: "Total Sellers",
-  //       type: 'bar',
-  //       data: [500, 600, 700, 800, 900]  // Total Sellers data in numbers
-  //     },
-  //     {
-  //       name: "Active Sellers (%)",
-  //       type: 'line',  // Use a line or bar for percentage display
-  //       data: [30, 40, 50, 60, 70] // Percentage of active sellers
-  //     }
-  //   ],
-  //   chart: {
-  //     height: 350,
-  //     type: 'bar',
-  //     stacked: false
-  //   },
-  //   plotOptions: {
-  //     bar: {
-  //       horizontal: false,
-  //       columnWidth: '55%',
-  //       endingShape: 'rounded'
-  //     }
-  //   },
-  //   dataLabels: {
-  //     enabled: false  // Disable data labels on the bars
-  //   },
-  //   xaxis: {
-  //     categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May'], // Months or any other category labels
-  //   },
-  //   yaxis: [
-  //     {
-  //       title: {
-  //         text: "Total Sellers (Numbers)"
-  //       },
-  //       labels: {
-  //         formatter: (value: any) => {
-  //           return value.toFixed(0); // Display numbers without decimals
-  //         }
-  //       }
-  //     },
-  //     {
-  //       opposite: true,  // Position on the right side
-  //       title: {
-  //         text: "Active Sellers (%)"
-  //       },
-  //       labels: {
-  //         formatter:  (value: any) => {
-  //           return value.toFixed(0) + "%"; // Display percentage
-  //         }
-  //       }
-  //     }
-  //   ],
-  //   tooltip: {
-  //     shared: true,
-  //     intersect: false
-  //   },
-  //   title: {
-  //     text: 'Total Sellers (Numbers) and Active Sellers (%)'
-  //   }
-  // };
 
   ngOnInit(): void { }
 
