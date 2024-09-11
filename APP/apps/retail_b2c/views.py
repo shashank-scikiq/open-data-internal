@@ -83,7 +83,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             "Total Orders": 'Count of Distinct Network Order Id within the selected range.',
             "Districts": 'Unique count of Districts where orders have been delivered in the latest month within the date range. Districts are fetched using districts mapping using End pincode',
             "Total sellers": 'Unique count of combination of (Provider ID + Seller App) within the date range',
-            "Active sellers (in %)": 'Unique count of combination of active (Provider ID + Seller App) within the date range',
+            "Active sellers": 'Unique count of combination of active (Provider ID + Seller App) within the date range',
             "records the highest order count": 'Maximum Orders by State/Districts, basis the date range. It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.',
             "No. of items per order": "Average items per orders"
         }
@@ -236,7 +236,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                             
                         ),
                         self.create_metric_data(
-                            int(row['active_sellers_current']), 'Active sellers (in %)', row['active_sellers_count_delta']
+                            int(row['active_sellers_current']), 'Active sellers', row['active_sellers_count_delta'], ' %'
                             
                         ),
                         self.create_metric_data(
@@ -276,7 +276,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                             row['total_sellers_current'], 'Total sellers', 0
                         ),
                         self.create_metric_data(
-                            row['active_sellers_current'], 'Active sellers (in %)', 0
+                            row['active_sellers_current'], 'Active sellers', 0, ' %'
                         ),
                         self.create_metric_data(
                             row['avg_items_per_order_in_district_current'], 'No. of items per order', 0
@@ -292,23 +292,23 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                     "top_card_data": top_card_data
                 }
 
-    def create_metric_data(self, count, heading, delta):
+    def create_metric_data(self, count, heading, delta, count_suffix=None):
         if heading == 'Total sellers' and count <3:
             return {
                 "type": 'max_state',
                 "heading": 'Total sellers',
                 "mainText": 'No Data To Display'
             }
-        elif heading == 'Active sellers (in %)' and count <3:
+        elif heading == 'Active sellers' and count <3:
             return {
                 "type": 'max_state',
-                "heading": 'Active sellers (in %)',
+                "heading": 'Active sellers',
                 "mainText": 'No Data To Display'
             }
         else:
             return {
                 "type": 'default',
-                "count": int(count),
+                "count": int(count) if not count_suffix else (str(count) + count_suffix),
                 "heading": heading,
                 "icon": 'trending_up' if delta >= 0 else 'trending_down',
                 "positive": bool(delta >= 0),

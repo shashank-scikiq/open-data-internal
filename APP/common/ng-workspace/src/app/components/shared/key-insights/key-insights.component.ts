@@ -38,6 +38,7 @@ export class KeyInsightsComponent implements OnInit {
       type: "bar",
       height: 350,
       stacked: true,
+      // stackType: "100%",
       toolbar: {
         show: false,
         tools: {

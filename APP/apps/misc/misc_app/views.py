@@ -127,12 +127,12 @@ def key_insights(request):
             {
                 'cardText': 'What % of active sellers contribute to 80% of the total Orders?',
                 'title': "7% of the Active Sellers ",
-                'subText': "contribute to 80% of the orders.",
+                'subText': "contribute to 80% of the orders",
                 'metaData': False
             },
             {
                 'cardText': 'What % of the total sellers are active with atleast 1 order?',
-                'title': '10% of the total Sellers ',
+                'title': '10% of the total sellers ',
                 'subText': "have completed atleast 1 order.",
                 'metaData': False
             },
@@ -142,12 +142,10 @@ def key_insights(request):
                 'subText': "",
                 'metaData': False,
                 'query': """    
-                    SELECT 
-                        sum(aa.total_orders_delivered) as total_orders_delivered, aa.sub_category, aa.category
-                        FROM ec2_all.sub_cat_district_wise_monthly_aggregates aa where domain_name = 'Retail' and order_year = 2024 and order_month = 8
-                        group by domain_name, sub_category, category
-                        order by total_orders_delivered desc, aa.category
-                    limit 5
+                    select sum(total_orders_delivered) as total_order_delivered, sub_category, category 
+                    from ec2_all.sub_category_level_orders
+                    where order_date between '2024-08-01' and '2024-08-31'
+                    group by sub_category, category order by total_order_delivered desc
                 """
             },
             {
@@ -156,14 +154,27 @@ def key_insights(request):
                 'subText': "",
                 'metaData': False,
                 'query': """
-                    select upper(sub_category) as sub_category,
-                        current_period,
-                        prev_period,
-                        gain_percent
-                        from ec2_all.key_insights_sub_category
-                        where current_mtd_demand > 1
-                        order by gain_percent desc
-                        limit 3
+                    with  A_table as (
+                        select sum(total_orders_delivered) as total_order_delivered, sub_category, category , '2024-08' as month
+                    from ec2_all.sub_category_level_orders
+                    where order_date between '2024-08-01' and '2024-08-31'
+                    group by sub_category, category 
+                    ), 
+                    B_table as (
+                        select sum(total_orders_delivered) as total_order_delivered, sub_category, category , '2024-07' as month
+                    from ec2_all.sub_category_level_orders
+                    where order_date between '2024-07-01' and '2024-07-31'
+                    group by sub_category, category 
+                    ) 
+                        select (A.total_order_delivered ) as aug_order,
+                        (A.total_order_delivered - B.total_order_delivered) as aug_order_diff,
+                        round(((A.total_order_delivered - B.total_order_delivered)*100.0)/B.total_order_delivered, 2) as aug_order_diff_percentage,
+                        B.total_order_delivered as jul_order,
+                        B.sub_category, B.category
+                        from A_table A inner join B_table B on A.sub_category = B.sub_category
+                    order by aug_order_diff_percentage desc
+
+
                     """
             },
             {

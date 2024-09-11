@@ -45,7 +45,7 @@
                             @if(pageTitle !== "Logistics") {
                                 <button mat-fab
                                     [ngClass]="{'metric-button active-seller': true, 'active-seller-active': activeMetric === metrics[1].title}"
-                                    (click)="handleClick(metrics[1])" nz-tooltip nzTooltipPlacement="top"
+                                    (click)="handleClick(metrics[1])" nz-tooltip nzTooltipPlacement="right"
                                     nzTooltipTitle="Sellers">
                                     <img src="static/assets/img/sellers.png" alt="Supply" class="icon-menu active-seller-icon">
                                 </button>
