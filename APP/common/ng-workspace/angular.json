@@ -38,6 +38,7 @@
             ],
             "styles": [
               "src/styles.scss",
+              "node_modules/leaflet/dist/leaflet.css",
               "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
               "node_modules/@fortawesome/fontawesome-free/css/all.css"
             ],
@@ -115,7 +116,8 @@
             ],
             "styles": [
               "src/styles.scss",
-              "node_modules/ng-zorro-antd/ng-zorro-antd.min.css"
+              "node_modules/ng-zorro-antd/ng-zorro-antd.min.css",
+              "node_modules/leaflet/dist/leaflet.css"
             ],
             "scripts": [
               "node_modules/apexcharts/dist/apexcharts.min.js"

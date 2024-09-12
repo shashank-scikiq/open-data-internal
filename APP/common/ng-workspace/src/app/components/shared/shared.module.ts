@@ -22,6 +22,7 @@ import { KeyInsightsComponent } from './key-insights/key-insights.component';
 import { ColumnChartComponent } from '../global/charts/column-chart/column-chart.component';
 import { RouterModule } from '@angular/router';
 import { BarChartComponent } from '../global/charts/bar-chart/bar-chart.component';
+import { PincodeLevelMapViewComponent } from './pincode-level-map-view/pincode-level-map-view.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -42,7 +43,8 @@ import { BarChartComponent } from '../global/charts/bar-chart/bar-chart.componen
     SunburstChartComponent,
     DetailCategoryFilterComponent,
     KeyInsightsComponent,
-    BarChartComponent
+    BarChartComponent,
+    PincodeLevelMapViewComponent
   ],
   imports: [
     CommonModule,
@@ -69,7 +71,8 @@ import { BarChartComponent } from '../global/charts/bar-chart/bar-chart.componen
     RadialBarChartComponent,
     SunburstChartComponent,
     DetailCategoryFilterComponent,
-    BarChartComponent
+    BarChartComponent, 
+    PincodeLevelMapViewComponent
   ]
 })
 export class SharedModule { }

@@ -72,23 +72,40 @@ export class RightSidenavComponent implements OnInit {
           },
           {
             title: 'Logistics',
-            // type: 'accordian',
-            type: 'default',
+            type: 'accordian',
+            // type: 'default',
             icon: 'fa-solid fa-truck-arrow-right',
             url: 'logistics',
             disabled: false,
             options: [
               {
-                title: 'Logistic Overall',
+                title: 'Orders',
                 url: 'logistics',
                 disabled: false,
                 external: false
               },
               {
-                title: 'Logistic Detail',
+                title: 'Search by city',
                 url: 'logistics/detail',
                 disabled: false,
-                external: false
+                external: false,
+                type: 'accordian',
+                options: [
+                  {
+                    title: 'Delhi',
+                    url: 'logistics/search_by_city',
+                    disabled: false,
+                    external: false,
+                    params: {city: 'Delhi'}
+                  },
+                  {
+                    title: 'Bangalore',
+                    url: 'logistics/search_by_city',
+                    disabled: false,
+                    external: false,
+                    params: {city: 'Bangalore'}
+                  }
+                ] 
               }
             ]
           }

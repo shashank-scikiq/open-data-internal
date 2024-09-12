@@ -1,0 +1,39 @@
+@import "colors";
+@import "breakpoints";
+
+.main-pincode-level-map-container {
+    padding: 60px 16px;
+
+    #map {
+        height: 600px;
+        width: 100%;
+        z-index: 1;
+        border: none;
+        background: none;
+        outline: none;
+    }
+
+    .heading {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.25;
+
+        @media (max-width: 1366px) {
+            font-size: 18px;
+        }
+    }
+    .legend, .filter-section {
+        background-color: white;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+    }
+    .filter-section {
+        margin-bottom: 10px;
+    }
+}
+::ng-deep {
+    .leaflet-control-attribution {
+        opacity: 0 !important;
+    }
+}
