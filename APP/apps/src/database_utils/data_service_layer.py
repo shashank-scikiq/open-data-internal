@@ -118,3 +118,7 @@ class DataService:
     def get_state_sellers(self, start_date, end_date, category=None, sub_category=None,
                              domain_name=None, state=None, seller_type='Total'):
         return self.dal.fetch_state_sellers(start_date, end_date, category, sub_category, domain_name, state)
+
+
+    def get_logistic_searched_data(self, city):
+        return self.dal.fetch_logistic_searched_data(city)

@@ -11,6 +11,6 @@ urlpatterns = [
     re_path(r'^', include('apps.logistics_all.logistics_all_app.urls')),
     re_path(r'^', include('apps.retail_b2b.urls')),
     re_path(r'^', include('apps.retail_b2c.urls')),
-
+    re_path(r'^', include('apps.logistics_search.urls')),
     re_path(r'^', include('apps.misc.misc_app.urls')),
 ]

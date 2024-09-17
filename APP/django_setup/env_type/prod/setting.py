@@ -6,6 +6,7 @@ INSTALL_APP = [
     'apps.logistics_all.logistics_all_app',
     'apps.retail_b2b',
     'apps.retail_b2c',
+    'apps.logistics_search'
 ]
 
 
