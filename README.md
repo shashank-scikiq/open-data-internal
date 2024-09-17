@@ -10,3 +10,6 @@ kubectl create secret generic ondc-open-data-webapp-aws-secret --from-literal=AW
 ```cmd
 kubectl create secret generic ondc-open-data-webapp-aws-secret-key --from-literal=AWS_SECRET_KEY=****** -n ondc-open-data
 ```
+
+
+
