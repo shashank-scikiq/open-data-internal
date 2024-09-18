@@ -1,5 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { NzDrawerPlacement } from 'ng-zorro-antd/drawer';
+
+import { Component, AfterViewInit, OnInit } from '@angular/core';
+import { AppService } from '@openData/app/core/api/app/app.service';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-key-insights',
@@ -7,57 +9,217 @@ import { NzDrawerPlacement } from 'ng-zorro-antd/drawer';
   styleUrl: './key-insights.component.scss'
 })
 export class KeyInsightsComponent implements OnInit {
-  data: any = {
-    "seller_card": {
-      "percentage_seller": 7,
-      "percentage_of_orders": "80",
-      "current_period": "Jun 01, 2024 to Jun 06, 2024"
+
+  elems: any = [];
+  insights: any = [];
+  metaDataChecked: boolean = false;
+  activeItem: any = null;
+
+  chartOptions: any = {
+    series: [
+      {
+        name: "Active Sellers",
+        data: [24,
+          90,
+          11,
+          14,
+          35,
+          26,
+          12,
+          8,
+          16]
+      },
+      // {
+      //   name: "Sellers",
+      //   data: [53, 32, 33, 52, 13]
+      // }
+    ],
+    chart: {
+      type: "bar",
+      height: 350,
+      stacked: true,
+      // stackType: "100%",
+      toolbar: {
+        show: false,
+        tools: {
+          download: false,
+          selection: false,
+          zoom: true,
+          zoomin: true,
+          zoomout: true,
+          pan: false,
+          reset: true
+        }
+      },
+      zoom: {
+        enabled: false,
+      }
     },
-    "state_order_volume": {
-      "delta_volume_max_state": 68.0,
-      "state_name": "KARNATAKA",
-      "current_period": "Jun 01, 2024 to Jun 06, 2024",
-      "previous_period": "May 01, 2024 to May 06, 2024"
+    plotOptions: {
+      bar: {
+        horizontal: true
+      }
     },
-    "state_order_volume_weekwise": {
-      "delta_volume_max_state": 1218.0,
-      "state_name": "BIHAR",
-      "current_period": "Jun 01, 2024 to Jun 06, 2024",
-      "previous_period": "May 01, 2024 to May 06, 2024"
+    stroke: {
+      width: 1,
+      colors: ["#fff"]
     },
-    "district_order_volume": {
-      "delta_volume_max_state": 867.0,
-      "district_name": "HISAR",
-      "current_period": "Jun 01, 2024 to Jun 06, 2024",
-      "previous_period": "May 01, 2024 to May 06, 2024"
+    // title: {
+    //   text: "Fiction Books Sales"
+    // },
+    xaxis: {
+      categories: [
+        "Appliances",
+        "Auto Components & Accessories",
+        "BPC",
+        "Electronics",
+        "F&B",
+        "Fashion",
+        "Grocery",
+        "Health & Wellness",
+        "Home & Kitchen",
+      ],
+      labels: {
+        formatter: (val: any) => {
+          return val + "%";
+        }
+      }
     },
-    "district_order_volume_weekwise": {
-      "delta_volume_max_state": 700.0,
-      "district_name": "CHITTOOR",
-      "current_period": "Jun 03, 2024 to Jun 06, 2024",
-      "previous_period": "May 27, 2024 to May 30, 2024"
+    yaxis: {
+      title: {
+        text: undefined
+      }
     },
-    "subcategory_order_volume": {
-      "delta_volume_max_subcat": 7293,
-      "sub_category": "NUTRITION AND FITNESS SUPPLEMENTS",
-      "current_period": "Jun 01, 2024 - Jun 06, 2024",
-      "previous_period": "May 01, 2024 - May 06, 2024"
+    tooltip: {
+      y: {
+        formatter: (val: any) => {
+          return val + "%";
+        }
+      }
+    },
+    fill: {
+      opacity: 1
+    },
+    legend: {
+      position: "top",
+      horizontalAlign: "left",
+      offsetX: 40
+    }
+  };
+
+  stateWiseBin: any = {
+    "< 1,000": [
+        " Jharkhand",
+        " Chhattisgarh",
+        " Uttarakhand",
+        " Himachal Pradesh",
+        " Manipur",
+        " Tripura",
+        " Goa",
+        " Meghalaya",
+        " Arunachal Pradesh",
+        " Nagaland",
+        " Mizoram",
+        " Chandigarh",
+        " Sikkim",
+        " Puducherry",
+        " Ladakh",
+        " Dadra And Nagar Haveli And Daman And Diu",
+        " Andaman And Nicobar Islands",
+        " Lakshadweep"
+    ],
+    "1,000 - 5,000": [
+        " Rajasthan",
+        " Tamil Nadu",
+        " Gujarat",
+        " Madhya Pradesh",
+        " Kerala",
+        " Bihar",
+        " Andhra Pradesh",
+        " Punjab",
+        " Assam",
+        " Odisha",
+        " Jammu And Kashmir"
+    ],
+    "5,000 - 10,000": [
+        " Telangana",
+        " West Bengal"
+    ],
+    "> 10,000": [
+        " Karnataka",
+        " Delhi",
+        " Uttar Pradesh",
+        " Maharashtra",
+        " Haryana"
+    ]
+}
+
+  constructor(private appService: AppService) {}
+
+  ngOnInit(): void {
+    this.appService.getKeyInsights().subscribe(
+      (response: any) => {
+        this.elems = response.insights;
+        this.activeItem = this.elems[2];
+        delay(1000)
+        this.setCards();
+      }, (error: Error) => {
+        console.log(error);
+      }
+    )
+  }
+
+  setCards(): void {
+    let count = -2;
+    this.elems.forEach((ele: any) => {
+      ele.pos = count;
+      ele.active = Boolean(count == 0);
+      count+=1;
+    })
+  }
+
+  onCardClick(cardPos: number): void {
+    const clickedItem = this.elems.find((item: any) => item.pos === cardPos);
+    this.activeItem = clickedItem;
+
+
+    if (clickedItem && !clickedItem.active) {
+      this.update(clickedItem);
     }
   }
 
-  visible = false;
-  placement: NzDrawerPlacement = 'bottom';
-  open(): void {
-    this.visible = true;
+  private update(newActive: { pos: number; active: boolean }): void {
+    const newActivePos = newActive.pos;
+
+    // Find current, prev, next, first, last elements
+    const current = this.elems.find((item: any) => item.pos === 0);
+    const prev = this.elems.find((item: any) => item.pos === -1);
+    const next = this.elems.find((item: any) => item.pos === 1);
+    const first = this.elems.find((item: any) => item.pos === -2);
+    const last = this.elems.find((item: any) => item.pos === 2);
+
+    if (current) {
+      current.active = false;
+      this.metaDataChecked = false;
+    }
+
+    // Update the positions of the elements
+    [current, prev, next, first, last].forEach(item => {
+      if (item) {
+        item.pos = this.getPos(item.pos, newActivePos);
+        item.active = item.pos === 0; // Mark the current item as active
+      }
+    });
   }
 
-  close(): void {
-    this.visible = false;
-  }
+  private getPos(current: number, active: number): number {
+    const diff = current - active;
 
-  constructor() { }
+    if (Math.abs(diff) > 2) {
+      return -current;
+    }
 
-  ngOnInit(): void {
-
+    return diff;
   }
 }
+

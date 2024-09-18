@@ -1,31 +1,33 @@
 <div class="chart-section">
     <div class="chart-inner-section">
-        <p class="margin-0 font-bolder font-lg open-data-grey-900">
-            {{chartTitle}}
-        </p>
         @if(domainConfig) {
-        <div class="legend-section">
-            @for(domain of domainConfig.domains; track domain; let i = $index) {
-            <div [ngStyle]="{
-                            'background-color': domainConfig.colorLight[i],
-                            }" class="legend-container">
-                <i class="fa-solid fa-circle" [ngStyle]="{'color': domainConfig.colorDark[i]}"></i>
-                <p class="margin-0">{{domain}}</p>
+            <div class="title-section margin-bottom-4"> 
+                <p class="margin-0 font-bolder font-lg graph-title">
+                    {{chartTitle}}
+                </p>
+                <div class="legend-section">
+                    @for(domain of domainConfig.domains; track domain; let i = $index) {
+                    <div [ngStyle]="{
+                                    'background-color': domainConfig.colorLight[i],
+                                    }" class="legend-container">
+                        <i class="fa-solid fa-circle" [ngStyle]="{'color': domainConfig.colorDark[i]}"></i>
+                        <p class="margin-0">{{domain}}</p>
+                    </div>
+                    }
+                </div>
             </div>
-            }
-        </div>
         <div class="filter-section">
             <div class="filter-container">
-                <p class="text margin-0 open-data-grey-800">Filter by</p>
+                <p class="text margin-0">Filter by</p>
                 <nz-select nzsize="small" [(ngModel)]="selectedFilterValue" (ngModelChange)="updateSelection($event)">
                     @for(option of options; track option) {
                     <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
                     }
                 </nz-select>
             </div>
-            <p class="text margin-0 open-data-grey-800">Last updated at {{lastUpdatedAt}}</p>
+            <p class="text margin-0">Last updated at {{lastUpdatedAt}}</p>
         </div>
         }
-        <div id="main" style="width: 100%; height: 400px;"></div>
+        <div id="main" style="width: 100%; height: 480px;"></div>
     </div>
 </div>

@@ -3,7 +3,8 @@
 from django.urls import path
 from .views import (
     fetch_license, data_dictionary_page, data_dictionary, pincode, 
-    domain, landing_page_echart_data
+    key_insights,
+    domain, #landing_page_echart_data
 )
 
 urlpatterns = [
@@ -12,6 +13,7 @@ urlpatterns = [
     path('api/pincode/', pincode, name='pincode'),
     path('api/domain/', domain, name='domain'),
     path('license/', fetch_license, name='license'),
-    path('api/landing-page/echart/', landing_page_echart_data, name='landing_page_echart_data')
+    path('api/v2/key-insight-data/', key_insights, name='key_insights')
+    # path('api/landing-page/echart/', landing_page_echart_data, name='landing_page_echart_data')
 
 ]

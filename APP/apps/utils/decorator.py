@@ -2,15 +2,12 @@ import os
 import pandas as pd
 from django.db import connection
 from django_setup.settings import APP_VERSION
-from apps.logging_conf import log_function_call
 import logging
-import sys
+from apps.utils.constant import ONDC_DASHBOARD_VERSION_TABLE
+
+ONDC_DASHBOARD_VERSION_TABLE = ONDC_DASHBOARD_VERSION_TABLE
 
 
-ONDC_DASHBOARD_VERSION_TABLE = os.getenv('ONDC_DASHBOARD_VERSION_TABLE', 'ondc_dashboard_version')
-
-
-# @log_function_call
 def verify_version():
     query = f"""
         SELECT

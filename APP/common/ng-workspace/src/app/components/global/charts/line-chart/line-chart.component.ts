@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { AppService } from '@openData/app/core/api/app/app.service';
 import { delay } from 'rxjs';
+import { formatNumber } from '@openData/app/core/utils/global';
 
 @Component({
   selector: 'app-line-chart',
@@ -98,6 +99,9 @@ export class LineChartComponent implements OnChanges, OnInit {
                     fontSize: '11px',
                     fontWeight: 400,
                     cssClass: ''
+                },
+                formatter: function (value:any) {
+                  return formatNumber(value.toFixed(0)); // Custom formatting for Y-axis labels
                 }
             },
             axisBorder: {
@@ -166,7 +170,7 @@ export class LineChartComponent implements OnChanges, OnInit {
           if (this.metrix == "map_total_zonal_commerce_metrics") {
             return val + "%";
           }
-          return val;
+          return val ? formatNumber(val) : 0;
         },
         title: {
           formatter: (seriesName: any) => seriesName,

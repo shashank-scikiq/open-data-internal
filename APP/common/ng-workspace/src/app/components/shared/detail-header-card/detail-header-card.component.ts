@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, HostListener, OnInit, ViewChild } from '@angular/core';
 import { AppService } from '@openData/app/core/api/app/app.service';
 import { MapService } from '@openData/app/core/api/map/map.service';
 import { StateCode } from '@openData/core/utils/map';
+import { delay } from 'rxjs';
 
 @Component({
   selector: 'app-detail-header-card',
@@ -13,7 +14,12 @@ export class DetailHeaderCardComponent implements OnInit {
   isLoading: boolean = false;
   selectedStateCode: string = 'TT';
   topCardsDelta: any = {};
+  tooltipText: any = {};
   prevDateRange: string = '';
+
+  scrollEnabled: boolean = false;
+
+  @ViewChild('slider', { read: ElementRef }) public slider: ElementRef<any> | undefined;
 
   constructor(
     private appService: AppService,
@@ -25,7 +31,7 @@ export class DetailHeaderCardComponent implements OnInit {
       this.getCardData();
     });
     this.appService.filterUpdated$.subscribe((val: any) => {
-      if (val) {
+      if (val.updated) {
         this.getCardData();
       }
     });
@@ -50,6 +56,7 @@ export class DetailHeaderCardComponent implements OnInit {
       (response: any) => {
         if (Object.keys(response.top_card_data).length) {
           this.topCardsDelta = response.top_card_data;
+          this.tooltipText = response.tooltip_text,
           this.prevDateRange = response.prev_date_range;
           this.updateTopCardsDelta();
         }
@@ -63,54 +70,29 @@ export class DetailHeaderCardComponent implements OnInit {
 
   updateTopCardsDelta() {
     if (Object.keys(this.topCardsDelta).length) {
-      // this.upperCardData = [
-      //   {
-      //     type: 'default',
-      //     count: this.formatNumber(this.topCardsDelta[this.selectedStateCode].total_confirmed_orders),
-      //     heading: 'Total Orders',
-      //     tooltipText: 'Count of Distinct Network Order Id within the selected range. For Filters, The Total Orders  are within that category/sub_category',
-      //     icon: 'trending_down', // trending_up
-      //     positive: Boolean(parseFloat(this.topCardsDelta[this.selectedStateCode].cnf_delta) >= 0),
-      //     percentageCount: this.topCardsDelta[this.selectedStateCode].cnf_delta,
-      //   },
-      //   // {
-      //   //   count: 220,
-      //   //   heading: 'Avg. Items Per Order',
-      //   //   tooltipText: 'Total Number of Items ordered / Total Unique Orders',
-      //   //   icon: 'trending_down', // trending_up
-      //   //   percentageCount: '12',
-      //   //   positive: true,
-  
-      //   // },
-      //   {
-      //     type: 'default',
-      //     count: this.formatNumber(this.topCardsDelta[this.selectedStateCode].total_districts),
-      //     heading: 'Total active districts',
-      //     tooltipText: 'Unique count of Districts where order has been delivered within the date range. Districts are fetched using districts mapping using End pincode',
-      //     icon: 'trending_down', // trending_up
-      //     positive: Boolean(parseFloat(this.topCardsDelta[this.selectedStateCode].district_delta) >= 0),
-      //     percentageCount: this.topCardsDelta[this.selectedStateCode].district_delta,
-      //   },
-      //   {
-      //     type: 'default',
-      //     count: this.formatNumber(this.topCardsDelta[this.selectedStateCode].total_active_sellers),
-      //     heading: 'Total registered sellers',
-      //     tooltipText: 'Unique count of combination of (Provider ID + Seller App) where order has been delivered within the date range',
-      //     icon: 'trending_up', // trending_up
-      //     positive: Boolean(parseFloat(this.topCardsDelta[this.selectedStateCode].sellers_delta) >= 0),
-      //     percentageCount: this.topCardsDelta[this.selectedStateCode].sellers_delta,
-      //   },
-      //   {
-      //     type: 'max_state',
-      //     heading: 'Maximum number of orders delivered to',
-      //     tooltipText: `Sort the Total Orders  by State/Districts, basis the date range and other filters selected. 
-      //       It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.`,
-      //     mainText: this.topCardsDelta[this.selectedStateCode].max_orders_delivered_area
-      //   }
-      // ];
       this.upperCardData = this.topCardsDelta[this.selectedStateCode];
       this.isLoading = false;
-    }
 
+      delay(1000);
+      this.checkForScrolling();
+    }
+  }
+
+  @HostListener('window:resize', ['$event'])
+  checkForScrolling() {
+    const upperCardsSection: any = document.getElementsByClassName('upper-cards-section')[0];
+    const sectionWidth = upperCardsSection.offsetWidth;
+
+    const cardsCount = this.topCardsDelta['TT']?.length ?? 0;
+
+    this.scrollEnabled = Boolean(sectionWidth < ((cardsCount*350) + ((cardsCount - 1)*4) + 20));
+  }
+
+  public scrollRight(): void {
+    this.slider?.nativeElement.scrollTo({ left: (this.slider?.nativeElement.scrollLeft + 354), behavior: 'smooth' });
+  }
+
+  public scrollLeft(): void {
+    this.slider?.nativeElement.scrollTo({ left: (this.slider?.nativeElement.scrollLeft - 354), behavior: 'smooth' });
   }
 }

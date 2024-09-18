@@ -1,5 +1,4 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { Router } from '@angular/router';
 import { AppService } from '@openData/app/core/api/app/app.service';
 
 @Component({
@@ -47,21 +46,26 @@ export class RightSidenavComponent implements OnInit {
             disabled: false,
             options: [
               {
-                title: 'Retail',
+                title: 'Overall',
                 url: 'retail',
                 disabled: false,
                 external: false
               },
               {
-                title: 'Retail B2B',
-                url: 'retail/b2b/',
+                title: 'B2B',
+                url: 'retail/b2b',
                 disabled: false,
                 external: false
               },
               {
-                title: 'Retail B2C',
-                url: 'retail/b2c/',
+                title: 'B2C',
+                url: 'retail/b2c',
                 disabled: false,
+                external: false
+              },
+              {
+                title: 'Gift Voucher',
+                disabled: true,
                 external: false
               }
             ]
@@ -75,16 +79,33 @@ export class RightSidenavComponent implements OnInit {
             disabled: false,
             options: [
               {
-                title: 'Logistic Overall',
+                title: 'Orders',
                 url: 'logistics',
                 disabled: false,
                 external: false
               },
               {
-                title: 'Logistic Detail',
-                url: 'logistics/detail/',
+                title: 'Search by city',
+                url: 'logistics/detail',
                 disabled: false,
-                external: false
+                external: false,
+                type: 'accordian',
+                options: [
+                  {
+                    title: 'Delhi',
+                    url: 'logistics/search_by_city',
+                    disabled: false,
+                    external: false,
+                    params: {city: 'Delhi'}
+                  },
+                  {
+                    title: 'Bangalore',
+                    url: 'logistics/search_by_city',
+                    disabled: false,
+                    external: false,
+                    params: {city: 'Bangalore'}
+                  }
+                ] 
               }
             ]
           }

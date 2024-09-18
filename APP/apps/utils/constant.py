@@ -1,5 +1,12 @@
 import os
 
+
+FIXED_MIN_DATE = os.getenv('START_DATE')
+
+LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
+ENABLE_CONSOLE_LOG = enable_console_log = os.getenv('ENABLE_CONSOLE_LOG', 'true').lower() in ('true', '1', 't')
+ONDC_DASHBOARD_VERSION_TABLE = os.getenv('ONDC_DASHBOARD_VERSION_TBL', 'ondc_dashboard_version')
+
 DISTRICT_TABLE = os.environ.get("DISTRICT_TBL")
 SUB_CATEGORY_TABLE = os.environ.get("SUB_CATEGORY_TBL")
 CATEGORY_TABLE = os.environ.get("CATEGORY_TBL")
@@ -48,7 +55,6 @@ tdr_seller_state_sub_query = " AND upper(om.seller_state) = upper(%s)"
 
 swdlo_cat_sub_query = " AND swdlo.category = %s"
 swdlo_sub_cat_sub_query = " AND swdlo.sub_category = %s"
-swdlo_domain_sub_query = " AND swdlo.domain_name = %s"
 swdlo_domain_sub_query_overall = " AND swdlo.domain_name = %(domain)s"
 swdlo_delivery_st_sq = " AND upper(swdlo.delivery_state) = upper(%s)"
 
@@ -57,6 +63,8 @@ LOGISTICS_DISTRICT_TABLE = os.getenv('LOGISTICS_DISTRICT_TBL')
 
 MONTHLY_DISTRICT_TABLE = os.getenv('MONTHLY_DISTRICT_TBL')
 MONTHLY_PROVIDERS = os.getenv('MONTHLY_PROVIDERS_TBL')
+TOTAL_ACTIVE_SELLER_TBL = os.getenv('TOTAL_ACTIVE_SELLER_TBL')
+TOTAL_ACTIVE_SELLER_CAT_SUBCAT_TBL = os.getenv('TOTAL_ACTIVE_SELLER_CAT_SUBCAT_TBL')
 LOGISTICS_MONTHLY_PROVIDERS = os.getenv('LOGISTICS_MONTHLY_PROVIDERS_TBL')
 
 download_table_col_reference = {
@@ -69,5 +77,10 @@ download_table_col_reference = {
 
 CACHE_EXPIRY = int(os.getenv('CACHE_EXPIRY'))
 
-LANDING_PAGE_ECHART_TABLE = os.getenv('LANDING_PAGE_ECHART_TBL')
+LANDING_PAGE_ECHART_TABLE = os.getenv('LANDING_PAGE_ECHART_TABLE')
 LANDING_PAGE_ECHART_CONFIG = os.getenv('LANDING_PAGE_ECHART_CONFIG')
+LANDING_PAGE_ECHART_DATA_TILL = os.getenv('LANDING_PAGE_ECHART_DATA_TILL')
+
+LOGISTIC_SEARCH_TBL = os.getenv('LOGISTIC_SEARCH_TBL')
+LOGISTIC_SEARCH_PINCODE_TBL = os.getenv('LOGISTIC_SEARCH_PINCODE_TBL')
+

@@ -1,12 +1,64 @@
+@if(metrix === 'map_total_active_sellers_metrics' && (activeUrl.includes('/retail/b2c'))) {
+    <div class="options-container">
+        <div (click)="updateSupplySelection('Total')" 
+            [ngClass]="{'options' : true, 'selected': selectedSupplyOptions == 'Total'}">
+            Total Sellers
+        </div>
+        <div (click)="updateSupplySelection('Active')" 
+            [ngClass]="{'options' : true, 'selected': selectedSupplyOptions == 'Active'}">
+            Active Sellers
+        </div>
+    </div>
+}
+
+@if(metrix !== 'map_total_zonal_commerce_metrics' && (activeUrl.includes('/retail/b2c'))
+    ) {
+        <div class="chart-container">
+            <div class="card-title-section">
+                @if(metrix.includes('sellers')) {
+                    <p class="font-xs font-bold margin-y-0 open-data-grey-900">
+                        Distribution of {{selectedSupplyOptions}} Sellers
+                    </p>
+                } @else {
+                    <p class="font-xs font-bold margin-y-0 open-data-grey-900">
+                        Distribution of Orders
+                    </p>
+                }
+
+                <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                    By Category
+                    <span class="cursor-pointer">
+                        <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
+                        nzTooltipTitle="Percentage of Total Confirmed Orders within that category w.r.t Total Delivered Orders across the Network. By selecting a category, this will filter the dashboard with metrics for that category and the chart will show Percentage of Total Confirmed Orders  within a sub_category w.r.t Total Orders for the category. Similarly if a sub category is selected, It will filter the dashboard for that sub category and the chart will show only sub_category percentage within the sub category which will be 100%"></i>
+                    </span>
+                </p>
+            </div>
+            <div class="chart-body relative">
+                @if(!isLoadingSunBurstChartData) {
+                    <app-sunburst-chart 
+                        [chartData]="metrixSunBurstChartData"
+                        (clickedCategory)="updateSelectedCategory($event)">
+                    </app-sunburst-chart>
+                } @else {
+                    <div class="loader-area">
+                        <div class="dot-loader"></div>
+                        <div class="dot-loader dot-loader--2"></div>
+                        <div class="dot-loader dot-loader--3"></div>
+                    </div>
+                }
+            </div>
+        </div>
+}
+
 @if(overallOrdersData && metrix !== "map_total_zonal_commerce_metrics") {
 <div class="chart-container">
     <div class="card-title-section">
         <p class="font-xs font-bold margin-y-0 open-data-grey-900">Overall Trend for India</p>
         <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
-            {{cummulativeData[metrix].subtitle}}
+            {{cummulativeData[metrix].subtitle.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')}}
             <span class="cursor-pointer">
                 <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
-                [nzTooltipTitle]="cummulativeData[metrix].tooltip"></i>
+                [nzTooltipTitle]="cummulativeData[metrix].tooltip.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')"></i>
             </span>
         </p>
     </div>
@@ -20,10 +72,10 @@
     <div class="card-title-section">
         <p class="font-xs font-bold margin-y-0 open-data-grey-900">{{ selectedState == 'TT' ?  'Top 3 States' : selectedState }}</p>
         <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
-            {{topStateData[metrix].subtitle}}
+            {{topStateData[metrix].subtitle.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')}}
             <span class="cursor-pointer">
                 <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
-                [nzTooltipTitle]="topStateData[metrix].tooltip">
+                [nzTooltipTitle]="topStateData[metrix].tooltip.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')">
                 </i>
             </span>
         </p>
@@ -38,10 +90,10 @@
     <div class="card-title-section">
         <p class="font-xs font-bold margin-y-0 open-data-grey-900">Top 3 Districts {{ selectedState == 'TT' ?  '' : ' of ' + selectedState }}</p>
         <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
-            {{topDistrictData[metrix].subtitle}}
+            {{topDistrictData[metrix].subtitle.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')}}
             <span class="cursor-pointer">
                 <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right"
-                    [nzTooltipTitle]="topDistrictData[metrix].tooltip">
+                    [nzTooltipTitle]="topDistrictData[metrix].tooltip.replace('SELLER_TYPE', selectedSupplyOptions + ' Sellers')">
                 </i>
             </span>
         </p>
@@ -67,7 +119,9 @@
             @for(data of metrixMaxData; track data) {
                 <div class="card">
                     <div class="card-header-section">
-                        <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">Maximum number of Confirmed Orders to {{data.record_type}}</p>
+                        <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                            Maximum number of Confirmed Orders to {{data.record_type}}
+                        </p>
                     </div>
     
                     <div class="card-body-section">
@@ -153,34 +207,7 @@
         </div>
     }
 }
-@if(metrix !== 'map_total_zonal_commerce_metrics' && (activeUrl.includes('/retail/b2c'))
-    ) {
-        <div class="chart-container">
-            <div class="card-title-section">
-                <p class="font-xs font-bold margin-y-0 open-data-grey-900">Distribution of Active Sellers</p>
-                <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
-                    By Category
-                    <span class="cursor-pointer">
-                        <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
-                        nzTooltipTitle="Percentage of Total Confirmed Orders within that category w.r.t Total Delivered Orders across the Network. By selecting a category, this will filter the dashboard with metrics for that category and the chart will show Percentage of Total Confirmed Orders  within a sub_category w.r.t Total Orders for the category. Similarly if a sub category is selected, It will filter the dashboard for that sub category and the chart will show only sub_category percentage within the sub category which will be 100%"></i>
-                    </span>
-                </p>
-            </div>
-            <div class="chart-body relative">
-                @if(!isLoadingSunBurstChartData) {
-                    <app-sunburst-chart 
-                        [chartData]="metrixSunBurstChartData">
-                    </app-sunburst-chart>
-                } @else {
-                    <div class="loader-area">
-                        <div class="dot-loader"></div>
-                        <div class="dot-loader dot-loader--2"></div>
-                        <div class="dot-loader dot-loader--3"></div>
-                    </div>
-                }
-            </div>
-        </div>
-}
+
 
 @if(metrix == 'map_total_zonal_commerce_metrics' && (
     activeUrl.includes('/retail') || activeUrl.includes('/retail/b2c') || activeUrl.includes('/logistics'))

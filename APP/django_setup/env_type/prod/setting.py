@@ -4,6 +4,9 @@ from django_setup.setting_utils import get_env_value, BASE_DIR
 INSTALL_APP = [
     'apps.retail_all.retail_all_app',
     'apps.logistics_all.logistics_all_app',
+    'apps.retail_b2b',
+    'apps.retail_b2c',
+    'apps.logistics_search'
 ]
 
 
@@ -23,8 +26,6 @@ DATABASES = {
 }
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'apps', 'retail_all', 'web'),
-    os.path.join(BASE_DIR, 'apps', 'misc', 'web'),
     os.path.join(BASE_DIR, 'common', 'web'),
 
 ]

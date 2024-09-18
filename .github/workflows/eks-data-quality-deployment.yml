@@ -29,9 +29,9 @@ jobs:
       - name: docker login to ECR
         run: aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app
 
-      - name: build image
-        # docker build --platform linux/x86_64 -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${version} .
-        run: docker build --platform linux/x86_64 -f db.Dockerfile -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }} .
+#      - name: build image
+#        # docker build --platform linux/x86_64 -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${version} .
+#        run: docker build --platform linux/x86_64 -f db.Dockerfile -t 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }} .
 
       - name: push image to ECR
         run: docker push 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }}

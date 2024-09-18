@@ -11,7 +11,7 @@ from apps.utils import constant
 from apps.src.database_utils.database_utility import DatabaseUtility
 
 from apps.logging_conf import exceptionAPI, ondcLogger
-from apps.src.database_utils.generic_queries import pincode_query, landing_page_echart_data_query
+from apps.src.database_utils.generic_queries import pincode_query #landing_page_echart_data_query
 load_dotenv()
 
 sub_category_none_values = ('undefined', 'all', 'None', 'Select Sub-Category')
@@ -90,7 +90,7 @@ def data_dictionary_page(request):
 def prepare_echart_data_for_landing_page(df):
     columns = df.columns.tolist()
     data = [[i[0].strip(), i[1].strftime('%Y-%m-%d'), i[2]] for i in df.values.tolist()]
-    last_updated_date = df['date'].max().strftime('%B %d, %Y')
+    last_updated_date = df['date'].max().strftime('%B %Y')
 
     echart_config = json.loads(constant.LANDING_PAGE_ECHART_CONFIG).get('config', {})
 
@@ -119,5 +119,70 @@ def landing_page_echart_data(request):
         resp_data = data
 
     return JsonResponse(resp_data, safe=False)
+
+
+def key_insights(request):
+    return JsonResponse({
+        'insights': [
+            {
+                'cardText': 'What % of active sellers contribute to 80% of the total Orders?',
+                'title': "7% of the Active Sellers ",
+                'subText': "contribute to 80% of the orders",
+                'metaData': False
+            },
+            {
+                'cardText': 'What % of the total sellers are active with atleast 1 order?',
+                'title': '10% of the total sellers ',
+                'subText': "have completed atleast 1 order.",
+                'metaData': False
+            },
+            {
+                'cardText': 'What are the top 5 subcategories in retail, that contribute to the highest number of orders on the Network ?',
+                'title': '',
+                'subText': "",
+                'metaData': False,
+                'query': """    
+                    select sum(total_orders_delivered) as total_order_delivered, sub_category, category 
+                    from ec2_all.sub_category_level_orders
+                    where order_date between '2024-08-01' and '2024-08-31'
+                    group by sub_category, category order by total_order_delivered desc
+                """
+            },
+            {
+                'cardText': 'What are the top 3 sub categories that show highest growth since the last Month ? ',
+                'title': "",
+                'subText': "",
+                'metaData': False,
+                'query': """
+                    with  A_table as (
+                        select sum(total_orders_delivered) as total_order_delivered, sub_category, category , '2024-08' as month
+                    from ec2_all.sub_category_level_orders
+                    where order_date between '2024-08-01' and '2024-08-31'
+                    group by sub_category, category 
+                    ), 
+                    B_table as (
+                        select sum(total_orders_delivered) as total_order_delivered, sub_category, category , '2024-07' as month
+                    from ec2_all.sub_category_level_orders
+                    where order_date between '2024-07-01' and '2024-07-31'
+                    group by sub_category, category 
+                    ) 
+                        select (A.total_order_delivered ) as aug_order,
+                        (A.total_order_delivered - B.total_order_delivered) as aug_order_diff,
+                        round(((A.total_order_delivered - B.total_order_delivered)*100.0)/B.total_order_delivered, 2) as aug_order_diff_percentage,
+                        B.total_order_delivered as jul_order,
+                        B.sub_category, B.category
+                        from A_table A inner join B_table B on A.sub_category = B.sub_category
+                    order by aug_order_diff_percentage desc
+
+
+                    """
+            },
+            {
+                'cardText': 'What is the distribution of states across Orders completed?',
+                'title': "",
+                'subText': "",
+                'metaData': False
+            }
+        ]}, safe=False)
 
 

@@ -1,0 +1,14 @@
+services:
+  webapp_local:
+    container_name: webapp_local
+    build:
+      context: .
+      dockerfile: app.Dockerfile
+    image: webapp_local:version_4.0.1
+    ports:
+      - "8081:8001"
+    env_file:
+      - .env
+    restart: unless-stopped
+    environment:
+     - POSTGRES_SCHEMA=ec2_all

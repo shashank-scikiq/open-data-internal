@@ -1,13 +1,19 @@
 <div class="summary-main-container">
     <div class="heading-section">
         <!-- <app-key-insights></app-key-insights> -->
-        <div>
+        <div style="display: flex; align-items: center; gap: 8px">
             <h4 class="open-data-blue-700 margin-0 heading">{{ pageTitle }}
             </h4>
+            @if(pageTitleTooltip){
+                <i class="fa-solid fa-circle-info open-data-grey-700" nz-tooltip nzTooltipPlacement="right" 
+                [nzTooltipTitle]="pageTitleTooltip">
+                </i>
+            }
+            
         </div>
         <div class="heading-section-btn-container">
 
-            <app-date-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
+            <app-month-range-picker [dateRange]="dateRange" (selectedDateRange)="setDateRange($event)" />
             @if(pageTitle == "Retail B2C") {
                 <app-detail-category-filter></app-detail-category-filter>
             }
@@ -39,8 +45,8 @@
                             @if(pageTitle !== "Logistics") {
                                 <button mat-fab
                                     [ngClass]="{'metric-button active-seller': true, 'active-seller-active': activeMetric === metrics[1].title}"
-                                    (click)="handleClick(metrics[1])" nz-tooltip nzTooltipPlacement="top"
-                                    nzTooltipTitle="Registered Sellers">
+                                    (click)="handleClick(metrics[1])" nz-tooltip nzTooltipPlacement="right"
+                                    nzTooltipTitle="Sellers">
                                     <img src="static/assets/img/sellers.png" alt="Supply" class="icon-menu active-seller-icon">
                                 </button>
                             }
@@ -54,12 +60,17 @@
                     </div>
                 </div>
                 <app-map [metrix]="activeMetric"></app-map>
+
+                <a [routerLink]="'/key-insight'" class="absolute key-insights-btn cursor-pointer">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    Key data insights
+                </a>
             </div>
             @if(pageTitle !== "Retail B2B") {
     
             <div class="width-100 map-meta-data-section">
                 <div class="charts-main-container invisible-scrollbar">
-                    <div class="chart-metrix-section">
+                    <!-- <div class="chart-metrix-section">
                         <div class="btn-container">
                             <div [ngClass]="{'btn': true, 'active': activeMetric == 'map_total_orders_metrics'}"
                                 (click)="handleClick(metrics[0])">
@@ -79,7 +90,7 @@
                                 <p class="margin-0 text">Zonal Commerce</p>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="charts-section invisible-scrollbar">
     
                         <app-detail-charts-section [metrix]="activeMetric" [selectedState]="selectedState" (changeMatrix)="setMetrix($event)">

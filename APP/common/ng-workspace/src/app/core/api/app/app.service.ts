@@ -31,8 +31,13 @@ export class AppService {
 
   selectedCategory: string = 'All';
   selectedSubCategory: string = 'All';
-  filterUpdated = new BehaviorSubject<any>(false);
+  filters = new BehaviorSubject<any>({
+    category: 'All',
+    subCategory: 'All' 
+  });
+  filterUpdated = new BehaviorSubject<any>({updated: false, means: ''});
   filterUpdated$ = this.filterUpdated.asObservable();
+  filters$ = this.filters.asObservable()
 
   private cancelStatewiseBinPrevious$ = new Subject<void>();
   private cancelSummaryCardDataPrevious$ = new Subject<void>();
@@ -55,9 +60,13 @@ export class AppService {
     return this.http.get(`${this.baseUrl}api/retail/b2c/categories/`);
   }
 
-  setFilters(category: string, subcategory: string) {
+  setFilters(category: string, subCategory: string) {
     this.selectedCategory = category;
-    this.selectedSubCategory = subcategory;
+    this.selectedSubCategory = subCategory;
+    this.filters.next({
+      category,
+      subCategory
+    })
   }
 
   getLandingPageEchartData() {
@@ -162,16 +171,19 @@ export class AppService {
     );
   }
 
-  getTopStateOrders(uri: string, state: string) {
+  getTopStateOrders(uri: string, state: string, supplyType: string | null) {
     this.cancelTopStateOrdersPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
     state = state == 'TT' ? 'None' : state;
-    const params = {
+    const params: any = {
       startDate,
       endDate,
       state,
       category: this.selectedCategory,
       subCategory: this.selectedSubCategory
+    }
+    if (supplyType) {
+      params['sellerType'] = supplyType
     }
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_state_${uri}/`,
@@ -181,17 +193,21 @@ export class AppService {
     );
   }
 
-  getTopDistrictOrders(uri: string, state: string) {
+  getTopDistrictOrders(uri: string, state: string, supplyType: string | null) {
     this.cancelTopDistrictOrdersPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
     state = state == 'TT' ? 'None' : state;
 
-    const params = {
+    const params: any = {
       startDate,
       endDate,
       state,
       category: this.selectedCategory,
       subCategory: this.selectedSubCategory
+    }
+
+    if (supplyType) {
+      params['sellerType'] = supplyType
     }
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_district_${uri}/`,
@@ -201,12 +217,16 @@ export class AppService {
     );
   }
 
-  getOverallOrders(uri: string) {
+  getOverallData(uri: string, supplyType: string | null) {
     this.cancelOverallOrdersPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
-    const params = {startDate, endDate,
+    const params: any = {startDate, endDate,
       category: this.selectedCategory,
       subCategory: this.selectedSubCategory}
+    
+    if (supplyType) {
+      params['sellerType'] = supplyType
+    }
 
     return this.http.get(
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_cummulative_${uri}/`,
@@ -279,7 +299,7 @@ export class AppService {
   getMetrixMaxData(uri: string, state: string) {
     this.cancelMetrixMaxDataPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
-    state = state.replaceAll(' ', '+');
+    // state = state.replaceAll(' ', '+');
 
     const params = {
       startDate, endDate, 
@@ -321,17 +341,28 @@ export class AppService {
   }
 
   private cancelMetrixSunBurstChartDataPrevious$ = new Subject<void>();
-  getMetrixSunBurstChartData(uri: string, state: string) {
+  getMetrixSunBurstChartData(uri: string, state: string, supplyType: string | null) {
     this.cancelMetrixSunBurstChartDataPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
     state = state.replaceAll(' ', '+');
-    const params = { startDate, endDate, state: state == 'TT' ? '' : state,
+    const params: any = { startDate, endDate, state: state == 'TT' ? '' : state,
       category: this.selectedCategory,
       subCategory: this.selectedSubCategory }
+
+    if (supplyType) {
+      params['sellerType'] = supplyType
+    }
     return this.http.get(this.baseUrl + `api/retail/b2c/category_penetration_${uri}/`, {params}).pipe(
       takeUntil(this.cancelMetrixSunBurstChartDataPrevious$)
     );
   }
+
+  getLandingPageCumulativeOrderCount() {
+    return this.http.get(`${this.baseUrl}api/landing-page/cumulative_orders/`);
+  }
   
+  getKeyInsights() {
+    return this.http.get(`${this.baseUrl}api/v2/key-insight-data/`)
+  }
   
 }

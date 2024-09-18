@@ -11,6 +11,7 @@ import { MapService } from '@openData/app/core/api/map/map.service';
 })
 export class DetailComponent implements OnInit {
   @Input() pageTitle: string = '';
+  @Input() pageTitleTooltip: string = '';
   dateRange: any = [];
 
   metrics : any = [

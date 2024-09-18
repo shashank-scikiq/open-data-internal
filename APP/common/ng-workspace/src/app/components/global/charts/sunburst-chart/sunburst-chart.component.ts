@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, Input } from '@angular/core';
+import { Component, OnInit, HostListener, Input, EventEmitter, Output } from '@angular/core';
 
 declare var Plotly: any;
 
@@ -9,6 +9,7 @@ declare var Plotly: any;
 })
 export class SunburstChartComponent implements OnInit {
   @Input() chartData: any = {};
+  @Output() clickedCategory = new EventEmitter<any>();
   data: any;
   layout: any;
   config: any;
@@ -27,8 +28,10 @@ export class SunburstChartComponent implements OnInit {
       return;
     }
     this.isNoData = false;
+    
     this.data = [{
       type: "sunburst",
+      maxdepth: 2,
       ids: this.chartData.ids,
       labels: this.chartData.labels,
       parents: this.chartData.parents,
@@ -54,7 +57,21 @@ export class SunburstChartComponent implements OnInit {
 
     this.config = { displayModeBar: false,responsive: true };
 
-    Plotly.newPlot('sunburst-chart', this.data, this.layout, this.config);
+    Plotly.newPlot('sunburst-chart', this.data, this.layout, this.config).then((gd: any) => {
+      gd.on('plotly_sunburstclick', (data: any) => {
+        const pt = data.points[0];
+        // const path = ((pt.currentPath ?? '/') + pt.label).replace('Root', '')
+        // console.log(data, "clicked")                // path of the clicked element 
+
+        // const clickedTexts = path.split('/');
+
+        if (pt.parent == "" && [... new Set(this.chartData.parents )].length != 2) {
+          this.clickedCategory.emit({option: [pt.label], type: 'category'});
+        } else {
+          this.clickedCategory.emit({option: [pt.parent, pt.label], type: 'subCategory'});
+        }       
+      })
+    });
     
   }
 }
