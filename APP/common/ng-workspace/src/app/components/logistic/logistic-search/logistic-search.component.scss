@@ -1,0 +1,26 @@
+@import 'breakpoints';
+@import "colors";
+
+.domain-detail-main-container {
+    display: flex;
+    flex-direction: column;
+    padding: 60px 10px 8px;
+
+    height: 100vh;
+    overflow: hidden;
+
+    min-height: 100vh;
+
+    @media (resolution: 1.25dppx) {
+        padding: 60px 20px 8px;
+    }
+
+    @include media-below('lg') {
+        padding: 45px 10px 8px;
+    }
+
+    @include media-below("md") {
+        height: 100%;
+        overflow: hidden;
+    }
+}

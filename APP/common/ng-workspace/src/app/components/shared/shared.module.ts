@@ -23,6 +23,13 @@ import { ColumnChartComponent } from '../global/charts/column-chart/column-chart
 import { RouterModule } from '@angular/router';
 import { BarChartComponent } from '../global/charts/bar-chart/bar-chart.component';
 import { PincodeLevelMapViewComponent } from './pincode-level-map-view/pincode-level-map-view.component';
+import { DomainDetailComponent } from './domain-detail/domain-detail.component';
+import { TopCardsGroupComponent } from './top-cards-group/top-cards-group.component';
+import { TopCardComponent } from './top-card/top-card.component';
+import { DomainDetailFiltersComponent } from './domain-detail-filters/domain-detail-filters.component';
+import { LogisticSearchFiltersComponent } from './logistic-search-filters/logistic-search-filters.component';
+import { LogisticsSearchTopCardsComponent } from './logistics-search-top-cards/logistics-search-top-cards.component';
+import { LogisticsSearchDetailComponent } from './logistics-search-detail/logistics-search-detail.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -44,7 +51,14 @@ import { PincodeLevelMapViewComponent } from './pincode-level-map-view/pincode-l
     DetailCategoryFilterComponent,
     KeyInsightsComponent,
     BarChartComponent,
-    PincodeLevelMapViewComponent
+    PincodeLevelMapViewComponent,
+    DomainDetailComponent,
+    TopCardsGroupComponent,
+    TopCardComponent,
+    DomainDetailFiltersComponent,
+    LogisticSearchFiltersComponent,
+    LogisticsSearchTopCardsComponent,
+    LogisticsSearchDetailComponent
   ],
   imports: [
     CommonModule,
@@ -72,7 +86,12 @@ import { PincodeLevelMapViewComponent } from './pincode-level-map-view/pincode-l
     SunburstChartComponent,
     DetailCategoryFilterComponent,
     BarChartComponent, 
-    PincodeLevelMapViewComponent
+    PincodeLevelMapViewComponent,
+    DomainDetailComponent,
+    TopCardsGroupComponent,
+    TopCardComponent,
+    DomainDetailFiltersComponent,
+    LogisticSearchFiltersComponent
   ]
 })
 export class SharedModule { }

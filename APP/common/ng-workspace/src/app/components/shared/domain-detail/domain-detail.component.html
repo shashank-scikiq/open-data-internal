@@ -1,0 +1,21 @@
+<div class="heading-section">
+    <div style="display: flex; align-items: center; gap: 8px">
+        <h4 class="open-data-blue-700 margin-0 heading">
+            {{ domain }}
+        </h4>
+        @if(domainTooltip){
+            <i 
+                class="fa-solid fa-circle-info open-data-grey-700" 
+                nz-tooltip nzTooltipPlacement="right" 
+                [nzTooltipTitle]="domainTooltip">
+            </i>
+        }
+    </div>
+    <div class="heading-section-btn-container">
+        <app-domain-detail-filters [domain]="domain"></app-domain-detail-filters>
+    </div>
+
+    
+</div>
+<app-logistics-search-top-cards></app-logistics-search-top-cards>
+<app-logistics-search-detail></app-logistics-search-detail>

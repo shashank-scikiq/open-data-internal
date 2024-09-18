@@ -3,6 +3,7 @@ import * as L from "leaflet";
 import * as d3 from "d3";
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { LogisticSearchService } from '@openData/app/core/api/logistic-search/logistic-search.service';
 
 
 @Component({
@@ -12,21 +13,15 @@ import { Subscription } from 'rxjs';
 })
 export class PincodeLevelMapViewComponent implements OnInit {
 
-  // // Variable to store combined GeoJSON
-  // combinedGeoJSON: any = null;
-  // map: any;
-  // // Define the bounding box for Bangalore (approximate values)
-  // minLatitude = 12.7;
-  // maxLatitude = 13.2;
-  // minLongitude = 77.4;
-  // maxLongitude = 77.8;
-  // geojsonFiles: any;
   city: string = 'Bangalore';
 
-  constructor(private route: ActivatedRoute) {
-    this.route.queryParams.subscribe(params => {
-      this.city = params['city'];
-    });
+  constructor(private route: ActivatedRoute,
+    private logisticSearchService: LogisticSearchService
+  ) {
+    // this.route.queryParams.subscribe(params => {
+    //   this.city = params['city'];
+    // });
+    
   }
 
   private map: any;
@@ -38,12 +33,15 @@ export class PincodeLevelMapViewComponent implements OnInit {
   private geojsonFiles: string[] = [];
   queryParamsSubscription: any;
 
+  cityWiseData: any = [];
+
   ngOnInit(): void {
-    console.log("called for ", this.city)
-    this.queryParamsSubscription = this.route.queryParams.subscribe(params => {
-      // Call your function whenever query params change
-      this.setData();
-    });
+    this.logisticSearchService.activeCity$.subscribe(
+      (value: string) => {
+        this.city = value;
+        this.setData();
+      }
+    )
     
 
 
@@ -130,15 +128,14 @@ export class PincodeLevelMapViewComponent implements OnInit {
     }
     this.initMap();
     this.loadGeoJSONFiles(this.geojsonFiles, (combinedGeoJSON: any) => {
-      this.loadCSVData(`static/assets/data/lats-long/${this.city.toLowerCase()}_lats_longs.csv`, (csvData: any) => {
-        const filteredData = this.filterCSVData(csvData);
-        this.updateMapAndBubbles(filteredData);
-
-        d3.select('#dateFilterDropdown').on('change', () => {
-          const selectedMonth = (d3.select('#dateFilterDropdown').node() as HTMLSelectElement).value;
-          this.filterDataByDate(filteredData, selectedMonth);
-        });
-      });
+      this.logisticSearchService.getCityWiseData().subscribe(
+        (response: any) => {
+          this.cityWiseData = response.data;
+          this.updateMapAndBubbles(this.cityWiseData);
+        }, (error: Error) => {
+          console.log(error);
+        }
+      )
     });
   }
 
@@ -168,24 +165,24 @@ export class PincodeLevelMapViewComponent implements OnInit {
     });
   }
 
-  private loadCSVData(url: string, callback: (data: any) => void): void {
-    d3.csv(url).then(callback).catch(error => {
-      console.error(`Error loading CSV data:`, error);
-    });
-  }
+  // private loadCSVData(url: string, callback: (data: any) => void): void {
+  //   d3.csv(url).then(callback).catch(error => {
+  //     console.error(`Error loading CSV data:`, error);
+  //   });
+  // }
 
-  private filterCSVData(data: any[]): any[] {
-    return data.filter(d => {
-      const lat = +d.latitude_x;
-      const lon = +d.longitude_y;
-      return lat >= this.minLatitude && lat <= this.maxLatitude && lon >= this.minLongitude && lon <= this.maxLongitude;
-    });
-  }
+  // private filterCSVData(data: any[]): any[] {
+  //   return data.filter(d => {
+  //     const lat = +d.latitude_x;
+  //     const lon = +d.longitude_y;
+  //     return lat >= this.minLatitude && lat <= this.maxLatitude && lon >= this.minLongitude && lon <= this.maxLongitude;
+  //   });
+  // }
 
   private updateMapAndBubbles(data: any[]): void {
     const totalTransactionsMap: { [key: string]: number } = {};
     data.forEach((d: any) => {
-      totalTransactionsMap[d.pick_up_pincode] = +d.total_transactions;
+      totalTransactionsMap[d.pick_up_pincode] = +d.confirmed_data;
     });
 
     L.geoJSON(this.combinedGeoJSON, {
@@ -193,7 +190,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
         const pincode = feature?.properties?.pincode;
         const totalTransactions = totalTransactionsMap[pincode] || 0;
 
-        const maxTransactions = d3.max(data, (d: any) => +d.total_transactions) || 0;
+        const maxTransactions = d3.max(data, (d: any) => +d.confirmed_data) || 0;
 
         const colorScale = d3.scaleSequential(d3.interpolateBlues)
           .domain([0, maxTransactions]);
@@ -213,26 +210,26 @@ export class PincodeLevelMapViewComponent implements OnInit {
       }
     }).addTo(this.map);
 
-    this.plotBubbles(data);
+    // this.plotBubbles(data);
   }
 
-  private filterDataByDate(data: any[], selectedMonth: string): void {
-    if (selectedMonth === 'All') {
-      this.updateMapAndBubbles(data);
-      d3.select('#totalConfirmedOrders').text('Total Confirmed Orders: N/A');
-    } else {
-      const filteredDataByDate = data.filter(d => {
-        const date = new Date(d.latest_order_date);
-        const month = date.getMonth() + 1;
-        return month === +selectedMonth;
-      });
+  // private filterDataByDate(data: any[], selectedMonth: string): void {
+  //   if (selectedMonth === 'All') {
+  //     this.updateMapAndBubbles(data);
+  //     d3.select('#totalConfirmedOrders').text('Total Confirmed Orders: N/A');
+  //   } else {
+  //     const filteredDataByDate = data.filter(d => {
+  //       const date = new Date(d.latest_order_date);
+  //       const month = date.getMonth() + 1;
+  //       return month === +selectedMonth;
+  //     });
 
-      const totalConfirmedOrders = d3.sum(filteredDataByDate, d => +d.delivered_orders);
-      d3.select('#totalConfirmedOrders').text(`Total Confirmed Orders: ${totalConfirmedOrders}`);
+  //     const totalConfirmedOrders = d3.sum(filteredDataByDate, d => +d.delivered_orders);
+  //     d3.select('#totalConfirmedOrders').text(`Total Confirmed Orders: ${totalConfirmedOrders}`);
 
-      this.updateMapAndBubbles(filteredDataByDate);
-    }
-  }
+  //     this.updateMapAndBubbles(filteredDataByDate);
+  //   }
+  // }
 
   private plotBubbles(data: any[]): void {
     data.forEach(d => {

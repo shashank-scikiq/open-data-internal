@@ -1656,7 +1656,8 @@ class DataAccessLayer:
         query = f''' {query_sub_cat}
                             UNION 
                         {query_all}'''
-
+        import pdb 
+        pdb.set_trace()
         df = self.db_utility.execute_query(query, parameters)
         return df
 

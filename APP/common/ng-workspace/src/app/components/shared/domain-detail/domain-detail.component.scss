@@ -1,0 +1,39 @@
+@import "colors";
+@import "breakpoints";
+
+.heading-section {
+    display: flex;
+    place-content: space-between;
+    align-items: center;
+    margin: 8px 0;
+
+    .heading {
+        font-size: 20px;
+        font-weight: 700;
+        line-height: 1.25;
+
+        @media (max-width: 1366px) {
+            font-size: 18px;
+        }
+    }
+
+    .sub-text {
+        font-style: italic;
+        color: #8392a5;
+        font-size: 11px;
+        margin-left: 10px;
+        font-weight: 400;
+    }
+
+    .date-range-title {
+        font-size: 14px;
+        line-height: 1.5;
+        font-weight: 700;
+
+        @media (resolution: 1.25dppx) {
+            font-size: 10px;
+        }
+    }
+}
+
+
