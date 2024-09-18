@@ -67,19 +67,32 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_logistic_searched_top_card_data(self, city):
         where_condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
-            if city == 'Bangalore' else "state = 'DELHI'"
+            if city == 'Bangalore' else " state = 'DELHI' "
         
         query = f"""
-            SELECT 
-                ls.time_of_day,
-	            case
-				    when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
+            (SELECT 
+                ls.time_of_day as time_of_day,
+                case
+                    when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
                     else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
                 end as total_conversion,
                 sum(ls.searched) as searched_data
             from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
                 where {where_condition}
-	        group by ls.time_of_day order by ls.time_of_day
+            group by ls.time_of_day )
+
+                Union
+            (SELECT 
+                'Overall' as time_of_day,
+                case
+                    when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
+                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                end as total_conversion,
+                sum(ls.searched) as searched_data
+            from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
+                where {where_condition} )
+                order by time_of_day
+            
             """
         df = self.db_utility.execute_query(query)
         return df
