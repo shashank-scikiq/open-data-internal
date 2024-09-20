@@ -45,14 +45,20 @@ export class LogisticsSearchTopCardsComponent implements OnInit {
     for (let data of this.topCardData) {
       if (data.time_of_day == this.logisticSearchService.activeTimeInterval.value) {
         cardsData.push({
-          count: `${data.total_conversion}%`,
-          heading: "Total conversion",
+          count: `${data.searched_data}`,
+          heading: "Total searches",
           showVarience: false,
           type: "default"
         })
         cardsData.push({
-          count: `${data.searched_data}`,
-          heading: "Total searches",
+          count: `${data.total_conversion_percentage}%`,
+          heading: "% Search-to-confirm",
+          showVarience: false,
+          type: "default"
+        })
+        cardsData.push({
+          count: `${data.total_assigned_percentage}%`,
+          heading: "% Search-to-rider-assign",
           showVarience: false,
           type: "default"
         })

@@ -13,7 +13,7 @@ export class LogisticSearchService {
   activeCity = new BehaviorSubject<string>("New Delhi");
   activeCity$ = this.activeCity.asObservable();
 
-  activeTimeInterval = new BehaviorSubject<string>("10am-12pm");
+  activeTimeInterval = new BehaviorSubject<string>("Overall");
   activeTimeInterval$ = this.activeTimeInterval.asObservable();
 
   filterUpdated = new BehaviorSubject<any>(null);

@@ -1,6 +1,54 @@
-<div class="main-pincode-level-map-container">
-    <!-- <h4 class="open-data-blue-700 margin-y-3 heading">
-        Logistics ({{city == 'Bangalore' ? 'Bangalore' : 'New Delhi'}})
-    </h4> -->
-    <div id="map"></div>
+<div id="pincode-map" class="map-svg" [ngStyle]="{'visibility': isLoadingMap ? 'hidden': 'visible'}">
+    <!-- <svg id="pincode-map" >
+        <g id="state-border"></g>
+        <g id="pincode-chloro"></g>
+        <g id="legend"></g>
+        <g id="pincode-bubble"></g>
+    </svg> -->
+
+    <!-- <div class="map-tooltip">
+        tooltip text
+    </div> -->
+
+    <div class="map-control" >
+        <div class="btn" (click)="toggleBubbleView()"
+            nz-tooltip nzTooltipPlacement="top"
+            [nzTooltipTitle]="isBubblesVisible ? 'Hide bubbles': 'Show bubbles'">
+            <i [class]="(isBubblesVisible ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye')"></i>
+        </div>
+        <div class="btn" (click)="zoomIn()"
+            nz-tooltip nzTooltipPlacement="top"
+            nzTooltipTitle="Zoom in">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+        <div class="btn" (click)="zoomOut()"
+            nz-tooltip nzTooltipPlacement="top"
+            nzTooltipTitle="Zoom out">
+            <i class="fa-solid fa-minus"></i>
+        </div>
+        <div class="btn" (click)="resetZoom()"
+            nz-tooltip nzTooltipPlacement="top"
+            nzTooltipTitle="Reset view">
+            <i class="fa-solid fa-rotate-left"></i>
+        </div>
+    </div>
+    <div class="absolute" [ngStyle]="{'visibility': !isLoadingMap ? 'visible' : 'hidden'}"
+        style="left: 8px; bottom: 8px;">
+        <div [ngStyle]="{'visibility': isBubblesVisible ? 'visible' : 'hidden'}" 
+             id="bubble-legends">
+             <p class="font-xxs font-bolder margin-0">% Search to confirm</p>
+        </div>
+        <div id="chloro-legends">
+            <p class="font-xxs font-bolder margin-0">Search counts</p>
+        </div>
+    </div>
+
+    <div [ngStyle]="{'visibility': isLoadingMap ? 'visible' : 'hidden'}" class="absolute">
+        Loading...
+    </div>
+
 </div>
+<div class="tooltip">
+</div>
+<!-- <div class="desktop-tooltip">
+</div> -->

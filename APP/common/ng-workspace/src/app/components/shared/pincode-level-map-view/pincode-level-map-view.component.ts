@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import { ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { LogisticSearchService } from '@openData/app/core/api/logistic-search/logistic-search.service';
+import { CityWiseGeoJSONPincodeFiles, CityLatLong } from '@openData/app/core/utils/map';
 
 
 @Component({
@@ -14,244 +15,435 @@ import { LogisticSearchService } from '@openData/app/core/api/logistic-search/lo
 export class PincodeLevelMapViewComponent implements OnInit {
 
   city: string = 'Bangalore';
+  isLoadingMap: boolean = true;
+  width: number = 0;
+  height: number = 0;
 
-  constructor(private route: ActivatedRoute,
-    private logisticSearchService: LogisticSearchService
-  ) {
-    // this.route.queryParams.subscribe(params => {
-    //   this.city = params['city'];
-    // });
-    
+  isBubblesVisible: boolean = true;
+
+  private svg: any;
+  private tooltip: any;
+  private zoomBehavior: any;
+
+  // Define default zoom settings
+  private zoomExtent: any = [1, 8]; // Min, Max zoom levels
+  private zoomStep = 1.5; // Zoom scale step for each button press
+
+  mapData: any = [];
+  chloroplethcolormapper3: any = {
+    map_total_orders_metrics: ["#ffffff", "#FF7722"],
+    map_total_active_sellers_metrics: ["#ffffff", "#1c75bc"],
+    map_total_zonal_commerce_metrics: ["#ffffff", "#10b759"],
   }
 
-  private map: any;
-  private minLatitude: any = 12.7;
-  private maxLatitude: any = 13.2;
-  private minLongitude: any = 77.4;
-  private maxLongitude: any = 77.8;
-  private combinedGeoJSON: any;
-  private geojsonFiles: string[] = [];
+  bubblecolormapper: any = {
+    map_total_active_sellers_metrics: ["rgba(0,123,255,0.8)", "rgba(0,123,255,0.5)", "rgba(0,123,255,0.5)"],
+    map_total_orders_metrics: ["rgba(227, 87, 10,0.8)", "rgba(227, 87, 10,0.4)", "rgba(227, 87, 10,0.4)"],
+    map_total_zonal_commerce_metrics: ["rgba(16,183,89,0.8)", "rgba(16,183,89,0.5)", "rgba(16,183,89,0.5)"],
+  }
+
+  chloroplethcolormapper2: any = {
+    map_total_orders_metrics: ["#ffffff", "#f9f0e9", "#FF7722"],
+    map_total_active_sellers_metrics: ["#ffffff", "#dfebf5", "#1c75bc"],
+    map_total_zonal_commerce_metrics: ["#ffffff", "#eefaf3", "#10b759"],
+  }
+  maxData: any = null;
+
+  constructor(
+    private logisticSearchService: LogisticSearchService
+  ) { }
+
   queryParamsSubscription: any;
 
   cityWiseData: any = [];
 
   ngOnInit(): void {
+    this.setDimensions();
+
     this.logisticSearchService.activeCity$.subscribe(
       (value: string) => {
         this.city = value;
-        this.setData();
+        this.isLoadingMap = true;
+        this.getMapData();
       }
     )
-    
 
+    this.logisticSearchService.activeTimeInterval$.subscribe(
+      (res: any) => {
+        if (this.mapData && !this.isLoadingMap) {
+          this.isLoadingMap = true;
+          this.setData();
+        }
+      }
+    )
+  }
 
+  setDimensions() {
+    const element = document.getElementsByClassName('map-svg')[0];
+    this.width = element.clientWidth;
+    this.height = element.clientHeight;
+  }
+
+  getMapData() {
+    this.logisticSearchService.getCityWiseData().subscribe(
+      (response: any) => {
+        if (response) {
+          this.mapData = response.data;
+
+          this.setData();
+        }
+      }
+    )
+  }
+
+  toggleBubbleView() {
+    this.isBubblesVisible = !this.isBubblesVisible;
+    d3.selectAll('circle')
+      .transition()
+      .duration(500) // Optional: Duration of the transition
+      .style('visibility', this.isBubblesVisible ? 'visible' : 'hidden');
   }
 
   setData() {
-    if (this.city == 'Bangalore') {
-      this.minLatitude = 12.7;
-      this.maxLatitude = 13.2;
-      this.minLongitude = 77.4;
-      this.maxLongitude = 77.8;
-      this.geojsonFiles = ['static/assets/data/pincode-level/bangalore/560001.geojson', 'static/assets/data/pincode-level/bangalore/560002.geojson',
-        'static/assets/data/pincode-level/bangalore/560003.geojson', 'static/assets/data/pincode-level/bangalore/560004.geojson', 'static/assets/data/pincode-level/bangalore/560005.geojson',
-        'static/assets/data/pincode-level/bangalore/560006.geojson', 'static/assets/data/pincode-level/bangalore/560007.geojson', 'static/assets/data/pincode-level/bangalore/560008.geojson',
-        'static/assets/data/pincode-level/bangalore/560009.geojson', 'static/assets/data/pincode-level/bangalore/560010.geojson',
-        'static/assets/data/pincode-level/bangalore/560011.geojson', 'static/assets/data/pincode-level/bangalore/560012.geojson', 'static/assets/data/pincode-level/bangalore/560013.geojson',
-        'static/assets/data/pincode-level/bangalore/560014.geojson', 'static/assets/data/pincode-level/bangalore/560015.geojson', 'static/assets/data/pincode-level/bangalore/560016.geojson',
-        'static/assets/data/pincode-level/bangalore/560017.geojson', 'static/assets/data/pincode-level/bangalore/560018.geojson', 'static/assets/data/pincode-level/bangalore/560019.geojson',
-        'static/assets/data/pincode-level/bangalore/560020.geojson', 'static/assets/data/pincode-level/bangalore/560021.geojson', 'static/assets/data/pincode-level/bangalore/560022.geojson',
-        'static/assets/data/pincode-level/bangalore/560023.geojson', 'static/assets/data/pincode-level/bangalore/560024.geojson', 'static/assets/data/pincode-level/bangalore/560025.geojson',
-        'static/assets/data/pincode-level/bangalore/560026.geojson', 'static/assets/data/pincode-level/bangalore/560027.geojson',
-        'static/assets/data/pincode-level/bangalore/560029.geojson', 'static/assets/data/pincode-level/bangalore/560030.geojson',
-        'static/assets/data/pincode-level/bangalore/560032.geojson', 'static/assets/data/pincode-level/bangalore/560033.geojson', 'static/assets/data/pincode-level/bangalore/560034.geojson', 'static/assets/data/pincode-level/bangalore/560035.geojson',
-        'static/assets/data/pincode-level/bangalore/560036.geojson', 'static/assets/data/pincode-level/bangalore/560037.geojson', 'static/assets/data/pincode-level/bangalore/560038.geojson', 'static/assets/data/pincode-level/bangalore/560039.geojson',
-        'static/assets/data/pincode-level/bangalore/560040.geojson', 'static/assets/data/pincode-level/bangalore/560041.geojson', 'static/assets/data/pincode-level/bangalore/560042.geojson', 'static/assets/data/pincode-level/bangalore/560043.geojson',
-        'static/assets/data/pincode-level/bangalore/560045.geojson', 'static/assets/data/pincode-level/bangalore/560046.geojson', 'static/assets/data/pincode-level/bangalore/560047.geojson',
-        'static/assets/data/pincode-level/bangalore/560048.geojson', 'static/assets/data/pincode-level/bangalore/560049.geojson', 'static/assets/data/pincode-level/bangalore/560050.geojson',
+    this.isBubblesVisible = true;
+    this.isLoadingMap = true;
+    d3.select('#bubble-legends').selectAll('svg').remove();
+    d3.select('#chloro-legends').selectAll('svg').remove();
+    d3.select('#pincode-map').selectAll('svg').remove();
+    
+    let cityData = [];
 
-        'static/assets/data/pincode-level/bangalore/560051.geojson', 'static/assets/data/pincode-level/bangalore/560052.geojson', 'static/assets/data/pincode-level/bangalore/560053.geojson', 'static/assets/data/pincode-level/bangalore/560054.geojson',
-        'static/assets/data/pincode-level/bangalore/560055.geojson', 'static/assets/data/pincode-level/bangalore/560056.geojson', 'static/assets/data/pincode-level/bangalore/560057.geojson', 'static/assets/data/pincode-level/bangalore/560058.geojson',
-        'static/assets/data/pincode-level/bangalore/560059.geojson', 'static/assets/data/pincode-level/bangalore/560060.geojson', 'static/assets/data/pincode-level/bangalore/560061.geojson', 'static/assets/data/pincode-level/bangalore/560062.geojson',
-        'static/assets/data/pincode-level/bangalore/560063.geojson', 'static/assets/data/pincode-level/bangalore/560064.geojson', 'static/assets/data/pincode-level/bangalore/560065.geojson', 'static/assets/data/pincode-level/bangalore/560066.geojson',
-        'static/assets/data/pincode-level/bangalore/560067.geojson', 'static/assets/data/pincode-level/bangalore/560068.geojson', 'static/assets/data/pincode-level/bangalore/560069.geojson', 'static/assets/data/pincode-level/bangalore/560070.geojson',
-        'static/assets/data/pincode-level/bangalore/560071.geojson', 'static/assets/data/pincode-level/bangalore/560072.geojson', 'static/assets/data/pincode-level/bangalore/560073.geojson', 'static/assets/data/pincode-level/bangalore/560074.geojson',
-        'static/assets/data/pincode-level/bangalore/560075.geojson', 'static/assets/data/pincode-level/bangalore/560076.geojson', 'static/assets/data/pincode-level/bangalore/560077.geojson', 'static/assets/data/pincode-level/bangalore/560078.geojson',
-        'static/assets/data/pincode-level/bangalore/560079.geojson', 'static/assets/data/pincode-level/bangalore/560080.geojson', 'static/assets/data/pincode-level/bangalore/560081.geojson', 'static/assets/data/pincode-level/bangalore/560082.geojson',
-        'static/assets/data/pincode-level/bangalore/560083.geojson', 'static/assets/data/pincode-level/bangalore/560084.geojson', 'static/assets/data/pincode-level/bangalore/560085.geojson', 'static/assets/data/pincode-level/bangalore/560086.geojson',
-        'static/assets/data/pincode-level/bangalore/560087.geojson', 'static/assets/data/pincode-level/bangalore/560088.geojson', 'static/assets/data/pincode-level/bangalore/560089.geojson', 'static/assets/data/pincode-level/bangalore/560090.geojson',
-        'static/assets/data/pincode-level/bangalore/560091.geojson', 'static/assets/data/pincode-level/bangalore/560092.geojson', 'static/assets/data/pincode-level/bangalore/560093.geojson', 'static/assets/data/pincode-level/bangalore/560094.geojson',
-        'static/assets/data/pincode-level/bangalore/560095.geojson', 'static/assets/data/pincode-level/bangalore/560096.geojson', 'static/assets/data/pincode-level/bangalore/560097.geojson', 'static/assets/data/pincode-level/bangalore/560098.geojson',
-        'static/assets/data/pincode-level/bangalore/560099.geojson', 'static/assets/data/pincode-level/bangalore/560100.geojson', 'static/assets/data/pincode-level/bangalore/560102.geojson',
-        'static/assets/data/pincode-level/bangalore/560103.geojson', 'static/assets/data/pincode-level/bangalore/560104.geojson', 'static/assets/data/pincode-level/bangalore/560105.geojson', 'static/assets/data/pincode-level/bangalore/560107.geojson',
-        'static/assets/data/pincode-level/bangalore/560108.geojson', 'static/assets/data/pincode-level/bangalore/560109.geojson', 'static/assets/data/pincode-level/bangalore/560110.geojson', 'static/assets/data/pincode-level/bangalore/560111.geojson',
-        'static/assets/data/pincode-level/bangalore/560112.geojson', 'static/assets/data/pincode-level/bangalore/560113.geojson', 'static/assets/data/pincode-level/bangalore/560114.geojson', 'static/assets/data/pincode-level/bangalore/560115.geojson',
-        'static/assets/data/pincode-level/bangalore/560116.geojson', 'static/assets/data/pincode-level/bangalore/560117.geojson', 'static/assets/data/pincode-level/bangalore/560500.geojson', 'static/assets/data/pincode-level/bangalore/562106.geojson',
-        'static/assets/data/pincode-level/bangalore/562107.geojson', 'static/assets/data/pincode-level/bangalore/562123.geojson', 'static/assets/data/pincode-level/bangalore/562125.geojson', 'static/assets/data/pincode-level/bangalore/562130.geojson',
-        'static/assets/data/pincode-level/bangalore/562149.geojson', 'static/assets/data/pincode-level/bangalore/562157.geojson', 'static/assets/data/pincode-level/bangalore/562162.geojson',];
-    } else {
-      this.minLatitude = 28.4;
-      this.maxLatitude = 28.8;
-      this.minLongitude = 77.1;
-      this.maxLongitude = 77.4;
-      this.geojsonFiles =  ['static/assets/data/pincode-level/delhi/110001.geojson','static/assets/data/pincode-level/delhi/110002.geojson','static/assets/data/pincode-level/delhi/110003.geojson','static/assets/data/pincode-level/delhi/110004.geojson',
-        'static/assets/data/pincode-level/delhi/110005.geojson', 'static/assets/data/pincode-level/delhi/110006.geojson','static/assets/data/pincode-level/delhi/110007.geojson','static/assets/data/pincode-level/delhi/110008.geojson',
-        'static/assets/data/pincode-level/delhi/110009.geojson', 'static/assets/data/pincode-level/delhi/110010.geojson','static/assets/data/pincode-level/delhi/110011.geojson','static/assets/data/pincode-level/delhi/110012.geojson',
-        'static/assets/data/pincode-level/delhi/110013.geojson', 'static/assets/data/pincode-level/delhi/110014.geojson','static/assets/data/pincode-level/delhi/110015.geojson','static/assets/data/pincode-level/delhi/110016.geojson',
-        'static/assets/data/pincode-level/delhi/110017.geojson','static/assets/data/pincode-level/delhi/110018.geojson','static/assets/data/pincode-level/delhi/110019.geojson','static/assets/data/pincode-level/delhi/110020.geojson',
-        'static/assets/data/pincode-level/delhi/110021.geojson','static/assets/data/pincode-level/delhi/110022.geojson','static/assets/data/pincode-level/delhi/110023.geojson','static/assets/data/pincode-level/delhi/110024.geojson',
-        'static/assets/data/pincode-level/delhi/110025.geojson','static/assets/data/pincode-level/delhi/110026.geojson','static/assets/data/pincode-level/delhi/110027.geojson','static/assets/data/pincode-level/delhi/110028.geojson',
-        'static/assets/data/pincode-level/delhi/110029.geojson','static/assets/data/pincode-level/delhi/110030.geojson','static/assets/data/pincode-level/delhi/110031.geojson', 'static/assets/data/pincode-level/delhi/110032.geojson',
-        'static/assets/data/pincode-level/delhi/110033.geojson','static/assets/data/pincode-level/delhi/110034.geojson','static/assets/data/pincode-level/delhi/110035.geojson','static/assets/data/pincode-level/delhi/110036.geojson',
-        'static/assets/data/pincode-level/delhi/110037.geojson','static/assets/data/pincode-level/delhi/110038.geojson','static/assets/data/pincode-level/delhi/110039.geojson','static/assets/data/pincode-level/delhi/110040.geojson',
-        'static/assets/data/pincode-level/delhi/110041.geojson','static/assets/data/pincode-level/delhi/110042.geojson','static/assets/data/pincode-level/delhi/110043.geojson','static/assets/data/pincode-level/delhi/110044.geojson',
-        'static/assets/data/pincode-level/delhi/110045.geojson','static/assets/data/pincode-level/delhi/110046.geojson','static/assets/data/pincode-level/delhi/110047.geojson','static/assets/data/pincode-level/delhi/110048.geojson',
-        'static/assets/data/pincode-level/delhi/110049.geojson','static/assets/data/pincode-level/delhi/110050.geojson','static/assets/data/pincode-level/delhi/110051.geojson',
-        'static/assets/data/pincode-level/delhi/110052.geojson','static/assets/data/pincode-level/delhi/110053.geojson','static/assets/data/pincode-level/delhi/110054.geojson','static/assets/data/pincode-level/delhi/110055.geojson',
-        'static/assets/data/pincode-level/delhi/110056.geojson', 'static/assets/data/pincode-level/delhi/110057.geojson','static/assets/data/pincode-level/delhi/110058.geojson','static/assets/data/pincode-level/delhi/110059.geojson',
-        'static/assets/data/pincode-level/delhi/110060.geojson', 'static/assets/data/pincode-level/delhi/110061.geojson','static/assets/data/pincode-level/delhi/110062.geojson','static/assets/data/pincode-level/delhi/110063.geojson',
-        'static/assets/data/pincode-level/delhi/110064.geojson', 'static/assets/data/pincode-level/delhi/110065.geojson','static/assets/data/pincode-level/delhi/110066.geojson','static/assets/data/pincode-level/delhi/110067.geojson',
-        'static/assets/data/pincode-level/delhi/110068.geojson','static/assets/data/pincode-level/delhi/110069.geojson','static/assets/data/pincode-level/delhi/110070.geojson','static/assets/data/pincode-level/delhi/110071.geojson',
-        'static/assets/data/pincode-level/delhi/110072.geojson','static/assets/data/pincode-level/delhi/110073.geojson','static/assets/data/pincode-level/delhi/110074.geojson','static/assets/data/pincode-level/delhi/110075.geojson',
-        'static/assets/data/pincode-level/delhi/110076.geojson','static/assets/data/pincode-level/delhi/110077.geojson','static/assets/data/pincode-level/delhi/110078.geojson',
-        'static/assets/data/pincode-level/delhi/110080.geojson','static/assets/data/pincode-level/delhi/110081.geojson','static/assets/data/pincode-level/delhi/110082.geojson', 'static/assets/data/pincode-level/delhi/110083.geojson',
-        'static/assets/data/pincode-level/delhi/110084.geojson','static/assets/data/pincode-level/delhi/110085.geojson','static/assets/data/pincode-level/delhi/110086.geojson','static/assets/data/pincode-level/delhi/110087.geojson',
-        'static/assets/data/pincode-level/delhi/110088.geojson','static/assets/data/pincode-level/delhi/110089.geojson','static/assets/data/pincode-level/delhi/110090.geojson','static/assets/data/pincode-level/delhi/110091.geojson',
-        'static/assets/data/pincode-level/delhi/110092.geojson','static/assets/data/pincode-level/delhi/110093.geojson','static/assets/data/pincode-level/delhi/110094.geojson','static/assets/data/pincode-level/delhi/110095.geojson',
-        'static/assets/data/pincode-level/delhi/110096.geojson','static/assets/data/pincode-level/delhi/110097.geojson','static/assets/data/pincode-level/delhi/110098.geojson','static/assets/data/pincode-level/delhi/110099.geojson',
-        'static/assets/data/pincode-level/delhi/110100.geojson'];
-        
-    }
-    if (this.map) {
-      this.map.off();
-      this.map.remove();
-    }
-    this.initMap();
-    this.loadGeoJSONFiles(this.geojsonFiles, (combinedGeoJSON: any) => {
-      this.logisticSearchService.getCityWiseData().subscribe(
-        (response: any) => {
-          this.cityWiseData = response.data;
-          this.updateMapAndBubbles(this.cityWiseData);
-        }, (error: Error) => {
-          console.log(error);
-        }
-      )
-    });
-  }
+    let combinedGeoJSON: any = {
+      "type": "FeatureCollection",
+      "features": []
+    };
 
-  private initMap(): void {
-    this.map = L.map('map').setView(this.city == 'Bangalore' ? [12.9716, 77.5946] : [28.7041, 77.1025], 10);
-    L.tileLayer('', { attribution: '' }).addTo(this.map);
-  }
-
-  private loadGeoJSONFiles(files: string[], callback: (combinedGeoJSON: any) => void): void {
-    this.combinedGeoJSON = { type: 'FeatureCollection', features: [] };
-    let loaded = 0;
-
-    files.forEach((file: string) => {
+    const topojsonFiles = CityWiseGeoJSONPincodeFiles[this.city];
+    topojsonFiles.forEach((file: string) => {
       d3.json(file).then((data: any) => {
         if (data && data.type === 'Feature' && data.geometry && data.geometry.type === 'MultiPolygon') {
-          this.combinedGeoJSON.features.push(data);
+          data.mapData = this.mapData[data.properties.pincode.toString()]
+          combinedGeoJSON.features.push(data);
         } else {
           console.error(`Invalid GeoJSON structure in file: ${file}`);
         }
-        loaded++;
-        if (loaded === files.length) {
-          callback(this.combinedGeoJSON);
+        if (combinedGeoJSON.features.length === topojsonFiles.length) {
+          renderMap();
         }
       }).catch(error => {
         console.error(`Error loading file ${file}:`, error);
       });
     });
+
+    const mapprojectionresult = this.mapprojection(combinedGeoJSON);
+
+    for (const key in this.mapData) {
+      const stringKey: any = key.toString();
+      let pincodeData: any = this.mapData[stringKey][this.logisticSearchService.activeTimeInterval.value] ?? {
+
+      };
+      pincodeData['pincode'] = Number(key);
+      cityData.push(pincodeData)
+    }
+
+    this.tooltip = d3.select(".tooltip")
+
+    this.svg = d3.select('#pincode-map').append('svg')
+      .attr('viewBox', `0 0 ${this.width} ${this.height}`)
+      .attr('preserveAspectRatio', "xMidYMid meet");
+
+    const sortedSearchedData = cityData.sort(
+      (a: any, b: any) => b.searched_data - a.searched_data
+    ).slice(0, 3);
+    let maxSearchedData = sortedSearchedData[0].searched_data;
+    maxSearchedData = maxSearchedData ? Number(maxSearchedData) : 0;
+
+    const sortedConversionData = cityData.sort(
+      (a: any, b: any) => b.total_conversion_percentage - a.total_conversion_percentage
+    ).slice(0, 3);
+    let maxConversionData = sortedConversionData[0].total_conversion_percentage;
+    maxConversionData = maxConversionData ? Number(maxConversionData) : 0;
+
+    let customColorRange: any;
+    customColorRange = d3.scaleLinear()
+      .domain([0, 1, maxSearchedData])
+      .range(this.chloroplethcolormapper2['map_total_active_sellers_metrics']);
+    const g = this.svg.append('g');
+
+    const projection: any = d3.geoMercator()
+      .center(CityLatLong[this.city])
+      .scale(50000)
+      .translate([this.width / 2, (this.height / 2) - 60]);
+
+    const path: any = d3.geoPath().projection(projection);
+    // const g = d3.select('#pincode-chloro');
+
+    this.zoomBehavior = d3.zoom()
+      .scaleExtent(this.zoomExtent)  // Limit zoom to specified extent
+      .on('zoom', (event: any) => g.attr("transform", event.transform));
+
+    this.svg.call(this.zoomBehavior);
+
+    const bubbleradius = d3.scaleSqrt()
+      .domain([0, maxConversionData])
+      .range([2, 20]);
+
+    const renderMap = () => {
+      g.selectAll('path')
+        .data(combinedGeoJSON.features)
+        .enter().append('path')
+        .attr('d', path)
+        .attr('fill',
+          (el: any) => {
+            if (el.mapData && this.logisticSearchService.activeTimeInterval.value in el.mapData) {
+              const val = Number(
+                el.mapData[this.logisticSearchService.activeTimeInterval.value]?.searched_data
+              );
+              return customColorRange(val)
+            } else {
+              return customColorRange(0)
+            }
+          })
+        .attr('stroke-width', 0.5)
+        // .attr('stroke', this.chloroplethStrokeColor[casetype])
+        .attr('stroke', 'rgba(0,123,255,0.5)')
+        .attr('class', `cursor-pointer`)
+        .on('mouseover', (event: any, d: any) => {
+          const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
+          this.tooltip.style('opacity', 1)
+            .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
+                <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
+        })
+        .on('mousemove', (event: any) => {
+          const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
+
+          // Adjust the position relative to the SVG element, not the whole page
+          const offsetX = event.clientX - svgElement.left;
+          const offsetY = event.clientY - svgElement.top;
+          this.tooltip.style('left', (offsetX + 5) + 'px')
+            .style('top', (offsetY - 28) + 'px');
+        })
+        .on('mouseout', () => {
+          this.tooltip.style('opacity', 0);
+        })
+        .each((d: any) => {
+          // Compute the centroid of the path for this feature
+          const centroid = path.centroid(d);
+
+          // Append a circle at the centroid position
+          g.append('circle')
+            .attr('cx', centroid[0])
+            .attr('cy', centroid[1])
+            .attr('r', (el: any) => {
+              if (d.mapData && this.logisticSearchService.activeTimeInterval.value in d.mapData) {
+                const value = Math.trunc(Number(d.mapData[this.logisticSearchService.activeTimeInterval.value]?.total_conversion_percentage));
+                return value ? Math.min(20, Math.max(2, bubbleradius(value))) : 2;
+              } else {
+                return 2
+              }
+            })
+            .attr('fill', 'rgba(0,123,255,0)')
+            .attr('stroke', 'yellow')
+            .attr('stroke-width', 1)
+            .on('mouseover', (event: any) => {
+              const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
+              this.tooltip.style('opacity', 1)
+                .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
+                    <b>Confirm percentage:</b> ${mapData?.total_conversion_percentage ?? 0}% <br>
+                    <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
+            })
+            .on('mousemove', (event: any) => {
+              const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
+
+              // Adjust the position relative to the SVG element, not the whole page
+              const offsetX = event.clientX - svgElement.left;
+              const offsetY = event.clientY - svgElement.top;
+              this.tooltip.style('left', (offsetX + 5) + 'px')
+                .style('top', (offsetY - 28) + 'px');
+            })
+            .on('mouseout', () => {
+              this.tooltip.style('opacity', 0);
+            });
+
+          const topPincodes = sortedConversionData.map((d: any) => d.pincode);
+          if (d.mapData && topPincodes.includes(d.mapData[this.logisticSearchService.activeTimeInterval.value]?.pincode)) {
+            g.append('foreignObject')
+              .attr('x', centroid[0] - 35 / 2 + 5)
+              .attr('y', centroid[1] - 40)
+              .attr('width', 35)
+              .attr('height', 35)
+              .attr('overflow', 'visible')
+              .on('mouseover', (event: any) => {
+                const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
+                this.tooltip.style('opacity', 1)
+                  .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
+                      <b>Confirm percentage:</b> ${mapData?.total_conversion_percentage ?? 0} % <br>
+                      <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
+              })
+              .on('mousemove', (event: any) => {
+                const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
+
+                // Adjust the position relative to the SVG element, not the whole page
+                const offsetX = event.clientX - svgElement.left;
+                const offsetY = event.clientY - svgElement.top;
+                this.tooltip.style('left', (offsetX + 5) + 'px')
+                  .style('top', (offsetY - 28) + 'px');
+              })
+              .on('mouseout', () => {
+                this.tooltip.style('opacity', 0);
+              })
+              .html((i: any) => {
+                let iconClass = "pointer-icon fa-solid fa-cart-shopping";
+                let metricValue = Number(
+                  d.mapData[this.logisticSearchService.activeTimeInterval.value]?.searched_data
+                );
+                return `<div class="pointer" nz-tooltip nzTooltipPlacement="top" 
+                nzTooltipTitle="
+                  <br/>top data: ${metricValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}">
+                  <i class="${iconClass}"></i>
+                  </div><div class="pulse"></div>`;
+              })
+
+          }
+        });
+
+      // for bubble legends
+      const legendData = [
+        {
+          label: 'Low',
+          radius: bubbleradius(0),
+          value: 0, color: this.bubblecolormapper['map_total_active_sellers_metrics'][0]
+        },
+        {
+          label: 'Medium', radius:
+            bubbleradius(
+              maxConversionData * 0.5
+            ),
+          value: Math.floor(
+            maxConversionData * 0.5
+          ),
+          color: this.bubblecolormapper['map_total_active_sellers_metrics'][0]
+        },
+        {
+          label: 'High',
+          radius: bubbleradius(maxConversionData),
+          value: Math.floor(maxConversionData),
+          color: this.bubblecolormapper['map_total_active_sellers_metrics'][1]
+        }
+      ];
+
+      const newLegendContainer = d3.select('#bubble-legends').append('svg')
+        .attr('class', 'legend')
+        .attr('width', "180px")
+        .attr('height', "96px")
+
+      const legendItems = newLegendContainer.selectAll('g')
+        .data(legendData)
+        .enter().append('g')
+        .attr('transform', `translate(10, 40)`);
+
+      legendItems.append('circle')
+        .attr('cx', 30)
+        .attr('cy', (d, i) => `${30 - (i * 15)}`)
+        .attr('r', (d, i) => `${i * (1 * 15) + 5}`)
+        .attr('fill', 'transparent')
+        .attr('stroke', d => d.color)
+        .attr('stroke-width', 2);
+
+      legendItems.append('line')
+        .attr('x1', (d, i) => `${35 + (i * 15)}`)
+        .attr('x2', 90)
+        .attr('y1', (d, i) => `${30 - (i * 15)}`)
+        .attr('y2', (d, i) => `${30 - (i * 15)}`)
+        .attr('stroke', 'black')
+        .style('stroke-dasharray', '2,2');
+
+      legendItems.append('text')
+        .attr('x', 95)
+        .attr('y', (d, i) => `${30 - (i * 15)}`)
+        .attr('dy', '.35em')
+        .style('text-anchor', 'start')
+        .style('font-size', '12px')
+        .text(d => `${d.value.toLocaleString()}%`);
+
+
+      // for chloro legends
+      const legendValues = [0, ...Array.from({ length: 4 }, (_, i) => (i + 1) * maxSearchedData / 4)];
+      const newChloroLegendContainer = d3.select('#chloro-legends')
+        .append('svg')
+        .attr('class', 'legend')
+        .attr('width', "180px")
+        .attr('height', "100%");
+
+      const legend = newChloroLegendContainer.selectAll('g')
+        .data(legendValues)
+        .enter()
+        .append('g')
+        .attr('class', 'legend')
+        .attr('transform', (d, i) => `translate(0, ${i * (200 / 9) + 20})`); // Adjust vertical positioning
+
+      legend.append('rect')
+        .attr('width', 18)
+        .attr('height', 18)
+        .style('stroke', 'black')
+        .style('stroke-width', '1px')
+        .style('fill', (d) => customColorRange(d)); // Use customColorRange here
+
+      legend.append('text')
+        .attr('x', 25)
+        .attr('y', 9)
+        .attr('dy', '.35em')
+        .style('text-anchor', 'start')
+        .style('font-size', '12px')
+        .text((d, i) => {
+          const startRange = i === 0 ? '0' : Math.floor(legendValues[i - 1]) + 1;
+          const endRange = Math.floor(d);
+
+          if (d == 0) { return 'No Data' };
+          if (i === 0) {
+            return startRange.toLocaleString();
+          } else if (i === 1) {
+            return `< ${endRange.toLocaleString()}`;
+          } else if (i === legendValues.length - 1) {
+            return `> ${startRange.toLocaleString()}`;
+          } else {
+            return `${startRange.toLocaleString()}-${endRange.toLocaleString()}`;
+          }
+        });
+    }
+    this.isLoadingMap = false;
   }
 
-  // private loadCSVData(url: string, callback: (data: any) => void): void {
-  //   d3.csv(url).then(callback).catch(error => {
-  //     console.error(`Error loading CSV data:`, error);
-  //   });
-  // }
-
-  // private filterCSVData(data: any[]): any[] {
-  //   return data.filter(d => {
-  //     const lat = +d.latitude_x;
-  //     const lon = +d.longitude_y;
-  //     return lat >= this.minLatitude && lat <= this.maxLatitude && lon >= this.minLongitude && lon <= this.maxLongitude;
-  //   });
-  // }
-
-  private updateMapAndBubbles(data: any[]): void {
-    const totalTransactionsMap: { [key: string]: number } = {};
-    data.forEach((d: any) => {
-      totalTransactionsMap[d.pick_up_pincode] = +d.confirmed_data;
-    });
-
-    L.geoJSON(this.combinedGeoJSON, {
-      style: feature => {
-        const pincode = feature?.properties?.pincode;
-        const totalTransactions = totalTransactionsMap[pincode] || 0;
-
-        const maxTransactions = d3.max(data, (d: any) => +d.confirmed_data) || 0;
-
-        const colorScale = d3.scaleSequential(d3.interpolateBlues)
-          .domain([0, maxTransactions]);
-
-        return {
-          color: 'black',
-          weight: 0.5,
-          opacity: 1,
-          fillOpacity: totalTransactions ? totalTransactions / maxTransactions : 0.1,
-          fillColor: colorScale(totalTransactions),
-        };
-      },
-      onEachFeature: (feature, layer) => {
-        const pincode = feature?.properties?.pincode;
-        const totalTransactions = totalTransactionsMap[pincode] || 0;
-        layer.bindPopup(`<b>Pincode:</b> ${pincode}<br><b>Total Transactions:</b> ${totalTransactions}`);
-      }
-    }).addTo(this.map);
-
-    // this.plotBubbles(data);
+  // Zoom in method
+  zoomIn(): void {
+    this.svg.transition().duration(500).call(this.zoomBehavior.scaleBy, this.zoomStep);
   }
 
-  // private filterDataByDate(data: any[], selectedMonth: string): void {
-  //   if (selectedMonth === 'All') {
-  //     this.updateMapAndBubbles(data);
-  //     d3.select('#totalConfirmedOrders').text('Total Confirmed Orders: N/A');
-  //   } else {
-  //     const filteredDataByDate = data.filter(d => {
-  //       const date = new Date(d.latest_order_date);
-  //       const month = date.getMonth() + 1;
-  //       return month === +selectedMonth;
-  //     });
+  // Zoom out method
+  zoomOut(): void {
+    this.svg.transition().duration(500).call(this.zoomBehavior.scaleBy, 1 / this.zoomStep);
+  }
 
-  //     const totalConfirmedOrders = d3.sum(filteredDataByDate, d => +d.delivered_orders);
-  //     d3.select('#totalConfirmedOrders').text(`Total Confirmed Orders: ${totalConfirmedOrders}`);
+  // Reset zoom method
+  resetZoom(): void {
+    this.svg.transition().duration(500).call(this.zoomBehavior.transform, d3.zoomIdentity); // Reset to original view
+  }
 
-  //     this.updateMapAndBubbles(filteredDataByDate);
-  //   }
-  // }
+  mapprojection(data: any) {
+    const el: any = document.getElementById("pincode-map");
 
-  private plotBubbles(data: any[]): void {
-    data.forEach(d => {
-      const latitudeX = +d.latitude_x;
-      const longitudeY = +d.longitude_y;
-      const deliveredPercentage = +d.delivered_percentage;
+    const height = el.clientHeight
+    const width = el.clientWidth
+    const projection = d3.geoMercator();
+    const pathGenerator = d3.geoPath().projection(projection);
 
-      if (!isNaN(latitudeX) && !isNaN(longitudeY)) {
-        const radius = Math.sqrt(deliveredPercentage) * 20;
-        const bubbleColor = 'rgba(0, 123, 255, 0.8)';
+    projection.scale(1).translate([0, 0])
 
-        L.circle([latitudeX, longitudeY], {
-          weight: 2,
-          color: bubbleColor,
-          fillColor: bubbleColor,
-          fillOpacity: 0.7,
-          radius: radius
-        }).bindPopup(`<b>Pincode:</b> ${d.pick_up_pincode}<br><b>Delivered Percentage:</b> ${deliveredPercentage}%`)
-          .addTo(this.map);
-      } else {
-        console.error(`Invalid LatLng for pick_up_pincode: ${d.pick_up_pincode}`);
-      }
-    });
+    const b = pathGenerator.bounds(data),
+      s = 0.95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
+      t: [number, number] = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];
+
+    projection.scale(s).translate(t);
+    return [projection, pathGenerator];
   }
 }

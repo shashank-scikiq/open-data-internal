@@ -9,6 +9,7 @@ import { LogisticSearchService } from '@openData/app/core/api/logistic-search/lo
 export class LogisticSearchFiltersComponent implements OnInit {
 
   timeIntervals: string[] = [
+    "Overall",
     "3am-6am",
     "6am-8am",
     "8am-10am",
@@ -18,7 +19,7 @@ export class LogisticSearchFiltersComponent implements OnInit {
     "6pm-9pm",
     "9pm-12am",
   ];
-  selectedInterval: string = '3pm-6pm';
+  selectedInterval: string = 'Overall';
 
   cities: string[] = ['New Delhi', 'Bangalore'];
   selectedCity: string = 'New Delhi';

@@ -20,7 +20,6 @@ export class TopCardsGroupComponent implements OnChanges, OnInit {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.checkForScrolling();
-    console.log(this.data, this.isLoading)
   }
 
   formatNumber(num: number) {

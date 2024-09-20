@@ -51,16 +51,33 @@ class DataAccessLayer:
             if city == 'Bangalore' else "state = 'DELHI'"
         
         query = f"""
-            SELECT 
-                ls.time_of_day, 
-                ls.pick_up_pincode, 
-                sum(ls.searched) as searched_data,
-                sum(ls.confirmed) as confirmed_data, 
-                sum(ls.assigned) as assigned_data
-            from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
-                where {where_condition}
-                group by ls.time_of_day, ls.pick_up_pincode order by ls.pick_up_pincode, ls.time_of_day
-            """
+            
+            (SELECT 
+                    ls.time_of_day as time_of_day, 
+                    ls.pick_up_pincode, 
+                    case
+                        when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
+                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                    end as total_conversion_percentage,
+                    
+                    sum(ls.searched) as searched_data
+                from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
+                    where {where_condition}
+                group by ls.time_of_day, ls.pick_up_pincode )
+
+                    Union
+                (SELECT 
+                    'Overall' as time_of_day,
+                    ls.pick_up_pincode, 
+                    case
+                        when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
+                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                    end as total_conversion_percentage,
+                    
+                    sum(ls.searched) as searched_data
+                from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
+                    where {where_condition} group by ls.pick_up_pincode  )
+                    order by pick_up_pincode, time_of_day"""
         df = self.db_utility.execute_query(query)
         return df
     
@@ -75,7 +92,11 @@ class DataAccessLayer:
                 case
                     when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
                     else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
-                end as total_conversion,
+                end as total_conversion_percentage,
+                case
+                    when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
+                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 2) 
+                end as total_assigned_percentage,
                 sum(ls.searched) as searched_data
             from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
                 where {where_condition}
@@ -87,7 +108,11 @@ class DataAccessLayer:
                 case
                     when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
                     else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
-                end as total_conversion,
+                end as total_conversion_percentage,
+                case
+                    when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
+                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 2) 
+                end as total_assigned_percentage,
                 sum(ls.searched) as searched_data
             from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
                 where {where_condition} )

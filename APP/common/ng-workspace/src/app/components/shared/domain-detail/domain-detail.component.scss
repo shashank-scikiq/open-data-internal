@@ -1,6 +1,15 @@
 @import "colors";
 @import "breakpoints";
 
+.detail-main-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+    min-height: 100vh;
+    padding: 48px 8px 8px;
+}
+
 .heading-section {
     display: flex;
     place-content: space-between;

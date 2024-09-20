@@ -110,7 +110,20 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             data = get_cached_data(cache_key)
             if data is None:
                 df = data_service.get_logistic_searched_data(**params)
-                fetched_data = df.to_dict(orient="records")
+                result = {}
+
+                grouped = df.groupby('pick_up_pincode')
+
+                for pincode, group in grouped:
+                    result[pincode] = {}
+                    
+                    for _, row in group.iterrows():
+                        result[pincode][row['time_of_day']] = {
+                            'total_conversion_percentage': row['total_conversion_percentage'],
+                            'searched_data': row['searched_data'],
+                            'pincode': int(pincode)
+                        }
+                fetched_data = result
                 cache.set(cache_key, fetched_data, constant.CACHE_EXPIRY)
             else:
                 fetched_data = data
