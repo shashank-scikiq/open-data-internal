@@ -3,7 +3,8 @@ export const AppApiMap: any = {
   '/retail/b2b': 'retail/b2b',
   '/retail/b2c': 'retail/b2c',
   '/logistics': 'logistics/overall',
-  '/logistics/detail': 'logistics/detail'
+  '/logistics/detail': 'logistics/detail',
+  '/logistics/search': 'logistics/search'
 }
 
 export type MetrixType =

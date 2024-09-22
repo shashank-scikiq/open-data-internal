@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { LogisticOverallComponent } from './logistic-overall/logistic-overall.component';
 import { LogisticSummaryComponent } from './logistic-summary/logistic-summary.component';
 import { PincodeLevelMapViewComponent } from '../shared/pincode-level-map-view/pincode-level-map-view.component';
+import { LogisticSearchComponent } from './logistic-search/logistic-search.component';
 
 const routes: Routes = [
   {
@@ -14,8 +15,8 @@ const routes: Routes = [
     component: LogisticSummaryComponent
   },
   {
-    path: 'search_by_city',
-    component: PincodeLevelMapViewComponent
+    path: 'search',
+    component: LogisticSearchComponent
   }
 ];
 

@@ -86,26 +86,26 @@ export class RightSidenavComponent implements OnInit {
               },
               {
                 title: 'Search by city',
-                url: 'logistics/detail',
+                url: 'logistics/search',
                 disabled: false,
                 external: false,
-                type: 'accordian',
-                options: [
-                  {
-                    title: 'Delhi',
-                    url: 'logistics/search_by_city',
-                    disabled: false,
-                    external: false,
-                    params: {city: 'Delhi'}
-                  },
-                  {
-                    title: 'Bangalore',
-                    url: 'logistics/search_by_city',
-                    disabled: false,
-                    external: false,
-                    params: {city: 'Bangalore'}
-                  }
-                ] 
+                // type: 'accordian',
+                // options: [
+                //   {
+                //     title: 'Delhi',
+                //     url: 'logistics/search_by_city',
+                //     disabled: false,
+                //     external: false,
+                //     params: {city: 'Delhi'}
+                //   },
+                //   {
+                //     title: 'Bangalore',
+                //     url: 'logistics/search_by_city',
+                //     disabled: false,
+                //     external: false,
+                //     params: {city: 'Bangalore'}
+                //   }
+                // ] 
               }
             ]
           }

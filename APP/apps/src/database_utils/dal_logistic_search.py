@@ -44,83 +44,80 @@ class DataAccessLayer:
         }
         return parameters
 
-    
-
-    
-    def fetch_state_sellers(self, start_date, end_date, category=None, sub_category=None, domain=None, state=None):
-
-        table_name = constant.MONTHLY_PROVIDERS
-
-        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-
-        start_month = stdate_obj.month
-        start_year = stdate_obj.year
-        end_month = edate_obj.month
-        end_year = edate_obj.year
-
-        # parameters = [start_date, end_date]
-        parameters = [start_year, start_year, start_month, end_year, end_year, end_month]
-
-        # Base SQL query
-        query = f"""
-            SELECT 
-                seller_state, 
-                COUNT(DISTINCT trim(lower(provider_key))) as active_sellers_count
-            FROM 
-                {table_name}
-            WHERE 
-                (order_year > %s OR (order_year = %s AND order_month >= %s))
-                AND (order_year < %s OR (order_year = %s AND order_month <= %s))
-        """
-
-        query_conditions = [
-            ("category = %s", [category]) if category and category != 'None' else None,
-            ("sub_category = %s", [sub_category]) if sub_category else None,
-            ("domain = %s", [domain]) if domain else None,
-            ("upper(seller_state) = upper(%s)", [state]) if state else None
-        ]
-
-        query_conditions = [condition for condition in query_conditions if condition is not None]
-
-        for condition, param in query_conditions:
-            query += f" AND {condition}"
-            parameters.extend(param)
-
-        query += f"""
-            AND seller_state IS NOT NULL
-            GROUP BY 
-                seller_state
-            HAVING COUNT(DISTINCT provider_key) > {constant.ACTIVE_SELLERS_MASKING}
-            ORDER BY 
-                active_sellers_count DESC
-        """
-
-        df = self.db_utility.execute_query(query, parameters)
-        return df
 
     @log_function_call(ondcLogger)
     def fetch_logistic_searched_data(self, city):
+        where_condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
+            if city == 'Bangalore' else "state = 'DELHI'"
+        
         query = f"""
-            WITH A AS (
-            SELECT DISTINCT pick_up_pincode, district 
-            FROM {constant.LOGISTIC_SEARCH_PINCODE_TBL}
-            WHERE district = '{city}'
-            )
+            
+            (SELECT 
+                    ls.time_of_day as time_of_day, 
+                    ls.pick_up_pincode, 
+                    case
+                        when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
+                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                    end as total_conversion_percentage,
+                    
+                    sum(ls.searched) as searched_data
+                from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
+                    where {where_condition}
+                group by ls.time_of_day, ls.pick_up_pincode )
 
-            SELECT 
-                ls.time_of_day, 
-                ls.pick_up_pincode, 
-                sum(ls.searched) as searched_data,
-                sum(ls.confirmed) as confirmed_data, 
-                sum(ls.assigned) as assigned_data, 
-                A.district
-            FROM {constant.LOGISTIC_SEARCH_TBL} ls 
-            INNER JOIN A ON ls.pick_up_pincode = A.pick_up_pincode
+                    Union
+                (SELECT 
+                    'Overall' as time_of_day,
+                    ls.pick_up_pincode, 
+                    case
+                        when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
+                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                    end as total_conversion_percentage,
+                    
+                    sum(ls.searched) as searched_data
+                from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
+                    where {where_condition} group by ls.pick_up_pincode  )
+                    order by pick_up_pincode, time_of_day"""
+        df = self.db_utility.execute_query(query)
+        return df
+    
+    @log_function_call(ondcLogger)
+    def fetch_logistic_searched_top_card_data(self, city):
+        where_condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
+            if city == 'Bangalore' else " state = 'DELHI' "
+        
+        query = f"""
+            (SELECT 
+                ls.time_of_day as time_of_day,
+                case
+                    when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
+                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                end as total_conversion_percentage,
+                case
+                    when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
+                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 2) 
+                end as total_assigned_percentage,
+                sum(ls.searched) as searched_data
+            from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
+                where {where_condition}
+            group by ls.time_of_day )
 
-            group by ls.time_of_day, ls.pick_up_pincode, A.district order by ls.pick_up_pincode, ls.time_of_day
+                Union
+            (SELECT 
+                'Overall' as time_of_day,
+                case
+                    when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
+                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                end as total_conversion_percentage,
+                case
+                    when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
+                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 2) 
+                end as total_assigned_percentage,
+                sum(ls.searched) as searched_data
+            from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
+                where {where_condition} )
+                order by time_of_day
+            
             """
-        import pdb 
-        pdb.set_trace()
         df = self.db_utility.execute_query(query)
         return df

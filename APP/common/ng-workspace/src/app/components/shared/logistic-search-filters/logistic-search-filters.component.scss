@@ -1,0 +1,43 @@
+@import "colors";
+@import "breakpoints";
+
+.selection-main-container {
+    display: flex;
+    gap: 8px;
+    place-content: center;
+    align-items: center;
+
+
+    .selection-container {
+        position: relative;
+        min-width: 160px;
+
+    }
+
+    .label {
+        position: absolute;
+        cursor: text;
+        font-size: 75%;
+        opacity: 1;
+        -webkit-transition: all .2s;
+        transition: all .2s;
+        top: -.5em;
+        left: .5rem;
+        z-index: 1;
+        line-height: 1;
+        padding: 0 4px;
+        background-color: $white;
+        color: $grey700;
+    }
+}
+
+::ng-deep {
+    .selection-main-container .ant-select {
+        width: 200px !important;
+        border-radius: 4px !important;
+    }
+
+    .selection-main-container .ant-select-single .ant-select-selector .ant-select-selection-item{
+        font-size: 12px;
+    }
+}

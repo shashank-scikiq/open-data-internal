@@ -1,0 +1,19 @@
+<div class="selection-main-container">
+    <div class="selection-container">
+        <div class="label">Choose City</div>
+        <nz-select nzsize="small" [(ngModel)]="selectedCity" (ngModelChange)="updateValue('city')">
+            @for(option of cities; track option) {
+            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+            }
+        </nz-select>
+    </div>
+    
+    <div class="selection-container">
+        <div class="label">Choose Time Interval</div>
+        <nz-select nzsize="small" [(ngModel)]="selectedInterval" (ngModelChange)="updateValue('timeInterval')">
+            @for(option of timeIntervals; track option) {
+            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+            }
+        </nz-select>
+    </div>
+</div>
