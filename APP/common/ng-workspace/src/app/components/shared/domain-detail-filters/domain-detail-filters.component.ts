@@ -7,5 +7,6 @@ import { Component, Input } from '@angular/core';
 })
 export class DomainDetailFiltersComponent {
   @Input() domain: string = '';
+  @Input() dateRangeChipData: string = '';
 
 }

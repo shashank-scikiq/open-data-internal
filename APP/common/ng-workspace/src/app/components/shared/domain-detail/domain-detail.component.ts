@@ -9,6 +9,7 @@ export class DomainDetailComponent implements OnInit {
 
   @Input() domain: string = '';
   @Input() domainTooltip: string = '';
+  @Input() dateRangeChipData: string = '';
   
   
   ngOnInit(): void {

@@ -121,3 +121,12 @@ class DataAccessLayer:
             """
         df = self.db_utility.execute_query(query)
         return df
+    
+
+    def fetch_logistic_searched_data_date_range(self):
+        query = f"""
+            select max(date), min(date)
+            from {constant.LOGISTIC_SEARCH_PINCODE_TBL}
+        """
+        df = self.db_utility.execute_query(query)
+        return df

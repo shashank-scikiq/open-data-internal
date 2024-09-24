@@ -61,4 +61,8 @@ export class LogisticSearchService {
     );
   }
 
+  getDateRange() {
+    return this.http.get(this.baseUrl + 'api/logistics/search/data_date_range/');
+  }
+
 }

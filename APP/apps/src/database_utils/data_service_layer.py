@@ -122,3 +122,6 @@ class DataService:
 
     def get_logistic_searched_top_card_data(self, city):
         return self.dal.fetch_logistic_searched_top_card_data(city)
+    
+    def get_logistic_searched_data_date_range(self):
+        return self.dal.fetch_logistic_searched_data_date_range()

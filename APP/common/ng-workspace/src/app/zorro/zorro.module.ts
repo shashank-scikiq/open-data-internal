@@ -10,6 +10,7 @@ import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzDrawerModule } from 'ng-zorro-antd/drawer';
+import { NzRadioModule } from 'ng-zorro-antd/radio';
 
 @NgModule({
   declarations: [],
@@ -24,7 +25,8 @@ import { NzDrawerModule } from 'ng-zorro-antd/drawer';
     NzInputModule,
     NzSelectModule,
     NzDropDownModule,
-    NzDrawerModule
+    NzDrawerModule,
+    NzRadioModule
   ],
   exports: [
     NzButtonModule,
@@ -37,7 +39,8 @@ import { NzDrawerModule } from 'ng-zorro-antd/drawer';
     NzInputModule,
     NzSelectModule,
     NzDropDownModule,
-    NzDrawerModule
+    NzDrawerModule,
+    NzRadioModule
   ]
 })
 export class ZorroModule { }

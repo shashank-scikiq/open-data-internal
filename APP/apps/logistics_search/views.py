@@ -110,6 +110,8 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             data = get_cached_data(cache_key)
             if data is None:
                 df = data_service.get_logistic_searched_data(**params)
+
+                insight_data = self.prepare_insight_data(df)
                 result = {}
 
                 grouped = df.groupby('pick_up_pincode')
@@ -124,16 +126,74 @@ class FetchCityWiseData(SummaryBaseDataAPI):
                             'pincode': int(pincode)
                         }
                 fetched_data = result
-                cache.set(cache_key, fetched_data, constant.CACHE_EXPIRY)
+
+                response_data = {'mapData': fetched_data, 'insightData': insight_data}
+                cache.set(cache_key, response_data, constant.CACHE_EXPIRY)
             else:
-                fetched_data = data
-            return JsonResponse({"data": fetched_data}, safe=False)
+                response_data = data
+            return JsonResponse({"data": response_data}, safe=False)
 
         except Exception as e:
             error_message = {'error': f"An error occurred: {str(e)}"}
             return JsonResponse(error_message, status=500, safe=False)
+    
+    def prepare_insight_data(self, df):
+        time_of_days = df['time_of_day'].unique()
+
+        insight_data = {'high_demand_and_high_conversion_rate': {}, 'high_demand_and_low_conversion_rate': {}}
+
+        for time in time_of_days:
+            filtered_df = df[df['time_of_day']==time]
+
+            searched_data_sum = float(filtered_df['searched_data'].sum())
+            filtered_df['search %'] = (filtered_df['searched_data'].astype(float) / searched_data_sum) * 100.0
+
+            average_conversion_rate = round(filtered_df['total_conversion_percentage'].mean(), 0)
+            filtered_df['conversion_rate_gt_avg'] = np.where(
+                filtered_df['total_conversion_percentage'] > average_conversion_rate,
+                filtered_df['total_conversion_percentage'],
+                0
+            )
+
+            filtered_df = filtered_df.sort_values(by='search %', ascending=False)
+
+            filtered_df_1 = filtered_df[filtered_df['conversion_rate_gt_avg'] != 0]
+            filtered_df_1 = filtered_df_1[:30]
+
+
+            data = {}
+            for _, row in filtered_df_1.iterrows():
+                data[row['pick_up_pincode']] = {
+                    'total_conversion_percentage': row['total_conversion_percentage'],
+                    'searched_data': row['searched_data'],
+                    'pincode': int(row['pick_up_pincode'])
+                }
+            
+            
+            insight_data['high_demand_and_high_conversion_rate'][str(time)] = data
+
+            filtered_df_2 = filtered_df[filtered_df['conversion_rate_gt_avg'] == 0]
+            filtered_df_2 = filtered_df_2[:30]
+            data = {}
+
+            for _, row in filtered_df_2.iterrows():
+                data[row['pick_up_pincode']] = {
+                    'total_conversion_percentage': row['total_conversion_percentage'],
+                    'searched_data': row['searched_data'],
+                    'pincode': int(row['pick_up_pincode'])
+                }
+            insight_data['high_demand_and_low_conversion_rate'][str(time)] = data
+        return insight_data
 
     
     def generate_cache_key(self, params):
         cleaned_list = [params['city']]
         return "FetchCityWiseData_Logistic_Search_$$$".join(cleaned_list)
+
+
+class FetchDateRange(SummaryBaseDataAPI):
+    def get(self, request, *args):
+        df = data_service.get_logistic_searched_data_date_range()
+        date_range = f"{df.min()['min'].strftime('%d-%m-%Y')} to {df.min()['max'].strftime('%d-%m-%Y')}"
+
+        return JsonResponse({'data': date_range}, status=200, safe=False) 

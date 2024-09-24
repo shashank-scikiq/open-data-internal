@@ -1,15 +1,4 @@
 <div id="pincode-map" class="map-svg" [ngStyle]="{'visibility': isLoadingMap ? 'hidden': 'visible'}">
-    <!-- <svg id="pincode-map" >
-        <g id="state-border"></g>
-        <g id="pincode-chloro"></g>
-        <g id="legend"></g>
-        <g id="pincode-bubble"></g>
-    </svg> -->
-
-    <!-- <div class="map-tooltip">
-        tooltip text
-    </div> -->
-
     <div class="map-control" >
         <div class="btn" (click)="toggleBubbleView()"
             nz-tooltip nzTooltipPlacement="top"
@@ -50,5 +39,19 @@
 </div>
 <div class="tooltip">
 </div>
+
+<div class="insight-options-section" *ngIf="mapData">
+    <p class="margin-top-0 margin-bottom-1 font-bolder font-xs">Insights</p>
+    <nz-radio-group [(ngModel)]="activeInsight" class="options-container">
+        @for(option of insightOptions; track option.type) {
+            <label nz-radio [nzValue]="option.type" (click)="updateInsightSelection(option.type)">
+                {{option.title}}
+                <i class="fa-solid fa-circle-info"nz-tooltip nzTooltipPlacement="right"
+                [nzTooltipTitle]="option.tooltip"></i>
+            </label>
+        }
+      </nz-radio-group>
+</div>
+
 <!-- <div class="desktop-tooltip">
 </div> -->
