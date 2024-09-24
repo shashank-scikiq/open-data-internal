@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import * as L from "leaflet";
 import * as d3 from "d3";
 import { ActivatedRoute } from '@angular/router';
@@ -18,8 +18,13 @@ export class PincodeLevelMapViewComponent implements OnInit {
   isLoadingMap: boolean = true;
   width: number = 0;
   height: number = 0;
+  selectedInsightOption: any;
+  pathProjection: any;
+  bubbleRadius: any;
+  cityData: any;
 
-  isBubblesVisible: boolean = true;
+
+  isBubblesVisible: boolean = false;
 
   private svg: any;
   private tooltip: any;
@@ -30,6 +35,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
   private zoomStep = 1.5; // Zoom scale step for each button press
 
   mapData: any = [];
+  insightData: any = {};
   chloroplethcolormapper3: any = {
     map_total_orders_metrics: ["#ffffff", "#FF7722"],
     map_total_active_sellers_metrics: ["#ffffff", "#1c75bc"],
@@ -42,12 +48,38 @@ export class PincodeLevelMapViewComponent implements OnInit {
     map_total_zonal_commerce_metrics: ["rgba(16,183,89,0.8)", "rgba(16,183,89,0.5)", "rgba(16,183,89,0.5)"],
   }
 
+  pincodeLevelMapColorMapper: any = ['#0ad10a', '#7b850b', '#da0000'];
+
   chloroplethcolormapper2: any = {
     map_total_orders_metrics: ["#ffffff", "#f9f0e9", "#FF7722"],
     map_total_active_sellers_metrics: ["#ffffff", "#dfebf5", "#1c75bc"],
     map_total_zonal_commerce_metrics: ["#ffffff", "#eefaf3", "#10b759"],
   }
   maxData: any = null;
+
+  insightOptions: any = [
+    {
+      title: 'Areas with high demand & high conversion rates',
+      tooltip: `Areas that contribute to 75% of total searches (capped to 30 pincodes). 
+            And conversion rates within these areas that are more than average.`,
+      selected: false,
+      type: 'high_demand_and_high_conversion_rate'
+    },
+    {
+      title: 'Areas with high demand, but low conversion rates',
+      tooltip: `Areas that contribute to 75% of total searches (capped to 30 pincodes) and 
+        conversion rates within these areas that are less than average`,
+      selected: false,
+      type: 'high_demand_and_low_conversion_rate'
+    },
+    // {
+    //   title: 'Areas with low demand but good conversions on the existing dmand',
+    //   tooltip: `Areas that contribute to not more than 25% of total searches 
+    //     (capped to 30 pincodes) and conversion rates are higehr than average. Minimum threshold of 100`,
+    //   selected: false
+    // }
+  ]
+  activeInsight: any;
 
   constructor(
     private logisticSearchService: LogisticSearchService
@@ -65,6 +97,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
         this.city = value;
         this.isLoadingMap = true;
         this.getMapData();
+        this.activeInsight = this.insightOptions[0].type;
       }
     )
 
@@ -88,12 +121,19 @@ export class PincodeLevelMapViewComponent implements OnInit {
     this.logisticSearchService.getCityWiseData().subscribe(
       (response: any) => {
         if (response) {
-          this.mapData = response.data;
-
+          this.mapData = response.data.mapData;
+          this.insightData = response.data.insightData;
           this.setData();
         }
       }
     )
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.setDimensions();
+    this.isLoadingMap = true;
+    this.setData();
   }
 
   toggleBubbleView() {
@@ -104,14 +144,20 @@ export class PincodeLevelMapViewComponent implements OnInit {
       .style('visibility', this.isBubblesVisible ? 'visible' : 'hidden');
   }
 
+
   setData() {
-    this.isBubblesVisible = true;
+    this.isBubblesVisible = false;
     this.isLoadingMap = true;
+    
     d3.select('#bubble-legends').selectAll('svg').remove();
     d3.select('#chloro-legends').selectAll('svg').remove();
     d3.select('#pincode-map').selectAll('svg').remove();
-    
-    let cityData = [];
+    if (this.svg) {
+      this.svg.selectAll('circle').remove();
+      this.svg.selectAll('foreignObject').remove();
+    }
+
+    this.cityData = [];
 
     let combinedGeoJSON: any = {
       "type": "FeatureCollection",
@@ -135,7 +181,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
       });
     });
 
-    const mapprojectionresult = this.mapprojection(combinedGeoJSON);
+    // const mapprojectionresult = this.mapprojection(combinedGeoJSON);
 
     for (const key in this.mapData) {
       const stringKey: any = key.toString();
@@ -143,22 +189,25 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
       };
       pincodeData['pincode'] = Number(key);
-      cityData.push(pincodeData)
+      this.cityData.push(pincodeData)
     }
 
     this.tooltip = d3.select(".tooltip")
 
     this.svg = d3.select('#pincode-map').append('svg')
       .attr('viewBox', `0 0 ${this.width} ${this.height}`)
-      .attr('preserveAspectRatio', "xMidYMid meet");
-
-    const sortedSearchedData = cityData.sort(
-      (a: any, b: any) => b.searched_data - a.searched_data
-    ).slice(0, 3);
+      .attr('preserveAspectRatio', "xMidYMid meet")
+      .attr('class', 'pincode-level-map');
+      
+      const sortedSearchedData = this.cityData.sort(
+        (a: any, b: any) => 
+          (b.searched_data ?? 0) - (a.searched_data ?? 0)
+        
+      ).slice(0, 3);
     let maxSearchedData = sortedSearchedData[0].searched_data;
     maxSearchedData = maxSearchedData ? Number(maxSearchedData) : 0;
 
-    const sortedConversionData = cityData.sort(
+    const sortedConversionData = this.cityData.sort(
       (a: any, b: any) => b.total_conversion_percentage - a.total_conversion_percentage
     ).slice(0, 3);
     let maxConversionData = sortedConversionData[0].total_conversion_percentage;
@@ -168,14 +217,14 @@ export class PincodeLevelMapViewComponent implements OnInit {
     customColorRange = d3.scaleLinear()
       .domain([0, 1, maxSearchedData])
       .range(this.chloroplethcolormapper2['map_total_active_sellers_metrics']);
-    const g = this.svg.append('g');
+    const g = this.svg.append('g').attr('id', 'pincodeGroup');
 
     const projection: any = d3.geoMercator()
       .center(CityLatLong[this.city])
       .scale(50000)
-      .translate([this.width / 2, (this.height / 2) - 60]);
+      .translate([(this.width / 2) + 80, (this.height / 2) - 60]);
 
-    const path: any = d3.geoPath().projection(projection);
+    this.pathProjection = d3.geoPath().projection(projection);
     // const g = d3.select('#pincode-chloro');
 
     this.zoomBehavior = d3.zoom()
@@ -184,15 +233,17 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
     this.svg.call(this.zoomBehavior);
 
-    const bubbleradius = d3.scaleSqrt()
+    this.bubbleRadius = d3.scaleSqrt()
       .domain([0, maxConversionData])
-      .range([2, 20]);
+      .range([1, 7]);
 
     const renderMap = () => {
+      const legendValues = [0, ...Array.from({ length: 4 }, (_, i) => (i + 1) * maxSearchedData / 4)];
+
       g.selectAll('path')
         .data(combinedGeoJSON.features)
         .enter().append('path')
-        .attr('d', path)
+        .attr('d', this.pathProjection)
         .attr('fill',
           (el: any) => {
             if (el.mapData && this.logisticSearchService.activeTimeInterval.value in el.mapData) {
@@ -226,149 +277,9 @@ export class PincodeLevelMapViewComponent implements OnInit {
         .on('mouseout', () => {
           this.tooltip.style('opacity', 0);
         })
-        .each((d: any) => {
-          // Compute the centroid of the path for this feature
-          const centroid = path.centroid(d);
-
-          // Append a circle at the centroid position
-          g.append('circle')
-            .attr('cx', centroid[0])
-            .attr('cy', centroid[1])
-            .attr('r', (el: any) => {
-              if (d.mapData && this.logisticSearchService.activeTimeInterval.value in d.mapData) {
-                const value = Math.trunc(Number(d.mapData[this.logisticSearchService.activeTimeInterval.value]?.total_conversion_percentage));
-                return value ? Math.min(20, Math.max(2, bubbleradius(value))) : 2;
-              } else {
-                return 2
-              }
-            })
-            .attr('fill', 'rgba(0,123,255,0)')
-            .attr('stroke', 'yellow')
-            .attr('stroke-width', 1)
-            .on('mouseover', (event: any) => {
-              const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
-              this.tooltip.style('opacity', 1)
-                .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
-                    <b>Confirm percentage:</b> ${mapData?.total_conversion_percentage ?? 0}% <br>
-                    <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
-            })
-            .on('mousemove', (event: any) => {
-              const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
-
-              // Adjust the position relative to the SVG element, not the whole page
-              const offsetX = event.clientX - svgElement.left;
-              const offsetY = event.clientY - svgElement.top;
-              this.tooltip.style('left', (offsetX + 5) + 'px')
-                .style('top', (offsetY - 28) + 'px');
-            })
-            .on('mouseout', () => {
-              this.tooltip.style('opacity', 0);
-            });
-
-          const topPincodes = sortedConversionData.map((d: any) => d.pincode);
-          if (d.mapData && topPincodes.includes(d.mapData[this.logisticSearchService.activeTimeInterval.value]?.pincode)) {
-            g.append('foreignObject')
-              .attr('x', centroid[0] - 35 / 2 + 5)
-              .attr('y', centroid[1] - 40)
-              .attr('width', 35)
-              .attr('height', 35)
-              .attr('overflow', 'visible')
-              .on('mouseover', (event: any) => {
-                const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
-                this.tooltip.style('opacity', 1)
-                  .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
-                      <b>Confirm percentage:</b> ${mapData?.total_conversion_percentage ?? 0} % <br>
-                      <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
-              })
-              .on('mousemove', (event: any) => {
-                const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
-
-                // Adjust the position relative to the SVG element, not the whole page
-                const offsetX = event.clientX - svgElement.left;
-                const offsetY = event.clientY - svgElement.top;
-                this.tooltip.style('left', (offsetX + 5) + 'px')
-                  .style('top', (offsetY - 28) + 'px');
-              })
-              .on('mouseout', () => {
-                this.tooltip.style('opacity', 0);
-              })
-              .html((i: any) => {
-                let iconClass = "pointer-icon fa-solid fa-cart-shopping";
-                let metricValue = Number(
-                  d.mapData[this.logisticSearchService.activeTimeInterval.value]?.searched_data
-                );
-                return `<div class="pointer" nz-tooltip nzTooltipPlacement="top" 
-                nzTooltipTitle="
-                  <br/>top data: ${metricValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}">
-                  <i class="${iconClass}"></i>
-                  </div><div class="pulse"></div>`;
-              })
-
-          }
-        });
-
-      // for bubble legends
-      const legendData = [
-        {
-          label: 'Low',
-          radius: bubbleradius(0),
-          value: 0, color: this.bubblecolormapper['map_total_active_sellers_metrics'][0]
-        },
-        {
-          label: 'Medium', radius:
-            bubbleradius(
-              maxConversionData * 0.5
-            ),
-          value: Math.floor(
-            maxConversionData * 0.5
-          ),
-          color: this.bubblecolormapper['map_total_active_sellers_metrics'][0]
-        },
-        {
-          label: 'High',
-          radius: bubbleradius(maxConversionData),
-          value: Math.floor(maxConversionData),
-          color: this.bubblecolormapper['map_total_active_sellers_metrics'][1]
-        }
-      ];
-
-      const newLegendContainer = d3.select('#bubble-legends').append('svg')
-        .attr('class', 'legend')
-        .attr('width', "180px")
-        .attr('height', "96px")
-
-      const legendItems = newLegendContainer.selectAll('g')
-        .data(legendData)
-        .enter().append('g')
-        .attr('transform', `translate(10, 40)`);
-
-      legendItems.append('circle')
-        .attr('cx', 30)
-        .attr('cy', (d, i) => `${30 - (i * 15)}`)
-        .attr('r', (d, i) => `${i * (1 * 15) + 5}`)
-        .attr('fill', 'transparent')
-        .attr('stroke', d => d.color)
-        .attr('stroke-width', 2);
-
-      legendItems.append('line')
-        .attr('x1', (d, i) => `${35 + (i * 15)}`)
-        .attr('x2', 90)
-        .attr('y1', (d, i) => `${30 - (i * 15)}`)
-        .attr('y2', (d, i) => `${30 - (i * 15)}`)
-        .attr('stroke', 'black')
-        .style('stroke-dasharray', '2,2');
-
-      legendItems.append('text')
-        .attr('x', 95)
-        .attr('y', (d, i) => `${30 - (i * 15)}`)
-        .attr('dy', '.35em')
-        .style('text-anchor', 'start')
-        .style('font-size', '12px')
-        .text(d => `${d.value.toLocaleString()}%`);
-
 
       // for chloro legends
-      const legendValues = [0, ...Array.from({ length: 4 }, (_, i) => (i + 1) * maxSearchedData / 4)];
+      d3.select('#chloro-legends').selectAll('svg').remove();
       const newChloroLegendContainer = d3.select('#chloro-legends')
         .append('svg')
         .attr('class', 'legend')
@@ -410,8 +321,179 @@ export class PincodeLevelMapViewComponent implements OnInit {
             return `${startRange.toLocaleString()}-${endRange.toLocaleString()}`;
           }
         });
+      this.addBubbles();
+      this.isLoadingMap = false;
     }
-    this.isLoadingMap = false;
+  }
+
+  addBubbles(insightType: any = null) {
+    let g = this.svg.selectAll('#pincodeGroup');
+
+    this.svg.selectAll('circle').remove();
+    this.svg.selectAll('foreignObject').remove();
+
+    const activeTimeInterval: any = this.logisticSearchService.activeTimeInterval.value;
+    let activeInsightData = this.insightData[insightType ?? this.activeInsight][activeTimeInterval];
+    const sortedConversionData: any = Object.values(activeInsightData).sort(
+      (a: any, b: any) => (b.total_conversion_percentage ?? 0) - (a.total_conversion_percentage ?? 0)
+    )
+    const maxConversionData = sortedConversionData[0]?.total_conversion_percentage ?? 0;
+
+    g.selectAll('path').each((d: any) => {
+      // Compute the centroid of the path for this feature
+      const centroid = this.pathProjection.centroid(d);
+
+      const mapData = d.mapData ? d.mapData[activeTimeInterval] : null;
+      const pincode = mapData?.pincode;
+
+      if (pincode && activeInsightData[pincode ?? '']) {
+        const mapData = activeInsightData[pincode];
+
+        // Append a circle at the centroid position
+        this.svg.select('#pincodeGroup').append('circle')
+          .attr('cx', centroid[0])
+          .attr('cy', centroid[1])
+          .attr('r', (el: any) => {
+            // return 4;
+            if (mapData.total_conversion_percentage) {
+              const value = mapData.total_conversion_percentage;
+              return value ? Math.min(7, Math.max(1, this.bubbleRadius(value))) : 1;
+            } else {
+              return 1
+            }
+          })
+          .attr('fill', 'rgba(255, 142, 0, 0.4)')
+          .attr('stroke', 'rgba(255, 142, 0, 1)')
+          .attr('stroke-width', 1)
+          .style('visibility', this.isBubblesVisible ? 'visible' : 'hidden')
+          .on('mouseover', (event: any) => {
+            const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
+            this.tooltip.style('opacity', 1)
+              .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
+                    <b>Confirm percentage:</b> ${mapData?.total_conversion_percentage ?? 0}% <br>
+                    <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
+          })
+          .on('mousemove', (event: any) => {
+            const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
+  
+            // Adjust the position relative to the SVG element, not the whole page
+            const offsetX = event.clientX - svgElement.left;
+            const offsetY = event.clientY - svgElement.top;
+            this.tooltip.style('left', (offsetX + 5) + 'px')
+              .style('top', (offsetY - 28) + 'px');
+          })
+          .on('mouseout', () => {
+            this.tooltip.style('opacity', 0);
+          });
+      }
+
+
+
+      const topPincodes = sortedConversionData.slice(0, 5).map((d: any) => d.pincode);
+      if (d.mapData && topPincodes.includes(d.mapData[this.logisticSearchService.activeTimeInterval.value]?.pincode)) {
+        g.append('foreignObject')
+          .attr('x', centroid[0] - 35 / 2 + 5)
+          .attr('y', centroid[1] - 40)
+          .attr('width', 35)
+          .attr('height', 35)
+          .attr('overflow', 'visible')
+          .on('mouseover', (event: any) => {
+            const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
+            this.tooltip.style('opacity', 1)
+              .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
+                    <b>Confirm percentage:</b> ${mapData?.total_conversion_percentage ?? 0} % <br>
+                    <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
+          })
+          .on('mousemove', (event: any) => {
+            const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
+
+            // Adjust the position relative to the SVG element, not the whole page
+            const offsetX = event.clientX - svgElement.left;
+            const offsetY = event.clientY - svgElement.top;
+            this.tooltip.style('left', (offsetX + 5) + 'px')
+              .style('top', (offsetY - 28) + 'px');
+          })
+          .on('mouseout', () => {
+            this.tooltip.style('opacity', 0);
+          })
+          .html((i: any) => {
+            let iconClass = "pointer-icon fa-solid fa-cart-shopping";
+            let metricValue = Number(
+              d.mapData[this.logisticSearchService.activeTimeInterval.value]?.searched_data
+            );
+            return `<div class="pointer" nz-tooltip nzTooltipPlacement="top" 
+              nzTooltipTitle="
+                <br/>top data: ${metricValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}">
+                <i class="${iconClass}"></i>
+                </div><div class="pulse"></div>`;
+          })
+
+      }
+    });
+
+    const bubbleLegendData: any = [
+      {
+        label: 'Low',
+        radius: this.bubbleRadius(0),
+        value: 0, color: this.bubblecolormapper['map_total_active_sellers_metrics'][0]
+      },
+      {
+        label: 'Medium', radius:
+          this.bubbleRadius(
+            maxConversionData * 0.5
+          ),
+        value: Math.floor(
+          maxConversionData * 0.5
+        ),
+        color: this.bubblecolormapper['map_total_active_sellers_metrics'][0]
+      },
+      {
+        label: 'High',
+        radius: this.bubbleRadius(maxConversionData),
+        value: Math.floor(maxConversionData),
+        color: this.bubblecolormapper['map_total_active_sellers_metrics'][1]
+      }
+    ];
+
+    d3.select('#bubble-legends').selectAll('svg').remove();
+
+      const newLegendContainer = d3.select('#bubble-legends').append('svg')
+        .attr('class', 'legend')
+        .attr('width', "180px")
+        .attr('height', "96px")
+
+      const legendItems = newLegendContainer.selectAll('g')
+        .data(bubbleLegendData)
+        .enter().append('g')
+        .attr('transform', `translate(10, 40)`);
+
+      legendItems.append('circle')
+        .attr('cx', 30)
+        .attr('cy', (d, i) => `${30 - (i * 15)}`)
+        .attr('r', (d, i) => `${i * (1 * 15) + 5}`)
+        .attr('fill', (d, i) => 'transparent')
+        .attr('stroke', (d, i) => 'rgba(255, 142, 0, 1)')
+        .attr('stroke-width', 2);
+
+      legendItems.append('line')
+        .attr('x1', (d, i) => `${35 + (i * 15)}`)
+        .attr('x2', 90)
+        .attr('y1', (d, i) => `${30 - (i * 15)}`)
+        .attr('y2', (d, i) => `${30 - (i * 15)}`)
+        .attr('stroke', 'black')
+        .style('stroke-dasharray', '2,2');
+
+      legendItems.append('text')
+        .attr('x', 95)
+        .attr('y', (d, i) => `${30 - (i * 15)}`)
+        .attr('dy', '.35em')
+        .style('text-anchor', 'start')
+        .style('font-size', '12px')
+        .text((d: any, i: any) => {
+          return `>= ${(bubbleLegendData[2].value * ((i) * 0.33)).toLocaleString()}%`
+        }
+        );
+   
   }
 
   // Zoom in method
@@ -445,5 +527,10 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
     projection.scale(s).translate(t);
     return [projection, pathGenerator];
+  }
+
+
+  updateInsightSelection(type: any) {
+    this.addBubbles(type);
   }
 }

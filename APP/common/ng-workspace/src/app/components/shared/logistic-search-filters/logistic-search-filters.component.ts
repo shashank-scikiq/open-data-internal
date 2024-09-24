@@ -31,8 +31,11 @@ export class LogisticSearchFiltersComponent implements OnInit {
   }
   
   updateValue(updatedFor: string = 'city') {
-    this.logisticSearchService.setActiveCity(this.selectedCity);
-    this.logisticSearchService.setActiveTimeInterval(this.selectedInterval);
+    if (updatedFor == 'city') {
+      this.logisticSearchService.setActiveCity(this.selectedCity);
+    } else {
+      this.logisticSearchService.setActiveTimeInterval(this.selectedInterval);
+    }
     this.logisticSearchService.filterUpdated.next({updated: true, updatedFor});
   }
 }

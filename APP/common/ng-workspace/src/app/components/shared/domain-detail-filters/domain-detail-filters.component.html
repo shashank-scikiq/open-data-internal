@@ -1,5 +1,8 @@
 
 <div class="filters-main-container">
+    <div class="date-range-chip" *ngIf="dateRangeChipData">
+        <span class="font-bolder">Date Range: </span>{{dateRangeChipData}}
+    </div>
     @if(domain == 'Logistics Search') {
         <app-logistic-search-filters>
         </app-logistic-search-filters>
