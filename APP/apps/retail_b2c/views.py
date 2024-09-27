@@ -100,7 +100,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             data = get_cached_data(cache_key)
 
             if data is None:
-                top_cards_current = self.fetch_current_data(params)
+                top_cards_current = data_service.get_total_orders_summary(**params)
                 districts_count = data_service.get_district_count(**params)
                 delta_required = 0 if (datetime.strptime(params['start_date'], "%Y-%m-%d").date()
                                    == datetime.strptime(constant.FIXED_MIN_DATE,
@@ -109,7 +109,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                 if delta_required:
                     previous_start_date, previous_end_date = self.get_previous_date_range(params)
                     params['start_date'], params['end_date'] = previous_start_date, previous_end_date
-                    top_cards_previous = self.fetch_previous_data(params)
+                    top_cards_previous = data_service.get_total_orders_summary_prev(**params)
                 else:
                     previous_start_date, previous_end_date = None, None
                     top_cards_previous = top_cards_current
@@ -143,18 +143,12 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         cleaned_list = [element for element in cleaned_list if element not in [None, 'None']]
         return "FetchTopCardDeltaData_Retail_b2c_$$$".join(cleaned_list)
 
-    def fetch_current_data(self, params):
-        return data_service.get_total_orders_summary(**params)
-
     def get_previous_date_range(self, params):
         original_start_date = params['start_date']
         original_end_date = params['end_date']
         previous_start_date, previous_end_date = shift_date_months(original_start_date, original_end_date)
 
         return previous_start_date, previous_end_date
-
-    def fetch_previous_data(self, params):
-        return data_service.get_total_orders_summary_prev(**params)
 
     def merge_data(self, current_data, previous_data):
         current_data['delivery_state'] = current_data['delivery_state'].astype(str)
@@ -177,18 +171,16 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                               merged_df['total_districts_previous']), round_off_offset
         )
 
-
-        avg_items_res = safe_divide(
-            merged_df['avg_items_per_order_in_district_current'] - 
-            merged_df['avg_items_per_order_in_district_previous'],
-            merged_df['avg_items_per_order_in_district_previous']
+        merged_df['avg_items_per_order_delta'] = np.round(
+            100 * safe_divide(merged_df['avg_items_per_order_in_district_current'] - merged_df['avg_items_per_order_in_district_previous'],
+                              merged_df['avg_items_per_order_in_district_previous']), round_off_offset
         )
-
         
         merged_df['orders_count_delta'] = np.round(
             100 * safe_divide(merged_df['delivered_orders_current'] - merged_df['delivered_orders_previous'],
                               merged_df['delivered_orders_previous']), round_off_offset
         )
+
         merged_df['total_sellers_count_delta'] = np.round(
             100 * safe_divide(merged_df['total_sellers_current'] - merged_df['total_sellers_previous'],
                               merged_df['total_sellers_previous']), round_off_offset
@@ -197,9 +189,6 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             100 * safe_divide(merged_df['active_sellers_current'] - merged_df['active_sellers_previous'],
                               merged_df['active_sellers_previous']), round_off_offset
         )
-        merged_df['avg_items_per_order_delta'] = np.round(
-            100 * (avg_items_res if type(avg_items_res) == int else avg_items_res.astype(float)), round_off_offset
-        ) 
 
         merged_df = merged_df.replace([np.inf, -np.inf], 100).replace([np.nan], 0).fillna(0)
 
@@ -216,6 +205,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         merged_df = pd.merge(state_list, merged_df, how='left', on='delivery_state_code_current', validate="many_to_many")
         merged_df['most_ordering_district'] = merged_df['most_ordering_district'].fillna(constant.NO_DATA_MSG)
         merged_df = merged_df.fillna(0)
+
         if delta_req:
             for _, row in merged_df.iterrows():
                 state_code = row['delivery_state_code_current']
@@ -279,7 +269,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                             row['active_sellers_current'], 'Active sellers', 0, ' %'
                         ),
                         self.create_metric_data(
-                            row['avg_items_per_order_in_district_current'], 'No. of items per order', 0
+                            row['avg_items_per_order_in_district_current'], 'No. of items per order', 0, ' '
                         ),
                         self.create_max_orders_delivered_area_data(
                             row['most_ordering_district'])
@@ -292,7 +282,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                     "top_card_data": top_card_data
                 }
 
-    def create_metric_data(self, count, heading, delta, count_suffix=None):
+    def create_metric_data(self, count, heading, delta, count_suffix=''):
         if heading == 'Total sellers' and count <3:
             return {
                 "type": 'max_state',
@@ -308,7 +298,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         else:
             return {
                 "type": 'default',
-                "count": int(count) if not count_suffix else (str(count) + count_suffix),
+                "count": int(count) if not len(count_suffix) else (f"{count}{count_suffix}"),
                 "heading": heading,
                 "icon": 'trending_up' if delta >= 0 else 'trending_down',
                 "positive": bool(delta >= 0),
@@ -343,6 +333,7 @@ class FetchMapStateWiseData(SummaryBaseDataAPI):
         # if resp_data is None:
         data = data_service.get_cumulative_orders_statewise_summary(**params)
         current_sellers = data_service.get_overall_active_sellers(**params)
+        
 
         current_sellers_renamed = current_sellers.rename(columns={'seller_state_code': 'delivery_state_code',
                                                                     'seller_state': 'delivery_state'})
@@ -358,7 +349,6 @@ class FetchMapStateWiseData(SummaryBaseDataAPI):
         # else:
         #     json_data = resp_data
         return JsonResponse(json_data, safe=False)
-
 
 class FetchMapStateData(SummaryBaseDataAPI):
     @exceptionAPI(ondcLogger)
@@ -732,6 +722,7 @@ class FetchCategoryPenetrationSellers(SummaryBaseDataAPI):
         APIView BaseDataAPI FetchCategoryPenetrationSellers
         """
         params = self.extract_common_params(request)
+
         data = data_service.get_category_penetration_sellers(**params)
         formatted_data = self.sunburst_format(data, chart_type='active_sellers_count')
         return JsonResponse(formatted_data, safe=False)

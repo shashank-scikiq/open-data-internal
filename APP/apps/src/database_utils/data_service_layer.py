@@ -91,7 +91,7 @@ class DataService:
         return self.dal.fetch_category_penetration_orders(start_date, end_date, category, sub_category, domain_name, state)
     
     def get_category_penetration_sellers(self, start_date, end_date, category=None, sub_category=None, domain_name=None, state=None, seller_type='Total'):
-        return self.dal.fetch_category_penetration_sellers(start_date, end_date, category, sub_category, domain_name, state)
+        return self.dal.fetch_category_penetration_sellers(start_date, end_date, category, sub_category, domain_name, state, seller_type)
 
     def get_states_orders(self, start_date, end_date, category=None, sub_category=None, domain_name=None, state=None, seller_type='Total'):
         return self.dal.fetch_states_orders(start_date, end_date, category, sub_category, domain_name, state)
