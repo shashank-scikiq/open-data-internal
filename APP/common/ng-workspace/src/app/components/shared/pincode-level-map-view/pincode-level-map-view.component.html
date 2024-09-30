@@ -1,22 +1,17 @@
 <div id="pincode-map" class="map-svg" [ngStyle]="{'visibility': isLoadingMap ? 'hidden': 'visible'}">
     <div class="map-control" >
-        <div class="btn" (click)="toggleBubbleView()"
-            nz-tooltip nzTooltipPlacement="top"
-            [nzTooltipTitle]="isBubblesVisible ? 'Hide bubbles': 'Show bubbles'">
-            <i [class]="(isBubblesVisible ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye')"></i>
-        </div>
         <div class="btn" (click)="zoomIn()"
-            nz-tooltip nzTooltipPlacement="top"
+            nz-tooltip nzTooltipPlacement="left"
             nzTooltipTitle="Zoom in">
             <i class="fa-solid fa-plus"></i>
         </div>
         <div class="btn" (click)="zoomOut()"
-            nz-tooltip nzTooltipPlacement="top"
+            nz-tooltip nzTooltipPlacement="left"
             nzTooltipTitle="Zoom out">
             <i class="fa-solid fa-minus"></i>
         </div>
         <div class="btn" (click)="resetZoom()"
-            nz-tooltip nzTooltipPlacement="top"
+            nz-tooltip nzTooltipPlacement="left"
             nzTooltipTitle="Reset view">
             <i class="fa-solid fa-rotate-left"></i>
         </div>
@@ -40,11 +35,11 @@
 <div class="tooltip">
 </div>
 
-<div class="insight-options-section" *ngIf="mapData">
+<div class="insight-options-section" *ngIf="mapData && !isLoadingMap">
     <p class="margin-top-0 margin-bottom-1 font-bolder font-xs">Insights</p>
     <nz-radio-group [(ngModel)]="activeInsight" class="options-container">
         @for(option of insightOptions; track option.type) {
-            <label nz-radio [nzValue]="option.type" (click)="updateInsightSelection(option.type)">
+            <label nz-radio [nzValue]="option.type" (click)="updateInsightSelection(option)">
                 {{option.title}}
                 <i class="fa-solid fa-circle-info"nz-tooltip nzTooltipPlacement="right"
                 [nzTooltipTitle]="option.tooltip"></i>
@@ -53,5 +48,13 @@
       </nz-radio-group>
 </div>
 
-<!-- <div class="desktop-tooltip">
-</div> -->
+<div class="view-options-section" *ngIf="mapData && !isLoadingMap">
+    <p class="margin-top-0 margin-bottom-1 font-bolder font-xs">View</p>
+    <nz-radio-group [(ngModel)]="activeView" class="options-container">
+        @for(option of viewsOptions; track option.type) {
+            <label nz-radio [nzValue]="option.type" (click)="updateViewSelection(option)">
+                {{option.title}}
+            </label>
+        }
+      </nz-radio-group>
+</div>

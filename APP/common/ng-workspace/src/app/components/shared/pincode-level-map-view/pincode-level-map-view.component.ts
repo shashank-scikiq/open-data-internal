@@ -22,9 +22,10 @@ export class PincodeLevelMapViewComponent implements OnInit {
   pathProjection: any;
   bubbleRadius: any;
   cityData: any;
+  customColorRange: any;
 
 
-  isBubblesVisible: boolean = false;
+  isBubblesVisible: boolean = true;
 
   private svg: any;
   private tooltip: any;
@@ -52,34 +53,72 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
   chloroplethcolormapper2: any = {
     map_total_orders_metrics: ["#ffffff", "#f9f0e9", "#FF7722"],
-    map_total_active_sellers_metrics: ["#ffffff", "#dfebf5", "#1c75bc"],
+    map_total_active_sellers_metrics: ["#F8F3C5", "#FFCD71", "#FF6F48"],
     map_total_zonal_commerce_metrics: ["#ffffff", "#eefaf3", "#10b759"],
   }
   maxData: any = null;
 
+  viewsOptions: any = [
+    {
+      type: 'search_only',
+      title: 'Search Only'
+    }, {
+      type: 'conversion_only',
+      title: 'Conversion Only'
+    }, {
+      type: 'search_and_conversion',
+      title: 'Search and Conversion'
+    },
+  ];
+  activeView: any = 'search_only';
   insightOptions: any = [
     {
-      title: 'Areas with high demand & high conversion rates',
+      title: 'Top searched areas',
+      tooltip: `Areas with high demand`,
+      selected: false,
+      type: 'high_demand',
+      defaultView: this.viewsOptions[0]
+    },
+    {
+      title: 'Top Conversion rate Areas',
+      tooltip: `Areas with high conversion rate`,
+      selected: false,
+      type: 'high_conversion_rate',
+      defaultView: this.viewsOptions[0]
+    },
+    {
+      title: 'Areas with high search and high conversion rate',
       tooltip: `Areas that contribute to 75% of total searches (capped to 30 pincodes). 
             And conversion rates within these areas that are more than average.`,
       selected: false,
-      type: 'high_demand_and_high_conversion_rate'
+      type: 'high_demand_and_high_conversion_rate',
+      defaultView: this.viewsOptions[2]
     },
     {
-      title: 'Areas with high demand, but low conversion rates',
+      title: 'Areas with high search and low conversion rate',
       tooltip: `Areas that contribute to 75% of total searches (capped to 30 pincodes) and 
         conversion rates within these areas that are less than average`,
       selected: false,
-      type: 'high_demand_and_low_conversion_rate'
+      type: 'high_demand_and_low_conversion_rate',
+      defaultView: this.viewsOptions[2]
     },
-    // {
-    //   title: 'Areas with low demand but good conversions on the existing dmand',
-    //   tooltip: `Areas that contribute to not more than 25% of total searches 
-    //     (capped to 30 pincodes) and conversion rates are higehr than average. Minimum threshold of 100`,
-    //   selected: false
-    // }
-  ]
-  activeInsight: any;
+    {
+      title: 'Areas with high search in peak morning hours',
+      tooltip: ``,
+      selected: false,
+      type: 'high_demand_in_morning_hours',
+      defaultView: this.viewsOptions[0]
+    },
+    {
+      title: 'Areas with high search in peak evening hours',
+      tooltip: ``,
+      selected: false,
+      type: 'high_demand_in_evening_hours',
+      defaultView: this.viewsOptions[0]
+    }
+  ];
+  activeInsight: any = 'high_demand';
+
 
   constructor(
     private logisticSearchService: LogisticSearchService
@@ -98,6 +137,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
         this.isLoadingMap = true;
         this.getMapData();
         this.activeInsight = this.insightOptions[0].type;
+        this.activeView = this.viewsOptions[0].type;
       }
     )
 
@@ -148,7 +188,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
   setData() {
     this.isBubblesVisible = false;
     this.isLoadingMap = true;
-    
+
     d3.select('#bubble-legends').selectAll('svg').remove();
     d3.select('#chloro-legends').selectAll('svg').remove();
     d3.select('#pincode-map').selectAll('svg').remove();
@@ -198,23 +238,24 @@ export class PincodeLevelMapViewComponent implements OnInit {
       .attr('viewBox', `0 0 ${this.width} ${this.height}`)
       .attr('preserveAspectRatio', "xMidYMid meet")
       .attr('class', 'pincode-level-map');
-      
-      const sortedSearchedData = this.cityData.sort(
-        (a: any, b: any) => 
-          (b.searched_data ?? 0) - (a.searched_data ?? 0)
-        
-      ).slice(0, 3);
+
+    const sortedSearchedData = this.cityData.sort(
+      (a: any, b: any) =>
+        (b.searched_data ?? 0) - (a.searched_data ?? 0)
+
+    ).slice(0, 3);
     let maxSearchedData = sortedSearchedData[0].searched_data;
     maxSearchedData = maxSearchedData ? Number(maxSearchedData) : 0;
 
     const sortedConversionData = this.cityData.sort(
-      (a: any, b: any) => b.total_conversion_percentage - a.total_conversion_percentage
+      (a: any, b: any) => b.conversion_rate - a.conversion_rate
     ).slice(0, 3);
-    let maxConversionData = sortedConversionData[0].total_conversion_percentage;
+    let maxConversionData = sortedConversionData[0].conversion_rate;
     maxConversionData = maxConversionData ? Number(maxConversionData) : 0;
+    this.maxData = maxConversionData;
 
-    let customColorRange: any;
-    customColorRange = d3.scaleLinear()
+
+    this.customColorRange = d3.scaleLinear()
       .domain([0, 1, maxSearchedData])
       .range(this.chloroplethcolormapper2['map_total_active_sellers_metrics']);
     const g = this.svg.append('g').attr('id', 'pincodeGroup');
@@ -235,7 +276,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
     this.bubbleRadius = d3.scaleSqrt()
       .domain([0, maxConversionData])
-      .range([1, 7]);
+      .range([1, 12]);
 
     const renderMap = () => {
       const legendValues = [0, ...Array.from({ length: 4 }, (_, i) => (i + 1) * maxSearchedData / 4)];
@@ -244,26 +285,19 @@ export class PincodeLevelMapViewComponent implements OnInit {
         .data(combinedGeoJSON.features)
         .enter().append('path')
         .attr('d', this.pathProjection)
-        .attr('fill',
-          (el: any) => {
-            if (el.mapData && this.logisticSearchService.activeTimeInterval.value in el.mapData) {
-              const val = Number(
-                el.mapData[this.logisticSearchService.activeTimeInterval.value]?.searched_data
-              );
-              return customColorRange(val)
-            } else {
-              return customColorRange(0)
-            }
-          })
         .attr('stroke-width', 0.5)
         // .attr('stroke', this.chloroplethStrokeColor[casetype])
-        .attr('stroke', 'rgba(0,123,255,0.5)')
+        .attr('stroke', '#545454')
         .attr('class', `cursor-pointer`)
         .on('mouseover', (event: any, d: any) => {
           const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
           this.tooltip.style('opacity', 1)
-            .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
-                <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
+            .html(`
+                <b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
+                <b>Search count:</b> ${mapData?.searched_data ?? 'No data'} <br>
+                <b>Confirm percentage:</b> ${mapData?.conversion_rate ?? 0}% <br>
+                <b>Assign percentage:</b> ${mapData?.assigned_rate ?? 0}%
+          `);
         })
         .on('mousemove', (event: any) => {
           const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
@@ -298,7 +332,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
         .attr('height', 18)
         .style('stroke', 'black')
         .style('stroke-width', '1px')
-        .style('fill', (d) => customColorRange(d)); // Use customColorRange here
+        .style('fill', (d) => this.customColorRange(d)); // Use customColorRange here
 
       legend.append('text')
         .attr('x', 25)
@@ -333,103 +367,139 @@ export class PincodeLevelMapViewComponent implements OnInit {
     this.svg.selectAll('foreignObject').remove();
 
     const activeTimeInterval: any = this.logisticSearchService.activeTimeInterval.value;
+
+    // console.log(activeTimeInterval, this.insightData, insightType, this.activeInsight)
+
     let activeInsightData = this.insightData[insightType ?? this.activeInsight][activeTimeInterval];
-    const sortedConversionData: any = Object.values(activeInsightData).sort(
-      (a: any, b: any) => (b.total_conversion_percentage ?? 0) - (a.total_conversion_percentage ?? 0)
-    )
-    const maxConversionData = sortedConversionData[0]?.total_conversion_percentage ?? 0;
+    let sortedData: any;
 
-    g.selectAll('path').each((d: any) => {
-      // Compute the centroid of the path for this feature
-      const centroid = this.pathProjection.centroid(d);
+    if (this.activeInsight == this.insightOptions[0].type) {
+      sortedData = Object.values(activeInsightData).sort(
+        (a: any, b: any) => (b.searched_data ?? 0) - (a.searched_data ?? 0)
+      )
+    } else if (this.activeInsight == this.insightOptions[1].type) {
+      sortedData = Object.values(activeInsightData).sort(
+        (a: any, b: any) => (b.conversion_rate ?? 0) - (a.conversion_rate ?? 0)
+      )
+    } else {
+      sortedData = Object.values(activeInsightData).sort(
+        (a: any, b: any) => (b.conversion_rate ?? 0) - (a.conversion_rate ?? 0)
+      )
+    }
 
-      const mapData = d.mapData ? d.mapData[activeTimeInterval] : null;
-      const pincode = mapData?.pincode;
-
-      if (pincode && activeInsightData[pincode ?? '']) {
-        const mapData = activeInsightData[pincode];
-
-        // Append a circle at the centroid position
-        this.svg.select('#pincodeGroup').append('circle')
-          .attr('cx', centroid[0])
-          .attr('cy', centroid[1])
-          .attr('r', (el: any) => {
-            // return 4;
-            if (mapData.total_conversion_percentage) {
-              const value = mapData.total_conversion_percentage;
-              return value ? Math.min(7, Math.max(1, this.bubbleRadius(value))) : 1;
-            } else {
-              return 1
-            }
-          })
-          .attr('fill', 'rgba(255, 142, 0, 0.4)')
-          .attr('stroke', 'rgba(255, 142, 0, 1)')
-          .attr('stroke-width', 1)
-          .style('visibility', this.isBubblesVisible ? 'visible' : 'hidden')
-          .on('mouseover', (event: any) => {
-            const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
-            this.tooltip.style('opacity', 1)
-              .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
-                    <b>Confirm percentage:</b> ${mapData?.total_conversion_percentage ?? 0}% <br>
-                    <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
-          })
-          .on('mousemove', (event: any) => {
-            const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
-  
-            // Adjust the position relative to the SVG element, not the whole page
-            const offsetX = event.clientX - svgElement.left;
-            const offsetY = event.clientY - svgElement.top;
-            this.tooltip.style('left', (offsetX + 5) + 'px')
-              .style('top', (offsetY - 28) + 'px');
-          })
-          .on('mouseout', () => {
-            this.tooltip.style('opacity', 0);
-          });
-      }
-
-
-
-      const topPincodes = sortedConversionData.slice(0, 5).map((d: any) => d.pincode);
-      if (d.mapData && topPincodes.includes(d.mapData[this.logisticSearchService.activeTimeInterval.value]?.pincode)) {
-        g.append('foreignObject')
-          .attr('x', centroid[0] - 35 / 2 + 5)
-          .attr('y', centroid[1] - 40)
-          .attr('width', 35)
-          .attr('height', 35)
-          .attr('overflow', 'visible')
-          .on('mouseover', (event: any) => {
-            const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
-            this.tooltip.style('opacity', 1)
-              .html(`<b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
-                    <b>Confirm percentage:</b> ${mapData?.total_conversion_percentage ?? 0} % <br>
-                    <b>Search count:</b> ${mapData?.searched_data ?? 'No data'}`);
-          })
-          .on('mousemove', (event: any) => {
-            const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
-
-            // Adjust the position relative to the SVG element, not the whole page
-            const offsetX = event.clientX - svgElement.left;
-            const offsetY = event.clientY - svgElement.top;
-            this.tooltip.style('left', (offsetX + 5) + 'px')
-              .style('top', (offsetY - 28) + 'px');
-          })
-          .on('mouseout', () => {
-            this.tooltip.style('opacity', 0);
-          })
-          .html((i: any) => {
-            let iconClass = "pointer-icon fa-solid fa-cart-shopping";
-            let metricValue = Number(
-              d.mapData[this.logisticSearchService.activeTimeInterval.value]?.searched_data
+    g.selectAll('path')
+      .attr('fill',
+        (el: any) => {
+          if (this.activeView == this.viewsOptions[1].type) {
+            return 'white';
+          }
+          if (el.mapData && this.logisticSearchService.activeTimeInterval.value in el.mapData) {
+            const val = Number(
+              el.mapData[this.logisticSearchService.activeTimeInterval.value]?.searched_data
             );
-            return `<div class="pointer" nz-tooltip nzTooltipPlacement="top" 
-              nzTooltipTitle="
-                <br/>top data: ${metricValue.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}">
-                <i class="${iconClass}"></i>
-                </div><div class="pulse"></div>`;
-          })
+            return this.customColorRange(val)
+          } else {
+            return this.customColorRange(0)
+          }
+        })
+      .each((d: any) => {
+        // Compute the centroid of the path for this feature
+        const centroid = this.pathProjection.centroid(d);
 
-      }
-    });
+        const mapData = d.mapData ? d.mapData[activeTimeInterval] : null;
+        const pincode = mapData?.pincode;
+
+        // if (pincode && activeInsightData[pincode ?? '']) {
+        //   const mapData = activeInsightData[pincode];
+
+          // Append a circle at the centroid position
+          this.svg.select('#pincodeGroup').append('circle')
+            .attr('cx', centroid[0])
+            .attr('cy', centroid[1])
+            .attr('r', (el: any) => {
+              // return 4;
+              if (mapData?.conversion_rate) {
+                const value = mapData.conversion_rate;
+                return value ? Math.min(12, Math.max(1, this.bubbleRadius(value))) : 1;
+              } else {
+                return 1
+              }
+            })
+            .attr('fill', 'RGBA( 0, 139, 139, 0.4 )	')
+            .attr('stroke', 'RGBA( 0, 139, 139, 0.8)')
+            .attr('stroke-width', 0.5)
+            .style('visibility', (this.activeView == this.viewsOptions[1].type ||
+              this.activeView == this.viewsOptions[2].type) ? 'visible' : 'hidden')
+            .on('mouseover', (event: any) => {
+              const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
+              this.tooltip.style('opacity', 1)
+                .html(`
+                        <b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
+                        <b>Search count:</b> ${mapData?.searched_data ?? 'No data'} <br>
+                        <b>Confirm percentage:</b> ${mapData?.conversion_rate ?? 0}% <br>
+                        <b>Assign percentage:</b> ${mapData?.assigned_rate ?? 0}%
+                  `);
+            })
+            .on('mousemove', (event: any) => {
+              const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
+
+              // Adjust the position relative to the SVG element, not the whole page
+              const offsetX = event.clientX - svgElement.left;
+              const offsetY = event.clientY - svgElement.top;
+              this.tooltip.style('left', (offsetX + 5) + 'px')
+                .style('top', (offsetY - 28) + 'px');
+            })
+            .on('mouseout', () => {
+              this.tooltip.style('opacity', 0);
+            });
+        // }
+
+
+
+        const topPincodes = sortedData.slice(0, 5).map((d: any) => d.pincode);
+        if (d.mapData && topPincodes.includes(d.mapData[this.logisticSearchService.activeTimeInterval.value]?.pincode)) {
+          g.append('foreignObject')
+            .attr('x', centroid[0] - 35 / 2 + 5)
+            .attr('y', centroid[1] - 40)
+            .attr('width', 35)
+            .attr('height', 35)
+            .attr('overflow', 'visible')
+            .on('mouseover', (event: any) => {
+              const mapData = d.mapData ? d.mapData[this.logisticSearchService.activeTimeInterval.value] : null;
+              this.tooltip.style('opacity', 1)
+                .html(`<div class='tooltip-container'>
+                        <b>Pincode:</b> ${mapData?.pincode ?? d.properties.pincode}<br>
+                        <b>Search count:</b> ${mapData?.searched_data ?? 'No data'} <br>
+                        <b>Confirm percentage:</b> ${mapData?.conversion_rate ?? 0}% <br>
+                        <b>Assign percentage:</b> ${mapData?.assigned_rate ?? 0}%
+                      </div>
+                `);
+            })
+            .on('mousemove', (event: any) => {
+              const svgElement: any = document.getElementById('pincode-map')?.getBoundingClientRect();
+
+              // Adjust the position relative to the SVG element, not the whole page
+              const offsetX = event.clientX - svgElement.left;
+              const offsetY = event.clientY - svgElement.top;
+              this.tooltip.style('left', (offsetX + 5) + 'px')
+                .style('top', (offsetY - 28) + 'px');
+            })
+            .on('mouseout', () => {
+              this.tooltip.style('opacity', 0);
+            })
+            .html((i: any) => {
+              let iconClass = "pointer-icon fa-solid fa-person-biking";
+              let metricValue = Number(
+                d.mapData[this.logisticSearchService.activeTimeInterval.value]?.searched_data
+              );
+              return `<div class="pointer">
+                  <i class="${iconClass}"></i>
+                  </div>
+                <div class="pulse"></div>`;
+            })
+
+        }
+      });
 
     const bubbleLegendData: any = [
       {
@@ -440,60 +510,60 @@ export class PincodeLevelMapViewComponent implements OnInit {
       {
         label: 'Medium', radius:
           this.bubbleRadius(
-            maxConversionData * 0.5
+            this.maxData * 0.5
           ),
         value: Math.floor(
-          maxConversionData * 0.5
+          this.maxData * 0.5
         ),
         color: this.bubblecolormapper['map_total_active_sellers_metrics'][0]
       },
       {
         label: 'High',
-        radius: this.bubbleRadius(maxConversionData),
-        value: Math.floor(maxConversionData),
+        radius: this.bubbleRadius(this.maxData),
+        value: Math.floor(this.maxData),
         color: this.bubblecolormapper['map_total_active_sellers_metrics'][1]
       }
     ];
 
     d3.select('#bubble-legends').selectAll('svg').remove();
 
-      const newLegendContainer = d3.select('#bubble-legends').append('svg')
-        .attr('class', 'legend')
-        .attr('width', "180px")
-        .attr('height', "96px")
+    const newLegendContainer = d3.select('#bubble-legends').append('svg')
+      .attr('class', 'legend')
+      .attr('width', "180px")
+      .attr('height', "96px")
 
-      const legendItems = newLegendContainer.selectAll('g')
-        .data(bubbleLegendData)
-        .enter().append('g')
-        .attr('transform', `translate(10, 40)`);
+    const legendItems = newLegendContainer.selectAll('g')
+      .data(bubbleLegendData)
+      .enter().append('g')
+      .attr('transform', `translate(10, 40)`);
 
-      legendItems.append('circle')
-        .attr('cx', 30)
-        .attr('cy', (d, i) => `${30 - (i * 15)}`)
-        .attr('r', (d, i) => `${i * (1 * 15) + 5}`)
-        .attr('fill', (d, i) => 'transparent')
-        .attr('stroke', (d, i) => 'rgba(255, 142, 0, 1)')
-        .attr('stroke-width', 2);
+    legendItems.append('circle')
+      .attr('cx', 30)
+      .attr('cy', (d, i) => `${30 - (i * 15)}`)
+      .attr('r', (d, i) => `${i * (1 * 15) + 5}`)
+      .attr('fill', (d, i) => 'transparent')
+      .attr('stroke', (d, i) => 'rgba(255, 142, 0, 1)')
+      .attr('stroke-width', 2);
 
-      legendItems.append('line')
-        .attr('x1', (d, i) => `${35 + (i * 15)}`)
-        .attr('x2', 90)
-        .attr('y1', (d, i) => `${30 - (i * 15)}`)
-        .attr('y2', (d, i) => `${30 - (i * 15)}`)
-        .attr('stroke', 'black')
-        .style('stroke-dasharray', '2,2');
+    legendItems.append('line')
+      .attr('x1', (d, i) => `${35 + (i * 15)}`)
+      .attr('x2', 90)
+      .attr('y1', (d, i) => `${30 - (i * 15)}`)
+      .attr('y2', (d, i) => `${30 - (i * 15)}`)
+      .attr('stroke', 'black')
+      .style('stroke-dasharray', '2,2');
 
-      legendItems.append('text')
-        .attr('x', 95)
-        .attr('y', (d, i) => `${30 - (i * 15)}`)
-        .attr('dy', '.35em')
-        .style('text-anchor', 'start')
-        .style('font-size', '12px')
-        .text((d: any, i: any) => {
-          return `>= ${(bubbleLegendData[2].value * ((i) * 0.33)).toLocaleString()}%`
-        }
-        );
-   
+    legendItems.append('text')
+      .attr('x', 95)
+      .attr('y', (d, i) => `${30 - (i * 15)}`)
+      .attr('dy', '.35em')
+      .style('text-anchor', 'start')
+      .style('font-size', '12px')
+      .text((d: any, i: any) => {
+        return `>= ${(bubbleLegendData[2].value * ((i) * 0.33)).toLocaleString()}%`
+      }
+      );
+
   }
 
   // Zoom in method
@@ -530,7 +600,13 @@ export class PincodeLevelMapViewComponent implements OnInit {
   }
 
 
-  updateInsightSelection(type: any) {
-    this.addBubbles(type);
+  updateInsightSelection(option: any) {
+    this.activeView = option.defaultView.type;
+    this.addBubbles(option.type);
+  }
+
+  updateViewSelection(option: any) {
+    this.activeView = option.type;
+    this.addBubbles();
   }
 }

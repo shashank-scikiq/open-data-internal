@@ -26,12 +26,12 @@
 
 .map-control {
   position: absolute;
-  left: 50%;
+  right: 8px;
   bottom: 8px;
-  transform: translate(-50%);
+  // transform: translate(-50%);
   background: white;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   border-radius: 4px;
   overflow: hidden;
   box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
@@ -39,7 +39,6 @@
   -moz-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
 
   .btn {
-    
     padding: 8px;
     height: 40px;
     width: 40px;
@@ -163,11 +162,13 @@
 }
 .tooltip {
   position: absolute;
-  background: white;
+  background: black;
+  color: white;
   border: 1px solid #ccc;
-  padding: 5px;
+  padding: 8px;
   pointer-events: none;
   font-size: 12px;
+  border-radius: 4px;
 }
 
 ::ng-deep {
@@ -294,10 +295,9 @@
     }
 }
 
-.insight-options-section {
+%options-section {
   position: absolute;
-  left: 8px;
-  top: 8px;
+
   background: rgba(255,255, 255, 0.9);
   border-radius: 8px;
   padding: 12px;
@@ -309,12 +309,29 @@
   .options-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 4px;
 
     label {
       color: #545454 !important;
-      font-size: 12px;
-      line-height: 16px;
+      font-size: 14px;
+      line-height: 18px;
+
+      i {
+        font-size: 12px;
+      }
     }
   }
+}
+
+.insight-options-section {
+  @extend %options-section;
+  left: 8px;
+  top: 8px;
+}
+
+.view-options-section {
+  @extend %options-section;
+  width: 220px;
+  right: 8px;
+  top: 8px;
 }

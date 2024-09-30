@@ -51,15 +51,17 @@ class DataAccessLayer:
             if city == 'Bangalore' else "state = 'DELHI'"
         
         query = f"""
-            
             (SELECT 
                     ls.time_of_day as time_of_day, 
                     ls.pick_up_pincode, 
                     case
                         when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
-                    end as total_conversion_percentage,
-                    
+                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
+                    end as conversion_rate,
+                    case
+                        when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
+                        else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
+                    end as assigned_rate,
                     sum(ls.searched) as searched_data
                 from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
                     where {where_condition}
@@ -71,9 +73,12 @@ class DataAccessLayer:
                     ls.pick_up_pincode, 
                     case
                         when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
-                    end as total_conversion_percentage,
-                    
+                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
+                    end as conversion_rate,
+                    case
+                        when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
+                        else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
+                    end as assigned_rate,
                     sum(ls.searched) as searched_data
                 from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
                     where {where_condition} group by ls.pick_up_pincode  )
@@ -91,11 +96,11 @@ class DataAccessLayer:
                 ls.time_of_day as time_of_day,
                 case
                     when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
                 end as total_conversion_percentage,
                 case
                     when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
-                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 2) 
+                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
                 end as total_assigned_percentage,
                 sum(ls.searched) as searched_data
             from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
@@ -107,11 +112,11 @@ class DataAccessLayer:
                 'Overall' as time_of_day,
                 case
                     when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
                 end as total_conversion_percentage,
                 case
                     when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
-                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 2) 
+                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
                 end as total_assigned_percentage,
                 sum(ls.searched) as searched_data
             from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
