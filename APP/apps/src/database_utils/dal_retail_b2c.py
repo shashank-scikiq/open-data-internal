@@ -46,12 +46,9 @@ class DataAccessLayer:
     def fetch_top_district_sellers(self, start_date, end_date, category=None, sub_category=None,
                                             domain=None, state=None, seller_type='Total'):
         
-        table_name = constant.TOTAL_ACTIVE_SELLER_CAT_SUBCAT_TBL if (
-            (bool(category) and (category != 'None')) or (bool(sub_category) and (sub_category != 'None'))
-        ) else constant.TOTAL_ACTIVE_SELLER_TBL
+        table_name = constant.ACTIVE_TOTAL_SELLER_TBL
 
-
-        seller_column = 'total_seller_count' if seller_type == 'Total' else 'active_seller_count'
+        seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
 
         # table_name = constant.MONTHLY_PROVIDERS
         
@@ -130,12 +127,9 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_top_state_sellers(self, start_date, end_date, category=None, sub_category=None,
                                           domain=None, state=None, seller_type='Total'):
-        base_table = constant.TOTAL_ACTIVE_SELLER_CAT_SUBCAT_TBL if (
-            (bool(category) and (category != 'None')) or (bool(sub_category) and (sub_category != 'None'))
-        ) else constant.TOTAL_ACTIVE_SELLER_TBL
+        base_table = constant.ACTIVE_TOTAL_SELLER_TBL
 
-
-        seller_column = 'total_seller_count' if seller_type == 'Total' else 'active_seller_count'
+        seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
         # base_table = constant.MONTHLY_PROVIDERS
 
         parameters = self.get_query_month_parameters(start_date, end_date)
@@ -221,10 +215,10 @@ class DataAccessLayer:
         aggregate_value = "'AGG'"
 
         if (category):
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
 
         if (sub_category):
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
         
         parameters = self.get_query_month_parameters(start_date, end_date)
         parameters['tableName'] = table_name
@@ -275,7 +269,7 @@ class DataAccessLayer:
                 FROM
                     {provider_table}
                 WHERE
-                    ((year*100) + month) = ((%(end_year)s * 100) +%(end_month)s)
+                    ((year_val*100) + mnth_val) = ((%(end_year)s * 100) +%(end_month)s)
                     and seller_district = {aggregate_value}
                     and category = {f"'{category}'" if bool(category) and (category != 'None') else aggregate_value}
                     and sub_category = {f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value}
@@ -325,7 +319,7 @@ class DataAccessLayer:
                 FROM
                     {provider_table}
                 WHERE
-                    ((year*100) + month) = ((%(end_year)s * 100) +%(end_month)s) and seller_state={aggregate_value} and 
+                    ((year_val*100) + mnth_val) = ((%(end_year)s * 100) +%(end_month)s) and seller_state={aggregate_value} and 
                     seller_district={aggregate_value} and category={aggregate_value} and sub_category={aggregate_value}
             ),
             AggregatedDataTotal AS (
@@ -373,12 +367,12 @@ class DataAccessLayer:
             FROM
                 AggregatedDataTotal ADT
             LEFT JOIN
-                ActiveSellersTotal ASelt ON 1=1
+                ActiveSellersTotal ASelt ON 1=1 
             LEFT JOIN
                 StateRanking SRnk ON SRnk.rank_in_state = 1
         """
         query = query.format(table_name=table_name)
-        
+        # import pdb; pdb.set_trace();
         orders_count = self.db_utility.execute_query(query, parameters)
         return orders_count
 
@@ -391,10 +385,10 @@ class DataAccessLayer:
         aggregate_value = "'AGG'"
 
         if category:
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
 
         if sub_category:
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         parameters = self.get_query_month_parameters(start_date, end_date)
 
@@ -409,7 +403,7 @@ class DataAccessLayer:
                 FROM
                     {provider_table} ds
                 WHERE
-                    ((year*100) + month) = ((%(end_year)s * 100) +%(end_month)s)
+                    ((year_val*100) + mnth_val) = ((%(end_year)s * 100) +%(end_month)s)
                     and seller_district = {aggregate_value}
                     and category = {category if bool(category) and (category != 'None') else aggregate_value}
                     and sub_category = {sub_category if bool(sub_category) and (sub_category != 'None') else aggregate_value}
@@ -454,7 +448,7 @@ class DataAccessLayer:
                 FROM    
                     {provider_table} ds
                 WHERE
-                    ((year*100) + month) = ((%(end_year)s * 100) +%(end_month)s)
+                    ((year_val*100) + mnth_val) = ((%(end_year)s * 100) +%(end_month)s)
                     and seller_state={aggregate_value} and seller_district={aggregate_value}
                     and category={aggregate_value} and sub_category={aggregate_value}
             ),
@@ -536,9 +530,9 @@ class DataAccessLayer:
         domain_name = 'Retail' if domain_name is None else domain_name
         selected_view = constant.MONTHLY_DISTRICT_TABLE
         if (category):
-            selected_view = 'cat_district_wise_monthly_aggregates'
+            selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            selected_view = 'sub_cat_district_wise_monthly_aggregates'
+            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
         parameters = self.get_query_month_parameters(start_date, end_date)
 
         query = f"""
@@ -589,9 +583,9 @@ class DataAccessLayer:
 
             selected_view = constant.MONTHLY_DISTRICT_TABLE
             if (category):
-                selected_view = 'cat_district_wise_monthly_aggregates'
+                selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
             if(sub_category):
-                selected_view = 'sub_cat_district_wise_monthly_aggregates'
+                selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
             parameters = self.get_query_month_parameters(start_date, end_date)
 
             query = f'''
@@ -681,9 +675,9 @@ class DataAccessLayer:
 
         selected_view = constant.MONTHLY_DISTRICT_TABLE
         if (category):
-            selected_view = 'cat_district_wise_monthly_aggregates'
+            selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            selected_view = 'sub_cat_district_wise_monthly_aggregates'
+            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
         query_template = """
@@ -786,7 +780,7 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_overall_cumulative_sellers(self, start_date, end_date, category=None,
                                          sub_category=None, domain_name=None, state=None, seller_type='Total'):
-        table_name = 'sellers_cat_scat'
+        table_name = constant.ACTIVE_TOTAL_SELLER_TBL
         aggregate_value= "'AGG'"
         seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
         parameters = self.get_query_month_parameters(start_date, end_date)
@@ -805,13 +799,13 @@ class DataAccessLayer:
 
         query = f"""
             SELECT 
-                month as order_month,
-                year as order_year,
+                mnth_val as order_month,
+                year_val as order_year,
                 {seller_column} as total_orders_delivered
             FROM 
                 {table_name}
             WHERE
-                    ((year*100) + month) between ((%(start_year)s * 100) +%(start_month)s) and ((%(end_year)s * 100) +%(end_month)s)
+                    ((year_val*100) + mnth_val) between ((%(start_year)s * 100) +%(start_month)s) and ((%(end_year)s * 100) +%(end_month)s)
                     and seller_district = {aggregate_value}
                     and category = {f"'{category}'" if bool(category) and (category != 'None') else aggregate_value}
                     and sub_category = {f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value}
@@ -830,9 +824,9 @@ class DataAccessLayer:
 
         selected_view = constant.MONTHLY_DISTRICT_TABLE
         if (category):
-            selected_view = 'cat_district_wise_monthly_aggregates'
+            selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            selected_view = 'sub_cat_district_wise_monthly_aggregates'
+            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
         parameters = [params.start_year, params.start_year, params.start_month,
@@ -944,9 +938,9 @@ class DataAccessLayer:
         domain_name = 'Retail' if domain_name is None else domain_name
         selected_view = constant.MONTHLY_DISTRICT_TABLE
         if (category):
-            selected_view = 'cat_district_wise_monthly_aggregates'
+            selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            selected_view = 'sub_cat_district_wise_monthly_aggregates'
+            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         parameters = self.get_query_month_parameters(start_date, end_date)
 
@@ -1047,9 +1041,9 @@ class DataAccessLayer:
         table_name = constant.MONTHLY_DISTRICT_TABLE
 
         if (category):
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
         query = f"""
@@ -1137,9 +1131,9 @@ class DataAccessLayer:
         table_name = constant.MONTHLY_DISTRICT_TABLE
 
         if (category):
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
         query = f"""
@@ -1248,9 +1242,9 @@ class DataAccessLayer:
         table_name = constant.MONTHLY_DISTRICT_TABLE
 
         if (category):
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
         
         query = f'''
                     SELECT 
@@ -1291,9 +1285,9 @@ class DataAccessLayer:
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
         table_name = constant.MONTHLY_DISTRICT_TABLE
         if (category):
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
         query = f'''
             SELECT 
                 delivery_state_code AS delivery_state_code,
@@ -1347,9 +1341,9 @@ class DataAccessLayer:
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
         table_name = constant.MONTHLY_PROVIDERS
         # if (category):
-        #     table_name = 'cat_district_wise_monthly_aggregates'
+        #     table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
         # if(sub_category):
-        #     table_name = 'sub_cat_district_wise_monthly_aggregates'
+        #     table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
         query = f"""
             SELECT 
                 seller_state AS seller_state,
@@ -1442,9 +1436,9 @@ class DataAccessLayer:
         domain = 'Retail' if domain is None else domain
         table_name = constant.MONTHLY_DISTRICT_TABLE
         if (category):
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
         query = f"""
                 SELECT 
@@ -1495,7 +1489,7 @@ class DataAccessLayer:
     def fetch_category_penetration_orders(self, start_date, end_date, category=None, sub_category=None, domain=None,
                                           state=None):
         selected_view = constant.SUB_CATEGORY_PENETRATION_TABLE
-        params = DotDict(self.get_query_month_parameters(start_date, end_date))
+        # params = DotDict(self.get_query_month_parameters(start_date, end_date))
         # parameters = [params.start_year, params.start_year, params.start_month,
         #               params.end_year, params.end_year, params.end_month]
         parameters = [start_date, end_date]
@@ -1550,18 +1544,16 @@ class DataAccessLayer:
                     {seller_column} as active_sellers_count
                 from 
                 {table_name}
-                where ((year*100)+month) =  (({params.end_year}*100)+{params.end_month})
+                where ((year_val*100)+mnth_val) =  (({params.end_year}*100)+{params.end_month})
                     and category { " = '"+ category +"' " if category else ' <> ' + aggregated_value}
                     and sub_category { " = '" + sub_category + "' " if sub_category else ' <> ' + aggregated_value}
                     and seller_state = {aggregated_value} 
                     and category <>'Undefined' 
                     and seller_state <> ''
-                           
-                            
                 group by 1,2, 3
                 order by category
                 '''
-
+        
         df = self.db_utility.execute_query(query_sub_cat, parameters)
       
         return df
@@ -1573,9 +1565,9 @@ class DataAccessLayer:
 
         table_name = constant.MONTHLY_DISTRICT_TABLE
         if (category):
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
         edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
@@ -1632,9 +1624,9 @@ class DataAccessLayer:
 
         table_name = constant.MONTHLY_DISTRICT_TABLE
         if (category):
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
         edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
@@ -1709,9 +1701,9 @@ class DataAccessLayer:
 
         table_name = constant.MONTHLY_DISTRICT_TABLE
         if (category):
-            table_name = 'cat_district_wise_monthly_aggregates'
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
         if(sub_category):
-            table_name = 'sub_cat_district_wise_monthly_aggregates'
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
         edate_obj = datetime.strptime(end_date, '%Y-%m-%d')

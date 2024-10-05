@@ -29,6 +29,50 @@
         background-color: $white;
         color: $grey700;
     }
+
+    .time-slider-container {
+        padding: 0 8px;
+        border-left: 1px solid #d4d4d4;
+
+        .time-slider-filter {
+            height: 8px;
+            // width: 224px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
+            -webkit-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
+            -moz-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
+            display: flex;
+            overflow: hidden;
+            place-content: space-evenly;
+            margin: 0 4px 4px 8px;
+            width: 100%;
+
+    
+        }   
+        .slider-step {
+            width: 100%;
+            border-right: 1px solid #f4f4f4;
+            cursor: pointer;
+            &:hover {
+                background-color: $blue700;
+            }
+            &.active {
+                background-color: $blue700;
+            }
+        }
+        .slider-text {
+            font-size: 10px;
+            display: flex;
+            gap: 25px;
+            margin-left: -4px;
+            .title {
+                width: 16px;
+                text-align: center;
+            }
+        }
+    }
+
 }
 
 ::ng-deep {
@@ -39,5 +83,17 @@
 
     .selection-main-container .ant-select-single .ant-select-selector .ant-select-selection-item{
         font-size: 12px;
+    }
+
+    .time-slider-container {
+        .ant-divider-inner-text {
+            font-size: 10px;
+            color: #707070;
+            padding: 0 4px;
+        }
+
+        .ant-divider-horizontal.ant-divider-with-text {
+            margin: -4px 0 4px;
+        }
     }
 }

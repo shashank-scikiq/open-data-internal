@@ -1,8 +1,5 @@
 import { Component, HostListener, OnInit } from '@angular/core';
-import * as L from "leaflet";
 import * as d3 from "d3";
-import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { LogisticSearchService } from '@openData/app/core/api/logistic-search/logistic-search.service';
 import { CityWiseGeoJSONPincodeFiles, CityLatLong } from '@openData/app/core/utils/map';
 
@@ -104,20 +101,20 @@ export class PincodeLevelMapViewComponent implements OnInit {
     },
     {
       title: 'Areas with high search in peak morning hours',
-      tooltip: ``,
+      tooltip: `Areas with high demand between 8am-10am`,
       selected: false,
       type: 'high_demand_in_morning_hours',
       defaultView: this.viewsOptions[0]
     },
     {
       title: 'Areas with high search in peak evening hours',
-      tooltip: ``,
+      tooltip: `Areas with high demand between 6pm-9pm`,
       selected: false,
       type: 'high_demand_in_evening_hours',
       defaultView: this.viewsOptions[0]
     }
   ];
-  activeInsight: any = 'high_demand';
+  activeInsight: any;
 
 
   constructor(
@@ -130,13 +127,21 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.setDimensions();
+    this.logisticSearchService.dateRange$.subscribe(
+      (value: any) => {
+        this.isLoadingMap = true;
+        this.getMapData();
+        this.activeInsight = this.insightOptions[0];
+        this.activeView = this.viewsOptions[0].type;
+      }
+    )
 
     this.logisticSearchService.activeCity$.subscribe(
       (value: string) => {
         this.city = value;
         this.isLoadingMap = true;
         this.getMapData();
-        this.activeInsight = this.insightOptions[0].type;
+        this.activeInsight = this.insightOptions[0];
         this.activeView = this.viewsOptions[0].type;
       }
     )
@@ -145,10 +150,21 @@ export class PincodeLevelMapViewComponent implements OnInit {
       (res: any) => {
         if (this.mapData && !this.isLoadingMap) {
           this.isLoadingMap = true;
+          this.resetMap();
           this.setData();
         }
       }
     )
+  }
+
+  resetMap() {
+    d3.select('#bubble-legends').selectAll('svg').remove();
+    d3.select('#chloro-legends').selectAll('svg').remove();
+    d3.select('#pincode-map').selectAll('svg').remove();
+    if (this.svg) {
+      this.svg.selectAll('circle').remove();
+      this.svg.selectAll('foreignObject').remove();
+    }
   }
 
   setDimensions() {
@@ -158,11 +174,13 @@ export class PincodeLevelMapViewComponent implements OnInit {
   }
 
   getMapData() {
+    this.resetMap();
     this.logisticSearchService.getCityWiseData().subscribe(
       (response: any) => {
         if (response) {
           this.mapData = response.data.mapData;
           this.insightData = response.data.insightData;
+          this.resetMap();
           this.setData();
         }
       }
@@ -173,6 +191,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
   onResize() {
     this.setDimensions();
     this.isLoadingMap = true;
+    this.resetMap();
     this.setData();
   }
 
@@ -188,14 +207,6 @@ export class PincodeLevelMapViewComponent implements OnInit {
   setData() {
     this.isBubblesVisible = false;
     this.isLoadingMap = true;
-
-    d3.select('#bubble-legends').selectAll('svg').remove();
-    d3.select('#chloro-legends').selectAll('svg').remove();
-    d3.select('#pincode-map').selectAll('svg').remove();
-    if (this.svg) {
-      this.svg.selectAll('circle').remove();
-      this.svg.selectAll('foreignObject').remove();
-    }
 
     this.cityData = [];
 
@@ -262,8 +273,8 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
     const projection: any = d3.geoMercator()
       .center(CityLatLong[this.city])
-      .scale(50000)
-      .translate([(this.width / 2) + 80, (this.height / 2) - 60]);
+      .scale(55000)
+      .translate([(this.width / 2) - 180, (this.height / 2) - 60]);
 
     this.pathProjection = d3.geoPath().projection(projection);
     // const g = d3.select('#pincode-chloro');
@@ -370,14 +381,14 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
     // console.log(activeTimeInterval, this.insightData, insightType, this.activeInsight)
 
-    let activeInsightData = this.insightData[insightType ?? this.activeInsight][activeTimeInterval];
+    let activeInsightData = this.insightData[insightType ?? this.activeInsight.type][activeTimeInterval];
     let sortedData: any;
 
-    if (this.activeInsight == this.insightOptions[0].type) {
+    if (this.activeInsight.type == this.insightOptions[0].type) {
       sortedData = Object.values(activeInsightData).sort(
         (a: any, b: any) => (b.searched_data ?? 0) - (a.searched_data ?? 0)
       )
-    } else if (this.activeInsight == this.insightOptions[1].type) {
+    } else if (this.activeInsight.type == this.insightOptions[1].type) {
       sortedData = Object.values(activeInsightData).sort(
         (a: any, b: any) => (b.conversion_rate ?? 0) - (a.conversion_rate ?? 0)
       )
@@ -505,7 +516,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
       {
         label: 'Low',
         radius: this.bubbleRadius(0),
-        value: 0, color: this.bubblecolormapper['map_total_active_sellers_metrics'][0]
+        value: 0, color: "RGBA( 0, 139, 139, 0.8)"
       },
       {
         label: 'Medium', radius:
@@ -515,13 +526,13 @@ export class PincodeLevelMapViewComponent implements OnInit {
         value: Math.floor(
           this.maxData * 0.5
         ),
-        color: this.bubblecolormapper['map_total_active_sellers_metrics'][0]
+        color: "RGBA( 0, 139, 139, 0.8)"
       },
       {
         label: 'High',
         radius: this.bubbleRadius(this.maxData),
         value: Math.floor(this.maxData),
-        color: this.bubblecolormapper['map_total_active_sellers_metrics'][1]
+        color: "RGBA( 0, 139, 139, 0.8)"
       }
     ];
 
@@ -542,7 +553,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
       .attr('cy', (d, i) => `${30 - (i * 15)}`)
       .attr('r', (d, i) => `${i * (1 * 15) + 5}`)
       .attr('fill', (d, i) => 'transparent')
-      .attr('stroke', (d, i) => 'rgba(255, 142, 0, 1)')
+      .attr('stroke', (d: any, i) => d.color)
       .attr('stroke-width', 2);
 
     legendItems.append('line')
@@ -601,6 +612,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
 
   updateInsightSelection(option: any) {
+    this.activeInsight = option;
     this.activeView = option.defaultView.type;
     this.addBubbles(option.type);
   }

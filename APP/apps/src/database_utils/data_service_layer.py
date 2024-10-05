@@ -117,11 +117,11 @@ class DataService:
         return self.dal.fetch_state_sellers(start_date, end_date, category, sub_category, domain_name, state)
 
 
-    def get_logistic_searched_data(self, city):
-        return self.dal.fetch_logistic_searched_data(city)
+    def get_logistic_searched_data(self, start_date, end_date, city):
+        return self.dal.fetch_logistic_searched_data(start_date, end_date, city)
 
-    def get_logistic_searched_top_card_data(self, city):
-        return self.dal.fetch_logistic_searched_top_card_data(city)
+    def get_logistic_searched_top_card_data(self, start_date, end_date, city):
+        return self.dal.fetch_logistic_searched_top_card_data(start_date, end_date, city)
     
     def get_logistic_searched_data_date_range(self):
         return self.dal.fetch_logistic_searched_data_date_range()

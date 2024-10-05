@@ -1,5 +1,5 @@
 <div class="detail-section-container">
-    <div class="inner-map-section">
+    <div class="inner-map-section" *ngIf="!isLoading">
         <app-pincode-level-map-view class="width-100 height-100"></app-pincode-level-map-view>
     </div>
     

@@ -333,6 +333,8 @@ class FetchMapStateWiseData(SummaryBaseDataAPI):
         # if resp_data is None:
         data = data_service.get_cumulative_orders_statewise_summary(**params)
         current_sellers = data_service.get_overall_active_sellers(**params)
+        # import pdb 
+        # pdb.set_trace()
         
 
         current_sellers_renamed = current_sellers.rename(columns={'seller_state_code': 'delivery_state_code',

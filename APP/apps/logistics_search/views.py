@@ -57,13 +57,20 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         APIView BaseDataAPI FetchTopCardDeltaData
         """
         city = request.GET.get('city', None)
+        start_date = request.GET.get('startDate', None)
+        end_date = request.GET.get('endDate', None)
+
+        if not start_date or not end_date:
+            return JsonResponse(error_message, status=400, safe=False)
 
         if not city:
             error_message = {'error': "Bad request! City not provided"}
             return JsonResponse(error_message, status=400, safe=False)
         
         params = {
-            'city': city
+            'city': city,
+            'start_date': start_date,
+            'end_date': end_date
         }
 
         try:
@@ -97,13 +104,20 @@ class FetchCityWiseData(SummaryBaseDataAPI):
         """
 
         city = request.GET.get('city', None)
+        start_date = request.GET.get('startDate', None)
+        end_date = request.GET.get('endDate', None)
+
+        if not start_date or not end_date:
+            return JsonResponse(error_message, status=400, safe=False)
 
         if not city:
             error_message = {'error': "Bad request! City not provided"}
             return JsonResponse(error_message, status=400, safe=False)
         
         params = {
-            'city': city
+            'city': city,
+            'start_date': start_date,
+            'end_date': end_date
         }
 
         try:
@@ -241,6 +255,9 @@ class FetchCityWiseData(SummaryBaseDataAPI):
 class FetchDateRange(SummaryBaseDataAPI):
     def get(self, request, *args):
         df = data_service.get_logistic_searched_data_date_range()
-        date_range = f"{df.min()['min'].strftime('%d-%m-%Y')} to {df.min()['max'].strftime('%d-%m-%Y')}"
+        date_range = {  
+            "min_date": df.min()['min'].strftime('%Y-%m-%d'),
+            "max_date": df.min()['max'].strftime('%Y-%m-%d')
+        }
 
-        return JsonResponse({'data': date_range}, status=200, safe=False) 
+        return JsonResponse(date_range, status=200, safe=False) 

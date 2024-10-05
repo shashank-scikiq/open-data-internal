@@ -344,7 +344,7 @@ export class AppService {
   getMetrixSunBurstChartData(uri: string, state: string, supplyType: string | null) {
     this.cancelMetrixSunBurstChartDataPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
-    state = state.replaceAll(' ', '+');
+    // state = state.replaceAll(' ', '+');
     const params: any = { startDate, endDate, state: state == 'TT' ? '' : state,
       category: this.selectedCategory,
       subCategory: this.selectedSubCategory }
