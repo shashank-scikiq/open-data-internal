@@ -726,6 +726,7 @@ class FetchCategoryPenetrationSellers(SummaryBaseDataAPI):
         params = self.extract_common_params(request)
 
         data = data_service.get_category_penetration_sellers(**params)
+
         formatted_data = self.sunburst_format(data, chart_type='active_sellers_count')
         return JsonResponse(formatted_data, safe=False)
 

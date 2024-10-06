@@ -1546,7 +1546,7 @@ class DataAccessLayer:
                 {table_name}
                 where ((year_val*100)+mnth_val) =  (({params.end_year}*100)+{params.end_month})
                     and category { " = '"+ category +"' " if category else ' <> ' + aggregated_value}
-                    and sub_category { " = '" + sub_category + "' " if sub_category else ' <> ' + aggregated_value}
+                    { " and sub_category = '" + sub_category + "' " if sub_category else ' '}
                     and seller_state = {aggregated_value} 
                     and category <>'Undefined' 
                     and seller_state <> ''
@@ -1555,7 +1555,7 @@ class DataAccessLayer:
                 '''
         
         df = self.db_utility.execute_query(query_sub_cat, parameters)
-      
+
         return df
 
 
