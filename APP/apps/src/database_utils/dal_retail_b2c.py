@@ -405,9 +405,9 @@ class DataAccessLayer:
                 WHERE
                     ((year_val*100) + mnth_val) = ((%(end_year)s * 100) +%(end_month)s)
                     and seller_district = {aggregate_value}
-                    and category = {category if bool(category) and (category != 'None') else aggregate_value}
-                    and sub_category = {sub_category if bool(sub_category) and (sub_category != 'None') else aggregate_value}
-                    and  seller_state { ' = '+state if state else '<>'+aggregate_value}
+                    and category = {f"'{category}'" if bool(category) and (category != 'None') else aggregate_value}
+                    and sub_category = {f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value}
+                    and  seller_state { f"='{state}'" if state else f"<>{aggregate_value}"}
             ),
             AggregatedData AS (
                 SELECT

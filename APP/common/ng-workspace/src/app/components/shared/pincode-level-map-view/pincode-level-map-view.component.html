@@ -48,10 +48,16 @@
                 padding: 4px 8px">
                 <p class="margin-0 open-data-grey-900 font-xs">
                     {{activeInsight.title}}
+                    <span class="cursor-pointer margin-left-1">
+                        <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right"
+                            [nzTooltipTitle]="activeInsight.tooltip">
+                        </i>
+                    </span>
+
                 </p>
-                <p class="margin-0 open-data-grey-800 font-xxs">
+                <!-- <p class="margin-0 open-data-grey-800 font-xxs">
                     {{activeInsight.tooltip}}
-                </p>
+                </p> -->
             </div>
             <span nz-icon nzType="down"></span>
         </div>
