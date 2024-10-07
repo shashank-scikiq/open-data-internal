@@ -76,7 +76,8 @@ jobs:
           sudo su - $EC2_USER
           cd /home/shashank_daaslabs/git/open-data-internal/
           pwd
-          git checkout origin dev_4
+          git checkout origin/dev_4
+          git pull origin dev_4
           docker stop webapp_internal
           docker system prune -af
           docker compose -f /home/shashank_daaslabs/git/open-data-internal/docker-compose_ec2.yaml up -d webapp_internal
