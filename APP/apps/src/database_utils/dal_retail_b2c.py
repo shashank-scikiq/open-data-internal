@@ -1525,6 +1525,7 @@ class DataAccessLayer:
                 order_demand DESC;
         '''
         df = self.db_utility.execute_query(query, parameters)
+       
         return df
 
     @log_function_call(ondcLogger)
@@ -1538,24 +1539,27 @@ class DataAccessLayer:
         aggregated_value= "'AGG'"
         
         query_sub_cat = f'''
-                select 
-                    category, 
-                    case when sub_category = {aggregated_value} then 'ALL' else sub_category end as sub_category, 
-                    {seller_column} as active_sellers_count
-                from 
-                {table_name}
-                where ((year_val*100)+mnth_val) =  (({params.end_year}*100)+{params.end_month})
-                    and category { " = '"+ category +"' " if category else ' <> ' + aggregated_value}
-                    { " and sub_category = '" + sub_category + "' " if sub_category else ' '}
-                    and seller_state = {aggregated_value} 
-                    and category <>'Undefined' 
-                    and seller_state <> ''
-                group by 1,2, 3
-                order by category
+                        SELECT 
+                        category, 
+                        CASE 
+                            WHEN sub_category = {aggregated_value} THEN 'ALL' 
+                            ELSE sub_category 
+                        END AS sub_category, 
+                        {seller_column} AS active_sellers_count
+                    FROM 
+                        {table_name}
+                    WHERE ((year_val * 100) + mnth_val) = (({params.end_year} * 100) + {params.end_month})
+                        AND category { " = '"+ category +"' " if category else ' <> ' + aggregated_value}
+                        {" AND sub_category = '" + sub_category.replace("'", "''") + "' " if sub_category else ' '}
+                        AND seller_state = {aggregated_value} 
+                        AND category <> 'Undefined' 
+                        AND seller_state <> ''
+                    GROUP BY 1, 2, 3
+                    ORDER BY category
                 '''
         
+        
         df = self.db_utility.execute_query(query_sub_cat, parameters)
-
         return df
 
 
