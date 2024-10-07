@@ -10,7 +10,8 @@ on:
 
 jobs:
   vpn-build-deploy:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       # Step 1: Checkout the code
@@ -76,7 +77,7 @@ jobs:
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_ed25519
           ssh -T git@github.com
-          
+
           cd /home/shashank_daaslabs/git/open-data-internal/
           git checkout origin/dev_4
           git pull origin dev_4
