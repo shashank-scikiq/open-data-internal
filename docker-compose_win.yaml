@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: app.Dockerfile
-    image: webapp_local:version_4.0.1
+    image: webapp_local:version_4.2.1
     ports:
       - "8081:8001"
     env_file:

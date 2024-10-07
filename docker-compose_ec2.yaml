@@ -1,14 +1,14 @@
 services:
-  webapp_local:
-    container_name: webapp_local
+  webapp_internal:
+    container_name: webapp_internal
     build:
       context: .
       dockerfile: app.Dockerfile
-    image: webapp_local:version_4.0.1
+    image: webapp_internal:version_4.2.1
     ports:
       - "8081:8001"
     env_file:
-      - /home/shashank_daaslabs/Software/aws_stage.env
+      - /home/shashank_daaslabs/Software/od_internal.env
     restart: unless-stopped
     environment:
       - POSTGRES_SCHEMA=ec2_all
