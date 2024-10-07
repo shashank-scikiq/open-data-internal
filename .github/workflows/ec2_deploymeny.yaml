@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - dev_4
+
   workflow_dispatch:
 
 jobs:
@@ -73,7 +74,6 @@ jobs:
           EC2_USER: ${{ secrets.SSH_USER }}
         run: |
           ssh -i key.pem $EC2_USER@$EC2_IP 'bash -s' << EOF
-          sudo su - $EC2_USER
           cd /home/shashank_daaslabs/git/open-data-internal/
           pwd
           git checkout origin/dev_4
