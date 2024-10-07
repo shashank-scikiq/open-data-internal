@@ -76,7 +76,6 @@ jobs:
           echo "$SSH_PVT_KEY" > ~/.ssh/id_ed25519
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_ed25519
-          ssh -T git@github.com
 
           cd /home/shashank_daaslabs/git/open-data-internal/
           git checkout origin/dev_4
