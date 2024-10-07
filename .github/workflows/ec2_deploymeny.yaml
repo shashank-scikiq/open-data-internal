@@ -73,12 +73,13 @@ jobs:
           EC2_USER: ${{ secrets.SSH_USER }}
         run: |
           ssh -i key.pem $EC2_USER@$EC2_IP 'bash -s' << EOF
-          su - $EC2_USER
+          sudo su - $EC2_USER
           cd /home/shashank_daaslabs/git/open-data-internal/
+          pwd
           git checkout origin dev_4
-          docker stop docker stop webapp_internal
+          docker stop webapp_internal
           docker system prune -af
-          docker compose -f docker-compose_ec2.yaml up -d webapp_internal
+          docker compose -f /home/shashank_daaslabs/git/open-data-internal/docker-compose_ec2.yaml up -d webapp_internal
           EOF
 
       # Step 7: Disconnect from VPN after the job is complete
