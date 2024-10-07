@@ -20,20 +20,46 @@ export class LogisticSearchFiltersComponent implements OnInit {
     "9pm-12am",
   ];
   selectedInterval: string = 'Overall';
+  overallSelected: boolean = true;
 
   cities: string[] = ['New Delhi', 'Bangalore'];
   selectedCity: string = 'New Delhi';
+  dateRange: any = [];
+  availableDateRange: any = [];
 
   constructor(private logisticSearchService: LogisticSearchService) {}
 
   ngOnInit(): void {
     this.updateValue();
+    this.logisticSearchService.choosableDateRange$.subscribe((value) => {
+      this.availableDateRange = value;
+      this.logisticSearchService.dateRange$.subscribe((value) => {
+        this.dateRange = value;
+      });
+    })
+    
+    
+  }
+
+  setDateRange(value: any) {
+    this.logisticSearchService.setDateRange(value);
+    this.logisticSearchService.filterUpdated.next({updated: true});
+  }
+
+  updateTimeInterval(option: string) {
+    if (this.selectedInterval==option) {
+      this.selectedInterval = this.timeIntervals[0];
+    } else {
+      this.selectedInterval=option;
+    }
+    this.updateValue('timeInterval');
   }
   
   updateValue(updatedFor: string = 'city') {
     if (updatedFor == 'city') {
       this.logisticSearchService.setActiveCity(this.selectedCity);
     } else {
+      this.overallSelected = this.selectedInterval == 'Overall';
       this.logisticSearchService.setActiveTimeInterval(this.selectedInterval);
     }
     this.logisticSearchService.filterUpdated.next({updated: true, updatedFor});

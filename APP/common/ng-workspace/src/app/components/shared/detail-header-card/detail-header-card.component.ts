@@ -81,7 +81,7 @@ export class DetailHeaderCardComponent implements OnInit {
   @HostListener('window:resize', ['$event'])
   checkForScrolling() {
     const upperCardsSection: any = document.getElementsByClassName('upper-cards-section')[0];
-    const sectionWidth = upperCardsSection.offsetWidth;
+    const sectionWidth = upperCardsSection?.offsetWidth;
 
     const cardsCount = this.topCardsDelta['TT']?.length ?? 0;
 

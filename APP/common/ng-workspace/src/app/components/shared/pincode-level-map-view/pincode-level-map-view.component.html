@@ -1,32 +1,21 @@
 <div id="pincode-map" class="map-svg" [ngStyle]="{'visibility': isLoadingMap ? 'hidden': 'visible'}">
-    <div class="map-control" >
-        <div class="btn" (click)="toggleBubbleView()"
-            nz-tooltip nzTooltipPlacement="top"
-            [nzTooltipTitle]="isBubblesVisible ? 'Hide bubbles': 'Show bubbles'">
-            <i [class]="(isBubblesVisible ? 'fa-solid fa-eye-slash' : 'fa-regular fa-eye')"></i>
-        </div>
-        <div class="btn" (click)="zoomIn()"
-            nz-tooltip nzTooltipPlacement="top"
-            nzTooltipTitle="Zoom in">
+    <div class="map-control">
+        <div class="btn" (click)="zoomIn()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Zoom in">
             <i class="fa-solid fa-plus"></i>
         </div>
-        <div class="btn" (click)="zoomOut()"
-            nz-tooltip nzTooltipPlacement="top"
-            nzTooltipTitle="Zoom out">
+        <div class="btn" (click)="zoomOut()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Zoom out">
             <i class="fa-solid fa-minus"></i>
         </div>
-        <div class="btn" (click)="resetZoom()"
-            nz-tooltip nzTooltipPlacement="top"
-            nzTooltipTitle="Reset view">
+        <div class="btn" (click)="resetZoom()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Reset view">
             <i class="fa-solid fa-rotate-left"></i>
         </div>
     </div>
-    <div class="absolute" [ngStyle]="{'visibility': !isLoadingMap ? 'visible' : 'hidden'}"
-        style="left: 8px; bottom: 8px;">
-        <div [ngStyle]="{'visibility': isBubblesVisible ? 'visible' : 'hidden'}" 
-             id="bubble-legends">
-             <p class="font-xxs font-bolder margin-0">% Search to confirm</p>
+    <div class="absolute" [ngStyle]="{'visibility': 'visible'}" style="left: 4px; bottom: -16px;">
+        @if(true) {
+        <div id="bubble-legends">
+            <p class="font-xxs font-bolder margin-0">% Search to confirm</p>
         </div>
+        }
         <div id="chloro-legends">
             <p class="font-xxs font-bolder margin-0">Search counts</p>
         </div>
@@ -40,18 +29,96 @@
 <div class="tooltip">
 </div>
 
-<div class="insight-options-section" *ngIf="mapData">
-    <p class="margin-top-0 margin-bottom-1 font-bolder font-xs">Insights</p>
-    <nz-radio-group [(ngModel)]="activeInsight" class="options-container">
-        @for(option of insightOptions; track option.type) {
-            <label nz-radio [nzValue]="option.type" (click)="updateInsightSelection(option.type)">
-                {{option.title}}
-                <i class="fa-solid fa-circle-info"nz-tooltip nzTooltipPlacement="right"
-                [nzTooltipTitle]="option.tooltip"></i>
-            </label>
-        }
-      </nz-radio-group>
-</div>
+<div class="map-options-section" *ngIf="mapData && !isLoadingMap">
+    <div class="insight-options-section">
+        <div style="display: flex; align-items: center; gap: 8px" class="margin-bottom-3">
+            <div class="insight-option-icon-section">
+                <i class="insight-pointer-icon fa-solid fa-person-biking"></i>
+            </div>
+            <p class="margin-0 font-bolder font-xs">Insights</p>
+            <!-- <div class="pulse"></div> -->
+        </div>
+        <nz-divider style="margin: 4px 0;"></nz-divider>
+        <div nz-dropdown style="display: flex; width: 100%;" [nzDropdownMenu]="menu">
+            <div style="
+                cursor: pointer; 
+                display: flex; 
+                flex-direction: column; 
+                flex-grow: 1 !important; 
+                padding: 4px 8px">
+                <p class="margin-0 open-data-grey-900 font-xs">
+                    {{activeInsight.title}}
+                    <span class="cursor-pointer margin-left-1">
+                        <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right"
+                            [nzTooltipTitle]="activeInsight.tooltip">
+                        </i>
+                    </span>
 
-<!-- <div class="desktop-tooltip">
-</div> -->
+                </p>
+                <!-- <p class="margin-0 open-data-grey-800 font-xxs">
+                    {{activeInsight.tooltip}}
+                </p> -->
+            </div>
+            <span nz-icon nzType="down"></span>
+        </div>
+        <nz-dropdown-menu #menu="nzDropdownMenu">
+            <div nz-menu style=" display: flex;
+            flex-direction: column;
+            max-width: 520px;
+            border-radius: 4px; 
+            max-height: 40vh;
+            overflow-y: scroll;
+            ">
+                @for(option of insightOptions; track option; let i = $index) {
+                    <div [ngClass]="{'option': true, 'active': activeInsight.title == option.title ? true : false}" 
+                        nz-menu-item (click)="updateInsightSelection(option)">
+                        <p class="margin-0 open-data-grey-900 font-xs">
+                            {{option.title}}
+                        </p>
+                        <p class="margin-0 open-data-grey-800 font-xxs">
+                            {{option.tooltip}}
+                        </p>
+                    </div>
+                    @if(i!=insightOptions?.length-1) {
+                        <nz-divider style="margin: 0;"></nz-divider>
+                    }
+                }
+            </div>
+        </nz-dropdown-menu>
+    </div>
+
+    <div class="view-options-section">
+        <div style="display: flex; align-items: center; gap: 8px" class="margin-bottom-3">
+            <div style="
+            padding: 4px;
+            background: #1c75bc;
+            border-radius: 20px;
+            height: 22px;
+            width: 22px;
+            display: flex;
+            place-content: center;
+            align-items: center;
+        ">
+                <i class="fa-solid fa-eye"
+                style="color: #1c75bc;
+                background: white;
+                border-radius: 50%;
+                padding: 2px;
+                font-size: 10px;
+                display: flex;
+                place-content: center;
+                align-items: center;"></i>
+            </div>
+            <p class="margin-0 font-bolder font-xs">Choose Map Visual</p>
+            <!-- <div class="pulse"></div> -->
+        </div>
+        <nz-divider style="margin: 4px 0;"></nz-divider>
+        <nz-radio-group style="padding: 12px 4px 4px" [(ngModel)]="activeView" class="options-container">
+            @for(option of viewsOptions; track option.type) {
+            <label nz-radio [nzValue]="option.type" (click)="updateViewSelection(option)">
+                {{option.title}}
+            </label>
+            }
+        </nz-radio-group>
+    </div>
+</div>

@@ -1,4 +1,5 @@
 <div class="selection-main-container">
+    <app-date-range-picker [dateRange]="dateRange" [availableDateRange]="availableDateRange" (selectedDateRange)="setDateRange($event)" />
     <div class="selection-container">
         <div class="label">Choose City</div>
         <nz-select nzsize="small" [(ngModel)]="selectedCity" (ngModelChange)="updateValue('city')">
@@ -8,12 +9,51 @@
         </nz-select>
     </div>
     
-    <div class="selection-container">
+    <!-- <div class="selection-container">
         <div class="label">Choose Time Interval</div>
         <nz-select nzsize="small" [(ngModel)]="selectedInterval" (ngModelChange)="updateValue('timeInterval')">
             @for(option of timeIntervals; track option) {
             <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
             }
         </nz-select>
+    </div> -->
+
+    <div class="time-slider-container">
+        <nz-divider nzText="Choose Time Interval" nzOrientation="left"></nz-divider>
+        <div style="display: flex; place-content: center; gap: 16px;">
+            <i class="fa-solid fa-sun"></i>
+            <div style="display: flex; flex-direction: column; place-content: center; align-items: center;">
+                <div class="time-slider-filter">
+                    @for(option of timeIntervals.slice(1,timeIntervals.length); track option) {
+                        <div [ngClass]="{'slider-step': true, 'active': (selectedInterval == option) ||overallSelected}"
+                        (click)="updateTimeInterval(option)"></div>
+                    }
+                    <!-- <div class="slider-step"></div>
+                    <div class="slider-step"></div>
+                    <div class="slider-step"></div>
+                    <div class="slider-step"></div>
+                    <div class="slider-step"></div>
+                    <div class="slider-step"></div>
+                    <div class="slider-step"></div> -->
+                </div>
+                <div class="slider-text">
+                    <p class="margin-0 title">3am</p>
+                    <p class="margin-0 title">6am</p>
+                    <p class="margin-0 title">8am</p>
+                    <p class="margin-0 title">10am</p>
+                    <p class="margin-0 title">12pm</p>
+                    <p class="margin-0 title">3pm</p>
+                    <p class="margin-0 title">6pm</p>
+                    <p class="margin-0 title">9pm</p>
+                    <p class="margin-0 title">12pm</p>
+                </div>
+            </div>
+            <i class="fa-solid fa-moon"></i>
+
+            <!-- <label nz-checkbox 
+                style="font-size: 12px;"
+                [(ngModel)]="overallSelected"
+                >Overall</label> -->
+        </div>
     </div>
 </div>

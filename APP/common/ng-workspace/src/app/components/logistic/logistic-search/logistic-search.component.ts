@@ -9,15 +9,20 @@ import { LogisticSearchService } from '@openData/app/core/api/logistic-search/lo
 export class LogisticSearchComponent implements OnInit {
   domain: string = 'Logistics Search';
   dateRangeDate: string = '';
+  isLoading: boolean = true;
 
   constructor(private logisticSearch: LogisticSearchService) {}
 
   ngOnInit(): void {
+    this.isLoading = true;
     this.logisticSearch.getDateRange().subscribe(
       (response: any) => {
-        this.dateRangeDate = response.data;
+        this.logisticSearch.setDateRange([new Date(response.min_date), new Date(response.max_date)]);
+        this.logisticSearch.setChoosableDateRange([new Date(response.min_date), new Date(response.max_date)]);
+        this.isLoading = false;
       }, (error: Error) => {
         console.log(error);
+        this.isLoading = false;
       }
     )
   }

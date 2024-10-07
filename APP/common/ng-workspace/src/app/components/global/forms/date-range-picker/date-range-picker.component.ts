@@ -8,8 +8,8 @@ import { AppService } from '@openData/app/core/api/app/app.service';
 })
 export class DateRangePickerComponent implements OnInit, OnChanges {
   @Input() dateRange: any = [];
+  @Input() availableDateRange: any = [];
   @Output() selectedDateRange = new EventEmitter<any>();
-  availableDateRange: any = [];
 
   date: any = null;
 
@@ -43,7 +43,10 @@ export class DateRangePickerComponent implements OnInit, OnChanges {
   disabledDate = (current: Date): boolean => {
     if (!this.availableDateRange)
       return false;
-    return current && (current < this.availableDateRange[0] || current > this.availableDateRange[1]);
+    let currentDate = current.setHours(0, 0, 0, 0);
+    let startDate = this.availableDateRange[0].setHours(0, 0, 0, 0);
+    let endDate = this.availableDateRange[1].setHours(0, 0, 0, 0);
+    return Boolean(currentDate && (currentDate < startDate || current > endDate));
   };
 }
 

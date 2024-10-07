@@ -46,23 +46,25 @@ class DataAccessLayer:
 
 
     @log_function_call(ondcLogger)
-    def fetch_logistic_searched_data(self, city):
+    def fetch_logistic_searched_data(self, start_date, end_date, city):
         where_condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
             if city == 'Bangalore' else "state = 'DELHI'"
         
         query = f"""
-            
             (SELECT 
                     ls.time_of_day as time_of_day, 
                     ls.pick_up_pincode, 
                     case
                         when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
-                    end as total_conversion_percentage,
-                    
+                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
+                    end as conversion_rate,
+                    case
+                        when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
+                        else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
+                    end as assigned_rate,
                     sum(ls.searched) as searched_data
                 from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
-                    where {where_condition}
+                    where date between '{start_date}' and '{end_date}' and {where_condition}
                 group by ls.time_of_day, ls.pick_up_pincode )
 
                     Union
@@ -71,18 +73,21 @@ class DataAccessLayer:
                     ls.pick_up_pincode, 
                     case
                         when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
-                    end as total_conversion_percentage,
-                    
+                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
+                    end as conversion_rate,
+                    case
+                        when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
+                        else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
+                    end as assigned_rate,
                     sum(ls.searched) as searched_data
                 from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
-                    where {where_condition} group by ls.pick_up_pincode  )
+                    where date between '{start_date}' and '{end_date}' and {where_condition} group by ls.pick_up_pincode  )
                     order by pick_up_pincode, time_of_day"""
         df = self.db_utility.execute_query(query)
         return df
     
     @log_function_call(ondcLogger)
-    def fetch_logistic_searched_top_card_data(self, city):
+    def fetch_logistic_searched_top_card_data(self, start_date, end_date, city):
         where_condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
             if city == 'Bangalore' else " state = 'DELHI' "
         
@@ -91,15 +96,15 @@ class DataAccessLayer:
                 ls.time_of_day as time_of_day,
                 case
                     when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
                 end as total_conversion_percentage,
                 case
                     when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
-                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 2) 
+                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
                 end as total_assigned_percentage,
                 sum(ls.searched) as searched_data
             from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
-                where {where_condition}
+                where date between '{start_date}' and '{end_date}' and {where_condition}
             group by ls.time_of_day )
 
                 Union
@@ -107,15 +112,15 @@ class DataAccessLayer:
                 'Overall' as time_of_day,
                 case
                     when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 2) 
+                    else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
                 end as total_conversion_percentage,
                 case
                     when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
-                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 2) 
+                    else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
                 end as total_assigned_percentage,
                 sum(ls.searched) as searched_data
             from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
-                where {where_condition} )
+                where date between '{start_date}' and '{end_date}' and {where_condition} )
                 order by time_of_day
             
             """

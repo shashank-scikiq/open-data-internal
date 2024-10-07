@@ -1,0 +1,89 @@
+# https://support.circleci.com/hc/en-us/articles/360049397051-How-To-Set-Up-a-VPN-Connection-During-Builds
+name: Deploy on EC2 dev_4
+
+on:
+  push:
+    branches:
+      - dev_4
+  workflow_dispatch:
+
+jobs:
+  vpn-build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Install OpenVPN
+      - name: Install OpenVPN
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y openvpn openvpn-systemd-resolved curl
+
+      # Step 3: Check IP before VPN connection
+      - name: Check Public IP Before VPN Connection
+        env: 
+          SERVER_IP: ${{ secrets.EC2_PUBLIC_IP }}
+        run: |
+          ip a
+          curl --connect-timeout 10 http://$SERVER_IP|| echo "Failed to fetch IP within timeout"
+
+      # Step 4: Configure and start VPN using existing .ovpn file
+      - name: Setup and Connect to OpenVPN
+        env:
+          OVPN_FILE: ${{ secrets.OVPN_FILE }}
+        run: |
+          mkdir vpn
+          echo "$OVPN_FILE" > vpn/config.ovpn
+          sudo openvpn --config vpn/config.ovpn --script-security 2 \
+            --up /etc/openvpn/update-systemd-resolved --up-restart \
+            --down /etc/openvpn/update-systemd-resolved --down-pre \
+            --dhcp-option DOMAIN-ROUTE . > /tmp/openvpn.log &
+      
+       # Step 5: Add the remote server to known_hosts
+      - name: Add remote server to SSH known_hosts
+        env:
+          EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
+        run: |
+
+          mkdir -p ~/.ssh
+
+          # Replace "your-server-ip-or-hostname" with the actual IP or hostname of your server
+          ssh-keyscan -H $EC2_IP >> ~/.ssh/known_hosts
+
+      # Step 6: Set up SSH private key and permissions
+      - name: Set up SSH Key
+        env:
+          SSH_PVT_KEY: ${{ secrets.EC2_PVT_KEY }}
+          EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
+        run: |
+          # Add the SSH private key from GitHub Secrets
+          echo "$SSH_PVT_KEY" > key.pem
+          chmod 600 key.pem
+          eval $(ssh-agent -s)
+          ssh-add key.pem
+      
+        # Step 7: Run deployment steps (e.g., SSH into EC2 and run commands)
+      - name: Run Deployment Commands
+        env:
+          SSH_PVT_KEY: ${{ secrets.EC2_PVT_KEY }}
+          EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
+          EC2_USER: ${{ secrets.SSH_USER }}
+        run: |
+          ssh -i key.pem $EC2_USER@$EC2_IP 'bash -s' << EOF
+          sudo su - $EC2_USER
+          cd /home/shashank_daaslabs/git/open-data-internal/
+          pwd
+          git checkout origin/dev_4
+          git pull origin dev_4
+          docker stop webapp_internal
+          docker system prune -af
+          docker compose -f /home/shashank_daaslabs/git/open-data-internal/docker-compose_ec2.yaml up -d webapp_internal
+          EOF
+
+      # Step 7: Disconnect from VPN after the job is complete
+      - name: Disconnect from OpenVPN
+        run: |
+          sudo killall openvpn || true

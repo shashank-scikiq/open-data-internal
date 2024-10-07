@@ -8,6 +8,7 @@ open_dashboard/open_dashboard/__pychache__/
 **/log
 **.env
 .venv
+**.env**
 **venv**
 credentials.json
 token.json
