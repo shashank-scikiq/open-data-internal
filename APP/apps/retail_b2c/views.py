@@ -85,7 +85,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             "Total sellers": 'Unique count of combination of (Provider ID + Seller App) within the date range',
             "Active sellers": 'Unique count of combination of active (Provider ID + Seller App) within the date range',
             "records the highest order count": 'Maximum Orders by State/Districts, basis the date range. It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.',
-            "No. of items per order": "Average items per orders new change...."
+            "No. of items per order": "Average items per orders"
         }
     @exceptionAPI(ondcLogger)
     def get(self, request, *args):
