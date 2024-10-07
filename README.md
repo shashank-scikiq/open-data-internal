@@ -1,4 +1,7 @@
+# Secret Key Setting
+
 ## create k8 secret
+
 ```cmd
 kubectl create secret generic ondc-open-data-webapp-secret --from-literal=db_password=********
 ```
@@ -13,3 +16,4 @@ kubectl create secret generic ondc-open-data-webapp-aws-secret-key --from-litera
 
 
 
+[![Deploy on EC2 dev_4](https://github.com/shashank-scikiq/open-data-internal/actions/workflows/ec2_deploymeny.yaml/badge.svg?branch=dev_4)](https://github.com/shashank-scikiq/open-data-internal/actions/workflows/ec2_deploymeny.yaml)
