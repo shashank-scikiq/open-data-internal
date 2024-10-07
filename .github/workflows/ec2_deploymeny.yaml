@@ -1,5 +1,5 @@
 # https://support.circleci.com/hc/en-us/articles/360049397051-How-To-Set-Up-a-VPN-Connection-During-Builds
-name: VPN Build and Deploy
+name: Deploy on EC2 dev_4
 
 on:
   push:
