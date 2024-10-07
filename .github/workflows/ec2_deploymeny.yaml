@@ -74,7 +74,7 @@ jobs:
         run: |
           ssh -i key.pem $EC2_USER@$EC2_IP 'bash -s' << EOF
           su - $EC2_USER
-          cd /home/shashank_daaslabs/git/od_webapp_internal
+          cd /home/shashank_daaslabs/git/open-data-internal/
           git checkout origin dev_4
           docker stop docker stop webapp_internal
           docker system prune -af
