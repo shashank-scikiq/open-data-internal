@@ -256,8 +256,8 @@ class FetchDateRange(SummaryBaseDataAPI):
     def get(self, request, *args):
         df = data_service.get_logistic_searched_data_date_range()
         date_range = {  
-            "min_date": df.min()['min'].strftime('%Y-%m-%d'),
-            "max_date": df.min()['max'].strftime('%Y-%m-%d')
+            # "min_date": df.min()['min'].strftime('%Y-%m-%d'),
+            # "max_date": df.min()['max'].strftime('%Y-%m-%d')
         }
 
         return JsonResponse(date_range, status=200, safe=False) 
