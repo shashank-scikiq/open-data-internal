@@ -16,10 +16,10 @@ import os
 
 ALLOWED_HOSTS = ['*']
 
-CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(",")
+CORS_ORIGIN_ALLOW_ALL = True
 X_FRAME_OPTIONS = '*'
 CORS_ALLOW_HEADERS = ['*']
-DATA_UPLOAD_MAX_MEMORY_SIZE = os.getenv('DATA_UPLOAD_MAX_MEMORY_SIZE')
+DATA_UPLOAD_MAX_MEMORY_SIZE = 10242880 * 2
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
