@@ -4,9 +4,6 @@ from django.db import connections
 from contextlib import contextmanager
 import pandas as pd
 
-from dotenv import load_dotenv
-
-load_dotenv()
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'APP.django_setup.settings')
 django.setup()

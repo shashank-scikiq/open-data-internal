@@ -10,9 +10,11 @@ def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_setup.settings')
     try:
-        dotenv_path = join(dirname(__file__), '.env')
+        env_file_path = os.getenv('ENV_FILE_PATH')
 
-        load_dotenv(dotenv_path)
+        # Load the .env file dynamically
+        if env_file_path and os.path.exists(env_file_path):
+            load_dotenv(env_file_path)
         
     except ImportError as exc:
         raise ImportError(

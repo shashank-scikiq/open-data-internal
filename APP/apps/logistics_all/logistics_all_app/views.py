@@ -5,7 +5,6 @@ from django.core.cache import cache
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from dotenv import load_dotenv
 
 from apps.src.api_response_utils import SummaryBaseDataAPI, shift_date_months
 from apps.src.database_utils.database_utility import DatabaseUtility
@@ -16,8 +15,6 @@ from apps.logging_conf import exceptionAPI, ondcLogger
 from apps.utils import constant
 from apps.utils.helpers import get_cached_data
 import calendar
-
-load_dotenv()
 
 round_off_offset = 0
 

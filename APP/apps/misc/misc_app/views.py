@@ -2,7 +2,6 @@ from django.shortcuts import render
 from django.core.cache import cache
 
 from django.http import JsonResponse
-from dotenv import load_dotenv
 from django.db import connection
 import csv
 import os
@@ -12,7 +11,7 @@ from apps.src.database_utils.database_utility import DatabaseUtility
 
 from apps.logging_conf import exceptionAPI, ondcLogger
 from apps.src.database_utils.generic_queries import pincode_query #landing_page_echart_data_query
-load_dotenv()
+
 
 sub_category_none_values = ('undefined', 'all', 'None', 'Select Sub-Category')
 chart_date_format = '%d-%b'

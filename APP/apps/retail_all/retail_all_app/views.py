@@ -6,7 +6,6 @@ from django.http import HttpRequest
 from django.core.cache import cache
 from django.db import connection
 from collections import defaultdict
-from dotenv import load_dotenv
 import calendar
 
 import pandas as pd
@@ -22,8 +21,6 @@ from apps.src.database_utils.database_utility import DatabaseUtility
 from apps.src.database_utils.dal_retail_overall import DataAccessLayer
 from apps.src.database_utils.data_service_layer import DataService
 from apps.src.database_utils.generic_queries import max_date_retail_overall, fetch_district_list_query
-
-load_dotenv()
 
 
 db_utility = DatabaseUtility()
