@@ -10,4 +10,3 @@ services:
     env_file:
       - /home/shashank_daaslabs/Software/od_internal.env
     restart: unless-stopped
-

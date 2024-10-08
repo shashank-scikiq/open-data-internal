@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 import os
 
 
-
 ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -95,6 +94,7 @@ DATABASES = {
             },
     }
 }
+
 
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'

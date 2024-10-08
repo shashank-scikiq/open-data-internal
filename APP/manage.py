@@ -15,7 +15,7 @@ def main():
         # Load the .env file dynamically
         if env_file_path and os.path.exists(env_file_path):
             load_dotenv(env_file_path)
-        
+        # pass
     except ImportError as exc:
         raise ImportError(
             "Couldn't import Django. Are you sure it's installed and "
