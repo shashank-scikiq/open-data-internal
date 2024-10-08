@@ -11,38 +11,19 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-import importlib
-from django_setup.setting_utils import get_env_value
-DEPLOYMENT_TYPE = get_env_value('DEPLOYMENT_TYPE', True, 'default').lower()
-print(DEPLOYMENT_TYPE)
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print(BASE_DIR)
-ENV_PATH = f"django_setup.env_type.{DEPLOYMENT_TYPE}"
-# equiv. of your `import matplotlib.text as text`
-env_mod_setting = importlib.import_module(f'{ENV_PATH}.setting')
-
 
 ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS').split(",")
 X_FRAME_OPTIONS = '*'
 CORS_ALLOW_HEADERS = ['*']
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10242880 * 2
+DATA_UPLOAD_MAX_MEMORY_SIZE = os.getenv('DATA_UPLOAD_MAX_MEMORY_SIZE')
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('APP_SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-
-DEBUG = False
-if get_env_value('DEBUG') == "True":
-    DEBUG = True
-else:
-    DEBUG = False
+DEBUG = bool(int(os.getenv('DEBUG')))
 
 # Application definition
 INSTALLED_APPS = [
@@ -54,7 +35,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'corsheaders',
     'rest_framework',
-]+env_mod_setting.INSTALL_APP
+
+    # defined apps
+    'apps.retail_all.retail_all_app',
+    'apps.logistics_all.logistics_all_app',
+    'apps.retail_b2b',
+    'apps.retail_b2c',
+    'apps.logistics_search'
+]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -91,16 +79,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'django_setup.wsgi.application'
 
-DATABASES = env_mod_setting.DATABASES
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv("POSTGRES_DB"),
+        'USER':  os.getenv("POSTGRES_USER"),
+        'PASSWORD':  os.getenv("POSTGRES_PASSWORD"),
+        'HOST':  os.getenv("POSTGRES_HOST"),
+        'PORT':  os.getenv("POSTGRES_PORT"),
+        'OPTIONS':
+            {
+                'options': f'-c search_path={os.getenv("POSTGRES_SCHEMA")}',
+            },
+    }
+}
 
 LANGUAGE_CODE = 'en-us'
-
 TIME_ZONE = 'UTC'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 APPEND_SLASH = True
 
@@ -112,12 +109,11 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR_MAIN, 'static/')
 
 
-STATICFILES_DIRS = env_mod_setting.STATICFILES_DIRS
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'common', 'web')
+]
 print(STATICFILES_DIRS)
 
-# VER_MAJOR = "3"
-# VER_MINOR = "7"
-# VER_MINOR_MINOR = "1"
 VER_MAJOR = os.getenv("VER_MAJOR")
 VER_MINOR = os.getenv("VER_MINOR")
 VER_MINOR_MINOR = os.getenv("VER_MINOR_MINOR")

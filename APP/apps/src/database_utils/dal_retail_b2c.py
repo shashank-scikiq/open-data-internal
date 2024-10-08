@@ -1531,6 +1531,10 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_category_penetration_sellers(self, start_date, end_date, category=None, sub_category=None, domain=None,
                                            state=None, seller_type='Total'):
+        if category:
+            category=category.replace("'", "''")
+        if sub_category:
+            sub_category = sub_category.replace("'", "''")
         
         seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
@@ -1539,29 +1543,25 @@ class DataAccessLayer:
         aggregated_value= "'AGG'"
         
         query_sub_cat = f'''
-                        SELECT 
-                        category, 
-                        CASE 
-                            WHEN sub_category = {aggregated_value} THEN 'ALL' 
-                            ELSE sub_category 
-                        END AS sub_category, 
-                        {seller_column} AS active_sellers_count
-                    FROM 
-                        {table_name}
-                    WHERE ((year_val * 100) + mnth_val) = (({params.end_year} * 100) + {params.end_month})
-                        AND category { " = '"+ category +"' " if category else ' <> ' + aggregated_value}
-                        {" AND sub_category = '" + sub_category.replace("'", "''") + "' " if sub_category else ' '}
-                        AND seller_state = {aggregated_value} 
-                        AND category <> 'Undefined' 
-                        AND seller_state <> ''
-                    GROUP BY 1, 2, 3
-                    ORDER BY category
+                select 
+                    category, 
+                    case when sub_category = {aggregated_value} then 'ALL' else sub_category end as sub_category, 
+                    {seller_column} as active_sellers_count
+                from 
+                {table_name}
+                where ((year_val*100)+mnth_val) =  (({params.end_year}*100)+{params.end_month})
+                    and upper(category) { " = upper('"+ category +"') " if category else ' <> ' + aggregated_value}
+                    { " and upper(sub_category) = upper('" + sub_category + "') " if sub_category else ' '}
+                    and seller_state = {aggregated_value} 
+                    and category <>'Undefined' 
+                    and seller_state <> ''
+                group by 1,2, 3
+                order by category
                 '''
         
-        
         df = self.db_utility.execute_query(query_sub_cat, parameters)
-        return df
 
+        return df
 
     @log_function_call(ondcLogger)
     def fetch_states_orders(self, start_date, end_date, category=None,
