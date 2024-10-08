@@ -11,4 +11,4 @@ services:
       - .env
     restart: unless-stopped
     environment:
-     - POSTGRES_SCHEMA=ec2_all
+      - ENV_FILE_PATH=/home/shashank_daaslabs/Software/od_internal.env
