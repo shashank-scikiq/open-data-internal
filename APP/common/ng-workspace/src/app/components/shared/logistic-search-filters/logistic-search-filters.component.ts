@@ -9,15 +9,8 @@ import { LogisticSearchService } from '@openData/app/core/api/logistic-search/lo
 export class LogisticSearchFiltersComponent implements OnInit {
 
   timeIntervals: string[] = [
-    "Overall",
-    "3am-6am",
-    "6am-8am",
-    "8am-10am",
-    "10am-12pm",
-    "12pm-3pm",
-    "3pm-6pm",
-    "6pm-9pm",
-    "9pm-12am",
+    "Overall", "3am-6am", "6am-8am", "8am-10am", "10am-12pm", 
+    "12pm-3pm", "3pm-6pm", "6pm-9pm", "9pm-12am", "12am-3am"
   ];
   selectedInterval: string = 'Overall';
   overallSelected: boolean = true;
@@ -38,6 +31,13 @@ export class LogisticSearchFiltersComponent implements OnInit {
       });
     })
     
+    this.logisticSearchService.activeTimeInterval$.subscribe(
+      (res: any) => {
+        if (res) {
+          this.selectedInterval = res;
+          this.overallSelected = Boolean(res=='Overall')
+        }
+      })
     
   }
 

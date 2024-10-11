@@ -28,13 +28,6 @@
                         <div [ngClass]="{'slider-step': true, 'active': (selectedInterval == option) ||overallSelected}"
                         (click)="updateTimeInterval(option)"></div>
                     }
-                    <!-- <div class="slider-step"></div>
-                    <div class="slider-step"></div>
-                    <div class="slider-step"></div>
-                    <div class="slider-step"></div>
-                    <div class="slider-step"></div>
-                    <div class="slider-step"></div>
-                    <div class="slider-step"></div> -->
                 </div>
                 <div class="slider-text">
                     <p class="margin-0 title">3am</p>
@@ -45,10 +38,17 @@
                     <p class="margin-0 title">3pm</p>
                     <p class="margin-0 title">6pm</p>
                     <p class="margin-0 title">9pm</p>
-                    <p class="margin-0 title">12pm</p>
+                    <p class="margin-0 title">12am</p>
+                    <p class="margin-0 title">3am</p>
                 </div>
             </div>
             <i class="fa-solid fa-moon"></i>
+            @if(!overallSelected) {
+                <div class="reset-btn cursor-pointer" (click)="updateTimeInterval('Overall')">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    Reset
+                </div>
+            }
 
             <!-- <label nz-checkbox 
                 style="font-size: 12px;"

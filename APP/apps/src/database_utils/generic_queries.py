@@ -73,12 +73,18 @@ fetch_category_list_query = f'''
         '''
 
 landing_page_echart_data_query = f'''
-    select domain, month as date, order_count as weekly_average from 
-        {LANDING_PAGE_ECHART_TABLE} 
-    where month <= '{LANDING_PAGE_ECHART_DATA_TILL}'
+    select 
+	domain, 
+	month::date as date, 
+	order_count as weekly_average 
+    from {LANDING_PAGE_ECHART_TABLE}
+    where (extract(year from month)*100)+extract(month from month)
+     < (select max((extract(year from month)*100)+extract(month from month)) from {LANDING_PAGE_ECHART_TABLE})
 '''
 landing_page_cumulative_orders_query = f'''
-    select sum(order_count) as total_orders from 
+    select max(month), sum(order_count) as total_orders from 
         {LANDING_PAGE_ECHART_TABLE} 
-    where domain='ONDC Network - All Domains' and month <= '{LANDING_PAGE_ECHART_DATA_TILL}'
+    where domain='ONDC Network - All Domains' and
+    (extract(year from month)*100)+extract(month from month)
+     < (select max((extract(year from month)*100)+extract(month from month)) from {LANDING_PAGE_ECHART_TABLE})
 '''

@@ -593,6 +593,7 @@ class FetchTop5SellerStates(SummaryBaseDataAPI):
 
         if data is None:
             data = data_service.get_overall_zonal_commerce_top_states(**params)
+
             formatted_data = self.zonal_commerce_format(data, tree_type='delivery_state')
             cache.set(p_d, formatted_data, constant.CACHE_EXPIRY)
         else:
