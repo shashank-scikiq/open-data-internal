@@ -41,6 +41,9 @@ export class LogisticsSearchTopCardsComponent implements OnInit {
 
   prepareData() {
     let cardsData = [];
+    if (this.topCardData?.length <1){
+      return;
+    }
 
     for (let data of this.topCardData) {
       if (data.time_of_day == this.logisticSearchService.activeTimeInterval.value) {
