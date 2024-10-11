@@ -74,7 +74,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         }
 
         try:
-            cache_key = self.generate_cache_key(params)
+            cache_key = f"Logistic_search_FetchTopCardDeltaData_{self.generate_cache_key(params)}"
             data = get_cached_data(cache_key)
             if data is None:
                 card_data = data_service.get_logistic_searched_top_card_data(**params)
@@ -121,7 +121,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
         }
 
         try:
-            cache_key = self.generate_cache_key(params)
+            cache_key = f"Logistic_search_FetchCityWiseData_{self.generate_cache_key(params)}"
             data = get_cached_data(cache_key)
             if data is None:
                 df = data_service.get_logistic_searched_data(**params)
