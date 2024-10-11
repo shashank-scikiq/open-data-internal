@@ -248,7 +248,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
     this.svg = d3.select('#pincode-map').append('svg')
       .attr('viewBox', `0 0 ${this.width} ${this.height}`)
       .attr('preserveAspectRatio', "xMidYMid meet")
-      .attr('class', 'pincode-level-map');
+      .attr('class', 'pincode-level-map cursor-grab');
 
     const sortedSearchedData = this.cityData.sort(
       (a: any, b: any) =>
@@ -613,6 +613,15 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
   updateInsightSelection(option: any) {
     this.activeInsight = option;
+    if (option.type == "high_demand_in_morning_hours") {
+      this.logisticSearchService.setActiveTimeInterval("8am-10am");
+      this.logisticSearchService.filterUpdated.next({updated: true, updatedFor: 'timeInterval'});
+      return;
+    } else if (option.type == "high_demand_in_evening_hours") {
+      this.logisticSearchService.setActiveTimeInterval("6pm-9pm");
+      this.logisticSearchService.filterUpdated.next({updated: true, updatedFor: 'timeInterval'});
+      return;
+    }
     this.activeView = option.defaultView.type;
     this.addBubbles(option.type);
   }

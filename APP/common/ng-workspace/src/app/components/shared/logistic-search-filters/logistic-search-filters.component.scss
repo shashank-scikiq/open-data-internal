@@ -73,6 +73,18 @@
         }
     }
 
+    .reset-btn {
+        display: flex;
+        place-content: center;
+        align-items: center;
+        gap: 8px;
+        background: $blue700;
+        color: white;
+        padding: 4px 10px;
+        font-size: 12px;
+        border-radius: 5px;
+    }
+
 }
 
 ::ng-deep {

@@ -10,7 +10,7 @@ def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_setup.settings')
     try:
-        env_file_path = os.getenv('ENV_FILE_PATH')
+        env_file_path = "./.env"
 
         # Load the .env file dynamically
         if env_file_path and os.path.exists(env_file_path):

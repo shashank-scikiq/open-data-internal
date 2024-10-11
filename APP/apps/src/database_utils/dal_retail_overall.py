@@ -852,13 +852,13 @@ class DataAccessLayer:
                 -- COALESCE(NULLIF(TRIM(sub.seller_state), ''), 'Missing') AS seller_state,
                 sub.seller_state,
                 sub.order_demand,
-                ROUND(sub.flow_percentage,2) as flow_percentage
+                sub.flow_percentage as flow_percentage
             FROM (
                 SELECT 
                     om.delivery_state,
                     om.seller_state,
                     SUM(om.total_orders_delivered) AS order_demand,
-                    (SUM(om.total_orders_delivered) * 100.0) / total.total_orders AS flow_percentage,
+                    (SUM(om.total_orders_delivered::integer) * 100.0) / total.total_orders AS flow_percentage,
                     ROW_NUMBER() OVER (
                         PARTITION BY om.delivery_state 
                         ORDER BY SUM(om.total_orders_delivered) DESC

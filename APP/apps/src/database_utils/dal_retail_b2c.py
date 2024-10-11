@@ -1119,7 +1119,7 @@ class DataAccessLayer:
             and sub.seller_state is not NULL
             ORDER BY sub.delivery_state, sub.flow_percentage DESC;
         """
-       
+
         df = self.db_utility.execute_query(query, parameters)
         return df
 

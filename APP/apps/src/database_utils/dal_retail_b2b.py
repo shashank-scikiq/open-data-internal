@@ -214,10 +214,6 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_total_orders_summary_prev(self, start_date, end_date, category=None,
                                         sub_category=None, domain=None, state=None):
-
-        domain = 'Retail' if domain is None else domain
-        sub_domain = 'B2B' if sub_domain is None else sub_domain
-
         table_name = constant.MONTHLY_DISTRICT_TABLE
         parameters = self.get_query_month_parameters(start_date, end_date)
 
@@ -238,7 +234,7 @@ class DataAccessLayer:
             query += " AND ds.seller_state = %(state)s"
             parameters['state'] = state
 
-        query += """
+        query += f"""
                 GROUP BY ds.seller_state, ds.seller_state_code
             ),
             AggregatedData AS (
@@ -252,18 +248,8 @@ class DataAccessLayer:
                 WHERE
                     (swdlo.order_year > %(start_year)s OR (swdlo.order_year = %(start_year)s AND swdlo.order_month >= %(start_month)s))
                     AND (swdlo.order_year < %(end_year)s OR (swdlo.order_year = %(end_year)s AND swdlo.order_month <= %(end_month)s))
-                    AND swdlo.delivery_state <> '' AND swdlo.delivery_state IS NOT NULL
-        """
+                    AND swdlo.delivery_state <> '' AND swdlo.delivery_state IS NOT NULL and swdlo.domain_name = 'Retail' and swdlo.sub_domain = 'B2B'
 
-        if domain:
-            query += " AND swdlo.domain_name = %(domain)s"
-            parameters['domain'] = domain
-
-        if sub_domain:
-            query += " AND sub_domain = %(sub_domain)s"
-            parameters['sub_domain'] = sub_domain
-
-        query += f"""
                 GROUP BY swdlo.delivery_state_code, swdlo.delivery_state
             ),
             ActiveSellersTotal AS (
@@ -288,16 +274,7 @@ class DataAccessLayer:
                 WHERE
                     (swdlo.order_year > %(start_year)s OR (swdlo.order_year = %(start_year)s AND swdlo.order_month >= %(start_month)s))
                     AND (swdlo.order_year < %(end_year)s OR (swdlo.order_year = %(end_year)s AND swdlo.order_month <= %(end_month)s))
-        """
-
-        if domain:
-            query += " AND swdlo.domain_name = %(domain)s"
-            parameters['domain'] = domain
-        if sub_domain:
-            query += " AND sub_domain = %(sub_domain)s"
-            parameters['sub_domain'] = sub_domain
-
-        query += """
+                    and swdlo.domain_name = 'Retail' and swdlo.sub_domain = 'B2B'
             )
             SELECT
                 COALESCE(AD.delivery_state_code, 'Missing') AS delivery_state_code,
@@ -329,9 +306,6 @@ class DataAccessLayer:
             LEFT JOIN
                 ActiveSellersTotal ASelt ON 1=1
         """
-
-        query = query.format(table_name=table_name)
-
         orders_count = self.db_utility.execute_query(query, parameters)
         return orders_count
     
