@@ -19,7 +19,9 @@ export class LogisticsSearchTopCardsComponent implements OnInit {
       (val: any) => {
         this.topCardsGroupData = [];
         if(val?.updatedFor == 'timeInterval') {
-          this.prepareData();
+          if (this.topCardData?.length) {
+            this.prepareData();
+          }
         } else {
           this.getData();
         }
@@ -31,8 +33,12 @@ export class LogisticsSearchTopCardsComponent implements OnInit {
     this.isLoading = true;
     this.logisticSearchService.getTopCardsData().subscribe(
       (response: any) => {
-        this.topCardData = response.data;
-        this.prepareData();
+        if (response) {
+          this.topCardData = response.data;
+          if (this.topCardData?.length) {
+            this.prepareData();
+          }
+        }
       }, (error: Error) => {
       console.log(error);
     }
@@ -41,9 +47,7 @@ export class LogisticsSearchTopCardsComponent implements OnInit {
 
   prepareData() {
     let cardsData = [];
-    if (this.topCardData?.length <1){
-      return;
-    }
+    console.log(this.topCardData, "here in top cards")
 
     for (let data of this.topCardData) {
       if (data.time_of_day == this.logisticSearchService.activeTimeInterval.value) {
