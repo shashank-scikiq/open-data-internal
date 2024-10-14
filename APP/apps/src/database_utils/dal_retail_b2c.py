@@ -319,8 +319,11 @@ class DataAccessLayer:
                 FROM
                     {provider_table}
                 WHERE
-                    ((year_val*100) + mnth_val) = ((%(end_year)s * 100) +%(end_month)s) and seller_state={aggregate_value} and 
-                    seller_district={aggregate_value} and category={aggregate_value} and sub_category={aggregate_value}
+                    ((year_val*100) + mnth_val) = ((%(end_year)s * 100) +%(end_month)s)
+                    and seller_district = {aggregate_value}
+                    and category = {f"'{category}'" if bool(category) and (category != 'None') else aggregate_value}
+                    and sub_category = {f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value}
+                    and  seller_state { f"='{state}'" if state else f"={aggregate_value}"}
             ),
             AggregatedDataTotal AS (
                 SELECT
@@ -372,7 +375,6 @@ class DataAccessLayer:
                 StateRanking SRnk ON SRnk.rank_in_state = 1
         """
         query = query.format(table_name=table_name)
-        # import pdb; pdb.set_trace();
         orders_count = self.db_utility.execute_query(query, parameters)
         return orders_count
 
@@ -407,7 +409,7 @@ class DataAccessLayer:
                     and seller_district = {aggregate_value}
                     and category = {f"'{category}'" if bool(category) and (category != 'None') else aggregate_value}
                     and sub_category = {f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value}
-                    and  seller_state { f"='{state}'" if state else f"<>{aggregate_value}"}
+                    and  seller_state { f"='{state}'" if state else f"={aggregate_value}"}
             ),
             AggregatedData AS (
                 SELECT
@@ -449,8 +451,10 @@ class DataAccessLayer:
                     {provider_table} ds
                 WHERE
                     ((year_val*100) + mnth_val) = ((%(end_year)s * 100) +%(end_month)s)
-                    and seller_state={aggregate_value} and seller_district={aggregate_value}
-                    and category={aggregate_value} and sub_category={aggregate_value}
+                    and seller_district = {aggregate_value}
+                    and category = {f"'{category}'" if bool(category) and (category != 'None') else aggregate_value}
+                    and sub_category = {f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value}
+                    and  seller_state { f"='{state}'" if state else f"<>{aggregate_value}"}
             ),
             AggregatedDataTotal AS (
                 SELECT
