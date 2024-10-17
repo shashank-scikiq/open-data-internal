@@ -99,20 +99,20 @@ export class PincodeLevelMapViewComponent implements OnInit {
       type: 'high_demand_and_low_conversion_rate',
       defaultView: this.viewsOptions[2]
     },
-    {
-      title: 'Areas with high search in peak morning hours',
-      tooltip: `Areas with high demand between 8am-10am`,
-      selected: false,
-      type: 'high_demand_in_morning_hours',
-      defaultView: this.viewsOptions[0]
-    },
-    {
-      title: 'Areas with high search in peak evening hours',
-      tooltip: `Areas with high demand between 6pm-9pm`,
-      selected: false,
-      type: 'high_demand_in_evening_hours',
-      defaultView: this.viewsOptions[0]
-    }
+    // {
+    //   title: 'Areas with high search in peak morning hours',
+    //   tooltip: `Areas with high demand between 8am-10am`,
+    //   selected: false,
+    //   type: 'high_demand_in_morning_hours',
+    //   defaultView: this.viewsOptions[0]
+    // },
+    // {
+    //   title: 'Areas with high search in peak evening hours',
+    //   tooltip: `Areas with high demand between 6pm-9pm`,
+    //   selected: false,
+    //   type: 'high_demand_in_evening_hours',
+    //   defaultView: this.viewsOptions[0]
+    // }
   ];
   activeInsight: any;
 
@@ -613,15 +613,15 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
   updateInsightSelection(option: any) {
     this.activeInsight = option;
-    if (option.type == "high_demand_in_morning_hours") {
-      this.logisticSearchService.setActiveTimeInterval("8am-10am");
-      this.logisticSearchService.filterUpdated.next({updated: true, updatedFor: 'timeInterval'});
-      return;
-    } else if (option.type == "high_demand_in_evening_hours") {
-      this.logisticSearchService.setActiveTimeInterval("6pm-9pm");
-      this.logisticSearchService.filterUpdated.next({updated: true, updatedFor: 'timeInterval'});
-      return;
-    }
+    // if (option.type == "high_demand_in_morning_hours") {
+    //   this.logisticSearchService.setActiveTimeInterval("8am-10am");
+    //   this.logisticSearchService.filterUpdated.next({updated: true, updatedFor: 'timeInterval'});
+    //   return;
+    // } else if (option.type == "high_demand_in_evening_hours") {
+    //   this.logisticSearchService.setActiveTimeInterval("6pm-9pm");
+    //   this.logisticSearchService.filterUpdated.next({updated: true, updatedFor: 'timeInterval'});
+    //   return;
+    // }
     this.activeView = option.defaultView.type;
     this.addBubbles(option.type);
   }
