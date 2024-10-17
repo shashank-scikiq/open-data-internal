@@ -249,7 +249,7 @@ class SummaryBaseDataAPI(APIView):
         result = {}
 
         state_codes = []
-        if active_sellers_data_total:
+        if active_sellers_data_total is not None and not active_sellers_data_total.empty:
             state_codes = list(set(active_sellers_data_total['seller_state_code']).union(set(map_state_df['delivery_state_code'])))
         else: 
             state_codes = list(set(map_state_df['delivery_state_code']))
