@@ -161,7 +161,6 @@ export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   mapprojection(data: any) {
-    console.log(data);
     const el: any = document.getElementById("indiamap");
 
     const height = el.clientHeight

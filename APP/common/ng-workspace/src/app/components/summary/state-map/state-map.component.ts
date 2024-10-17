@@ -333,7 +333,7 @@ export class StateMapComponent implements OnInit, OnChanges {
     }
 
     return `<p class="margin-0 font-xxs text-center open-data-white">
-      ${state} <br/> ${district} <br/> ${metrixText} : ${metricValue} </p>`;
+      ${state} <br/> ${district} <br/> ${metrixText?.replace('Intrastate', 'Intradistrict')} : ${metricValue} </p>`;
 
   }
 

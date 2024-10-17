@@ -161,8 +161,8 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             'high_conversion_rate': {},
             'high_demand_and_high_conversion_rate': {}, 
             'high_demand_and_low_conversion_rate': {},
-            'high_demand_in_morning_hours': {},
-            'high_demand_in_evening_hours': {}
+            # 'high_demand_in_morning_hours': {},
+            # 'high_demand_in_evening_hours': {}
         }
 
         for time in time_of_days:
@@ -183,8 +183,8 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             insight_data['high_demand'][str(time)] = data
 
 
-            insight_data['high_demand_in_morning_hours'][str(time)] = data if (time=='8am-10am') else {}
-            insight_data['high_demand_in_evening_hours'][str(time)] = data if (time=='6pm-9pm') else {}
+            # insight_data['high_demand_in_morning_hours'][str(time)] = data if (time=='8am-10am') else {}
+            # insight_data['high_demand_in_evening_hours'][str(time)] = data if (time=='6pm-9pm') else {}
 
             # high conversion rate
 

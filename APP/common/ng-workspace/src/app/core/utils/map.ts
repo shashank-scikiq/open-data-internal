@@ -215,7 +215,7 @@ export const getDistrictTooltipContent = (d: any, casetype: any, color: any, top
         
 
         <p class="margin-0 upper-title open-data-grey-700">
-                ${metricKey} in
+                ${metricKey?.replace('Intrastate', 'Intradistrict')} hi bha in
             </div>
             <p class="font-bolder selection-name margin-0"><i class="margin-right-2 fa-solid fa-location-dot"></i>  ${d.properties.district}</p>
             <h3 class="font-bolder margin-bottom-1 count-section" style="
