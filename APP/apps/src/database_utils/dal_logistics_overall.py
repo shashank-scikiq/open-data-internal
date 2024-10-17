@@ -873,7 +873,6 @@ class DataAccessLayer:
         '''
 
         aggregated_df = self.db_utility.execute_query(query, parameters)
-
         return aggregated_df
 
     @log_function_call(ondcLogger)
