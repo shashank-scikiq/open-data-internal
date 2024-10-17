@@ -242,8 +242,8 @@ class FetchCityWiseData(SummaryBaseDataAPI):
                 }
             insight_data['high_demand_and_low_conversion_rate'][str(time)] = data
         
-        insight_data['high_demand_in_morning_hours']['Overall'] = insight_data['high_demand_in_morning_hours']['8am-10am']
-        insight_data['high_demand_in_evening_hours']['Overall'] = insight_data['high_demand_in_evening_hours']['6pm-9pm']
+        # insight_data['high_demand_in_morning_hours']['Overall'] = insight_data['high_demand_in_morning_hours']['8am-10am']
+        # insight_data['high_demand_in_evening_hours']['Overall'] = insight_data['high_demand_in_evening_hours']['6pm-9pm']
         return insight_data
 
     
