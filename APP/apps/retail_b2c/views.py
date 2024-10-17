@@ -139,7 +139,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             return JsonResponse(error_message, status=200, safe=False)
 
     def generate_cache_key(self, params):
-        cleaned_list = [params['domain_name'], params['start_date'], params['end_date'], params['state']]
+        cleaned_list = params.values()
         cleaned_list = [element for element in cleaned_list if element not in [None, 'None']]
         return "FetchTopCardDeltaData_Retail_b2c_$$$".join(cleaned_list)
 
@@ -323,33 +323,31 @@ class FetchMapStateWiseData(SummaryBaseDataAPI):
         """
         params = self.extract_common_params(request)
         params['domain_name'] = 'Retail'
-        p_d = [params['domain_name'], params['start_date'],
-               params['end_date'], params['state']]
+        p_d = params.values()
         cleaned_list = [element for element in p_d if element not in [None, 'None']]
 
         p_d = "FetchMapStateWiseData_Retail_b2c_$$$".join(cleaned_list)
 
-        # resp_data = get_cached_data(p_d)
-        # if resp_data is None:
-        data = data_service.get_cumulative_orders_statewise_summary(**params)
-        current_sellers = data_service.get_overall_active_sellers(**params)
-        # import pdb 
-        # pdb.set_trace()
-        
+        resp_data = get_cached_data(p_d)
+        if resp_data is None:
+            data = data_service.get_cumulative_orders_statewise_summary(**params)
+            current_sellers = data_service.get_overall_active_sellers(**params)
 
-        current_sellers_renamed = current_sellers.rename(columns={'seller_state_code': 'delivery_state_code',
-                                                                    'seller_state': 'delivery_state'})
-        current_merged = data.merge(current_sellers_renamed,
-                                    on=['delivery_state_code', 'delivery_state'],
-                                    how='outer')
+            
 
-        current_merged.fillna(0, inplace=True)
+            current_sellers_renamed = current_sellers.rename(columns={'seller_state_code': 'delivery_state_code',
+                                                                        'seller_state': 'delivery_state'})
+            current_merged = data.merge(current_sellers_renamed,
+                                        on=['delivery_state_code', 'delivery_state'],
+                                        how='outer')
 
-        json_data = self.map_state_wise_data_format(current_merged)
+            current_merged.fillna(0, inplace=True)
 
-        # cache.set(p_d, json_data, constant.CACHE_EXPIRY)
-        # else:
-        #     json_data = resp_data
+            json_data = self.map_state_wise_data_format(current_merged)
+
+            cache.set(p_d, json_data, constant.CACHE_EXPIRY)
+        else:
+            json_data = resp_data
         return JsonResponse(json_data, safe=False)
 
 class FetchMapStateData(SummaryBaseDataAPI):
@@ -360,30 +358,29 @@ class FetchMapStateData(SummaryBaseDataAPI):
         """
         params = self.extract_common_params(request)
         params['domain_name'] = 'Retail'
-        p_d = [params['domain_name'], params['start_date'],
-               params['end_date'], params['state']]
-        # cleaned_list = [element for element in p_d if element not in [None, 'None']]
+        p_d = params.values()
+        cleaned_list = [element for element in p_d if element not in [None, 'None']]
 
-        # p_d = "FetchMapStateData_Retail_b2c_$$$".join(cleaned_list)
+        p_d = "FetchMapStateData_Retail_b2c_$$$".join(cleaned_list)
 
-        # resp_data = get_cached_data(p_d)
-        # if resp_data is None:
+        resp_data = get_cached_data(p_d)
+        if resp_data is None:
 
-        data = data_service.get_cumulative_orders_statedata_summary(**params)
-        active_sellers_data_total = data_service.get_overall_active_sellers(**params)
-        data.fillna(0, inplace=True)
+            data = data_service.get_cumulative_orders_statedata_summary(**params)
+            active_sellers_data_total = data_service.get_overall_active_sellers(**params)
+            data.fillna(0, inplace=True)
 
-        data['total_orders_delivered'] = pd.to_numeric(data['total_orders_delivered'], errors='coerce')
-        active_sellers_data_total['active_sellers_count'] = pd.to_numeric(
-            active_sellers_data_total['active_sellers_count'], errors='coerce')
+            data['total_orders_delivered'] = pd.to_numeric(data['total_orders_delivered'], errors='coerce')
+            active_sellers_data_total['active_sellers_count'] = pd.to_numeric(
+                active_sellers_data_total['active_sellers_count'], errors='coerce')
 
-        formatted_data = self.map_state_data_format(data, active_sellers_data_total)
-        json_data = formatted_data
+            formatted_data = self.map_state_data_format(data, active_sellers_data_total)
+            json_data = formatted_data
 
-        #     cache.set(p_d, json_data, constant.CACHE_EXPIRY)
+            cache.set(p_d, json_data, constant.CACHE_EXPIRY)
 
-        # else:
-        #     json_data = resp_data
+        else:
+            json_data = resp_data
         return JsonResponse(json_data, safe=False)
 
 
