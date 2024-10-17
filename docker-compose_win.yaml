@@ -8,7 +8,5 @@ services:
     ports:
       - "8081:8001"
     env_file:
-      - .env
+      - "D:\\Work\\git\\od_internal.env"
     restart: unless-stopped
-    environment:
-      - ENV_FILE_PATH=/home/shashank_daaslabs/Software/od_internal.env

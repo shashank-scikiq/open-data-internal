@@ -1,15 +1,17 @@
 # https://support.circleci.com/hc/en-us/articles/360049397051-How-To-Set-Up-a-VPN-Connection-During-Builds
-name: VPN Build and Deploy
+name: Deploy on EC2 dev_4
 
 on:
   push:
     branches:
       - dev_4
+
   workflow_dispatch:
 
 jobs:
   vpn-build-deploy:
-    runs-on: ubuntu-latest
+    # runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       # Step 1: Checkout the code
@@ -46,39 +48,42 @@ jobs:
       - name: Add remote server to SSH known_hosts
         env:
           EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
+
         run: |
-
           mkdir -p ~/.ssh
-
-          # Replace "your-server-ip-or-hostname" with the actual IP or hostname of your server
           ssh-keyscan -H $EC2_IP >> ~/.ssh/known_hosts
 
       # Step 6: Set up SSH private key and permissions
       - name: Set up SSH Key
         env:
-          SSH_PVT_KEY: ${{ secrets.EC2_PVT_KEY }}
+          EC2_PVT_KEY: ${{ secrets.EC2_PVT_KEY }}
           EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
         run: |
           # Add the SSH private key from GitHub Secrets
-          echo "$SSH_PVT_KEY" > key.pem
+          echo "$EC2_PVT_KEY" > key.pem
           chmod 600 key.pem
           eval $(ssh-agent -s)
           ssh-add key.pem
-      
+
         # Step 7: Run deployment steps (e.g., SSH into EC2 and run commands)
       - name: Run Deployment Commands
         env:
-          SSH_PVT_KEY: ${{ secrets.EC2_PVT_KEY }}
           EC2_IP: ${{ secrets.EC2_PUBLIC_IP }}
           EC2_USER: ${{ secrets.SSH_USER }}
+          SSH_PVT_KEY: ${{ secrets.SSH_PVT_KEY }}
         run: |
           ssh -i key.pem $EC2_USER@$EC2_IP 'bash -s' << EOF
-          su - $EC2_USER
-          cd /home/shashank_daaslabs/git/od_webapp_internal
-          git checkout origin dev_4
-          docker stop docker stop webapp_internal
+          echo "$SSH_PVT_KEY" > ~/.ssh/id_ed25519
+          chmod 400 ~/.ssh/id_ed25519
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_ed25519
+
+          cd /home/shashank_daaslabs/git/open-data-internal/
+          git checkout origin/dev_4
+          git pull origin dev_4
+          docker stop webapp_internal
           docker system prune -af
-          docker compose -f docker-compose_ec2.yaml up -d webapp_internal
+          docker compose -f /home/shashank_daaslabs/git/open-data-internal/docker-compose_ec2.yaml up -d webapp_internal
           EOF
 
       # Step 7: Disconnect from VPN after the job is complete
