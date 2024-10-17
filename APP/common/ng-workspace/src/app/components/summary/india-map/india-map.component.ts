@@ -108,10 +108,9 @@ export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
     this.mapStatewiseData.forEach((element: any) => {
       if (element.statecode != 'TT') {
 
-        if (element.active_sellers <= 3) {
-          element.active_sellers = 0
-        }
-
+        // if (element.active_sellers <= 3) {
+        //   element.active_sellers = 0
+        // }
         let orderDemand = element.order_demand ? element.order_demand : 0;
         let activeSellers = element.active_sellers ? element.active_sellers : 0;
         let totalIntradistrictOrdersPercentage = element.intradistrict_orders_percentage ? element.intradistrict_orders_percentage : 0;
@@ -138,7 +137,7 @@ export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
       // map_total_orders_metrics: d3.max(datajson.cummulative.od, d => +d),
       map_total_active_sellers_metrics: datajson.cummulative.as && datajson.cummulative.as.length > 0 ? d3.max(datajson.cummulative.as, d => +d) : 0,
       map_total_orders_metrics: datajson.cummulative.od && datajson.cummulative.od.length > 0 ? d3.max(datajson.cummulative.od, d => +d) : 0,
-      map_total_zonal_commerce_metrics: datajson.cummulative.tiso && datajson.cummulative.tiso.length > 0 ? d3.max(datajson.cummulative.tiso, d => +d) : 0,
+      map_total_zonal_commerce_metrics: datajson.cummulative.tiso2 && datajson.cummulative.tiso2.length > 0 ? d3.max(datajson.cummulative.tiso2, d => +d) : 0,
     };
 
     const indiamapdata = await this.indiamapdataprocessed();
@@ -282,8 +281,9 @@ export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
     const color = d3.scaleSequentialLog(
       this.chloroplethcolormapper3[caseType]).domain([1, this.maxData[caseType]]
       );
-    const sorteddata = mapGeopJson.features.sort((a: any, b: any) => b.properties.totalcasedata[this.metrix] - a.properties.totalcasedata[this.metrix]);
+    const sorteddata = mapGeopJson.features?.sort((a: any, b: any) => b.properties.totalcasedata[this.metrix] - a.properties.totalcasedata[this.metrix]);
     const top3Data = sorteddata.slice(0, 3);
+
 
     const g = d3.select('#india-chloro');
     this.removeSvgContent();

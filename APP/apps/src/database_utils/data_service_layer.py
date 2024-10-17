@@ -76,10 +76,10 @@ class DataService:
     def get_overall_active_sellers(self, start_date, end_date, category=None, sub_category=None, domain_name=None, state=None, seller_type='Total'):
         return self.dal.fetch_overall_active_sellers(start_date, end_date, category, sub_category, domain_name, state)
 
-    '''FetchMapStateData - sellers'''
-    def get_overall_active_sellers_statedata(self, start_date, end_date, category=None, sub_category=None, domain_name=None,
-                                     state=None, seller_type='Total'):
-        return self.dal.fetch_overall_active_sellers_statedata(start_date, end_date, category, sub_category, domain_name, state)
+    # '''FetchMapStateData - sellers'''
+    # def get_overall_active_sellers_statedata(self, start_date, end_date, category=None, sub_category=None, domain_name=None,
+    #                                  state=None, seller_type='Total'):
+    #     return self.dal.fetch_overall_active_sellers_statedata(start_date, end_date, category, sub_category, domain_name, state)
 
     '''FetchTopCardDeltaData - district count'''
     def get_district_count(self, start_date, end_date, category=None, sub_category=None, domain_name=None, state=None, seller_type='Total'):

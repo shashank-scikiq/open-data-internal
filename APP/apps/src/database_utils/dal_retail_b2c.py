@@ -772,31 +772,24 @@ class DataAccessLayer:
         seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
         parameters = self.get_query_month_parameters(start_date, end_date)
 
-        # query = f"""
-        #     SELECT 
-        #         order_month,
-        #         order_year,
-        #         COUNT(DISTINCT TRIM(LOWER(provider_key))) AS total_orders_delivered
-        #     FROM 
-        #         {table_name}
-        #     WHERE
-        #         (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
-        #         AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
-        # """
-
         query = f"""
             SELECT 
                 mnth_val as order_month,
                 year_val as order_year,
-                {seller_column} as total_orders_delivered
+                max({seller_column}) as total_orders_delivered
             FROM 
                 {table_name}
             WHERE
-                    ((year_val*100) + mnth_val) between ((%(start_year)s * 100) +%(start_month)s) and ((%(end_year)s * 100) +%(end_month)s)
-                    and seller_district = {aggregate_value}
-                    and category = {f"'{category}'" if bool(category) and (category != 'None') else aggregate_value}
-                    and sub_category = {f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value}
-                    and  seller_state { f"='{state}' " if state else '='+aggregate_value}
+                ((year_val*100) + mnth_val) between
+                    (({parameters['start_year']} * 100) + {parameters['start_month']})
+                    and
+                    (({parameters['end_year']} * 100) + {parameters['end_month']})
+                and seller_district = {aggregate_value}
+                and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
+                and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
+                and  upper(seller_state) { f"=upper('{state}') " if state else '='+aggregate_value}
+            group by 1, 2
+            order by ((year_val*100) + mnth_val)
         """
 
         df = self.db_utility.execute_query(query, parameters)
@@ -1220,7 +1213,6 @@ class DataAccessLayer:
                     (({params.end_year}*100) + {params.end_month}) and
                 domain_name = 'Retail' and sub_domain = 'B2C'
         '''
-
         conditions = []
 
         if state:
@@ -1239,6 +1231,7 @@ class DataAccessLayer:
         '''
 
         aggregated_df = self.db_utility.execute_query(query)
+
         return aggregated_df
 
     @log_function_call(ondcLogger)
@@ -1253,7 +1246,7 @@ class DataAccessLayer:
             SELECT 
                 seller_state AS seller_state,
                 seller_state_code AS seller_state_code,
-                max(total_sellers) AS active_sellers_count
+                max(total_sellers)::numeric AS active_sellers_count
             FROM 
                 {table_name}
             WHERE
@@ -1265,56 +1258,56 @@ class DataAccessLayer:
                 and  upper(seller_state) { f"=upper('{state}') " if state else '<>'+aggregate_value}
             group by 1,2
         """
+        # import pdb; pdb.set_trace();
         df = self.db_utility.execute_query(query)
-
         return df
 
 
-    @log_function_call(ondcLogger)
-    def fetch_overall_active_sellers_statedata(self, start_date, end_date,
-                                               category=None, sub_category=None,
-                                               domain='Retail', state=None):
-        table_name = constant.MONTHLY_PROVIDERS
-        params = DotDict(self.get_query_month_parameters(start_date, end_date))
-        query = f"""
-            SELECT 
-                seller_state AS seller_state,
-                seller_state_code AS seller_state_code,
-                -- seller_district AS seller_district,
-                COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
-            FROM 
-                {table_name}
-            WHERE
-                (order_year > %s OR (order_year = %s AND order_month >= %s))
-                AND (order_year < %s OR (order_year = %s AND order_month <= %s))
-                AND seller_state <> ''
-                AND seller_state is not null
-                AND seller_district is not null
-                AND seller_district <> ''
-        """
+    # @log_function_call(ondcLogger)
+    # def fetch_overall_active_sellers_statedata(self, start_date, end_date,
+    #                                            category=None, sub_category=None,
+    #                                            domain='Retail', state=None):
+    #     table_name = constant.MONTHLY_PROVIDERS
+    #     params = DotDict(self.get_query_month_parameters(start_date, end_date))
+    #     query = f"""
+    #         SELECT 
+    #             seller_state AS seller_state,
+    #             seller_state_code AS seller_state_code,
+    #             -- seller_district AS seller_district,
+    #             COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
+    #         FROM 
+    #             {table_name}
+    #         WHERE
+    #             (order_year > %s OR (order_year = %s AND order_month >= %s))
+    #             AND (order_year < %s OR (order_year = %s AND order_month <= %s))
+    #             AND seller_state <> ''
+    #             AND seller_state is not null
+    #             AND seller_district is not null
+    #             AND seller_district <> ''
+    #     """
 
-        parameters = [params.start_year, params.start_year, params.start_month,
-                      params.end_year, params.end_year, params.end_month]
+    #     parameters = [params.start_year, params.start_year, params.start_month,
+    #                   params.end_year, params.end_year, params.end_month]
 
-        conditions = []
+    #     conditions = []
 
-        if state:
-            conditions.append("AND upper(seller_state) = upper(%s)")
-            parameters.append(state)
+    #     if state:
+    #         conditions.append("AND upper(seller_state) = upper(%s)")
+    #         parameters.append(state)
         
-        # if bool(category) and (category != 'None'):
-        #     conditions.append(" AND category=%s")
-        #     parameters.append(category)
-        # if bool(sub_category) and (sub_category != 'None'):
-        #     conditions.append(" AND sub_category=%s")
-        #     parameters.append(sub_category)
+    #     # if bool(category) and (category != 'None'):
+    #     #     conditions.append(" AND category=%s")
+    #     #     parameters.append(category)
+    #     # if bool(sub_category) and (sub_category != 'None'):
+    #     #     conditions.append(" AND sub_category=%s")
+    #     #     parameters.append(sub_category)
 
-        conditions_str = ' '.join(conditions)
-        query = query + conditions_str + " GROUP BY  seller_state, seller_state_code"
+    #     conditions_str = ' '.join(conditions)
+    #     query = query + conditions_str + " GROUP BY  seller_state, seller_state_code"
 
-        df = self.db_utility.execute_query(query, parameters)
+    #     df = self.db_utility.execute_query(query, parameters)
         
-        return df
+    #     return df
 
 
     @log_function_call(ondcLogger)
@@ -1422,7 +1415,7 @@ class DataAccessLayer:
                     {table_name}
                 where ((year_val*100)+mnth_val) =  (({params.end_year}*100)+{params.end_month})
                     and upper(category) { " = upper('"+ category +"') " if category else ' <> ' + aggregated_value}
-                    { " and upper(sub_category) = upper('" + sub_category + "') " if sub_category else ' '}
+                    { (" and upper(sub_category) = upper('" + sub_category + "') ") if sub_category else ' '}
                     and upper(seller_state) = {aggregated_value} 
                     and category <>'Undefined' 
                     and seller_state <> ''
