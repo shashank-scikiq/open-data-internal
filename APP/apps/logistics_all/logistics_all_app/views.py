@@ -119,9 +119,6 @@ except Exception as e:
     min_date = ''
     max_date = ''
 
-import os
-
-
 
 class FetchTopCardDeltaData(SummaryBaseDataAPI):
     @exceptionAPI(ondcLogger)
@@ -410,8 +407,7 @@ class FetchMapStateData(SummaryBaseDataAPI):
         """
         params = self.extract_common_params(request)
         params['domain_name'] = 'Logistics'
-        p_d = [params['domain_name'], params['start_date'],
-               params['end_date'], params['state']]
+        p_d = params.values()
         cleaned_list = [element for element in p_d if element not in [None, 'None']]
 
         p_d = "FetchMapStateData_Logistics_Overall_$$$".join(cleaned_list)

@@ -247,11 +247,16 @@ class SummaryBaseDataAPI(APIView):
         map_state_df['intradistrict_orders'] = map_state_df['intradistrict_orders'].astype('float')
 
         result = {}
-        # import pdb; pdb.set_trace();
 
-        for state_code in list(
-            set(active_sellers_data_total['seller_state_code']).union(set(map_state_df['delivery_state_code']))
-            ):
+        state_codes = []
+        if active_sellers_data_total:
+            state_codes = list(set(active_sellers_data_total['seller_state_code']).union(set(map_state_df['delivery_state_code'])))
+        else: 
+            state_codes = list(set(map_state_df['delivery_state_code']))
+
+        
+
+        for state_code in state_codes:
             state_df = map_state_df[map_state_df['delivery_state_code'] == state_code]
             state_data = result.setdefault(state_code, {'districts': {}, 'total': {}})
             for district in state_df['delivery_district'].unique():
