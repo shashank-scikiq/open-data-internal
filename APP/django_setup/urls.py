@@ -29,7 +29,7 @@ urlpatterns = [
     re_path(r'^', include('apps.retail_b2c.urls')),
     re_path(r'^', include('apps.logistics_search.urls')),
     re_path(r'^', include('apps.misc.misc_app.urls')),
-
+    re_path(r'^', include('apps.key_data_insight.urls')),
     # re_path(r'^.*$',RedirectView.as_view(url='/', permanent=False)),
     path('api/landing-page/echart/', landing_page_echart_data, name='landing_page_echart_data'),
     path('api/landing-page/cumulative_orders/', landing_page_cumulative_orders, name='landing_page_cumulative_orders'),

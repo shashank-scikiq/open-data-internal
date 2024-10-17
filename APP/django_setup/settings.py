@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'apps.logistics_all.logistics_all_app',
     'apps.retail_b2b',
     'apps.retail_b2c',
-    'apps.logistics_search'
+    'apps.logistics_search',
+    'apps.key_data_insight'
 ]
 
 MIDDLEWARE = [
