@@ -91,8 +91,8 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             return JsonResponse(error_message, status=500, safe=False)
 
     def generate_cache_key(self, params):
-        cleaned_list = [params['city']]
-        cleaned_list = [element for element in cleaned_list if element not in [None, 'None']]
+        p_d = params.values()
+        cleaned_list = [element for element in p_d if element not in [None, 'None']]
         return "FetchTopCardDeltaData_Logistic_Search_$$$".join(cleaned_list)
 
 
@@ -154,7 +154,9 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             return JsonResponse(error_message, status=500, safe=False)
     
     def prepare_insight_data(self, df):
-        time_of_days = df['time_of_day'].unique()
+        # time_of_days = df['time_of_day'].unique()
+        time_of_days = ["Overall", "3am-6am", "6am-8am", "8am-10am", "10am-12pm", 
+            "12pm-3pm", "3pm-6pm", "6pm-9pm", "9pm-12am", "12am-3am"]
 
         insight_data = {
             'high_demand': {},
@@ -248,7 +250,8 @@ class FetchCityWiseData(SummaryBaseDataAPI):
 
     
     def generate_cache_key(self, params):
-        cleaned_list = [params['city']]
+        p_d = params.values()
+        cleaned_list = [element for element in p_d if element not in [None, 'None']]
         return "FetchCityWiseData_Logistic_Search_$$$".join(cleaned_list)
 
 
