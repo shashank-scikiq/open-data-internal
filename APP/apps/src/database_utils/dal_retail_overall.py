@@ -45,7 +45,7 @@ class DataAccessLayer:
 
     @log_function_call(ondcLogger)
     def fetch_top_district_sellers(self, start_date, end_date, category=None, sub_category=None,
-                                            domain=None, state=None):
+                                            domain=None, state=None, seller_type='Total'):
 
         table_name = constant.MONTHLY_PROVIDERS
         if domain == 'Logistics':
@@ -113,7 +113,7 @@ class DataAccessLayer:
 
     @log_function_call(ondcLogger)
     def fetch_top_state_sellers(self, start_date, end_date, category=None, sub_category=None,
-                                          domain=None, state=None):
+                                          domain=None, state=None, seller_type='Total'):
         base_table = constant.MONTHLY_PROVIDERS
         if domain == 'Logistics':
             base_table = constant.LOGISTICS_MONTHLY_PROVIDERS
@@ -649,7 +649,7 @@ class DataAccessLayer:
 
     @log_function_call(ondcLogger)
     def fetch_overall_cumulative_sellers(self, start_date, end_date, category=None,
-                                         sub_category=None, domain_name=None, state=None):
+                                         sub_category=None, domain_name=None, state=None, seller_type='Total'):
         table_name = constant.MONTHLY_PROVIDERS
         parameters = self.get_query_month_parameters(start_date, end_date)
 
@@ -661,8 +661,7 @@ class DataAccessLayer:
             FROM 
                 {table_name}
             WHERE
-                (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
-                AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
+                ((order_year*100) + order_month) between ((%(start_year)s*100) + %(start_month)s) and ((%(end_year)s*100) + %(end_month)s)
         """
 
         if state:
@@ -670,7 +669,6 @@ class DataAccessLayer:
             parameters['state'] = state
 
         query += " GROUP BY order_month, order_year ORDER BY order_year, order_month"
-
         df = self.db_utility.execute_query(query, parameters)
         return df
 
