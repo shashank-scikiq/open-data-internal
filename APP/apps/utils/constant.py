@@ -87,3 +87,11 @@ LOGISTIC_SEARCH_TBL = os.getenv('LOGISTIC_SEARCH_TBL')
 LOGISTIC_SEARCH_PINCODE_TBL = os.getenv('LOGISTIC_SEARCH_PINCODE_TBL')
 ACTIVE_TOTAL_SELLER_TBL = os.getenv('ACTIVE_TOTAL_SELLERS_TABLE')
 
+
+INSIGHTS_FOLDER_DIR = os.getenv('INSIGHTS_FOLDER_DIR')
+
+INSIGHTS_MAP = {
+    "active_sellers_daily": 1,
+    "new_repeat_sellers": 1
+}
+
