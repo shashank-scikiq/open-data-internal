@@ -171,7 +171,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             filtered_df = df[df['time_of_day']==time]
 
             # for high demand
-            high_demand_df = filtered_df.sort_values(by='searched_data', ascending=False)[:5]
+            high_demand_df = filtered_df.sort_values(by='searched_data', ascending=False)[:10]
 
             data = {}
             for _, row in high_demand_df.iterrows():
@@ -190,7 +190,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
 
             # high conversion rate
 
-            high_conversion_rate_df = filtered_df.sort_values(by='conversion_rate', ascending=False)[:5]
+            high_conversion_rate_df = filtered_df.sort_values(by='conversion_rate', ascending=False)[:10]
 
             data = {}
             for _, row in high_conversion_rate_df.iterrows():
@@ -217,7 +217,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             filtered_df = filtered_df.sort_values(by='search %', ascending=False)
 
             filtered_df_1 = filtered_df[filtered_df['conversion_rate_gt_avg'] != 0]
-            filtered_df_1 = filtered_df_1[:5]
+            filtered_df_1 = filtered_df_1[:10]
 
 
             data = {}
@@ -233,7 +233,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
 
             # high demand and low conversion rate
             filtered_df_2 = filtered_df[filtered_df['conversion_rate_gt_avg'] == 0]
-            filtered_df_2 = filtered_df_2[:5]
+            filtered_df_2 = filtered_df_2[:10]
             data = {}
 
             for _, row in filtered_df_2.iterrows():
