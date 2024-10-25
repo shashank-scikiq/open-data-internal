@@ -1,12 +1,12 @@
 services:
-  webapp_internal:
-    container_name: webapp_internal
+  OD_INTERNAL:
+    container_name: od_internal
     build:
       context: .
       dockerfile: app.Dockerfile
-    image: webapp_internal:version_4.2.1
+    image: webapp_internal:"${APP_VERSION}"
     ports:
       - "8081:8001"
     env_file:
-      - /home/shashank_daaslabs/Software/od_internal.env
+      - "${ENV_FILE_OD_INT}"
     restart: unless-stopped
