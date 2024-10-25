@@ -1,5 +1,6 @@
 asgiref==3.8.1
 Django==5.1.2
+django-cors-headers==4.5.0
 greenlet==3.0.3
 numpy==1.26.2
 pandas==2.1.4
