@@ -83,7 +83,7 @@ jobs:
           git pull origin dev_4
           docker stop webapp_internal
           docker system prune -af
-          docker compose -f /home/shashank_daaslabs/git/open-data-internal/docker-compose_ec2.yaml up -d webapp_internal
+          docker compose -f /home/shashank_daaslabs/git/open-data-internal/docker-compose.yaml up -d OD_INTERNAL
           EOF
 
       # Step 7: Disconnect from VPN after the job is complete
