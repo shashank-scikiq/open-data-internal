@@ -39,126 +39,6 @@ spec:
               value: "open_data_stage"
             - name: POSTGRES_SCHEMA
               value: "stage"
-            - name: DISTRICT_TBL
-              value: "district_level_orders"
-            - name: SUB_CATEGORY_TBL
-              value: "sub_category_level_orders"
-            - name: CATEGORY_TBL
-              value: "category_level_orders"
-            - name: AGG_TBL_B2C
-              value: "fact_order_detail"
-            - name: TBL_PINCODE
-              value: "pincode"
-            - name: AWS_ACCESS_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: ondc-open-data-webapp-aws-secret
-                  key: AWS_ACCESS_KEY
-            - name: AWS_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: ondc-open-data-webapp-aws-secret-key
-                  key: AWS_SECRET_KEY
-            - name: ATH_SCHEMA
-              value: "awsdatacatalog"
-            - name: S3_STAGING_DIR
-              value: "s3://aws-athena-query-results-568130295144-ap-south-1/external-queries-results/"
-            - name: ATH_DB
-              value: "default"
-            - name: ATH_TBL_B2C
-              value: "nhm_order_fulfillment_subset_v1"
-            - name: AWS_REGION
-              value: "ap-south-1"
-            - name: KEY_DATA_INSIGHTS_TBL
-              value: "key_insights_district_wise"
-            - name: KEY_INSIGHTS_SUB_CATEGORY_TBL
-              value: "key_insights_sub_category"
-            - name: KEY_INSIGHTS_SELLER_TBL
-              value: "key_insights_sellers"
-            - name: ONDC_DASHBOARD_VERSION_TBL
-              value: "ondc_dashboard_version"
-            - name: VER_MAJOR
-              value: "3"
-            - name: VER_MINOR
-              value: "8"
-            - name: VER_MINOR_MINOR
-              value: "1"
-            - name: INCL_CAT_SCAT
-              value: "0"
-            - name: SENDER
-              value: "donotreply@ondc.org"
-            - name: RECEIVER
-              value: "opendata@ondc.org"
-            - name: API_URL
-              value: "http://127.0.0.1:8000/dashboard/api/key_insights/"
-            - name: Start_date
-              value: "2023-11-01"
-            - name: DATA_DICTIONARY_FILE
-              value: "/app/Webapp/data_dictionary_open_data_dashboard.csv"
-            - name: PINCODE_MAPPING_FILE
-              value: "/app/Webapp/pincode_table_open_data_dashboard.csv"
-            - name: DOMAIN_MAPPING_FILE
-              value: "/app/Webapp/domain_mapping_open_data_dashboard.csv"
-            - name:  ATH_TBL_B2B
-              value:  "shared_open_data_b2b_order"
-            - name:  ATH_TBL_VOUCHER
-              value:  "shared_open_data_gift_voucher_order"
-            - name:  SELLER_TBL 
-              value:  "dim_providers"
-            - name:  SUB_CATEGORY_PENETRATION_TBL
-              value:  "sub_category_penetration"
-            - name:  DIM_CATEGORIES_TBL
-              value:  "dim_categories"
-            - name:  DIM_DISTRICTS_TBL
-              value:  "dim_districts"
-            - name:  DIM_DATES_TBL
-              value:  "dim_dates"
-            - name:  OD_DQ_TBL
-              value:  "od_dq_nhm"
-            - name:  AGG_TBL_B2B
-              value:  "fact_order_detail_b2b"
-            - name:  B2B_DISTRICT_TBL
-              value:  "retail_b2b_district_level_orders"
-            - name:  B2B_DIM_DATES_TBL
-              value:  "retail_b2b_dim_dates"
-            - name:  AGG_TBL_VOUCHER
-              value:  "retail_voucher_fact_order_detail"
-            - name:  RV_DISTRICT_TBL
-              value:  "retail_voucher_district_level_orders"
-            - name:  KDI_CURRENT_ORDERS_THRESHOLD
-              value:  "500"
-            - name:  ACTIVE_SELLERS_MASKING
-              value:  "3"
-            - name:  ADD_RV_TO_B2C
-              value:  "1"
-            - name:  SAMPLE_SPREADSHEET_ID
-              value:  "1spk2zvQY4LFRe01vdGt5uSDHjpOIFQuSQJRd_7XmfvM"
-            - name:  START_DATE
-              value:  "2023-11-01"
-            - name:  DEBUG
-              value:  "False"
-            - name:  EMAIL_ENV
-              value:  "Staging"
-            - name: LOGISTICS_DISTRICT_TBL
-              value: "logistics_district_level_orders"
-            - name: ATH_TBL_LOG
-              value: "shared_open_data_logistics_order"
-            - name: AGG_TBL_LOG
-              value: "logistics_fact_order_detail"
-            - name: LOG_CATEGORY_TBL
-              value: "logistics_category_level_orders"
-            - name: MONTHLY_DISTRICT_TBL
-              value: "district_wise_monthly_aggregates"
-            - name: MONTHLY_PROVIDERS_TBL
-              value: "monthly_providers"
-            - name:  DEPLOYMENT_TYPE
-              value:  "stage"
-            - name: PROJ_SEC_STR
-              value: "ThisIsMySecretKey"
-            - name: LOGISTICS_PROVIDERS_TBL
-              value: "logistics_providers"
-            - name: LOGISTICS_MONTHLY_PROVIDERS_TBL
-              value: "logistics_monthly_providers"
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -169,6 +49,57 @@ spec:
                 secretKeyRef:
                   name: ondc-open-data-webapp-secret-email
                   key: EMAIL_PASSWORD
+            - name: CACHE_EXPIRY
+              value: "108600"
+            - name: LANDING_PAGE_ECHART_TABLE
+              value: "landing_page_echart"
+            - name: LANDING_PAGE_ECHART_CONFIG
+              value: '{"config": { "domainConfig": { "domains": [ "Retail", "Mobility", "Logistics", "ONDC Network - All Domains" ], "colorLight": [ "#f9ceff", "#E3FBE8", "#fff3d7", "#FFF1E4" ], "colorDark": [ "#e76cf7", "#91cc75", "#fac858", "#ee6666" ] }, "chartTitle": "Monthly Network Orders" }}'
+            - name: LOGISTIC_SEARCH_PINCODE_TBL
+              value: "logistic_search_pincode"
+            - name: ACTIVE_TOTAL_SELLERS_TABLE
+              value: "active_total_sellers_cat_scat"
+            - name: MONTHLY_DISTRICT_TBL
+              value: "district_wise_monthly_aggregates_orders"
+            - name: CAT_MONTHLY_DISTRICT_TBL
+              value: "cat_district_wise_monthly_aggregates"
+            - name: SUB_CAT_MONTHLY_DISTRICT_TBL
+              value: "sub_cat_district_wise_monthly_aggregates"
+            - name: SUB_CATEGORY_PENETRATION_TABLE
+              value: "sub_category_penetration_orders"
+            - name: LOGISTICS_MONTHLY_PROVIDERS_TBL
+              value: "logistics_monthly_providers"
+            - name: LOGISTIC_SEARCH_PINCODE_TBL
+              value: "logistic_search_pincode"
+            - name: DIM_CATEGORIES_TBL
+              value: "dim_categories"
+            - name: DIM_DISTRICTS_TBL
+              value: "dim_districts"
+            - name: TBL_PINCODE
+              value: "pincode"
+            - name: LANDING_PAGE_ECHART_TABLE
+              value: "landing_page_echart"
+            - name: MONTHLY_PROVIDERS_TBL
+              value: "monthly_providers"
+            - name: CORS_ALLOWED_ORIGINS
+              value: "http://localhost:4200,http://localhost:8001,http://localhost:8081,http://172.31.41.128:8081,http://15.206.0.116:8081"
+            - name: DATA_UPLOAD_MAX_MEMORY_SIZE
+              value: "20485760"
+            - name: DEBUG
+              value: "1"
+            - name: VER_MAJOR
+              value: "4"
+            - name: VER_MINOR
+              value: "2"
+            - name: VER_MINOR_MINOR
+              value: "1"
+            - name: START_DATE
+              value: "2024-04-01"
+            - name: APP_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret-key
+                  key: app_secret_key
           resources:
             requests:
               memory: "500Mi"
