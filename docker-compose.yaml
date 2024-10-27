@@ -10,3 +10,5 @@ services:
     env_file:
       - "${ENV_FILE_OD_INT}"
     restart: unless-stopped
+    volumes:
+      - "${INSIGHTS_FOLDER_DIR}:/app/kdi/"
