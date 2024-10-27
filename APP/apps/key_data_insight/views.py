@@ -25,13 +25,14 @@ class FetchActiveSellerData(APIView):
             insights = constant.INSIGHTS_MAP
 
             for i in insights.keys():
+                print(f"Processing {i}")
                 if not insights.get(i, None):
                     continue
                 try:
                     formatted_response = self.read_and_prepare_insights_data(file_name=i)
                     response_insights.append(formatted_response)
                 except Exception as e:
-                    return JsonResponse({"error": "Something went wrong in loading/preparing data.", "msg": e}, 
+                    return Response({"error": "Something went wrong in loading/preparing data.", "msg": e}, 
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             
