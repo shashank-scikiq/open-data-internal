@@ -41,8 +41,8 @@ class FetchActiveSellerData(APIView):
 
     def read_and_prepare_insights_data(self, file_name):
         data = None
-        insights_folder_dir = constant.INSIGHTS_FOLDER_DIR
-        file_path = f"{insights_folder_dir}{file_name}.json"
+        # insights_folder_dir = constant.INSIGHTS_FOLDER_DIR
+        file_path = f"./KEY_DATA_INSIGHTS/{file_name}.json"
 
 
         if os.path.exists(file_path):
@@ -102,98 +102,7 @@ class FetchActiveSellerData(APIView):
             
 
         return meta_data
-
-
-
-
-
-        # return Response({
-        #     "insights": [
-        #         {
-        #             "card_title": "Active Sellers from 2024-09-01 to 2024-09-07 in ANDHRA PRADESH",
-        #             "main_text": "This data shows the number of active sellers over the specified period.",
-        #             "sub_text": "",
-        #             "metaData": {
-        #                 "title": "Active Sellers Data",
-        #                 "xaxis": {
-        #                     "categories": [
-        #                         "2024-09-01",
-        #                         "2024-09-02",
-        #                         "2024-09-03",
-        #                         "2024-09-04",
-        #                         "2024-09-05",
-        #                         "2024-09-06",
-        #                         "2024-09-07"
-        #                     ]
-        #                 },
-        #                 "yaxis": {
-        #                     "title": {
-        #                         "text": None
-        #                     }
-        #                 },
-        #                 "data": [
-        #                     31,
-        #                     26,
-        #                     29,
-        #                     21,
-        #                     22,
-        #                     23,
-        #                     15
-        #                 ]
-        #             }
-        #         },
-        #         {
-        #             "card_title": "This data shows the number of active sellers over the specified period.",
-        #             "main_text": "This data shows the number of active sellers over the specified period.",
-        #             "sub_text": ""
-        #         },
-        #         {
-        #             "card_title": """
-        #                 This data shows the number of active sellers over the specified period.
-        #                 Active Sellers from 2024-09-01 to 2024-09-07 in ANDHRA PRADESH""",
-        #             "main_text": "This data shows the number of active sellers over the specified period.",
-        #             "sub_text": ""
-        #         }
-        #     ]
-        # }, status.HTTP_200_OK)
-        # json_file_path= os.path.join(json_location, 'active_sellers_daily.json')
-        
- 
-        # try:
-        #     # import pdb;pdb.set_trace()
-        #     with open(json_file_path, 'r') as json_file:
-        #         data= json.load(json_file)
-        # except FileNotFoundError:
-        #     return Response({"error": "file not found"}, status=status.HTTP_404_NOT_FOUND)
-        # except json.JSONDecodeError:
-        #     return Response({"error":"Invalid json format"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # response_data = deepcopy({
-        #     'card_title' : data.get("cardTitle", None),
-        #     'main_text' : data.get("mainText", None),
-        #     'sub_text' : data.get("subText", None)
-        # })
-
-        # if not data.get("isDetailsVisible", False):
-        #     return Response({"insights": [response_data]}, status.HTTP_200_OK)
-        
-        # meta_data = data.get("metaData", {})
-        # meta_type = meta_data.get("type", '')
-
-        # if meta_type == 'table':
-        #     response_data["metaData"]= self.process_table(meta_data)
-        # elif meta_type == 'line_chart':
-        #     response_data["metaData"]= self.process_line_chart(meta_data)
-        # elif meta_type == 'pie_chart':
-        #     response_data["metaData"]= self.process_pie_chart(meta_data)
-        # elif meta_type == 'bar_graph':
-        #     response_data["metaData"]= self.process_bar_graph(meta_data)
-        # else:
-        #     return Response({"error": "Unsupported metadata type"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        # return Response({"insights": [response_data]}, status=status.HTTP_200_OK)
     
-
     ########### METADATA TYPE METHOD ################
 
     def process_table(self, meta_data):
