@@ -19,7 +19,6 @@ class FetchActiveSellerData(APIView):
 
         cache_key = "Key_data_insights"
         data = get_cached_data(cache_key)
-        
         if data is None:
             response_insights = []
 
@@ -46,8 +45,8 @@ class FetchActiveSellerData(APIView):
 
     def read_and_prepare_insights_data(self, file_name):
         data = None
-        # insights_folder_dir = constant.INSIGHTS_FOLDER_DIR
-        file_path = f"./KEY_DATA_INSIGHTS/{file_name}.json"
+        insights_folder_dir = constant.INSIGHTS_FOLDER_DIR
+        file_path = f"{insights_folder_dir}{file_name}.json"
 
 
         if os.path.exists(file_path):
