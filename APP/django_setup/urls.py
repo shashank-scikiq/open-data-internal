@@ -20,6 +20,7 @@ from django.conf import settings
 from django.views.generic.base import RedirectView
 from apps.retail_all.retail_all_app.views import angular_app
 from .views import * 
+from apps.key_data_insight.views import FetchActiveSellerData
 
 
 urlpatterns = [
@@ -29,6 +30,7 @@ urlpatterns = [
     re_path(r'^', include('apps.retail_b2c.urls')),
     re_path(r'^', include('apps.logistics_search.urls')),
     re_path(r'^', include('apps.misc.misc_app.urls')),
+    path('api/key-insight-data/', FetchActiveSellerData.as_view(), name='FetchActiveSellerData'),
     re_path(r'^', include('apps.key_data_insight.urls')),
     # re_path(r'^.*$',RedirectView.as_view(url='/', permanent=False)),
     path('api/landing-page/echart/', landing_page_echart_data, name='landing_page_echart_data'),
