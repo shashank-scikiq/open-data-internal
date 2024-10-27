@@ -88,10 +88,10 @@ LOGISTIC_SEARCH_PINCODE_TBL = os.getenv('LOGISTIC_SEARCH_PINCODE_TBL')
 ACTIVE_TOTAL_SELLER_TBL = os.getenv('ACTIVE_TOTAL_SELLERS_TABLE')
 
 
-INSIGHTS_FOLDER_DIR = os.getenv('INSIGHTS_FOLDER_DIR')
+INSIGHTS_FOLDER_DIR = os.getenv('INSIGHTS_FOLDER_DIR', './KEY_DATA_INSIGHTS/')
 
 INSIGHTS_MAP = {
-    "active_sellers_daily": 1,
-    "new_repeat_sellers": 1
+    "active_sellers_daily": 0,
+    "new_repeat_sellers": 1,
+    "active_sellers_share_india": 1
 }
-
