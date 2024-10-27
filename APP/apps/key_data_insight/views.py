@@ -16,7 +16,7 @@ json_location = os.getenv("JSON_LOCATION")
 
 class FetchActiveSellerData(APIView):
     def get(self, request):
-        return JsonResponse({"response": "dummy"}, safe=status.HTTP_200_OK)
+        # return JsonResponse({"response": "dummy"}, safe=status.HTTP_200_OK)
         cache_key = "Key_data_insights"
         data = get_cached_data(cache_key)
         if data is None:
