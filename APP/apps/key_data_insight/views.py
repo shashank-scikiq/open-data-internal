@@ -19,7 +19,7 @@ class FetchActiveSellerData(APIView):
 
         cache_key = "Key_data_insights"
         data = get_cached_data(cache_key)
-        return JsonResponse({"response": "this is dummy response"}, safe=status.HTTP_200_OK)
+        
         if data is None:
             response_insights = []
 
