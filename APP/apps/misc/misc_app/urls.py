@@ -13,7 +13,7 @@ urlpatterns = [
     path('api/pincode/', pincode, name='pincode'),
     path('api/domain/', domain, name='domain'),
     path('license/', fetch_license, name='license'),
-    path('api/v2/key-insight-data/', key_insights, name='key_insights')
+    # path('api/v2/key-insight-data/', key_insights, name='key_insights')
     # path('api/landing-page/echart/', landing_page_echart_data, name='landing_page_echart_data')
 
 ]

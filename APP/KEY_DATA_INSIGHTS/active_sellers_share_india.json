@@ -1,0 +1,62 @@
+{
+    "cardTitle": "What share of sellers are active on the network?",
+    "mainText": "Three in ten sellers on the network are active.",
+    "subText": "Active sellers as percentage of total sellers (Apr - Sep 2024, in %)",
+    "footnote": "Total sellers are sellers registered on the network. Active sellers are sellers that have made atleast one order.",
+    "isDetailsVisible": true,
+    "metaData": {
+        "type": "bar_chart",
+        "title": "Active and Total Sellers",
+        "subtitle": "Monthly Active Sellers",
+        "data": [
+            {
+                "month_year": "Apr-2024",
+                "active_sellers": 37672,
+                "inactive_sellers": 92205,
+                "total_sellers": 129877,
+                "active_perc": 29.0,
+                "inactive_perc": 71.0
+            },
+            {
+                "month_year": "May-2024",
+                "active_sellers": 44745,
+                "inactive_sellers": 89363,
+                "total_sellers": 134108,
+                "active_perc": 33.4,
+                "inactive_perc": 66.6
+            },
+            {
+                "month_year": "Jun-2024",
+                "active_sellers": 49128,
+                "inactive_sellers": 93241,
+                "total_sellers": 142369,
+                "active_perc": 34.5,
+                "inactive_perc": 65.5
+            },
+            {
+                "month_year": "Jul-2024",
+                "active_sellers": 51439,
+                "inactive_sellers": 109091,
+                "total_sellers": 160530,
+                "active_perc": 32.0,
+                "inactive_perc": 68.0
+            },
+            {
+                "month_year": "Aug-2024",
+                "active_sellers": 55043,
+                "inactive_sellers": 168744,
+                "total_sellers": 223787,
+                "active_perc": 24.6,
+                "inactive_perc": 75.4
+            },
+            {
+                "month_year": "Sep-2024",
+                "active_sellers": 55869,
+                "inactive_sellers": 168722,
+                "total_sellers": 224591,
+                "active_perc": 24.9,
+                "inactive_perc": 75.1
+            }
+        ]
+    }
+}

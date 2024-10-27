@@ -7,45 +7,191 @@ from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from apps.utils import constant
+from apps.utils.helpers import get_cached_data
+from django.core.cache import cache
+
 
 json_location = os.getenv("JSON_LOCATION")
 
 class FetchActiveSellerData(APIView):
-    def get(self, request, *args, **Kwargs):
-        json_file_path= os.path.join(json_location, 'active_sellers_daily.json')
+    def get(self, request):
+
+        cache_key = "Key_data_insights"
+        data = get_cached_data(cache_key)
+        if data is None:
+            response_insights = []
+
+            insights = constant.INSIGHTS_MAP
+
+            for i in insights.keys():
+                if not insights.get(i, None):
+                    continue
+                    
+                formatted_response = self.read_and_prepare_insights_data(file_name=i)
+                response_insights.append(formatted_response)
+            
+            response_data = {"insights": response_insights}
+            cache.set(cache_key, response_data, constant.CACHE_EXPIRY)
+        else:
+            response_data = data
+        
+        return JsonResponse(response_data, safe=status.HTTP_200_OK)
+
+
+    def read_and_prepare_insights_data(self, file_name):
+        data = None
+        insights_folder_dir = constant.INSIGHTS_FOLDER_DIR
+        file_path = f"{insights_folder_dir}{file_name}.json"
+
+
+        if os.path.exists(file_path):
+            with open(file_path, 'r') as json_file:
+                data = json.load(json_file)
+
+        meta_data = data.get("metaData", None)
+
+        if meta_data:
+            processed_meta_data = self.prepare_meta_data(file_name, meta_data['data'])
+            data['metaData']['data'] = processed_meta_data
+        
+        return data
+    
+    def prepare_meta_data(self, file_name, data):
+        meta_data = {}
+
+        if file_name == 'active_sellers_share_india':
+            meta_data = {
+                "series": [
+                    {
+                        "name": 'Active Sellers',
+                        "data": []
+                    },
+                    {
+                        "name": 'Inactive Sellers',
+                        "data": []
+                    }
+                ],
+                "categories": [],
+                "colors": ["#72A950", "#C4C4C4"]
+            }
+            for i in data:
+                meta_data['series'][0]['data'].append(i['active_perc'])
+                meta_data['series'][1]['data'].append(i['inactive_perc'])
+                meta_data['categories'].append(i['month_year'])
+        
+        if file_name == 'new_repeat_sellers':
+            meta_data = {
+                "series": [
+                    {
+                        "name": 'New Sellers',
+                        "data": []
+                    },
+                    {
+                        "name": 'Repeat Sellers',
+                        "data": []
+                    }
+                ],
+                "categories": [],
+                "colors": ["#9AB187", "#F3C881"]
+            }
+            for i in data:
+                meta_data['series'][0]['data'].append(i['new'])
+                meta_data['series'][1]['data'].append(i['repeat'])
+                meta_data['categories'].append(i['Month-Year'])
+            
+
+        return meta_data
+
+
+
+
+
+        # return Response({
+        #     "insights": [
+        #         {
+        #             "card_title": "Active Sellers from 2024-09-01 to 2024-09-07 in ANDHRA PRADESH",
+        #             "main_text": "This data shows the number of active sellers over the specified period.",
+        #             "sub_text": "",
+        #             "metaData": {
+        #                 "title": "Active Sellers Data",
+        #                 "xaxis": {
+        #                     "categories": [
+        #                         "2024-09-01",
+        #                         "2024-09-02",
+        #                         "2024-09-03",
+        #                         "2024-09-04",
+        #                         "2024-09-05",
+        #                         "2024-09-06",
+        #                         "2024-09-07"
+        #                     ]
+        #                 },
+        #                 "yaxis": {
+        #                     "title": {
+        #                         "text": None
+        #                     }
+        #                 },
+        #                 "data": [
+        #                     31,
+        #                     26,
+        #                     29,
+        #                     21,
+        #                     22,
+        #                     23,
+        #                     15
+        #                 ]
+        #             }
+        #         },
+        #         {
+        #             "card_title": "This data shows the number of active sellers over the specified period.",
+        #             "main_text": "This data shows the number of active sellers over the specified period.",
+        #             "sub_text": ""
+        #         },
+        #         {
+        #             "card_title": """
+        #                 This data shows the number of active sellers over the specified period.
+        #                 Active Sellers from 2024-09-01 to 2024-09-07 in ANDHRA PRADESH""",
+        #             "main_text": "This data shows the number of active sellers over the specified period.",
+        #             "sub_text": ""
+        #         }
+        #     ]
+        # }, status.HTTP_200_OK)
+        # json_file_path= os.path.join(json_location, 'active_sellers_daily.json')
         
  
-        try:
-            # import pdb;pdb.set_trace()
-            with open(json_file_path, 'r') as json_file:
-                data= json.load(json_file)
-        except FileNotFoundError:
-            return Response({"error": "file not found"}, status=status.HTTP_404_NOT_FOUND)
-        except json.JSONDecodeError:
-            return Response({"error":"Invalid json format"}, status=status.HTTP_400_BAD_REQUEST)
+        # try:
+        #     # import pdb;pdb.set_trace()
+        #     with open(json_file_path, 'r') as json_file:
+        #         data= json.load(json_file)
+        # except FileNotFoundError:
+        #     return Response({"error": "file not found"}, status=status.HTTP_404_NOT_FOUND)
+        # except json.JSONDecodeError:
+        #     return Response({"error":"Invalid json format"}, status=status.HTTP_400_BAD_REQUEST)
         
-        response_data = deepcopy({
-            'card_title' : data.get("cardTitle", None),
-            'main_text' : data.get("mainText", None),
-            'sub_text' : data.get("subText", None)
-        })
+        # response_data = deepcopy({
+        #     'card_title' : data.get("cardTitle", None),
+        #     'main_text' : data.get("mainText", None),
+        #     'sub_text' : data.get("subText", None)
+        # })
 
-        if not data.get("isDetailsVisible", False):
-            return Response(response_data, status.HTTP_200_OK)
-        meta_data = data.get("metaData", {})
-        meta_type = meta_data.get("type")
+        # if not data.get("isDetailsVisible", False):
+        #     return Response({"insights": [response_data]}, status.HTTP_200_OK)
+        
+        # meta_data = data.get("metaData", {})
+        # meta_type = meta_data.get("type", '')
 
-        if meta_type == 'table':
-            response_data["metaData"]= self.process_table(meta_data)
-        elif meta_type == 'line_chart':
-            response_data["metaData"]= self.process_line_chart(meta_data)
-        elif meta_type == 'pie_chart':
-            response_data["metaData"]= self.process_pie_chart(meta_data)
-        elif meta_type == 'bar_graph':
-            response_data["metaData"]= self.process_bar_graph(meta_data)
-        else:
-            return Response({"error": "Unsupported metadata type"}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(response_data, status=status.HTTP_200_OK)
+        # if meta_type == 'table':
+        #     response_data["metaData"]= self.process_table(meta_data)
+        # elif meta_type == 'line_chart':
+        #     response_data["metaData"]= self.process_line_chart(meta_data)
+        # elif meta_type == 'pie_chart':
+        #     response_data["metaData"]= self.process_pie_chart(meta_data)
+        # elif meta_type == 'bar_graph':
+        #     response_data["metaData"]= self.process_bar_graph(meta_data)
+        # else:
+        #     return Response({"error": "Unsupported metadata type"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # return Response({"insights": [response_data]}, status=status.HTTP_200_OK)
     
 
     ########### METADATA TYPE METHOD ################
@@ -70,7 +216,7 @@ class FetchActiveSellerData(APIView):
         return {
         "title": meta_data.get("title", ""),
         "xaxis": {
-            "date": [item["order_date"] for item in meta_data.get("data", [])],
+            "categories": [item["order_date"] for item in meta_data.get("data", [])],
             
         },
         "yaxis": {
