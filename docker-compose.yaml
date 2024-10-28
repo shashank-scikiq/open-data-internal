@@ -1,17 +1,14 @@
 services:
-  webapp_stage:
-    container_name: webapp_stage
+  OD_INTERNAL:
+    container_name: od_internal
     build:
       context: .
       dockerfile: app.Dockerfile
-    image: webapp_test:version_3.9.0
+    image: webapp_internal:version_4.2.1
     ports:
       - "8081:8001"
     env_file:
-      - /home/shashank_daaslabs/Software/aws_stage.env
+      - "${ENV_FILE_OD_INT}"
     restart: unless-stopped
-    environment:
-      - POSTGRES_SCHEMA=stage
     volumes:
-      - /home/shashank_daaslabs/OD_DB_Files:/mnt/data
-      - /home/shashank_daaslabs/Software/aws_stage.env:/mnt/env/aws_stage.env
+      - "${INSIGHTS_FOLDER_DIR}:/app/kdi/"

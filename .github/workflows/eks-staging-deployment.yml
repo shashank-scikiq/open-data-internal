@@ -40,8 +40,8 @@ jobs:
       - name: push image to ECR
         run: docker push 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:webserverv${{ steps.commit.outputs.short }}
 
-      - name: push cron image to ECR
-        run: docker push 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:crondbv${{ steps.commit.outputs.short }}
+#      - name: push cron image to ECR
+#        run: docker push 568130295144.dkr.ecr.ap-south-1.amazonaws.com/ondc-open-data-web-app:crondbv${{ steps.commit.outputs.short }}
 
       - name: configure kubectl
         run: aws eks --region ap-south-1 update-kubeconfig --name ondc-prod-prod-eks-cluster

@@ -25,6 +25,7 @@ class FetchActiveSellerData(APIView):
             insights = constant.INSIGHTS_MAP
 
             for i in insights.keys():
+                print(f"Processing {i}")
                 if not insights.get(i, None):
                     continue
                 try:
