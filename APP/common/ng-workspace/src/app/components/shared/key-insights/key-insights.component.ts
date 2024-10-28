@@ -81,7 +81,7 @@ export class KeyInsightsComponent implements OnInit {
       ],
       labels: {
         formatter: (val: any) => {
-          return val + "%";
+          return val ;
         }
       }
     },
@@ -93,7 +93,7 @@ export class KeyInsightsComponent implements OnInit {
     tooltip: {
       y: {
         formatter: (val: any) => {
-          return val + "%";
+          return val;
         }
       }
     },
@@ -153,16 +153,25 @@ export class KeyInsightsComponent implements OnInit {
         " Haryana"
     ]
 }
+chartInitialized: boolean = false;
 
   constructor(private appService: AppService) {}
 
   ngOnInit(): void {
     this.appService.getKeyInsights().subscribe(
       (response: any) => {
-        this.elems = response.insights;
-        this.activeItem = this.elems[2];
-        delay(1000)
-        this.setCards();
+        if (response ) {
+          this.elems = response.insights;
+          // this.activeItem = this.elems[0];
+          // console.log(this.elems[0], this.activeItem, this.activeItem.metaData.xaxis)
+          // this.chartOptions.xaxis.categories = this.activeItem.metaData.xaxis.categories;
+          // this.chartOptions.series.data = this.activeItem.metaData.data;
+
+          console.log(this.elems)
+          delay(1000)
+          this.chartInitialized = true;
+          this.setCards();
+        }
       }, (error: Error) => {
         console.log(error);
       }
@@ -170,7 +179,7 @@ export class KeyInsightsComponent implements OnInit {
   }
 
   setCards(): void {
-    let count = -2;
+    let count = 0;
     this.elems.forEach((ele: any) => {
       ele.pos = count;
       ele.active = Boolean(count == 0);

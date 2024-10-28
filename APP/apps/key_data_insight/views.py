@@ -32,7 +32,7 @@ class FetchActiveSellerData(APIView):
                     formatted_response = self.read_and_prepare_insights_data(file_name=i)
                     response_insights.append(formatted_response)
                 except Exception as e:
-                    return Response({"error": "Something went wrong in loading/preparing data.", "msg": e}, 
+                    return Response({"error": "Something went wrong in loading/preparing data."}, 
                         status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             

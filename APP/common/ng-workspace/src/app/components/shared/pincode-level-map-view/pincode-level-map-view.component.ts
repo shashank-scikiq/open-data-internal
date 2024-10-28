@@ -204,7 +204,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
   }
 
 
-  setData() {
+  async setData() {
     this.isBubblesVisible = false;
     this.isLoadingMap = true;
 
@@ -216,7 +216,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
     };
 
     const topojsonFiles = CityWiseGeoJSONPincodeFiles[this.city];
-    topojsonFiles.forEach((file: string) => {
+     topojsonFiles.forEach(async (file: string) => {
       d3.json(file).then((data: any) => {
         if (data && data.type === 'Feature' && data.geometry && data.geometry.type === 'MultiPolygon') {
           data.mapData = this.mapData[data.properties.pincode.toString()]
@@ -225,7 +225,8 @@ export class PincodeLevelMapViewComponent implements OnInit {
           console.error(`Invalid GeoJSON structure in file: ${file}`);
         }
         if (combinedGeoJSON.features.length === topojsonFiles.length) {
-          renderMap();
+          const bounds = d3.geoPath().bounds(combinedGeoJSON);
+          renderMap(bounds);
         }
       }).catch(error => {
         console.error(`Error loading file ${file}:`, error);
@@ -271,12 +272,12 @@ export class PincodeLevelMapViewComponent implements OnInit {
       .range(this.chloroplethcolormapper2['map_total_active_sellers_metrics']);
     const g = this.svg.append('g').attr('id', 'pincodeGroup');
 
-    const projection: any = d3.geoMercator()
-      .center(CityLatLong[this.city])
-      .scale(55000)
-      .translate([(this.width / 2) - 180, (this.height / 2) - 60]);
+    // const projection: any = d3.geoMercator()
+    //   .center(CityLatLong[this.city])
+    //   .scale(55000)
+    //   .translate([(this.width / 2) - 180, (this.height / 2) - 60]);
 
-    this.pathProjection = d3.geoPath().projection(projection);
+    // this.pathProjection = d3.geoPath().projection(projection);
     // const g = d3.select('#pincode-chloro');
 
     this.zoomBehavior = d3.zoom()
@@ -289,7 +290,26 @@ export class PincodeLevelMapViewComponent implements OnInit {
       .domain([0, maxConversionData])
       .range([1, 12]);
 
-    const renderMap = () => {
+    const renderMap = (bounds: any) => {
+      const scale = Math.min(
+        this.width / (bounds[1][0] - bounds[0][0]),  // Width of the bounding box
+        this.height / (bounds[1][1] - bounds[0][1])  // Height of the bounding box
+      ) * 50;
+      const translate: any = [
+        (this.width - scale * (bounds[1][0] + bounds[0][0])) / 2,
+        (this.height - scale * (bounds[1][1] + bounds[0][1])) / 2
+      ];
+
+      console.log(scale)
+
+
+      const projection: any = d3.geoMercator()
+      .center(CityLatLong[this.city])
+      .scale(scale)
+      .translate([(this.width / 2) - 180, (this.height / 2) - (this.city == 'Bangalore' ? 30 : 75)]);
+
+      this.pathProjection = d3.geoPath().projection(projection);
+
       const legendValues = [0, ...Array.from({ length: 4 }, (_, i) => (i + 1) * maxSearchedData / 4)];
 
       g.selectAll('path')
@@ -467,7 +487,7 @@ export class PincodeLevelMapViewComponent implements OnInit {
 
 
 
-        const topPincodes = sortedData.slice(0, 5).map((d: any) => d.pincode);
+        const topPincodes = sortedData.slice(0, 10).map((d: any) => d.pincode);
         if (d.mapData && topPincodes.includes(d.mapData[this.logisticSearchService.activeTimeInterval.value]?.pincode)) {
           g.append('foreignObject')
             .attr('x', centroid[0] - 35 / 2 + 5)

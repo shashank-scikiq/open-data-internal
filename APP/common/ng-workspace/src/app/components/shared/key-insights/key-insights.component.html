@@ -1,208 +1,22 @@
 <div class="key-insight-main-container">
-  <div class="carousel">
-    <div class="carousel__list">
-      <div
-        *ngFor="let card of elems"
-        class="carousel__item"
-        [class.carousel__item_active]="card.active"
-        (click)="onCardClick(card.pos)"
-        [attr.data-pos]="card.pos"
-      >
-       {{card.cardText}}
-        <!-- <p>Card {{ card.pos }}</p> -->
-      </div>
-    </div>
+  <div class="insight-banner">
+    Key Data Insights
   </div>
-
-  @for(card of elems; track card) {
-    @if(card?.active) {
-      <div class="active-card-content-section">
-        <!-- <p class="margin-0 heading">
-          {{ card.cardText }}
-        </p> -->
-        @if(card.title) {
-          <p class="margin-0 title">
-            {{card.title}}
-          </p>
-        }
-        @if(card.subText) {
-          <p class="margin-0 sub-title">
-            {{card.subText}}
-          </p>
-        }
-
-        <div class="view-btn" *ngIf="card?.metaData" (click)="metaDataChecked = !metaDataChecked">
-          View {{ metaDataChecked ? 'less' : 'more' }}
-        </div>
-      </div>
-
-    }
+  @if(elems && elems.length) {
+    <app-key-insights-carousel style="flex-grow: 1; display: flex;" [items]="elems"></app-key-insights-carousel>
   }
-
-  @if(elems.indexOf(activeItem) == 0) {
-    <div class="open-data-grey-800 text-center" style="margin-top: 8px; display: flex; place-content: center; align-items: center; gap: 8px;">
-      <p>Date Period: </p>
-      <p class="font-bolder open-data-grey-900">August 2024</p>
-    </div>
-    <div class="open-data-red-400 marign-top-2 text-center font-xxs">Chart coming soon...</div>
-  }
-
-  @if(elems.indexOf(activeItem) == 2) {
-    <div style="display: flex;
-    place-content: center;
-    flex-direction: column;
-    place-content: center;
-    width: max-content;
-    margin: auto;" >
-
-      <div style="display: flex; gap: 10px;" class="open-data-grey-800">
-        <span style="min-width: 200px;">1. F&B</span>
-        <span style="min-width: 120px;"> | F&B</span>
-        <p class="margin-0" style="min-width: 120px;"> , Total Orders = 
-          <span class="open-data-grey-900 font-bolder"> 1,842,528 </span></p>
-      </div>
-      <div style="display: flex; gap: 10px;" class="open-data-grey-800">
-        <span style="min-width: 200px;">2. Fruits and Vegetables</span>
-        <span style="min-width: 120px;"> | Grocery</span>
-        <p class="margin-0" style="min-width: 120px;"> , Total Orders = 
-          <span class="open-data-grey-900 font-bolder"> 699,526 </span></p>
-      </div>
-      <div style="display: flex; gap: 10px;" class="open-data-grey-800">
-        <span style="min-width: 200px;">3. Dairy and Cheese</span>
-        <span style="min-width: 120px;"> | Grocery</span>
-        <p class="margin-0" style="min-width: 120px;"> , Total Orders = 
-          <span class="open-data-grey-900 font-bolder"> 348,021 </span></p>
-      </div>
-      <div style="display: flex; gap: 10px;" class="open-data-grey-800">
-        <span style="min-width: 200px;">4. Home Decor</span>
-        <span style="min-width: 120px;"> | Home & Kitchen</span>
-        <p class="margin-0" style="min-width: 120px;"> , Total Orders = 
-          <span class="open-data-grey-900 font-bolder"> 162,603 </span></p>
-      </div>
-      <div style="display: flex; gap: 10px;" class="open-data-grey-800">
-        <span style="min-width: 200px;">5. Cleaning & Household</span>
-        <span style="min-width: 120px;"> | Grocery</span>
-        <p class="margin-0" style="min-width: 120px;"> , Total Orders = 
-          <span class="open-data-grey-900 font-bolder"> 113,464 </span></p>
-      </div>
-      <div class="open-data-grey-800 text-center" style="margin-top: 16px; display: flex; place-content: center; align-items: center; gap: 8px;">
-        <p class="margin-0">Date Period: </p>
-        <p class="font-bolder margin-0 open-data-grey-900">August 2024</p>
-      </div>
-    </div>
-  }
-
-  @if(elems.indexOf(activeItem) == 3) {
-    <div style="display: flex;
-    place-content: center;
-    flex-direction: column;
-    place-content: center;
-    width: max-content;
-    margin: auto;">
-      <div style="display: flex; gap: 10px;" class="open-data-grey-800">
-        <span style="min-width: 220px;">1. Camcorder</span>
-        <span style="min-width: 120px;"> | Electronics</span>
-        <p class="margin-0" style="min-width: 120px;"> , % Growth = <span class="open-data-grey-900 font-bolder">90700 %</span></p>
-      </div>
-      <div style="display: flex; gap: 10px;" class="open-data-grey-800">
-        <span style="min-width: 220px;">2. Cooking Appliance Accessories</span>
-        <span style="min-width: 120px;"> | Appliances</span>
-        <p class="margin-0" style="min-width: 120px;"> , % Growth = <span class="open-data-grey-900 font-bolder">8575 %</span></p>
-      </div>
-      <div style="display: flex; gap: 10px;" class="open-data-grey-800">
-        <span style="min-width: 220px;">3. Coffee</span>
-        <span style="min-width: 120px;"> | F&B</span>
-        <p class="margin-0" style="min-width: 120px;"> , % Growth = <span class="open-data-grey-900 font-bolder">5291 %</span></p>
-      </div>
-
-      <div class="open-data-grey-800 text-center" style="margin-top: 16px; display: flex; place-content: center; align-items: center; gap: 8px;">
-        <p class="margin-0">Date Period: </p>
-        <p class="font-bolder margin-0 open-data-grey-900">July 2024 Vs August 2024</p>
-      </div>
-    </div>
-  }
-
-  @if(elems.indexOf(activeItem) == 1) {
-    <div style="max-width: 720px; margin: 24px auto 0 !important;">
-      <apx-chart
-        [series]="chartOptions.series"
-        [chart]="chartOptions.chart"
-        [dataLabels]="chartOptions.dataLabels"
-        [plotOptions]="chartOptions.plotOptions"
-        [xaxis]="chartOptions.xaxis"
-        [stroke]="chartOptions.stroke"
-        [fill]="chartOptions.fill"
-        [yaxis]="chartOptions.yaxis"
-        [title]="chartOptions.title"
-        [tooltip]="chartOptions.tooltip"
-        [legend]="chartOptions.legend"
-      ></apx-chart>
-
-      <div class="open-data-grey-800 text-center" style="margin-top: 8px; display: flex; place-content: center; align-items: center; gap: 8px;">
-        <p>Date Period: </p>
-        <p class="font-bolder open-data-grey-900">August 2024</p>
-      </div>
-    </div>
-  }
-
-  @if(elems.indexOf(activeItem) == 4) {
-    <div class="card-body-section margin-top-2 relative">
-      <div class="inner-card">
-          <p class="margin-0 text-center font-bold">< 1,000 <br/>
-              <span class="font-normal open-data-grey-700">
-                  Orders per month
-              </span>
-          </p>
-          <app-radial-bar-chart [data]="stateWiseBin['\< 1,000']">
-          </app-radial-bar-chart>
-      </div>
-      <div class="inner-card">
-          <p class="margin-0 text-center font-bold">1,000 - 5,000<br/>
-              <span class="font-normal open-data-grey-700">
-                  Orders per month
-              </span>
-          </p>
-          <app-radial-bar-chart [data]="stateWiseBin['1,000 - 5,000']">
-          </app-radial-bar-chart>
-      </div>
-      <div class="inner-card">
-          <p class="margin-0 text-center font-bold">5,000 - 10,000<br/>
-              <span class="font-normal open-data-grey-700">
-                  Orders per month
-              </span>
-          </p>
-          <app-radial-bar-chart [data]="stateWiseBin['5,000 - 10,000']">
-          </app-radial-bar-chart>
-      </div>
-      <div class="inner-card">
-          <p class="margin-0 text-center font-bold">> 10,000<br/>
-              <span class="font-normal open-data-grey-700">
-                  Orders per month
-              </span>
-          </p>
-          <app-radial-bar-chart [data]="stateWiseBin['> 1,000']">
-          </app-radial-bar-chart>
-      </div>
-  </div>
-  }
-
-<!-- 
-  @if(metaDataChecked) {
-    <div class="meta-data-container">
-      <app-column-chart></app-column-chart>
-    </div>
-  } -->
-  
   <div class="input-section">
-    <p class="text open-data-blue-700">Ask me anything!
+    <!-- <p class="text open-data-blue-700">Ask me anything!
       <span class="font-xs open-data-red-400"> (Coming soon ...)</span>
-    </p>
+    </p> -->
 
     <div class="input-container">
       <div style="flex-grow: 1;
       padding: 12px;
-      color: #727272;"> Write here...</div>
+      color: #727272;"> Ask me anything (Coming soon) ...</div>
       <i class="fa-solid fa-circle-arrow-up open-data-grey-400" style="font-size: 24px;"></i>
     </div>  
   </div>
+
+
 </div>

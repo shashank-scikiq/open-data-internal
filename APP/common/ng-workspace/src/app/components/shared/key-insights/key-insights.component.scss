@@ -6,6 +6,23 @@
 
 .key-insight-main-container {
     padding: 48px 20px 24px;
+    background: linear-gradient(45deg, #d0d0d038, transparent);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    .insight-banner {
+      border-radius: 0 50px 50px 0;
+      padding: 16px 32px;
+      color: #ffffff;
+      background: #1473e6;
+      font-size: 22px;
+      line-height: 28px;
+      font-weight: 700;
+      margin: 12px 0 0 -20px;
+      width: fit-content;
+      box-shadow: 0 6px 4px rgb(0 0 0 / 30%);
+    }
 
     .carousel {
       padding: 48px 0;
@@ -187,6 +204,8 @@
   place-content: center;
   align-items: center;
   margin: 48px auto;
+  width: 80%;
+  max-width: 720px;
 
   .text {
     font-size: 1.875rem;

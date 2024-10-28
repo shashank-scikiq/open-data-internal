@@ -69,8 +69,6 @@ def fetch_state_list():
 
 def safe_divide(a, b, default=1):
     try:
-        if not a or not b:
-            return 0.00
         return np.divide(a, b)
     except Exception as e:
         return default
@@ -109,12 +107,15 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                 if delta_required:
                     previous_start_date, previous_end_date = self.get_previous_date_range(params)
                     params['start_date'], params['end_date'] = previous_start_date, previous_end_date
-                    top_cards_previous = data_service.get_total_orders_summary_prev(**params)
+                    top_cards_previous = data_service.get_total_orders_summary(**params)
+                    top_cards_previous = top_cards_previous.drop(columns=['most_ordering_district'])
+                    # import pdb; pdb.set_trace()
                 else:
                     previous_start_date, previous_end_date = None, None
                     top_cards_previous = top_cards_current
                     top_cards_previous = top_cards_previous.drop(columns=['most_ordering_district'])
                 merged_data = self.merge_data(top_cards_current, top_cards_previous)
+                # import pdb; pdb.set_trace()
                 filtered_merged_df = self.clean_and_prepare_data(merged_data)
 
                 total_district_count = districts_count['district_count'].sum()
@@ -171,9 +172,14 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                               merged_df['total_districts_previous']), round_off_offset
         )
 
-        merged_df['avg_items_per_order_delta'] = np.round(
+        # import pdb; pdb.set_trace()
+        # merged_df['avg_items_per_order_delta'] = np.round(
+        #     100 * safe_divide(merged_df['avg_items_per_order_in_district_current'] - merged_df['avg_items_per_order_in_district_previous'],
+        #                       merged_df['avg_items_per_order_in_district_previous']), round_off_offset
+        # )
+        merged_df['avg_items_per_order_delta'] = (
             100 * safe_divide(merged_df['avg_items_per_order_in_district_current'] - merged_df['avg_items_per_order_in_district_previous'],
-                              merged_df['avg_items_per_order_in_district_previous']), round_off_offset
+                              merged_df['avg_items_per_order_in_district_previous'])
         )
         
         merged_df['orders_count_delta'] = np.round(
@@ -182,12 +188,13 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         )
 
         merged_df['total_sellers_count_delta'] = np.round(
-            100 * safe_divide(merged_df['total_sellers_current'] - merged_df['total_sellers_previous'],
-                              merged_df['total_sellers_previous']), round_off_offset
+            100 * safe_divide(merged_df['total_sellers_current'] - merged_df['total_sellers_previous'],merged_df['total_sellers_previous']), round_off_offset
         )
-        merged_df['active_sellers_count_delta'] = np.round(
+        # import pdb; pdb.set_trace()
+        
+        merged_df['active_sellers_count_delta'] = (
             100 * safe_divide(merged_df['active_sellers_current'] - merged_df['active_sellers_previous'],
-                              merged_df['active_sellers_previous']), round_off_offset
+                              merged_df['active_sellers_previous'])
         )
 
         merged_df = merged_df.replace([np.inf, -np.inf], 100).replace([np.nan], 0).fillna(0)
@@ -283,13 +290,13 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                 }
 
     def create_metric_data(self, count, heading, delta, count_suffix=''):
-        if heading == 'Total sellers' and count <3:
+        if heading == 'Total sellers' and count <=0:
             return {
                 "type": 'max_state',
                 "heading": 'Total sellers',
                 "mainText": 'No Data To Display'
             }
-        elif heading == 'Active sellers' and count <3:
+        elif heading == 'Active sellers' and count <=0:
             return {
                 "type": 'max_state',
                 "heading": 'Active sellers',
@@ -302,7 +309,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                 "heading": heading,
                 "icon": 'trending_up' if delta >= 0 else 'trending_down',
                 "positive": bool(delta >= 0),
-                "percentageCount": float(delta),
+                "percentageCount": float("{:.2f}".format(delta)),
                 "showVarience": bool(delta)
             }
 
