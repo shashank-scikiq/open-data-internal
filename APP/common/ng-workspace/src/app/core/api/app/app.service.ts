@@ -362,7 +362,7 @@ export class AppService {
   }
   
   getKeyInsights() {
-    return this.http.get(`${this.baseUrl}api/v2/key-insight-data/`)
+    return this.http.get(`${this.baseUrl}api/key-insight-data/`)
   }
   
 }

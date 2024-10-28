@@ -30,6 +30,8 @@ import { DomainDetailFiltersComponent } from './domain-detail-filters/domain-det
 import { LogisticSearchFiltersComponent } from './logistic-search-filters/logistic-search-filters.component';
 import { LogisticsSearchTopCardsComponent } from './logistics-search-top-cards/logistics-search-top-cards.component';
 import { LogisticsSearchDetailComponent } from './logistics-search-detail/logistics-search-detail.component';
+import { KeyInsightsCarouselComponent } from './key-insights-carousel/key-insights-carousel.component';
+import { KeyInsightsMetaDataComponent } from './key-insights-meta-data/key-insights-meta-data.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -58,7 +60,9 @@ import { LogisticsSearchDetailComponent } from './logistics-search-detail/logist
     DomainDetailFiltersComponent,
     LogisticSearchFiltersComponent,
     LogisticsSearchTopCardsComponent,
-    LogisticsSearchDetailComponent
+    LogisticsSearchDetailComponent,
+    KeyInsightsCarouselComponent,
+    KeyInsightsMetaDataComponent
   ],
   imports: [
     CommonModule,
@@ -91,7 +95,9 @@ import { LogisticsSearchDetailComponent } from './logistics-search-detail/logist
     TopCardsGroupComponent,
     TopCardComponent,
     DomainDetailFiltersComponent,
-    LogisticSearchFiltersComponent
+    LogisticSearchFiltersComponent,
+    KeyInsightsCarouselComponent,
+    KeyInsightsMetaDataComponent
   ]
 })
 export class SharedModule { }

@@ -168,7 +168,7 @@ export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
     const pathGenerator = d3.geoPath().projection(projection);
 
     projection.scale(1).translate([0, 0])
-
+    console.log(data, "here in data");
     const b = pathGenerator.bounds(data),
       s = 0.95 / Math.max((b[1][0] - b[0][0]) / width, (b[1][1] - b[0][1]) / height),
       t: [number, number] = [(width - s * (b[1][0] + b[0][0])) / 2, (height - s * (b[1][1] + b[0][1])) / 2];

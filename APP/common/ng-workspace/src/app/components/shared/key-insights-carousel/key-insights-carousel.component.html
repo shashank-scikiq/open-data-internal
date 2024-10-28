@@ -1,0 +1,21 @@
+<div class="key-insight-carousel-section">
+    <div class="cards-container">
+        <ul class="cards">
+            <li *ngFor="let card of items let i = index" 
+                class="card"
+                [class.card--current]="i === currentCardIndex"
+                [class.card--next]="i === nextCardIndex"
+                [class.card--out]="i === previousCardIndex"
+                (click)="onCardClick(i)">
+              <p class="margin-0 font-bolder">{{ card.cardTitle }}</p>
+            </li>
+          </ul>
+    </div>
+      
+    
+    <app-key-insights-meta-data
+        style="flex-grow: 1;"
+        [metaData]="items[currentCardIndex]">
+    </app-key-insights-meta-data>
+</div>
+

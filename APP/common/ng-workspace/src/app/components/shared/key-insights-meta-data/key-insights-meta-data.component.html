@@ -1,0 +1,21 @@
+<div class="meta-data-section">
+    @if(isLoadingData) {
+        Loading...
+    } @else {
+        <p class="main-text margin-0">{{metaData.mainText}}</p>
+        <p class="sub-text margin-0">{{metaData.subText}}</p>
+        <apx-chart
+          [series]="chartOptions.series"
+          [chart]="chartOptions.chart"
+          [dataLabels]="chartOptions.dataLabels"
+          [plotOptions]="chartOptions.plotOptions"
+          [responsive]="chartOptions.responsive"
+          [xaxis]="chartOptions.xaxis"
+          [legend]="chartOptions.legend"
+          [fill]="chartOptions.fill"
+          [colors]="chartOptions.colors"
+        ></apx-chart>
+        <p class="footnote margin-0">{{metaData?.footnote}}</p>
+    }
+  </div>
+  

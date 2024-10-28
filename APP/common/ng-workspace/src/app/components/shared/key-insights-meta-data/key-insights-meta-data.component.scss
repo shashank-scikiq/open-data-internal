@@ -1,0 +1,32 @@
+@import "colors";
+@import "breakpoints";
+
+
+.meta-data-section {
+    display: flex;
+    padding: 10% 10% 0;
+    place-content: center;
+    // align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 80vh;
+
+
+    .main-text {
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 24px;
+    }
+
+    .sub-text {
+        color: $grey800;
+        font-size: 14px;
+        line-height: 20px;
+    }
+    .footnote {
+        font-size: 12px;
+        line-height: 14px;
+        color: $grey700;
+        font-style: italic;
+    }
+}
