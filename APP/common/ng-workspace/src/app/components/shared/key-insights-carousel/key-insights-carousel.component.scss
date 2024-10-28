@@ -151,13 +151,17 @@
 
 .cards-container {
     width: 45vw;
+    display: flex;
+    gap: 20px;
+    place-content: center;
+    align-items: center;
 }
 
 .cards {
     position: relative;  
     list-style-type: none;
     padding: 0;
-    width: 270px;
+    width: 360px;
     height: 100%;
     margin: 20% auto 0;
   }
@@ -166,7 +170,7 @@
     position: absolute;
     top: 0;
     left: 0;
-    min-height: 270px;
+    min-height: 360px;
     height: 100%;
     z-index: 2;
     height: inherit;
@@ -222,5 +226,19 @@
     // background: #EEE;
     background: linear-gradient(45deg, #2D35EB 0%, #fdbb2d 100%);
     transform: rotate(-1deg) translateX(0%) scale(1);
+  }
+
+  .next-btn {
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 8px 35px rgba(0, 0, 0, 0.45);
+    transform: translate(-50%, 50%);
+
+    width: 32px;
+    height: 32px;
+    display: flex;
+    place-content: center;
+    align-items: center;
+    color: $grey700;
   }
   
