@@ -714,7 +714,7 @@ class FetchCategoryPenetrationOrders(SummaryBaseDataAPI):
         params = self.extract_common_params(request)
         data = data_service.get_category_penetration_orders(**params)
         formatted_data = self.sunburst_format(data, chart_type='order_demand')
-        return JsonResponse({"response": "test response"}, safe=False)
+        return JsonResponse(formatted_data, safe=False)
 
 
 class FetchCategoryPenetrationSellers(SummaryBaseDataAPI):
