@@ -69,7 +69,7 @@ def fetch_state_list():
 
 def safe_divide(a, b, default=1):
     try:
-        return np.divide(a, b)
+        return a/b
     except Exception as e:
         return default
 
@@ -167,7 +167,10 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         merged_df['delivery_state'] = merged_df['delivery_state'].fillna('TOTAL')
         merged_df = merged_df.fillna(0)
 
-        merged_df['district_count_delta'] = np.round(
+        merged_df['total_districts_current'] = merged_df['total_districts_current'].astype(float)
+        merged_df['total_districts_previous'] = merged_df['total_districts_previous'].astype(float)
+
+        merged_df['district_count_delta'] = round(
             100 * safe_divide(merged_df['total_districts_current'] - merged_df['total_districts_previous'],
                               merged_df['total_districts_previous']), round_off_offset
         )
@@ -177,26 +180,36 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         #     100 * safe_divide(merged_df['avg_items_per_order_in_district_current'] - merged_df['avg_items_per_order_in_district_previous'],
         #                       merged_df['avg_items_per_order_in_district_previous']), round_off_offset
         # )
+        merged_df['avg_items_per_order_in_district_current'] = merged_df['avg_items_per_order_in_district_current'].astype(float)
+        merged_df['avg_items_per_order_in_district_previous'] = merged_df['avg_items_per_order_in_district_previous'].astype(float)
         merged_df['avg_items_per_order_delta'] = (
             100 * safe_divide(merged_df['avg_items_per_order_in_district_current'] - merged_df['avg_items_per_order_in_district_previous'],
                               merged_df['avg_items_per_order_in_district_previous'])
         )
         
-        merged_df['orders_count_delta'] = np.round(
+        merged_df['delivered_orders_current'] = merged_df['delivered_orders_current'].astype(float)
+        merged_df['delivered_orders_previous'] = merged_df['delivered_orders_previous'].astype(float)
+        merged_df['orders_count_delta'] = round(
             100 * safe_divide(merged_df['delivered_orders_current'] - merged_df['delivered_orders_previous'],
                               merged_df['delivered_orders_previous']), round_off_offset
         )
 
-        merged_df['total_sellers_count_delta'] = np.round(
+        merged_df['total_sellers_current'] = merged_df['total_sellers_current'].astype(float)
+        merged_df['total_sellers_previous'] = merged_df['total_sellers_previous'].astype(float)
+        merged_df['total_sellers_count_delta'] = round(
             100 * safe_divide(merged_df['total_sellers_current'] - merged_df['total_sellers_previous'],merged_df['total_sellers_previous']), round_off_offset
         )
-        # import pdb; pdb.set_trace()
         
-        merged_df['active_sellers_count_delta'] = (
-            100 * safe_divide(merged_df['active_sellers_current'] - merged_df['active_sellers_previous'],
-                              merged_df['active_sellers_previous'])
-        )
+        
+        merged_df['active_sellers_current'] = merged_df['active_sellers_current'].astype(float)
+        merged_df['active_sellers_previous'] = merged_df['active_sellers_previous'].astype(float)
 
+        merged_df['active_sellers_count_delta'] = (
+            100 * safe_divide((merged_df['active_sellers_current'] / 100) - (merged_df['active_sellers_previous'] / 100),
+                                merged_df['active_sellers_previous'] / 100)
+            )
+
+        
         merged_df = merged_df.replace([np.inf, -np.inf], 100).replace([np.nan], 0).fillna(0)
 
         return merged_df.drop(
