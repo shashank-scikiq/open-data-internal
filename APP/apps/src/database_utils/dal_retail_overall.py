@@ -221,8 +221,8 @@ class DataAccessLayer:
                 FROM
                     {constant.MONTHLY_PROVIDERS}
                 WHERE
-                    (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
-                    AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
+                    
+                    ((order_year * 100) + order_month)= ((%(end_year)s * 100) + %(end_month)s)
         """
 
         if state:
@@ -284,8 +284,7 @@ class DataAccessLayer:
                 FROM
                     {constant.MONTHLY_PROVIDERS}
                 WHERE
-                    (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
-                    AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
+                    ((order_year * 100) + order_month)= ((%(end_year)s * 100) + %(end_month)s)
             ),
             AggregatedDataTotal AS (
                 SELECT
@@ -334,7 +333,7 @@ class DataAccessLayer:
             LEFT JOIN
                 StateRanking SRnk ON SRnk.rank_in_state = 1
         """
-
+        
         query = query.format(table_name=table_name)
         orders_count = self.db_utility.execute_query(query, parameters)
         return orders_count
@@ -357,10 +356,9 @@ class DataAccessLayer:
                 FROM
                     {constant.MONTHLY_PROVIDERS} ds
                 WHERE
-                    (ds.order_year > %(start_year)s OR (ds.order_year = %(start_year)s AND ds.order_month >= %(start_month)s))
-                    AND (ds.order_year < %(end_year)s OR (ds.order_year = %(end_year)s AND ds.order_month <= %(end_month)s))
+                    ((ds.order_year * 100) + ds.order_month)= ((%(end_year)s * 100) + %(end_month)s)
         """
-
+        
         if state:
             query += " AND ds.seller_state = %(state)s"
             parameters['state'] = state
@@ -397,8 +395,7 @@ class DataAccessLayer:
                 FROM
                     {constant.MONTHLY_PROVIDERS} ds
                 WHERE
-                    (ds.order_year > %(start_year)s OR (ds.order_year = %(start_year)s AND ds.order_month >= %(start_month)s))
-                    AND (ds.order_year < %(end_year)s OR (ds.order_year = %(end_year)s AND ds.order_month <= %(end_month)s))
+                    ((ds.order_year * 100) + ds.order_month)= ((%(end_year)s * 100) + %(end_month)s)
             ),
             AggregatedDataTotal AS (
                 SELECT
@@ -451,7 +448,7 @@ class DataAccessLayer:
         """
 
         query = query.format(table_name=table_name)
-
+        
         orders_count = self.db_utility.execute_query(query, parameters)
         return orders_count
 
@@ -670,6 +667,7 @@ class DataAccessLayer:
 
         query += " GROUP BY order_month, order_year ORDER BY order_year, order_month"
         df = self.db_utility.execute_query(query, parameters)
+        
         return df
 
     @log_function_call(ondcLogger)
@@ -1123,6 +1121,7 @@ class DataAccessLayer:
             WHERE
                 (order_year > %s OR (order_year = %s AND order_month >= %s))
                 AND (order_year < %s OR (order_year = %s AND order_month <= %s))
+
                 AND seller_state <> ''
                 AND seller_state is not null
                 AND seller_district is not null
@@ -1142,7 +1141,7 @@ class DataAccessLayer:
         query = query + conditions_str + " GROUP BY  seller_state, seller_state_code"
 
         df = self.db_utility.execute_query(query, parameters)
-
+        
         return df
 
     @log_function_call(ondcLogger)

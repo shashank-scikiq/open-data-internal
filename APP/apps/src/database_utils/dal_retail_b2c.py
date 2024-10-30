@@ -65,6 +65,8 @@ class DataAccessLayer:
                     AND seller_district IS NOT NULL
                     AND seller_district <> ''
                     AND seller_district <> 'AGG'
+                    AND seller_district <> 'Missing'
+                    AND seller_district <> 'Misssing'
         """
 
         if state:
@@ -151,10 +153,8 @@ class DataAccessLayer:
                     {base_table}
                 WHERE
                     ((year_val*100)+mnth_val) = ((%(end_year)s*100)+%(end_month)s)
-                    AND seller_state <> ''
-                    AND seller_state is not null
-                    AND seller_state <> 'AGG'
                     AND seller_district = 'AGG'
+                    and not seller_state in ('Missing', 'Misssing', '')
         '''
 
         if state:
@@ -224,7 +224,7 @@ class DataAccessLayer:
             ORDER BY 
                 rs.state_rank, om.year_val, om.mnth_val
         '''
-
+        
         df = self.db_utility.execute_query(query, parameters)
         return df
 
@@ -397,7 +397,7 @@ class DataAccessLayer:
             LEFT JOIN
                 StateRanking SRnk ON SRnk.rank_in_state = 1
         """
-        # import pdb; pdb.set_trace()
+        
         orders_count = self.db_utility.execute_query(query)
         return orders_count
 
@@ -550,7 +550,9 @@ class DataAccessLayer:
             LEFT JOIN
                 ActiveSellersTotal ASelt ON 1=1
         """
+        
         orders_count = self.db_utility.execute_query(query)
+        import pdb; pdb.set_trace()
         return orders_count
 
     
@@ -678,6 +680,7 @@ class DataAccessLayer:
                 SELECT * FROM FinalResult 
             '''
             df = self.db_utility.execute_query(query, parameters)
+           
             return df
 
         except Exception as e:
@@ -1229,7 +1232,7 @@ class DataAccessLayer:
             GROUP BY delivery_state_code, delivery_state, delivery_district 
             ORDER BY delivery_state_code, total_orders_delivered DESC
         '''
-
+        
         aggregated_df = self.db_utility.execute_query(query)
 
         return aggregated_df
@@ -1252,14 +1255,17 @@ class DataAccessLayer:
             WHERE
                 ((year_val*100) + mnth_val) =
                     (({params.end_year} * 100) + {params.end_month})
+                and seller_state not in ('Missing', 'Misssing') 
+                
                 and seller_district = {aggregate_value}
                 and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
                 and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
                 and  upper(seller_state) { f"=upper('{state}') " if state else '<>'+aggregate_value}
             group by 1,2
         """
-        # import pdb; pdb.set_trace();
+        
         df = self.db_utility.execute_query(query)
+        
         return df
 
 
@@ -1348,7 +1354,7 @@ class DataAccessLayer:
 
         query  += ' GROUP BY delivery_state_code, delivery_state ORDER BY total_orders DESC'
 
-
+        
         aggregated_df = self.db_utility.execute_query(query)
         return aggregated_df
 
@@ -1392,6 +1398,7 @@ class DataAccessLayer:
                 order_demand DESC;
         '''
         df = self.db_utility.execute_query(query, parameters)
+        
         return df
 
     @log_function_call(ondcLogger)
