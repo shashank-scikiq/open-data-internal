@@ -9,7 +9,11 @@
                 (click)="onCardClick(i)">
               <p class="margin-0 font-bolder">{{ card.cardTitle }}</p>
             </li>
-          </ul>
+
+        </ul>
+        <div (click)="onCardClick(nextCardIndex)" class="next-btn">
+            <i class="fa-solid fa-arrow-up"></i>
+        </div>
     </div>
       
     

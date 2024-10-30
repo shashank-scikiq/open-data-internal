@@ -1,16 +1,19 @@
 <div class="key-insight-main-container">
+  <div class="insight-banner">
+    Key Data Insights
+  </div>
   @if(elems && elems.length) {
-    <app-key-insights-carousel [items]="elems"></app-key-insights-carousel>
+    <app-key-insights-carousel style="flex-grow: 1; display: flex;" [items]="elems"></app-key-insights-carousel>
   }
   <div class="input-section">
-    <p class="text open-data-blue-700">Ask me anything!
+    <!-- <p class="text open-data-blue-700">Ask me anything!
       <span class="font-xs open-data-red-400"> (Coming soon ...)</span>
-    </p>
+    </p> -->
 
     <div class="input-container">
       <div style="flex-grow: 1;
       padding: 12px;
-      color: #727272;"> Write here...</div>
+      color: #727272;"> Ask me anything (Coming soon) ...</div>
       <i class="fa-solid fa-circle-arrow-up open-data-grey-400" style="font-size: 24px;"></i>
     </div>  
   </div>
