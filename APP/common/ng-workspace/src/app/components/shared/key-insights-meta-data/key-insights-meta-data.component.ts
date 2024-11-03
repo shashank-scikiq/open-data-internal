@@ -11,19 +11,16 @@ export class KeyInsightsMetaDataComponent implements OnChanges {
   @Input() metaData: any;
 
   chartOptions: any = {
-    colors: ["#9AB187", "#F3C881"],
-    series: [
-      {
-        name: "New Sellers",
-        data: [33.7, 23.5, 18.7, 19.8, 16.7]
-      },
-      {
-        name: "Repeat sellers",
-        data: [66.3, 76.5, 81.3, 80.2, 83.3]
+    colors: [],
+    series: [],
+    grid: {
+      yaxis: {
+        lines: {
+          show: false // Removes horizontal grid lines
+        }
       }
-    ],
+    },
     chart: {
-      type: "bar",
       height: 350,
       stacked: true,
       stackType: "100%",
@@ -44,13 +41,7 @@ export class KeyInsightsMetaDataComponent implements OnChanges {
       }
     ],
     xaxis: {
-      categories: [
-        "May-2024",
-        "Jun-2024",
-        "Jul-2024",
-        "Aug-2024",
-        "Sep-2024"
-      ]
+      categories: []
     },
     fill: {
       opacity: 1
@@ -63,8 +54,18 @@ export class KeyInsightsMetaDataComponent implements OnChanges {
     noData: {
       text: 'No Data to Display'
     },
+    dataLabels: {
+      enabled: false
+    },
+    markers: {
+      size: 5,
+      hover: {
+        size: 9
+      }
+    },
   };
   isLoadingData: boolean = true;
+  object=Object;
 
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -74,12 +75,12 @@ export class KeyInsightsMetaDataComponent implements OnChanges {
 
   async loadData() {
     this.isLoadingData = true;
+    this.chartOptions.chart.type = this.metaData.metaData.type;
     this.chartOptions.series = this.metaData.metaData.data.series;
     this.chartOptions.xaxis.categories = this.metaData.metaData.data.categories;
     this.chartOptions.colors = this.metaData.metaData.data.colors;
-    console.log(this.metaData.metaData)
 
-    await delay(1000);
+    await delay(2000);
     this.isLoadingData = false;
   }
 

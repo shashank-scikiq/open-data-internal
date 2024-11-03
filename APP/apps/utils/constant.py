@@ -92,7 +92,14 @@ INSIGHTS_FOLDER_DIR = '/app/Webapp/KEY_DATA_INSIGHTS/'
 
 
 INSIGHTS_MAP = {
+    "active_sellers_location": 1,
+    "active_total_sellers_category": 1,
+    "active_total_sellers_national": 1,
+    "active_total_sellers_state_sep": 1,
+    "qsr_distribution": 1,
+
+
     "active_sellers_daily": 0,
-    "new_repeat_sellers": 1,
-    "active_sellers_share_india": 1
+    "new_repeat_sellers": 0,
+    "active_sellers_share_india": 0
 }
