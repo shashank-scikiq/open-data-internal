@@ -1,14 +1,16 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { delay } from 'rxjs';
 
 @Component({
-  selector: 'app-key-insights-meta-data',
-
-  templateUrl: './key-insights-meta-data.component.html',
-  styleUrl: './key-insights-meta-data.component.scss'
+  selector: 'app-area-chart',
+  templateUrl: './area-chart.component.html',
+  styleUrl: './area-chart.component.scss'
 })
-export class KeyInsightsMetaDataComponent implements OnChanges {
-  @Input() metaData: any;
+export class AreaChartComponent implements OnInit {
+  @Input() series: any = [];
+  @Input() colors: any = [];
+  @Input() categories: any = [];
+  @Input() height: any = 350;
 
   chartOptions: any = {
     colors: [],
@@ -21,7 +23,7 @@ export class KeyInsightsMetaDataComponent implements OnChanges {
       }
     },
     chart: {
-      height: 350,
+      type: 'area',
       stacked: true,
       stackType: "100%",
       toolbar: {
@@ -64,24 +66,21 @@ export class KeyInsightsMetaDataComponent implements OnChanges {
       }
     },
   };
-  isLoadingData: boolean = true;
-  object=Object;
 
+  isLoading: boolean = true;
 
-  ngOnChanges(changes: SimpleChanges): void {
-    this.metaData = changes['metaData']['currentValue'];
-    this.loadData();
+  ngOnInit(): void {
+    this.updateChartData();
   }
 
-  async loadData() {
-    this.isLoadingData = true;
-    this.chartOptions.chart.type = this.metaData.metaData.type;
-    this.chartOptions.series = this.metaData.metaData.data.series;
-    this.chartOptions.xaxis.categories = this.metaData.metaData.data.categories;
-    this.chartOptions.colors = this.metaData.metaData.data.colors;
-
-    await delay(2000);
-    this.isLoadingData = false;
+  async updateChartData() {
+    this.isLoading = true;
+    this.chartOptions.series = this.series;
+    this.chartOptions.xaxis.categories = this.categories;
+    this.chartOptions.chart.height = this.height;
+    this.chartOptions['colors'] = this.colors;
+    await delay(1000);
+    this.isLoading = false;
   }
 
 }

@@ -1,0 +1,87 @@
+{
+    "cardTitle": "In which cities do Quick Service Restaurants (QSR) have a high share in delivering orders?",
+    "mainText": "Over half the orders in Chennai, Surat, and Bengaluru are from Quick Service Restaurants (QSR).",
+    "footnote": "Quick Service Restaurants (QSRs) are branded fast food chains such as Domino's, McDonald's, KFC, etc. Location is defined based on the delivery pincode in the confirmed order data.",
+    "dataPeriod": "Data: Apr - Sep 2024",
+    "isDetailsVisible": true,
+    "metaData": {
+        "type": "multiple_donut_charts",
+        "data": [
+            {
+                "City": "Surat",
+                "QSR deliveries (%)": 71.1,
+                "Non-QSR deliveries (%)": 28.9
+            },
+            {
+                "City": "Chennai",
+                "QSR deliveries (%)": 62.1,
+                "Non-QSR deliveries (%)": 37.9
+            },
+            {
+                "City": "Bengaluru",
+                "QSR deliveries (%)": 52.8,
+                "Non-QSR deliveries (%)": 47.2
+            },
+            {
+                "City": "Ahmedabad",
+                "QSR deliveries (%)": 38.7,
+                "Non-QSR deliveries (%)": 61.3
+            },
+            {
+                "City": "Lucknow",
+                "QSR deliveries (%)": 38.2,
+                "Non-QSR deliveries (%)": 61.8
+            },
+            {
+                "City": "Gurugram",
+                "QSR deliveries (%)": 35.6,
+                "Non-QSR deliveries (%)": 64.4
+            },
+            {
+                "City": "Jaipur",
+                "QSR deliveries (%)": 34.8,
+                "Non-QSR deliveries (%)": 65.2
+            },
+            {
+                "City": "Gautam Buddha Nagar",
+                "QSR deliveries (%)": 33.9,
+                "Non-QSR deliveries (%)": 66.1
+            },
+            {
+                "City": "Thane",
+                "QSR deliveries (%)": 31.5,
+                "Non-QSR deliveries (%)": 68.5
+            },
+            {
+                "City": "Mumbai",
+                "QSR deliveries (%)": 30.3,
+                "Non-QSR deliveries (%)": 69.7
+            },
+            {
+                "City": "Pune",
+                "QSR deliveries (%)": 23.8,
+                "Non-QSR deliveries (%)": 76.2
+            },
+            {
+                "City": "Hyderabad",
+                "QSR deliveries (%)": 20.6,
+                "Non-QSR deliveries (%)": 79.4
+            },
+            {
+                "City": "Kolkata",
+                "QSR deliveries (%)": 18.5,
+                "Non-QSR deliveries (%)": 81.5
+            },
+            {
+                "City": "Delhi",
+                "QSR deliveries (%)": 17.9,
+                "Non-QSR deliveries (%)": 82.1
+            },
+            {
+                "City": "K.V.Rangareddy",
+                "QSR deliveries (%)": 17.5,
+                "Non-QSR deliveries (%)": 82.5
+            }
+        ]
+    }
+}

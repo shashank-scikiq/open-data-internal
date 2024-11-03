@@ -32,6 +32,10 @@ import { CommonLayoutComponent } from './components/common-layout/common-layout.
 import { LayoutComponent } from './layout/layout.component';
 import { LandingPageChartComponent } from './components/landing-page/landing-page-chart/landing-page-chart.component';
 import { DatePickerComponent } from './components/global/forms/date-picker/date-picker.component';
+import { TreeMapChartComponent } from './components/global/charts/tree-map-chart/tree-map-chart.component';
+import { StackBarChartComponent } from './components/global/charts/stack-bar-chart/stack-bar-chart.component';
+import { AreaChartComponent } from './components/global/charts/area-chart/area-chart.component';
+import { DonutChartComponent } from './components/global/charts/donut-chart/donut-chart.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 
@@ -50,7 +54,7 @@ import { DatePickerComponent } from './components/global/forms/date-picker/date-
     CommonLayoutComponent,
     LayoutComponent,
     LandingPageChartComponent,
-    DatePickerComponent
+    DatePickerComponent,
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,54 @@
+{
+    "cardTitle": "What share of sellers are active on the network?",
+    "mainText": "Three in ten sellers on the network are active.",
+    "footnote": "Active sellers are those who have made at least one order out of all the sellers registered on the network.",
+    "dataPeriod": "Data: Apr - Sep 2024",
+    "isDetailsVisible": true,
+    "metaData": {
+        "type": "area",
+        "data": [
+            {
+                "month_year": "2024-04",
+                "active_sellers": 37672,
+                "total_sellers": 129877,
+                "perc_active": 29,
+                "perc_inactive": 71
+            },
+            {
+                "month_year": "2024-05",
+                "active_sellers": 44745,
+                "total_sellers": 134108,
+                "perc_active": 33,
+                "perc_inactive": 67
+            },
+            {
+                "month_year": "2024-06",
+                "active_sellers": 49128,
+                "total_sellers": 142369,
+                "perc_active": 35,
+                "perc_inactive": 65
+            },
+            {
+                "month_year": "2024-07",
+                "active_sellers": 51439,
+                "total_sellers": 160530,
+                "perc_active": 32,
+                "perc_inactive": 68
+            },
+            {
+                "month_year": "2024-08",
+                "active_sellers": 55043,
+                "total_sellers": 223787,
+                "perc_active": 25,
+                "perc_inactive": 75
+            },
+            {
+                "month_year": "2024-09",
+                "active_sellers": 55869,
+                "total_sellers": 224591,
+                "perc_active": 25,
+                "perc_inactive": 75
+            }
+        ]
+    }
+}
