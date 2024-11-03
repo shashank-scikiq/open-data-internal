@@ -1,0 +1,23 @@
+<div class="selection-section">
+    <nz-select nzsize="small" 
+        [(ngModel)]="selectedOption"
+        (ngModelChange)="chooseOption($event)">
+        @for(option of options; track option) {
+            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+        }
+      </nz-select>
+</div>
+
+@if(!isLoading) {
+    <apx-chart
+        [series]="chartOptions.series"
+        [chart]="chartOptions.chart"
+        [dataLabels]="chartOptions.dataLabels"
+        [plotOptions]="chartOptions.plotOptions"
+        [legend]="chartOptions.legend"
+        [colors]="chartOptions.colors"
+        [stroke]="chartOptions.stroke"
+        [states]="chartOptions.states"
+        [tooltip]="chartOptions.tooltip"
+    ></apx-chart>
+}
