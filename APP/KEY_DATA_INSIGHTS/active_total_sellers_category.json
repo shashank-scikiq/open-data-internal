@@ -8,7 +8,7 @@
         "type": "multiple_area_chart",
         "data": [
             {
-                "month_year": "2024-04",
+                "month_year": "Apr 2024",
                 "category": "Food & Beverage",
                 "active_sellers": "32881",
                 "total_sellers": "101395",
@@ -16,7 +16,7 @@
                 "perc_inactive": "68"
             },
             {
-                "month_year": "2024-05",
+                "month_year": "May 2024",
                 "category": "Food & Beverage",
                 "active_sellers": "38004",
                 "total_sellers": "103933",
@@ -24,7 +24,7 @@
                 "perc_inactive": "63"
             },
             {
-                "month_year": "2024-06",
+                "month_year": "Jun 2024",
                 "category": "Food & Beverage",
                 "active_sellers": "41685",
                 "total_sellers": "111002",
@@ -32,7 +32,7 @@
                 "perc_inactive": "62"
             },
             {
-                "month_year": "2024-07",
+                "month_year": "Jul 2024",
                 "category": "Food & Beverage",
                 "active_sellers": "44556",
                 "total_sellers": "125636",
@@ -40,7 +40,7 @@
                 "perc_inactive": "65"
             },
             {
-                "month_year": "2024-08",
+                "month_year": "Aug 2024",
                 "category": "Food & Beverage",
                 "active_sellers": "47296",
                 "total_sellers": "180287",
@@ -48,7 +48,7 @@
                 "perc_inactive": "74"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sep 2024",
                 "category": "Food & Beverage",
                 "active_sellers": "48718",
                 "total_sellers": "184377",
@@ -56,7 +56,7 @@
                 "perc_inactive": "74"
             },
             {
-                "month_year": "2024-04",
+                "month_year": "Apr 2024",
                 "category": "Grocery",
                 "active_sellers": "1600",
                 "total_sellers": "16999",
@@ -64,7 +64,7 @@
                 "perc_inactive": "91"
             },
             {
-                "month_year": "2024-05",
+                "month_year": "May 2024",
                 "category": "Grocery",
                 "active_sellers": "2201",
                 "total_sellers": "16313",
@@ -72,7 +72,7 @@
                 "perc_inactive": "87"
             },
             {
-                "month_year": "2024-06",
+                "month_year": "Jun 2024",
                 "category": "Grocery",
                 "active_sellers": "2287",
                 "total_sellers": "15167",
@@ -80,7 +80,7 @@
                 "perc_inactive": "85"
             },
             {
-                "month_year": "2024-07",
+                "month_year": "Jul 2024",
                 "category": "Grocery",
                 "active_sellers": "2050",
                 "total_sellers": "17083",
@@ -88,7 +88,7 @@
                 "perc_inactive": "88"
             },
             {
-                "month_year": "2024-08",
+                "month_year": "Aug 2024",
                 "category": "Grocery",
                 "active_sellers": "1799",
                 "total_sellers": "19428",
@@ -96,7 +96,7 @@
                 "perc_inactive": "91"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sep 2024",
                 "category": "Grocery",
                 "active_sellers": "1723",
                 "total_sellers": "15412",
@@ -104,7 +104,7 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "2024-04",
+                "month_year": "Apr 2024",
                 "category": "Fashion",
                 "active_sellers": "1460",
                 "total_sellers": "7050",
@@ -112,7 +112,7 @@
                 "perc_inactive": "79"
             },
             {
-                "month_year": "2024-05",
+                "month_year": "May 2024",
                 "category": "Fashion",
                 "active_sellers": "1382",
                 "total_sellers": "7607",
@@ -120,7 +120,7 @@
                 "perc_inactive": "82"
             },
             {
-                "month_year": "2024-06",
+                "month_year": "Jun 2024",
                 "category": "Fashion",
                 "active_sellers": "1367",
                 "total_sellers": "8247",
@@ -128,7 +128,7 @@
                 "perc_inactive": "83"
             },
             {
-                "month_year": "2024-07",
+                "month_year": "Jul 2024",
                 "category": "Fashion",
                 "active_sellers": "1522",
                 "total_sellers": "9752",
@@ -136,7 +136,7 @@
                 "perc_inactive": "84"
             },
             {
-                "month_year": "2024-08",
+                "month_year": "Aug 2024",
                 "category": "Fashion",
                 "active_sellers": "1761",
                 "total_sellers": "13544",
@@ -144,7 +144,7 @@
                 "perc_inactive": "87"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sep 2024",
                 "category": "Fashion",
                 "active_sellers": "1908",
                 "total_sellers": "14193",
@@ -152,7 +152,7 @@
                 "perc_inactive": "87"
             },
             {
-                "month_year": "2024-04",
+                "month_year": "Apr 2024",
                 "category": "Beauty & Personal Care",
                 "active_sellers": "484",
                 "total_sellers": "4773",
@@ -160,7 +160,7 @@
                 "perc_inactive": "90"
             },
             {
-                "month_year": "2024-05",
+                "month_year": "May 2024",
                 "category": "Beauty & Personal Care",
                 "active_sellers": "461",
                 "total_sellers": "6719",
@@ -168,7 +168,7 @@
                 "perc_inactive": "93"
             },
             {
-                "month_year": "2024-06",
+                "month_year": "Jun 2024",
                 "category": "Beauty & Personal Care",
                 "active_sellers": "450",
                 "total_sellers": "7908",
@@ -176,7 +176,7 @@
                 "perc_inactive": "94"
             },
             {
-                "month_year": "2024-07",
+                "month_year": "Jul 2024",
                 "category": "Beauty & Personal Care",
                 "active_sellers": "558",
                 "total_sellers": "8790",
@@ -184,7 +184,7 @@
                 "perc_inactive": "94"
             },
             {
-                "month_year": "2024-08",
+                "month_year": "Aug 2024",
                 "category": "Beauty & Personal Care",
                 "active_sellers": "690",
                 "total_sellers": "10700",
@@ -192,7 +192,7 @@
                 "perc_inactive": "94"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sep 2024",
                 "category": "Beauty & Personal Care",
                 "active_sellers": "724",
                 "total_sellers": "8919",
@@ -200,7 +200,7 @@
                 "perc_inactive": "92"
             },
             {
-                "month_year": "2024-04",
+                "month_year": "Apr 2024",
                 "category": "Home & Kitchen",
                 "active_sellers": "1186",
                 "total_sellers": "6853",
@@ -208,7 +208,7 @@
                 "perc_inactive": "83"
             },
             {
-                "month_year": "2024-05",
+                "month_year": "May 2024",
                 "category": "Home & Kitchen",
                 "active_sellers": "1120",
                 "total_sellers": "10485",
@@ -216,7 +216,7 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "2024-06",
+                "month_year": "Jun 2024",
                 "category": "Home & Kitchen",
                 "active_sellers": "1108",
                 "total_sellers": "10438",
@@ -224,7 +224,7 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "2024-07",
+                "month_year": "Jul 2024",
                 "category": "Home & Kitchen",
                 "active_sellers": "1211",
                 "total_sellers": "11504",
@@ -232,7 +232,7 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "2024-08",
+                "month_year": "Aug 2024",
                 "category": "Home & Kitchen",
                 "active_sellers": "1467",
                 "total_sellers": "14485",
@@ -240,7 +240,7 @@
                 "perc_inactive": "90"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sep 2024",
                 "category": "Home & Kitchen",
                 "active_sellers": "1524",
                 "total_sellers": "13103",
@@ -248,7 +248,7 @@
                 "perc_inactive": "88"
             },
             {
-                "month_year": "2024-04",
+                "month_year": "Apr 2024",
                 "category": "Health & Wellness",
                 "active_sellers": "590",
                 "total_sellers": "5383",
@@ -256,7 +256,7 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "2024-05",
+                "month_year": "May 2024",
                 "category": "Health & Wellness",
                 "active_sellers": "440",
                 "total_sellers": "6925",
@@ -264,7 +264,7 @@
                 "perc_inactive": "94"
             },
             {
-                "month_year": "2024-06",
+                "month_year": "Jun 2024",
                 "category": "Health & Wellness",
                 "active_sellers": "413",
                 "total_sellers": "7732",
@@ -272,7 +272,7 @@
                 "perc_inactive": "95"
             },
             {
-                "month_year": "2024-07",
+                "month_year": "Jul 2024",
                 "category": "Health & Wellness",
                 "active_sellers": "514",
                 "total_sellers": "7852",
@@ -280,7 +280,7 @@
                 "perc_inactive": "93"
             },
             {
-                "month_year": "2024-08",
+                "month_year": "Aug 2024",
                 "category": "Health & Wellness",
                 "active_sellers": "634",
                 "total_sellers": "9574",
@@ -288,7 +288,7 @@
                 "perc_inactive": "93"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sep 2024",
                 "category": "Health & Wellness",
                 "active_sellers": "718",
                 "total_sellers": "7691",
@@ -296,7 +296,7 @@
                 "perc_inactive": "91"
             },
             {
-                "month_year": "2024-04",
+                "month_year": "Apr 2024",
                 "category": "Electronics",
                 "active_sellers": "192",
                 "total_sellers": "3674",
@@ -304,7 +304,7 @@
                 "perc_inactive": "95"
             },
             {
-                "month_year": "2024-05",
+                "month_year": "May 2024",
                 "category": "Electronics",
                 "active_sellers": "208",
                 "total_sellers": "3785",
@@ -312,7 +312,7 @@
                 "perc_inactive": "95"
             },
             {
-                "month_year": "2024-06",
+                "month_year": "Jun 2024",
                 "category": "Electronics",
                 "active_sellers": "231",
                 "total_sellers": "4083",
@@ -320,7 +320,7 @@
                 "perc_inactive": "94"
             },
             {
-                "month_year": "2024-07",
+                "month_year": "Jul 2024",
                 "category": "Electronics",
                 "active_sellers": "276",
                 "total_sellers": "4579",
@@ -328,7 +328,7 @@
                 "perc_inactive": "94"
             },
             {
-                "month_year": "2024-08",
+                "month_year": "Aug 2024",
                 "category": "Electronics",
                 "active_sellers": "315",
                 "total_sellers": "5833",
@@ -336,7 +336,7 @@
                 "perc_inactive": "95"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sep 2024",
                 "category": "Electronics",
                 "active_sellers": "288",
                 "total_sellers": "5760",
@@ -344,7 +344,7 @@
                 "perc_inactive": "95"
             },
             {
-                "month_year": "2024-04",
+                "month_year": "Apr 2024",
                 "category": "Appliances",
                 "active_sellers": "236",
                 "total_sellers": "2138",
@@ -352,7 +352,7 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "2024-05",
+                "month_year": "May 2024",
                 "category": "Appliances",
                 "active_sellers": "190",
                 "total_sellers": "1799",
@@ -360,7 +360,7 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "2024-06",
+                "month_year": "Jun 2024",
                 "category": "Appliances",
                 "active_sellers": "160",
                 "total_sellers": "1740",
@@ -368,7 +368,7 @@
                 "perc_inactive": "91"
             },
             {
-                "month_year": "2024-07",
+                "month_year": "Jul 2024",
                 "category": "Appliances",
                 "active_sellers": "114",
                 "total_sellers": "3167",
@@ -376,7 +376,7 @@
                 "perc_inactive": "96"
             },
             {
-                "month_year": "2024-08",
+                "month_year": "Aug 2024",
                 "category": "Appliances",
                 "active_sellers": "106",
                 "total_sellers": "3178",
@@ -384,7 +384,7 @@
                 "perc_inactive": "97"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sep 2024",
                 "category": "Appliances",
                 "active_sellers": "107",
                 "total_sellers": "1139",

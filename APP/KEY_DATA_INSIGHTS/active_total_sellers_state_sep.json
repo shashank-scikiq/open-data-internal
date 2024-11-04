@@ -8,7 +8,7 @@
         "type": "optional_stacked_bar_chart",
         "data": [
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "CHANDIGARH",
                 "active_sellers": 157.0,
                 "total_sellers": 759.0,
@@ -17,7 +17,7 @@
                 "region": "NORTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "DELHI",
                 "active_sellers": 10001.0,
                 "total_sellers": 28236.0,
@@ -26,7 +26,7 @@
                 "region": "NORTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "HARYANA",
                 "active_sellers": 3152.0,
                 "total_sellers": 10683.0,
@@ -35,7 +35,7 @@
                 "region": "NORTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "HIMACHAL PRADESH",
                 "active_sellers": 22.0,
                 "total_sellers": 229.0,
@@ -44,7 +44,7 @@
                 "region": "NORTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "JAMMU AND KASHMIR",
                 "active_sellers": 41.0,
                 "total_sellers": 285.0,
@@ -53,7 +53,7 @@
                 "region": "NORTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "LADAKH",
                 "active_sellers": 1.0,
                 "total_sellers": 8.0,
@@ -62,7 +62,7 @@
                 "region": "NORTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "PUNJAB",
                 "active_sellers": 532.0,
                 "total_sellers": 2779.0,
@@ -71,7 +71,7 @@
                 "region": "NORTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "UTTAR PRADESH",
                 "active_sellers": 4592.0,
                 "total_sellers": 16712.0,
@@ -80,7 +80,7 @@
                 "region": "NORTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "UTTARAKHAND",
                 "active_sellers": 132.0,
                 "total_sellers": 850.0,
@@ -89,7 +89,7 @@
                 "region": "NORTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "DADRA AND NAGAR HAVELI AND DAMAN AND DIU",
                 "active_sellers": 4.0,
                 "total_sellers": 22.0,
@@ -98,7 +98,7 @@
                 "region": "WESTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "GOA",
                 "active_sellers": 39.0,
                 "total_sellers": 378.0,
@@ -107,7 +107,7 @@
                 "region": "WESTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "GUJARAT",
                 "active_sellers": 1774.0,
                 "total_sellers": 8616.0,
@@ -116,7 +116,7 @@
                 "region": "WESTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "MAHARASHTRA",
                 "active_sellers": 9449.0,
                 "total_sellers": 33899.0,
@@ -125,7 +125,7 @@
                 "region": "WESTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "RAJASTHAN",
                 "active_sellers": 1039.0,
                 "total_sellers": 6100.0,
@@ -134,16 +134,16 @@
                 "region": "WESTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "ANDAMAN AND NICOBAR ISLANDS",
                 "active_sellers": 0,
                 "total_sellers": 1.0,
                 "perc_active": 0,
-                "perc_inactive": 0,
+                "perc_inactive": 100,
                 "region": "SOUTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "ANDHRA PRADESH",
                 "active_sellers": 252.0,
                 "total_sellers": 1523.0,
@@ -152,7 +152,7 @@
                 "region": "SOUTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "KARNATAKA",
                 "active_sellers": 13306.0,
                 "total_sellers": 27468.0,
@@ -161,7 +161,7 @@
                 "region": "SOUTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "KERALA",
                 "active_sellers": 184.0,
                 "total_sellers": 1463.0,
@@ -170,7 +170,7 @@
                 "region": "SOUTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "PUDUCHERRY",
                 "active_sellers": 10.0,
                 "total_sellers": 93.0,
@@ -179,7 +179,7 @@
                 "region": "SOUTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "TAMIL NADU",
                 "active_sellers": 1796.0,
                 "total_sellers": 6637.0,
@@ -188,7 +188,7 @@
                 "region": "SOUTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "TELANGANA",
                 "active_sellers": 4408.0,
                 "total_sellers": 13408.0,
@@ -197,7 +197,7 @@
                 "region": "SOUTHERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "BIHAR",
                 "active_sellers": 176.0,
                 "total_sellers": 844.0,
@@ -206,7 +206,7 @@
                 "region": "CENTRAL & EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "CHHATTISGARH",
                 "active_sellers": 78.0,
                 "total_sellers": 499.0,
@@ -215,7 +215,7 @@
                 "region": "CENTRAL & EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "JHARKHAND",
                 "active_sellers": 97.0,
                 "total_sellers": 540.0,
@@ -224,7 +224,7 @@
                 "region": "CENTRAL & EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "MADHYA PRADESH",
                 "active_sellers": 929.0,
                 "total_sellers": 3116.0,
@@ -233,7 +233,7 @@
                 "region": "CENTRAL & EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "ODISHA",
                 "active_sellers": 158.0,
                 "total_sellers": 679.0,
@@ -242,7 +242,7 @@
                 "region": "CENTRAL & EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "WEST BENGAL",
                 "active_sellers": 2224.0,
                 "total_sellers": 6606.0,
@@ -251,7 +251,7 @@
                 "region": "CENTRAL & EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "ARUNACHAL PRADESH",
                 "active_sellers": 2.0,
                 "total_sellers": 46.0,
@@ -260,7 +260,7 @@
                 "region": "NORTH EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "ASSAM",
                 "active_sellers": 99.0,
                 "total_sellers": 844.0,
@@ -269,7 +269,7 @@
                 "region": "NORTH EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "MANIPUR",
                 "active_sellers": 4.0,
                 "total_sellers": 67.0,
@@ -278,7 +278,7 @@
                 "region": "NORTH EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "MEGHALAYA",
                 "active_sellers": 8.0,
                 "total_sellers": 42.0,
@@ -287,16 +287,16 @@
                 "region": "NORTH EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "MIZORAM",
                 "active_sellers": 0,
                 "total_sellers": 19.0,
                 "perc_active": 0,
-                "perc_inactive": 0,
+                "perc_inactive": 100,
                 "region": "NORTH EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "NAGALAND",
                 "active_sellers": 2.0,
                 "total_sellers": 38.0,
@@ -305,7 +305,7 @@
                 "region": "NORTH EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "SIKKIM",
                 "active_sellers": 2.0,
                 "total_sellers": 42.0,
@@ -314,7 +314,7 @@
                 "region": "NORTH EASTERN STATES"
             },
             {
-                "month_year": "2024-09",
+                "month_year": "Sept 2024",
                 "seller_state": "TRIPURA",
                 "active_sellers": 7.0,
                 "total_sellers": 64.0,
