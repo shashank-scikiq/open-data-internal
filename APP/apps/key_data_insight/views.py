@@ -83,6 +83,7 @@ class FetchActiveSellerData(APIView):
                     }
                 ],
                 "colors": ["#A8D8B9", "#6A9BD1", "#FFA500"]
+
             }
             for i in data:
                 meta_data['series'][
@@ -96,12 +97,13 @@ class FetchActiveSellerData(APIView):
             meta_data = {
                 "series": [
                     {
-                        "name": 'Active Sellers(%)',
+                        "name": 'Active Sellers',
                         "data": []
                     }
                 ],
                 "categories": [],
-                "colors": ["#fcb65e"]
+                "colors": ["#fcb65e"],
+                "legends": ["Active Sellers"]
             }
             for i in data:
                 meta_data['series'][0]['data'].append(i['perc_active'])
@@ -109,6 +111,8 @@ class FetchActiveSellerData(APIView):
 
         if file_name == 'active_total_sellers_category':
             meta_data = {
+                "colors": ["#fcb65e"],
+                "legends": ["Active Sellers"],
                 "charts": {}
             }
             for i in data:
@@ -116,12 +120,12 @@ class FetchActiveSellerData(APIView):
                     meta_data['charts'][i['category']] = {
                             "series": [
                                 {
-                                    "name": 'Active Sellers(%)',
+                                    "name": 'Active Sellers',
                                     "data": []
                                 }
                             ],
                             "categories": [],
-                            "colors": ["#fcb65e"]
+                            
                         }
 
                 meta_data['charts'][i['category']]['series'][0]['data'].append(i['perc_active'])
@@ -129,30 +133,43 @@ class FetchActiveSellerData(APIView):
                 meta_data['charts'][i['category']]['categories'].append(i['month_year'])
         
         if file_name == 'active_total_sellers_state_sep':
-            meta_data = {}
+            meta_data = {
+                "colors": ["#fcb65e", "#dbdbdb"],
+                "legends": ["Active Sellers", "Inactive Sellers"],
+                "charts": {}
+            }
 
             for i in data:
-                if not meta_data.get(i['region'], None):
-                    meta_data[i['region']] = {
+                if not meta_data["charts"].get(i['region'], None):
+                    meta_data["charts"][i['region']] = {
                         "series": [
                             {
-                            "name": 'Active Sellers(%)',
+                            "name": 'Active Sellers',
+                            "data": []
+                            },
+                            {
+                            "name": 'Inactive Sellers',
                             "data": []
                             }
                         ],
                         "categories": [],
-                        "colors": ["#fcb65e"]
+                        
                     }
-                meta_data[i['region']]['series'][0]['data'].append(i['perc_active'])
-                meta_data[i['region']]['categories'].append(i['seller_state'])
+                meta_data["charts"][i['region']]['series'][0]['data'].append(i['perc_active'])
+                meta_data["charts"][i['region']]['series'][1]['data'].append(i['perc_inactive'])
+                meta_data["charts"][i['region']]['categories'].append(i['seller_state'])
         
         if file_name == 'qsr_distribution':
-            meta_data = {}
+            meta_data = {
+                "colors": ['#8E8FD1', '#E0E0E0'],
+                "legends": ['QSR deliveries', 'Non-QSR deliveries'],
+                "charts": {}
+            }
             for i in data:
-                meta_data[i['City']] = {
-                    "series": [i['QSR deliveries (%)'], i['Non-QSR deliveries (%)']],
-                    "colors": ['#8E8FD1', '#E0E0E0'],
-                    "labels": ['QSR deliveries (%)', 'Non-QSR deliveries (%)']
+                meta_data["charts"][i['City']] = {
+                    "series": [int(i['perc_QSR']), int(i['perc_NonQSR'])],
+                    "labels": ['QSR deliveries', 'Non-QSR deliveries'],
+                    "labelsColor": ["#fff", "#000"]
                 }
 
         
