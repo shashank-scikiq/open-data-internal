@@ -85,7 +85,11 @@ class FetchActiveSellerData(APIView):
                 "colors": ["#A8D8B9", "#6A9BD1", "#FFA500"]
 
             }
-            for i in data:
+
+            sorted_data = sorted(data, key=lambda x: x['perc_active_sellers'], reverse=True)
+            for i in sorted_data:
+                if not i['perc_active_sellers']:
+                    continue
                 meta_data['series'][
                     0 if i['Tier'] == 'Tier 1' else (1 if i['Tier'] == 'Tier 2' else 2)
                 ]['data'].append({
@@ -134,12 +138,13 @@ class FetchActiveSellerData(APIView):
         
         if file_name == 'active_total_sellers_state_sep':
             meta_data = {
-                "colors": ["#fcb65e", "#dbdbdb"],
-                "legends": ["Active Sellers", "Inactive Sellers"],
+                "colors": ["#fcb65e"],
+                "legends": ["Active Sellers"],
                 "charts": {}
             }
+            sorted_data = sorted(data, key=lambda x: x['perc_active'], reverse=True)
 
-            for i in data:
+            for i in sorted_data:
                 if not meta_data["charts"].get(i['region'], None):
                     meta_data["charts"][i['region']] = {
                         "series": [
@@ -147,16 +152,16 @@ class FetchActiveSellerData(APIView):
                             "name": 'Active Sellers',
                             "data": []
                             },
-                            {
-                            "name": 'Inactive Sellers',
-                            "data": []
-                            }
+                            # {
+                            # "name": 'Inactive Sellers',
+                            # "data": []
+                            # }
                         ],
                         "categories": [],
                         
                     }
                 meta_data["charts"][i['region']]['series'][0]['data'].append(i['perc_active'])
-                meta_data["charts"][i['region']]['series'][1]['data'].append(i['perc_inactive'])
+                # meta_data["charts"][i['region']]['series'][1]['data'].append(i['perc_inactive'])
                 meta_data["charts"][i['region']]['categories'].append(i['seller_state'])
         
         if file_name == 'qsr_distribution':
