@@ -2,7 +2,7 @@
     "cardTitle": "In which cities do Quick Service Restaurants (QSR) have a high share in delivering orders?",
     "mainText": "Over half the orders in Chennai, Surat, and Bengaluru are from Quick Service Restaurants (QSR)",
     "footnote": "Quick Service Restaurants (QSRs) are branded fast food chains such as Domino's, McDonald's, KFC, etc. Location is defined based on the delivery pincode in the confirmed order data.",
-    "dataPeriod": "Data: Apr - Sep 2024",
+    "dataPeriod": "Date Period: Apr - Sep 2024",
     "isDetailsVisible": true,
     "metaData": {
         "type": "multiple_donut_charts",
