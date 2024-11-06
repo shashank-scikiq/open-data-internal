@@ -197,7 +197,85 @@ class FetchActiveSellerData(APIView):
                 meta_data['series'][0]['data'].append(i['new'])
                 meta_data['series'][1]['data'].append(i['repeat'])
                 meta_data['categories'].append(i['Month-Year'])
-            
+        
+        if file_name == 'flow_orders_sellers':
+            meta_data = {
+                
+            }
+
+
+            for i in data:
+                if not meta_data.get(i['Category'], None):
+                    nodes = [
+                            {
+                                'id': 'Tier 1',
+                                'title': 'Tier 1',
+                                'color': "#A8D8B9"
+                            },
+                            {
+                                'id': 'Tier 2',
+                                'title': 'Tier 2',
+                                'color': '#6A9BD1'
+                            },
+                            {
+                                'id': 'Tier 3',
+                                'title': 'Tier 3',
+                                'color': '#FFA500'
+                            },
+                            {
+                                'id': i['Category'],
+                                'title': i['Category'],
+                                'color': '#707070'
+                            }
+                        ]
+                    meta_data[i['Category']] = [
+                            {   
+                                'title': 'Share (%) of sellers coming from..',
+                                'nodes': nodes, 
+                                'edges': [
+                                    {
+                                        'source': 'Tier 1',
+                                        'target': i['Category'],
+                                        'value': 0,
+                                    },
+                                    {
+                                        'source': 'Tier 2',
+                                        'target': i['Category'],
+                                        'value': 0,
+                                    },
+                                    {
+                                        'source': 'Tier 3',
+                                        'target': i['Category'],
+                                        'value': 0,
+                                    }
+                                ]
+                            },
+                            {
+                                'title': 'Share (%) of orders going to..',
+                                'nodes': nodes, 
+                                'edges': [
+                                    {
+                                        'source': i['Category'],
+                                        'target': 'Tier 1',
+                                        'value': 0,
+                                    },
+                                    {
+                                        'source': i['Category'],
+                                        'target': 'Tier 2',
+                                        'value': 0,
+                                    },
+                                    {
+                                        'source': i['Category'],
+                                        'target': 'Tier 3',
+                                        'value': 0,
+                                    }
+                                ]
+                            }
+                        ]
+                
+                meta_data[i['Category']][0 if i['Type'] == 'Sellers' else 1]['edges'][0]['value'] = int(i['Tier 1'])
+                meta_data[i['Category']][0 if i['Type'] == 'Sellers' else 1]['edges'][1]['value'] = int(i['Tier 2'])
+                meta_data[i['Category']][0 if i['Type'] == 'Sellers' else 1]['edges'][2]['value'] = int(i['Tier 3'])
 
         return meta_data
     

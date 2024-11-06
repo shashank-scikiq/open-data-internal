@@ -37,6 +37,7 @@ import { StackBarChartComponent } from '../global/charts/stack-bar-chart/stack-b
 import { AreaChartComponent } from '../global/charts/area-chart/area-chart.component';
 import { DonutChartComponent } from '../global/charts/donut-chart/donut-chart.component';
 import { OpenDataFooterComponent } from './footer/open-data-footer/open-data-footer.component';
+import { SankeyChartComponent } from '../global/charts/sankey-chart/sankey-chart.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -73,6 +74,7 @@ import { OpenDataFooterComponent } from './footer/open-data-footer/open-data-foo
     AreaChartComponent,
     DonutChartComponent,
     OpenDataFooterComponent,
+    SankeyChartComponent
   ],
   imports: [
     CommonModule,
@@ -113,6 +115,7 @@ import { OpenDataFooterComponent } from './footer/open-data-footer/open-data-foo
     AreaChartComponent,
     DonutChartComponent,
     OpenDataFooterComponent,
+    SankeyChartComponent
   ]
 })
 export class SharedModule { }

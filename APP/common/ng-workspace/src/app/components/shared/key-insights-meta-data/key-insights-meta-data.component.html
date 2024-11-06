@@ -4,16 +4,17 @@
   } @else {
   <p class="main-text margin-0">{{metaData.mainText}}</p>
   <p class="sub-text margin-0">{{metaData.subText}}</p>
-    
+
   @if(metaData?.metaData?.data?.legends ) {
-    <div class="meta-data-legends-section">
-      @for(legend of metaData.metaData.data.legends; track legend) {
-        <div class="legend-container">
-          <div class="color-div" [ngStyle]="{'background': metaData.metaData.data.colors[metaData.metaData.data.legends.indexOf(legend)]}"></div>
-           {{legend}}
-        </div>
-      }
+  <div class="meta-data-legends-section">
+    @for(legend of metaData.metaData.data.legends; track legend) {
+    <div class="legend-container">
+      <div class="color-div"
+        [ngStyle]="{'background': metaData.metaData.data.colors[metaData.metaData.data.legends.indexOf(legend)]}"></div>
+      {{legend}}
     </div>
+    }
+  </div>
   }
 
   @if(metaData?.metaData?.type == 'tree_map') {
@@ -24,29 +25,45 @@
     <div *ngFor="let chartData of object.keys(metaData.metaData.data.charts)" style="width: 196px;">
       <p class="margin-0 font-xs open-data-grey-800 text-center">{{ chartData }}</p>
       <app-area-chart [series]="metaData.metaData.data.charts[chartData].series"
-        [categories]="metaData.metaData.data.charts[chartData].categories"
-        [colors]="metaData.metaData.data.colors" [height]="196" yAxisSuffix="%">
+        [categories]="metaData.metaData.data.charts[chartData].categories" [colors]="metaData.metaData.data.colors"
+        [height]="196" yAxisSuffix="%">
       </app-area-chart>
     </div>
   </div>
   }
   @else if(metaData?.metaData?.type == 'optional_stacked_bar_chart') {
-  <app-bar-chart [fullStackType]="true" [optional]="true" [showLegends]="false"
-    [data]="metaData.metaData.data.charts" [colors]="metaData.metaData.data.colors"></app-bar-chart>
+  <app-bar-chart [fullStackType]="true" [optional]="true" [showLegends]="false" [data]="metaData.metaData.data.charts"
+    [colors]="metaData.metaData.data.colors"></app-bar-chart>
   }
 
   @else if(metaData?.metaData?.type == 'multiple_donut_charts') {
 
   <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px;">
     <div *ngFor="let key of object.keys(metaData.metaData.data.charts)">
-      <app-donut-chart [series]="metaData.metaData.data.charts[key].series" 
-        [labels]="metaData.metaData.data.charts[key].labels"
-        [colors]="metaData.metaData.data.colors" [showLegend]="false" [width]="160" size="30%"
-        [labelsColor]="metaData.metaData.data.charts[key].labelsColor">
+      <app-donut-chart [series]="metaData.metaData.data.charts[key].series"
+        [labels]="metaData.metaData.data.charts[key].labels" [colors]="metaData.metaData.data.colors"
+        [showLegend]="false" [width]="160" size="30%" [labelsColor]="metaData.metaData.data.charts[key].labelsColor">
       </app-donut-chart>
       <p class="margin-0 font-xxs open-data-grey-800 text-center">{{ key }}</p>
     </div>
   </div>
+  }
+  @else if(metaData?.metaData?.type == 'sankey_chart') {
+    <nz-select nzsize="small" 
+        [(ngModel)]="selectedSankeyOption"
+        (ngModelChange)="chooseSankeyOption($event)">
+        @for(option of object.keys(metaData.metaData.data); track option) {
+            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+        }
+    </nz-select>
+      <div style="display: flex; gap: 24px;">
+        @for(chart of metaData.metaData.data[selectedSankeyOption]; track chart; let j=$index) {
+          <div class="width-100">
+            <p class="margin-top-4 font-sm font-bolder">{{chart.title}}</p>
+            <app-sankey-chart [nodes]="chart.nodes" [edges]="chart.edges" [height]="800" [id]="'kdi-sankey-'+j"></app-sankey-chart>
+          </div>
+        }
+      </div>
   }
   @else {
   <app-area-chart [series]="metaData.metaData.data.series" [categories]="metaData.metaData.data.categories"

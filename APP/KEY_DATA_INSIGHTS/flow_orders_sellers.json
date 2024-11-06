@@ -1,0 +1,138 @@
+{
+    "cardTitle": "What is the flow of commerce between between sellers and orders fulfilled in each category?",
+    "mainText": "Food & Beverage, Grocery flow locally within Tier 1 cities, while Beauty & Personal Care, Health & Wellness have high demand in Tier 2 and Tier 3 cities",
+    "footnote": "Location for active sellers is based on the seller pincode. Location for orders is based on delivery pincode in the confirmed order data.",
+    "dataPeriod": "Date Period: Apr - Sep 2024",
+    "isDetailsVisible": true,
+    "metaData": {
+        "type": "sankey_chart",
+        "data": [
+            {
+                "Category": "Food & Beverage",
+                "Type": "Sellers",
+                "Tier 1": "72",
+                "Tier 2": "16",
+                "Tier 3": "12"
+            },
+            {
+                "Category": "Food & Beverage",
+                "Type": "Orders",
+                "Tier 1": "90",
+                "Tier 2": "5",
+                "Tier 3": "5"
+            },
+            {
+                "Category": "Grocery",
+                "Type": "Orders",
+                "Tier 1": "77",
+                "Tier 2": "7",
+                "Tier 3": "16"
+            },
+            {
+                "Category": "Grocery",
+                "Type": "Sellers",
+                "Tier 1": "53",
+                "Tier 2": "13",
+                "Tier 3": "34"
+            },
+            {
+                "Category": "Beauty & Personal Care",
+                "Type": "Sellers",
+                "Tier 1": "49",
+                "Tier 2": "29",
+                "Tier 3": "22"
+            },
+            {
+                "Category": "Beauty & Personal Care",
+                "Type": "Orders",
+                "Tier 1": "16",
+                "Tier 2": "27",
+                "Tier 3": "57"
+            },
+            {
+                "Category": "Fashion",
+                "Type": "Orders",
+                "Tier 1": "17",
+                "Tier 2": "28",
+                "Tier 3": "55"
+            },
+            {
+                "Category": "Fashion",
+                "Type": "Sellers",
+                "Tier 1": "41",
+                "Tier 2": "43",
+                "Tier 3": "16"
+            },
+            {
+                "Category": "Health & Wellness",
+                "Type": "Sellers",
+                "Tier 1": "52",
+                "Tier 2": "27",
+                "Tier 3": "21"
+            },
+            {
+                "Category": "Health & Wellness",
+                "Type": "Orders",
+                "Tier 1": "16",
+                "Tier 2": "27",
+                "Tier 3": "57"
+            },
+            {
+                "Category": "Home & Kitchen",
+                "Type": "Sellers",
+                "Tier 1": "44",
+                "Tier 2": "31",
+                "Tier 3": "25"
+            },
+            {
+                "Category": "Home & Kitchen",
+                "Type": "Orders",
+                "Tier 1": "15",
+                "Tier 2": "28",
+                "Tier 3": "57"
+            },
+            {
+                "Category": "Agri Input",
+                "Type": "Orders",
+                "Tier 1": "0",
+                "Tier 2": "16",
+                "Tier 3": "84"
+            },
+            {
+                "Category": "Agri Input",
+                "Type": "Sellers",
+                "Tier 1": "1",
+                "Tier 2": "19",
+                "Tier 3": "80"
+            },
+            {
+                "Category": "Appliances",
+                "Type": "Sellers",
+                "Tier 1": "52",
+                "Tier 2": "26",
+                "Tier 3": "22"
+            },
+            {
+                "Category": "Appliances",
+                "Type": "Orders",
+                "Tier 1": "16",
+                "Tier 2": "27",
+                "Tier 3": "57"
+            },
+            {
+                "Category": "Electronics",
+                "Type": "Orders",
+                "Tier 1": "16",
+                "Tier 2": "26",
+                "Tier 3": "58"
+            },
+            {
+                "Category": "Electronics",
+                "Type": "Sellers",
+                "Tier 1": "54",
+                "Tier 2": "27",
+                "Tier 3": "19"
+            }
+        ]
+    }
+}
