@@ -8,19 +8,6 @@
         "type": "multiple_optional_donut_charts",
         "data": [
             {
-                "City": "Ahmedabad",
-                "Category": "Total sellers",
-                "perc_QSR": 17,
-                "perc_NonQSR": 83
-            },
-            {
-                "City": "Ahmedabad",
-                "Category": "Orders delivered",
-                "perc_QSR": 38,
-                "perc_NonQSR": 62
-            },
-
-            {
                 "City": "Bengaluru",
                 "Category": "Total sellers",
                 "perc_QSR": 18,
@@ -33,6 +20,18 @@
                 "perc_QSR": 53,
                 "perc_NonQSR": 47,
                 "Value": 53
+            },
+            {
+                "City": "Ahmedabad",
+                "Category": "Total sellers",
+                "perc_QSR": 17,
+                "perc_NonQSR": 83
+            },
+            {
+                "City": "Ahmedabad",
+                "Category": "Orders delivered",
+                "perc_QSR": 38,
+                "perc_NonQSR": 62
             },
 
             {
