@@ -1,0 +1,4460 @@
+{
+    "cardTitle": "Where are the sellers fulfilling orders on ONDC located?",
+    "mainText": "One in three sellers is from Bengaluru and Delhi",
+    "footnote": "Location is defined based on the seller pincode in the confirmed order data.",
+    "dataPeriod": "Date Period: Apr - Sep 2024",
+    "isDetailsVisible": true,
+    "metaData": {
+        "type": "tree_map",
+        "data": [
+            {
+                "City": "Bengaluru",
+                "Tier": "Tier 1",
+                "active_sellers": 16910,
+                "perc_active_sellers": 17.99,
+                "perc_active_sellers_rounded": "18",
+                "labels": "Bengaluru"
+            },
+            {
+                "City": "Delhi",
+                "Tier": "Tier 1",
+                "active_sellers": 15881,
+                "perc_active_sellers": 16.89,
+                "perc_active_sellers_rounded": "16.9",
+                "labels": "Delhi"
+            },
+            {
+                "City": "Pune",
+                "Tier": "Tier 1",
+                "active_sellers": 6309,
+                "perc_active_sellers": 6.71,
+                "perc_active_sellers_rounded": "6.7",
+                "labels": "Pune"
+            },
+            {
+                "City": "Mumbai",
+                "Tier": "Tier 1",
+                "active_sellers": 5991,
+                "perc_active_sellers": 6.37,
+                "perc_active_sellers_rounded": "6.4",
+                "labels": "Mumbai"
+            },
+            {
+                "City": "Hyderabad",
+                "Tier": "Tier 1",
+                "active_sellers": 5743,
+                "perc_active_sellers": 6.11,
+                "perc_active_sellers_rounded": "6.1",
+                "labels": "Hyderabad"
+            },
+            {
+                "City": "Gurugram",
+                "Tier": "Tier 1",
+                "active_sellers": 4144,
+                "perc_active_sellers": 4.41,
+                "perc_active_sellers_rounded": "4.4",
+                "labels": "Gurugram"
+            },
+            {
+                "City": "Thane",
+                "Tier": "Tier 2",
+                "active_sellers": 3318,
+                "perc_active_sellers": 3.53,
+                "perc_active_sellers_rounded": "3.5",
+                "labels": "Thane"
+            },
+            {
+                "City": "GB Nagar",
+                "Tier": "Tier 1",
+                "active_sellers": 2582,
+                "perc_active_sellers": 2.75,
+                "perc_active_sellers_rounded": "2.8",
+                "labels": "GB Nagar"
+            },
+            {
+                "City": "K.V.Rangareddy",
+                "Tier": "Tier 3",
+                "active_sellers": 2523,
+                "perc_active_sellers": 2.68,
+                "perc_active_sellers_rounded": "2.7",
+                "labels": "K.V.Rangareddy"
+            },
+            {
+                "City": "Ghaziabad",
+                "Tier": "Tier 3",
+                "active_sellers": 2276,
+                "perc_active_sellers": 2.42,
+                "perc_active_sellers_rounded": "2.4",
+                "labels": "Ghaziabad"
+            },
+            {
+                "City": "Lucknow",
+                "Tier": "Tier 2",
+                "active_sellers": 1887,
+                "perc_active_sellers": 2.01,
+                "perc_active_sellers_rounded": "2",
+                "labels": "Lucknow"
+            },
+            {
+                "City": "Ahmedabad",
+                "Tier": "Tier 1",
+                "active_sellers": 1757,
+                "perc_active_sellers": 1.87,
+                "perc_active_sellers_rounded": "1.9",
+                "labels": "Ahmedabad"
+            },
+            {
+                "City": "Jaipur",
+                "Tier": "Tier 2",
+                "active_sellers": 1633,
+                "perc_active_sellers": 1.74,
+                "perc_active_sellers_rounded": "1.7",
+                "labels": "Jaipur"
+            },
+            {
+                "City": "Kolkata",
+                "Tier": "Tier 1",
+                "active_sellers": 1488,
+                "perc_active_sellers": 1.58,
+                "perc_active_sellers_rounded": "1.6",
+                "labels": "Kolkata"
+            },
+            {
+                "City": "North 24 Parganas",
+                "Tier": "Tier 2",
+                "active_sellers": 1240,
+                "perc_active_sellers": 1.32,
+                "perc_active_sellers_rounded": "1.3",
+                "labels": "North 24 Parganas"
+            },
+            {
+                "City": "Kanchipuram",
+                "Tier": "Tier 3",
+                "active_sellers": 1168,
+                "perc_active_sellers": 1.24,
+                "perc_active_sellers_rounded": "1.2",
+                "labels": "Kanchipuram"
+            },
+            {
+                "City": "Chennai",
+                "Tier": "Tier 1",
+                "active_sellers": 1116,
+                "perc_active_sellers": 1.19,
+                "perc_active_sellers_rounded": "1.2",
+                "labels": "Chennai"
+            },
+            {
+                "City": "Indore",
+                "Tier": "Tier 2",
+                "active_sellers": 915,
+                "perc_active_sellers": 0.97,
+                "perc_active_sellers_rounded": "1",
+                "labels": "Indore"
+            },
+            {
+                "City": "Surat",
+                "Tier": "Tier 2",
+                "active_sellers": 839,
+                "perc_active_sellers": 0.89,
+                "perc_active_sellers_rounded": "0.9",
+                "labels": "Surat"
+            },
+            {
+                "City": "Faridabad",
+                "Tier": "Tier 3",
+                "active_sellers": 588,
+                "perc_active_sellers": 0.63,
+                "perc_active_sellers_rounded": "0.6",
+                "labels": "Faridabad"
+            },
+            {
+                "City": "Bhopal",
+                "Tier": "Tier 2",
+                "active_sellers": 505,
+                "perc_active_sellers": 0.54,
+                "perc_active_sellers_rounded": "0.5",
+                "labels": "Bhopal"
+            },
+            {
+                "City": "Raigarh",
+                "Tier": "Tier 3",
+                "active_sellers": 474,
+                "perc_active_sellers": 0.5,
+                "perc_active_sellers_rounded": "0.5",
+                "labels": "Raigarh"
+            },
+            {
+                "City": "Tiruvallur",
+                "Tier": "Tier 3",
+                "active_sellers": 359,
+                "perc_active_sellers": 0.38,
+                "perc_active_sellers_rounded": "0.4",
+                "labels": "Tiruvallur"
+            },
+            {
+                "City": "Chandigarh",
+                "Tier": "Tier 2",
+                "active_sellers": 345,
+                "perc_active_sellers": 0.37,
+                "perc_active_sellers_rounded": "0.4",
+                "labels": "Chandigarh"
+            },
+            {
+                "City": "Coimbatore",
+                "Tier": "Tier 2",
+                "active_sellers": 342,
+                "perc_active_sellers": 0.36,
+                "perc_active_sellers_rounded": "0.4",
+                "labels": "Coimbatore"
+            },
+            {
+                "City": "Patna",
+                "Tier": "Tier 2",
+                "active_sellers": 295,
+                "perc_active_sellers": 0.31,
+                "perc_active_sellers_rounded": "0.3",
+                "labels": "Patna"
+            },
+            {
+                "City": "Agra",
+                "Tier": "Tier 2",
+                "active_sellers": 281,
+                "perc_active_sellers": 0.3,
+                "perc_active_sellers_rounded": "0.3",
+                "labels": "Agra"
+            },
+            {
+                "City": "Rupnagar",
+                "Tier": "Tier 3",
+                "active_sellers": 252,
+                "perc_active_sellers": 0.27,
+                "perc_active_sellers_rounded": "0.3",
+                "labels": "Rupnagar"
+            },
+            {
+                "City": "South 24 Parganas",
+                "Tier": "Tier 2",
+                "active_sellers": 240,
+                "perc_active_sellers": 0.26,
+                "perc_active_sellers_rounded": "0.3",
+                "labels": "South 24 Parganas"
+            },
+            {
+                "City": "Ludhiana",
+                "Tier": "Tier 2",
+                "active_sellers": 233,
+                "perc_active_sellers": 0.25,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Ludhiana"
+            },
+            {
+                "City": "Vadodara",
+                "Tier": "Tier 2",
+                "active_sellers": 224,
+                "perc_active_sellers": 0.24,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Vadodara"
+            },
+            {
+                "City": "Mysore",
+                "Tier": "Tier 2",
+                "active_sellers": 217,
+                "perc_active_sellers": 0.23,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Mysore"
+            },
+            {
+                "City": "Nagpur",
+                "Tier": "Tier 2",
+                "active_sellers": 193,
+                "perc_active_sellers": 0.21,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Nagpur"
+            },
+            {
+                "City": "Khorda",
+                "Tier": "Tier 3",
+                "active_sellers": 201,
+                "perc_active_sellers": 0.21,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Khorda"
+            },
+            {
+                "City": "Howrah",
+                "Tier": "Tier 2",
+                "active_sellers": 186,
+                "perc_active_sellers": 0.2,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Howrah"
+            },
+            {
+                "City": "Varanasi",
+                "Tier": "Tier 2",
+                "active_sellers": 184,
+                "perc_active_sellers": 0.2,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Varanasi"
+            },
+            {
+                "City": "Kanpur Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 189,
+                "perc_active_sellers": 0.2,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Kanpur Nagar"
+            },
+            {
+                "City": "Ernakulam",
+                "Tier": "Tier 3",
+                "active_sellers": 169,
+                "perc_active_sellers": 0.18,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Ernakulam"
+            },
+            {
+                "City": "Visakhapatnam",
+                "Tier": "Tier 2",
+                "active_sellers": 158,
+                "perc_active_sellers": 0.17,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Visakhapatnam"
+            },
+            {
+                "City": "Dehradun",
+                "Tier": "Tier 2",
+                "active_sellers": 161,
+                "perc_active_sellers": 0.17,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Dehradun"
+            },
+            {
+                "City": "Patiala",
+                "Tier": "Tier 3",
+                "active_sellers": 150,
+                "perc_active_sellers": 0.16,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Patiala"
+            },
+            {
+                "City": "Guwahati",
+                "Tier": "Tier 2",
+                "active_sellers": 152,
+                "perc_active_sellers": 0.16,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Guwahati"
+            },
+            {
+                "City": "Nashik",
+                "Tier": "Tier 2",
+                "active_sellers": 153,
+                "perc_active_sellers": 0.16,
+                "perc_active_sellers_rounded": "0.2",
+                "labels": "Nashik"
+            },
+            {
+                "City": "Ranchi",
+                "Tier": "Tier 2",
+                "active_sellers": 143,
+                "perc_active_sellers": 0.15,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Ranchi"
+            },
+            {
+                "City": "Krishna",
+                "Tier": "Tier 3",
+                "active_sellers": 132,
+                "perc_active_sellers": 0.14,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Krishna"
+            },
+            {
+                "City": "Hooghly",
+                "Tier": "Tier 3",
+                "active_sellers": 122,
+                "perc_active_sellers": 0.13,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Hooghly"
+            },
+            {
+                "City": "Meerut",
+                "Tier": "Tier 2",
+                "active_sellers": 122,
+                "perc_active_sellers": 0.13,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Meerut"
+            },
+            {
+                "City": "Muzaffarpur",
+                "Tier": "Tier 3",
+                "active_sellers": 114,
+                "perc_active_sellers": 0.12,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Muzaffarpur"
+            },
+            {
+                "City": "Panchkula",
+                "Tier": "Tier 3",
+                "active_sellers": 109,
+                "perc_active_sellers": 0.12,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Panchkula"
+            },
+            {
+                "City": "Panipat",
+                "Tier": "Tier 3",
+                "active_sellers": 101,
+                "perc_active_sellers": 0.11,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Panipat"
+            },
+            {
+                "City": "Jodhpur",
+                "Tier": "Tier 2",
+                "active_sellers": 108,
+                "perc_active_sellers": 0.11,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Jodhpur"
+            },
+            {
+                "City": "Rajkot",
+                "Tier": "Tier 2",
+                "active_sellers": 107,
+                "perc_active_sellers": 0.11,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Rajkot"
+            },
+            {
+                "City": "Aligarh",
+                "Tier": "Tier 2",
+                "active_sellers": 93,
+                "perc_active_sellers": 0.1,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Aligarh"
+            },
+            {
+                "City": "Thiruvananthapuram",
+                "Tier": "Tier 2",
+                "active_sellers": 92,
+                "perc_active_sellers": 0.1,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Thiruvananthapuram"
+            },
+            {
+                "City": "Raipur",
+                "Tier": "Tier 2",
+                "active_sellers": 94,
+                "perc_active_sellers": 0.1,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Raipur"
+            },
+            {
+                "City": "Gandhi Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 97,
+                "perc_active_sellers": 0.1,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Gandhi Nagar"
+            },
+            {
+                "City": "Jabalpur",
+                "Tier": "Tier 2",
+                "active_sellers": 90,
+                "perc_active_sellers": 0.1,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Jabalpur"
+            },
+            {
+                "City": "Bardhaman",
+                "Tier": "Tier 3",
+                "active_sellers": 92,
+                "perc_active_sellers": 0.1,
+                "perc_active_sellers_rounded": "0.1",
+                "labels": "Bardhaman"
+            },
+            {
+                "City": "Jalandhar",
+                "Tier": "Tier 2",
+                "active_sellers": 85,
+                "perc_active_sellers": 0.09,
+                "perc_active_sellers_rounded": "0.09",
+                "labels": "Jalandhar"
+            },
+            {
+                "City": "Udaipur",
+                "Tier": "Tier 3",
+                "active_sellers": 86,
+                "perc_active_sellers": 0.09,
+                "perc_active_sellers_rounded": "0.09",
+                "labels": "Udaipur"
+            },
+            {
+                "City": "Hisar",
+                "Tier": "Tier 3",
+                "active_sellers": 81,
+                "perc_active_sellers": 0.09,
+                "perc_active_sellers_rounded": "0.09",
+                "labels": "Hisar"
+            },
+            {
+                "City": "East Champaran",
+                "Tier": "Tier 3",
+                "active_sellers": 89,
+                "perc_active_sellers": 0.09,
+                "perc_active_sellers_rounded": "0.09",
+                "labels": "East Champaran"
+            },
+            {
+                "City": "Purnia",
+                "Tier": "Tier 3",
+                "active_sellers": 81,
+                "perc_active_sellers": 0.09,
+                "perc_active_sellers_rounded": "0.09",
+                "labels": "Purnia"
+            },
+            {
+                "City": "Amritsar",
+                "Tier": "Tier 2",
+                "active_sellers": 86,
+                "perc_active_sellers": 0.09,
+                "perc_active_sellers_rounded": "0.09",
+                "labels": "Amritsar"
+            },
+            {
+                "City": "Aurangabad",
+                "Tier": "Tier 2",
+                "active_sellers": 88,
+                "perc_active_sellers": 0.09,
+                "perc_active_sellers_rounded": "0.09",
+                "labels": "Aurangabad"
+            },
+            {
+                "City": "Prayagraj",
+                "Tier": "Tier 3",
+                "active_sellers": 89,
+                "perc_active_sellers": 0.09,
+                "perc_active_sellers_rounded": "0.09",
+                "labels": "Prayagraj"
+            },
+            {
+                "City": "Vaishali",
+                "Tier": "Tier 3",
+                "active_sellers": 80,
+                "perc_active_sellers": 0.09,
+                "perc_active_sellers_rounded": "0.09",
+                "labels": "Vaishali"
+            },
+            {
+                "City": "Kota",
+                "Tier": "Tier 2",
+                "active_sellers": 72,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "Kota"
+            },
+            {
+                "City": "Darjeeling",
+                "Tier": "Tier 3",
+                "active_sellers": 71,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "Darjeeling"
+            },
+            {
+                "City": "North Goa",
+                "Tier": "Tier 3",
+                "active_sellers": 74,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "North Goa"
+            },
+            {
+                "City": "West Champaran",
+                "Tier": "Tier 3",
+                "active_sellers": 72,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "West Champaran"
+            },
+            {
+                "City": "Medak",
+                "Tier": "Tier 3",
+                "active_sellers": 73,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "Medak"
+            },
+            {
+                "City": "Begusarai",
+                "Tier": "Tier 3",
+                "active_sellers": 74,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "Begusarai"
+            },
+            {
+                "City": "Moradabad",
+                "Tier": "Tier 2",
+                "active_sellers": 77,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "Moradabad"
+            },
+            {
+                "City": "Samastipur",
+                "Tier": "Tier 3",
+                "active_sellers": 78,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "Samastipur"
+            },
+            {
+                "City": "Sonipat",
+                "Tier": "Tier 3",
+                "active_sellers": 78,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "Sonipat"
+            },
+            {
+                "City": "Bareilly",
+                "Tier": "Tier 2",
+                "active_sellers": 71,
+                "perc_active_sellers": 0.08,
+                "perc_active_sellers_rounded": "0.08",
+                "labels": "Bareilly"
+            },
+            {
+                "City": "East Godavari",
+                "Tier": "Tier 3",
+                "active_sellers": 65,
+                "perc_active_sellers": 0.07,
+                "perc_active_sellers_rounded": "0.07",
+                "labels": "East Godavari"
+            },
+            {
+                "City": "Dakshina Kannada",
+                "Tier": "Tier 3",
+                "active_sellers": 64,
+                "perc_active_sellers": 0.07,
+                "perc_active_sellers_rounded": "0.07",
+                "labels": "Dakshina Kannada"
+            },
+            {
+                "City": "Solapur",
+                "Tier": "Tier 2",
+                "active_sellers": 69,
+                "perc_active_sellers": 0.07,
+                "perc_active_sellers_rounded": "0.07",
+                "labels": "Solapur"
+            },
+            {
+                "City": "Madurai",
+                "Tier": "Tier 2",
+                "active_sellers": 68,
+                "perc_active_sellers": 0.07,
+                "perc_active_sellers_rounded": "0.07",
+                "labels": "Madurai"
+            },
+            {
+                "City": "Guntur",
+                "Tier": "Tier 2",
+                "active_sellers": 64,
+                "perc_active_sellers": 0.07,
+                "perc_active_sellers_rounded": "0.07",
+                "labels": "Guntur"
+            },
+            {
+                "City": "Gwalior",
+                "Tier": "Tier 2",
+                "active_sellers": 70,
+                "perc_active_sellers": 0.07,
+                "perc_active_sellers_rounded": "0.07",
+                "labels": "Gwalior"
+            },
+            {
+                "City": "Araria",
+                "Tier": "Tier 3",
+                "active_sellers": 67,
+                "perc_active_sellers": 0.07,
+                "perc_active_sellers_rounded": "0.07",
+                "labels": "Araria"
+            },
+            {
+                "City": "Udupi",
+                "Tier": "Tier 3",
+                "active_sellers": 67,
+                "perc_active_sellers": 0.07,
+                "perc_active_sellers_rounded": "0.07",
+                "labels": "Udupi"
+            },
+            {
+                "City": "Hardoi",
+                "Tier": "Tier 3",
+                "active_sellers": 68,
+                "perc_active_sellers": 0.07,
+                "perc_active_sellers_rounded": "0.07",
+                "labels": "Hardoi"
+            },
+            {
+                "City": "Mohali",
+                "Tier": "Tier 3",
+                "active_sellers": 59,
+                "perc_active_sellers": 0.06,
+                "perc_active_sellers_rounded": "0.06",
+                "labels": "Mohali"
+            },
+            {
+                "City": "Jalgaon",
+                "Tier": "Tier 2",
+                "active_sellers": 53,
+                "perc_active_sellers": 0.06,
+                "perc_active_sellers_rounded": "0.06",
+                "labels": "Jalgaon"
+            },
+            {
+                "City": "Ballia",
+                "Tier": "Tier 3",
+                "active_sellers": 58,
+                "perc_active_sellers": 0.06,
+                "perc_active_sellers_rounded": "0.06",
+                "labels": "Ballia"
+            },
+            {
+                "City": "Gorakhpur",
+                "Tier": "Tier 2",
+                "active_sellers": 57,
+                "perc_active_sellers": 0.06,
+                "perc_active_sellers_rounded": "0.06",
+                "labels": "Gorakhpur"
+            },
+            {
+                "City": "Bilaspur",
+                "Tier": "Tier 2",
+                "active_sellers": 55,
+                "perc_active_sellers": 0.06,
+                "perc_active_sellers_rounded": "0.06",
+                "labels": "Bilaspur"
+            },
+            {
+                "City": "Kheri",
+                "Tier": "Tier 3",
+                "active_sellers": 53,
+                "perc_active_sellers": 0.06,
+                "perc_active_sellers_rounded": "0.06",
+                "labels": "Kheri"
+            },
+            {
+                "City": "Akola",
+                "Tier": "Tier 3",
+                "active_sellers": 53,
+                "perc_active_sellers": 0.06,
+                "perc_active_sellers_rounded": "0.06",
+                "labels": "Akola"
+            },
+            {
+                "City": "Dharwad",
+                "Tier": "Tier 3",
+                "active_sellers": 57,
+                "perc_active_sellers": 0.06,
+                "perc_active_sellers_rounded": "0.06",
+                "labels": "Dharwad"
+            },
+            {
+                "City": "Sitamarhi",
+                "Tier": "Tier 3",
+                "active_sellers": 53,
+                "perc_active_sellers": 0.06,
+                "perc_active_sellers_rounded": "0.06",
+                "labels": "Sitamarhi"
+            },
+            {
+                "City": "Ujjain",
+                "Tier": "Tier 2",
+                "active_sellers": 45,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Ujjain"
+            },
+            {
+                "City": "Shahjahanpur",
+                "Tier": "Tier 3",
+                "active_sellers": 50,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Shahjahanpur"
+            },
+            {
+                "City": "Jammu",
+                "Tier": "Tier 2",
+                "active_sellers": 44,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Jammu"
+            },
+            {
+                "City": "West Nimar",
+                "Tier": "Tier 3",
+                "active_sellers": 50,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "West Nimar"
+            },
+            {
+                "City": "Ahmed Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 43,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Ahmed Nagar"
+            },
+            {
+                "City": "Nalanda",
+                "Tier": "Tier 3",
+                "active_sellers": 46,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Nalanda"
+            },
+            {
+                "City": "Vellore",
+                "Tier": "Tier 2",
+                "active_sellers": 43,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Vellore"
+            },
+            {
+                "City": "Cooch Behar",
+                "Tier": "Tier 3",
+                "active_sellers": 46,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Cooch Behar"
+            },
+            {
+                "City": "Nadia",
+                "Tier": "Tier 3",
+                "active_sellers": 47,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Nadia"
+            },
+            {
+                "City": "Buldhana",
+                "Tier": "Tier 3",
+                "active_sellers": 43,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Buldhana"
+            },
+            {
+                "City": "East Singhbhum",
+                "Tier": "Tier 3",
+                "active_sellers": 49,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "East Singhbhum"
+            },
+            {
+                "City": "Madhepura",
+                "Tier": "Tier 3",
+                "active_sellers": 51,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Madhepura"
+            },
+            {
+                "City": "Jhajjar",
+                "Tier": "Tier 3",
+                "active_sellers": 49,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Jhajjar"
+            },
+            {
+                "City": "Khagaria",
+                "Tier": "Tier 3",
+                "active_sellers": 48,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Khagaria"
+            },
+            {
+                "City": "Murshidabad",
+                "Tier": "Tier 3",
+                "active_sellers": 47,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Murshidabad"
+            },
+            {
+                "City": "Pondicherry",
+                "Tier": "Tier 2",
+                "active_sellers": 49,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Pondicherry"
+            },
+            {
+                "City": "Satara",
+                "Tier": "Tier 3",
+                "active_sellers": 48,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Satara"
+            },
+            {
+                "City": "Bulandshahr",
+                "Tier": "Tier 3",
+                "active_sellers": 51,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Bulandshahr"
+            },
+            {
+                "City": "Amravati",
+                "Tier": "Tier 2",
+                "active_sellers": 44,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Amravati"
+            },
+            {
+                "City": "Bhagalpur",
+                "Tier": "Tier 3",
+                "active_sellers": 44,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Bhagalpur"
+            },
+            {
+                "City": "Nawada",
+                "Tier": "Tier 3",
+                "active_sellers": 50,
+                "perc_active_sellers": 0.05,
+                "perc_active_sellers_rounded": "0.05",
+                "labels": "Nawada"
+            },
+            {
+                "City": "Rohtas",
+                "Tier": "Tier 3",
+                "active_sellers": 34,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "South Goa",
+                "Tier": "Tier 3",
+                "active_sellers": 33,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "East Nimar",
+                "Tier": "Tier 3",
+                "active_sellers": 41,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "West Midnapore",
+                "Tier": "Tier 3",
+                "active_sellers": 38,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Sitapur",
+                "Tier": "Tier 3",
+                "active_sellers": 39,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Rohtak",
+                "Tier": "Tier 3",
+                "active_sellers": 34,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Nellore",
+                "Tier": "Tier 2",
+                "active_sellers": 38,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Bahraich",
+                "Tier": "Tier 3",
+                "active_sellers": 41,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Buxar",
+                "Tier": "Tier 3",
+                "active_sellers": 36,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Chittoor",
+                "Tier": "Tier 3",
+                "active_sellers": 42,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Chhindwara",
+                "Tier": "Tier 3",
+                "active_sellers": 42,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Saharsa",
+                "Tier": "Tier 3",
+                "active_sellers": 40,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Salem",
+                "Tier": "Tier 2",
+                "active_sellers": 35,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Barabanki",
+                "Tier": "Tier 3",
+                "active_sellers": 35,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Ambala",
+                "Tier": "Tier 3",
+                "active_sellers": 37,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Alwar",
+                "Tier": "Tier 3",
+                "active_sellers": 36,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Karnal",
+                "Tier": "Tier 3",
+                "active_sellers": 34,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Ghazipur",
+                "Tier": "Tier 3",
+                "active_sellers": 34,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Thrissur",
+                "Tier": "Tier 2",
+                "active_sellers": 38,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Kaimur",
+                "Tier": "Tier 3",
+                "active_sellers": 34,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Farrukhabad",
+                "Tier": "Tier 3",
+                "active_sellers": 36,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Erode",
+                "Tier": "Tier 2",
+                "active_sellers": 36,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Gaya",
+                "Tier": "Tier 3",
+                "active_sellers": 42,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Tiruchirappalli",
+                "Tier": "Tier 2",
+                "active_sellers": 42,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Etah",
+                "Tier": "Tier 3",
+                "active_sellers": 42,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Jalna",
+                "Tier": "Tier 3",
+                "active_sellers": 33,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Faizabad",
+                "Tier": "Tier 3",
+                "active_sellers": 39,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Gopalganj",
+                "Tier": "Tier 3",
+                "active_sellers": 33,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Malappuram",
+                "Tier": "Tier 2",
+                "active_sellers": 41,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Sikar",
+                "Tier": "Tier 3",
+                "active_sellers": 34,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Kushinagar",
+                "Tier": "Tier 3",
+                "active_sellers": 39,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Hazaribag",
+                "Tier": "Tier 3",
+                "active_sellers": 39,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Katihar",
+                "Tier": "Tier 3",
+                "active_sellers": 37,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Sangli",
+                "Tier": "Tier 2",
+                "active_sellers": 41,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Saran",
+                "Tier": "Tier 3",
+                "active_sellers": 39,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Hoshangabad",
+                "Tier": "Tier 3",
+                "active_sellers": 37,
+                "perc_active_sellers": 0.04,
+                "perc_active_sellers_rounded": "0.04",
+                "labels": ""
+            },
+            {
+                "City": "Kolhapur",
+                "Tier": "Tier 2",
+                "active_sellers": 28,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Krishnagiri",
+                "Tier": "Tier 3",
+                "active_sellers": 24,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Tirunelveli",
+                "Tier": "Tier 2",
+                "active_sellers": 29,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Malda",
+                "Tier": "Tier 3",
+                "active_sellers": 26,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Bhojpur",
+                "Tier": "Tier 3",
+                "active_sellers": 30,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Yavatmal",
+                "Tier": "Tier 3",
+                "active_sellers": 30,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Bellary",
+                "Tier": "Tier 3",
+                "active_sellers": 24,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Deoria",
+                "Tier": "Tier 3",
+                "active_sellers": 25,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Kaushambi",
+                "Tier": "Tier 3",
+                "active_sellers": 27,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Sirsa",
+                "Tier": "Tier 3",
+                "active_sellers": 24,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Dewas",
+                "Tier": "Tier 3",
+                "active_sellers": 30,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Hingoli",
+                "Tier": "Tier 3",
+                "active_sellers": 28,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Saharanpur",
+                "Tier": "Tier 2",
+                "active_sellers": 32,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Valsad",
+                "Tier": "Tier 3",
+                "active_sellers": 26,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Alappuzha",
+                "Tier": "Tier 3",
+                "active_sellers": 24,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Jaunpur",
+                "Tier": "Tier 3",
+                "active_sellers": 31,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Bharatpur",
+                "Tier": "Tier 3",
+                "active_sellers": 28,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Madhubani",
+                "Tier": "Tier 3",
+                "active_sellers": 28,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Belgaum",
+                "Tier": "Tier 2",
+                "active_sellers": 29,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Siwan",
+                "Tier": "Tier 3",
+                "active_sellers": 30,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Kalahandi",
+                "Tier": "Tier 3",
+                "active_sellers": 31,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Haridwar",
+                "Tier": "Tier 3",
+                "active_sellers": 31,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Maharajganj",
+                "Tier": "Tier 3",
+                "active_sellers": 26,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Washim",
+                "Tier": "Tier 3",
+                "active_sellers": 31,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Sonbhadra",
+                "Tier": "Tier 3",
+                "active_sellers": 32,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Shajapur",
+                "Tier": "Tier 3",
+                "active_sellers": 31,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Mathura",
+                "Tier": "Tier 2",
+                "active_sellers": 30,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Barwani",
+                "Tier": "Tier 3",
+                "active_sellers": 28,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Supaul",
+                "Tier": "Tier 3",
+                "active_sellers": 30,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Rajnandgaon",
+                "Tier": "Tier 3",
+                "active_sellers": 29,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Cuttack",
+                "Tier": "Tier 2",
+                "active_sellers": 26,
+                "perc_active_sellers": 0.03,
+                "perc_active_sellers_rounded": "0.03",
+                "labels": ""
+            },
+            {
+                "City": "Sundergarh",
+                "Tier": "Tier 3",
+                "active_sellers": 16,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Palakkad",
+                "Tier": "Tier 3",
+                "active_sellers": 18,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Fatehabad",
+                "Tier": "Tier 3",
+                "active_sellers": 21,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Unnao",
+                "Tier": "Tier 3",
+                "active_sellers": 19,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "North Dinajpur",
+                "Tier": "Tier 3",
+                "active_sellers": 16,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Dhule",
+                "Tier": "Tier 3",
+                "active_sellers": 19,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Giridh",
+                "Tier": "Tier 3",
+                "active_sellers": 19,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Ganganagar",
+                "Tier": "Tier 3",
+                "active_sellers": 20,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Kollam",
+                "Tier": "Tier 2",
+                "active_sellers": 22,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Dhamtari",
+                "Tier": "Tier 3",
+                "active_sellers": 20,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Medchal Malkajgiri",
+                "Tier": "Tier 3",
+                "active_sellers": 18,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Nagaur",
+                "Tier": "Tier 3",
+                "active_sellers": 20,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Dhanbad",
+                "Tier": "Tier 2",
+                "active_sellers": 21,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Hamirpur",
+                "Tier": "Tier 3",
+                "active_sellers": 15,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Narsinghpur",
+                "Tier": "Tier 3",
+                "active_sellers": 15,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Budaun",
+                "Tier": "Tier 3",
+                "active_sellers": 15,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Dhar",
+                "Tier": "Tier 3",
+                "active_sellers": 21,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Bokaro",
+                "Tier": "Tier 2",
+                "active_sellers": 20,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Tumkur",
+                "Tier": "Tier 3",
+                "active_sellers": 18,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Bhavnagar",
+                "Tier": "Tier 2",
+                "active_sellers": 19,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Bikaner",
+                "Tier": "Tier 2",
+                "active_sellers": 16,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Bijnor",
+                "Tier": "Tier 3",
+                "active_sellers": 17,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Bhiwani",
+                "Tier": "Tier 3",
+                "active_sellers": 15,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Sehore",
+                "Tier": "Tier 3",
+                "active_sellers": 21,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Surguja",
+                "Tier": "Tier 3",
+                "active_sellers": 23,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Junagadh",
+                "Tier": "Tier 3",
+                "active_sellers": 22,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Kozhikode",
+                "Tier": "Tier 2",
+                "active_sellers": 21,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Jyotiba Phule Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 23,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Jalpaiguri",
+                "Tier": "Tier 3",
+                "active_sellers": 22,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Seoni",
+                "Tier": "Tier 3",
+                "active_sellers": 15,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Jamnagar",
+                "Tier": "Tier 2",
+                "active_sellers": 18,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Vizianagaram",
+                "Tier": "Tier 3",
+                "active_sellers": 15,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Durg",
+                "Tier": "Tier 2",
+                "active_sellers": 23,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Jhansi",
+                "Tier": "Tier 2",
+                "active_sellers": 15,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Ramgarh",
+                "Tier": "Tier 3",
+                "active_sellers": 19,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Ajmer",
+                "Tier": "Tier 2",
+                "active_sellers": 23,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Ambedkar Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 22,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Kheda",
+                "Tier": "Tier 3",
+                "active_sellers": 16,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Warangal",
+                "Tier": "Tier 2",
+                "active_sellers": 16,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Rajgarh",
+                "Tier": "Tier 3",
+                "active_sellers": 22,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Lakhisarai",
+                "Tier": "Tier 3",
+                "active_sellers": 21,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "West Godavari",
+                "Tier": "Tier 3",
+                "active_sellers": 20,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Anand",
+                "Tier": "Tier 3",
+                "active_sellers": 21,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Bhilwara",
+                "Tier": "Tier 3",
+                "active_sellers": 22,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Kangra",
+                "Tier": "Tier 3",
+                "active_sellers": 16,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Ramanagar",
+                "Tier": "Tier 3",
+                "active_sellers": 23,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Kurnool",
+                "Tier": "Tier 2",
+                "active_sellers": 17,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Karur",
+                "Tier": "Tier 3",
+                "active_sellers": 15,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Ananthapur",
+                "Tier": "Tier 3",
+                "active_sellers": 19,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "Bagpat",
+                "Tier": "Tier 3",
+                "active_sellers": 15,
+                "perc_active_sellers": 0.02,
+                "perc_active_sellers_rounded": "0.02",
+                "labels": ""
+            },
+            {
+                "City": "West Tripura",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Dibrugarh",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Banaskantha",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Banka",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Bankura",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Baramulla",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Baran",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Barmer",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Bathinda",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Bastar",
+                "Tier": "Tier 3",
+                "active_sellers": 12,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Basti",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Bharuch",
+                "Tier": "Tier 3",
+                "active_sellers": 13,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Budgam",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Virudhunagar",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Birbhum",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Villupuram",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Baleswar",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Fatehgarh Sahib",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Azamgarh",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Firozabad",
+                "Tier": "Tier 2",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Cachar",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Koderma",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "East Midnapore",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Tinsukia",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Etawah",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Fatehpur",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Chengalpattu",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Yamuna Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 13,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Chatra",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Chandrapur",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Chandauli",
+                "Tier": "Tier 3",
+                "active_sellers": 12,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Almora",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Amreli",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Ananthnag",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Bundi",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Gonda",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Gandhinagar",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kamrup",
+                "Tier": "Tier 3",
+                "active_sellers": 14,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Hassan",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kanker",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Surendra Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Gurdaspur",
+                "Tier": "Tier 3",
+                "active_sellers": 12,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Jind",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kachchh",
+                "Tier": "Tier 3",
+                "active_sellers": 13,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Gumla",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Haveri",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Gulbarga",
+                "Tier": "Tier 3",
+                "active_sellers": 13,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Hanumangarh",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Siddharthnagar",
+                "Tier": "Tier 3",
+                "active_sellers": 14,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kanpur Dehat",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Tehri Garhwal",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Thanjavur",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Jhujhunu",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Jehanabad",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Sultanpur",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Srikakulam",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kannur",
+                "Tier": "Tier 2",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Jajapur",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Hoshiarpur",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Idukki",
+                "Tier": "Tier 3",
+                "active_sellers": 14,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Sirmaur",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Srinagar",
+                "Tier": "Tier 2",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kannauj",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Solan",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Sonitpur",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Jhabua",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Karim Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Jhalawar",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Jamui",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kapurthala",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Dindigul",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Mirzapur",
+                "Tier": "Tier 3",
+                "active_sellers": 14,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Tuticorin",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Mainpuri",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Nizamabad",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Namakkal",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Nagaon",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Sabarkantha",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Mandya",
+                "Tier": "Tier 3",
+                "active_sellers": 12,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Sheohar",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Mahendragarh",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Mandsaur",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Nainital",
+                "Tier": "Tier 3",
+                "active_sellers": 13,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Satna",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Mandi",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Pathanamthitta",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Patan",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Pauri Garhwal",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Ratlam",
+                "Tier": "Tier 3",
+                "active_sellers": 14,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kullu",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kottayam",
+                "Tier": "Tier 2",
+                "active_sellers": 12,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Shimoga",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Sagar",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Dholpur",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Nanded",
+                "Tier": "Tier 3",
+                "active_sellers": 12,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Muzaffarnagar",
+                "Tier": "Tier 3",
+                "active_sellers": 14,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Nalgonda",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Munger",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kurukshetra",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Koraput",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Shillong",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Korba",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Navsari",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Raebareli",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Nabarangapur",
+                "Tier": "Tier 3",
+                "active_sellers": 12,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Raichur",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Sambalpur",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Perambalur",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Shimla",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Mau",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Darbhanga",
+                "Tier": "Tier 3",
+                "active_sellers": 14,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Udhampur",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Uttara Kannada",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Chittorgarh",
+                "Tier": "Tier 3",
+                "active_sellers": 13,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Churu",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Cuddalore",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Cuddapah",
+                "Tier": "Tier 3",
+                "active_sellers": 13,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Darrang",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Adilabad",
+                "Tier": "Tier 3",
+                "active_sellers": 14,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Dausa",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Davangere",
+                "Tier": "Tier 3",
+                "active_sellers": 12,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Deoghar",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Udham Singh Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 12,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Mahesana",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Ganjam",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Kolar",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Ulhasnagar",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Sangrur",
+                "Tier": "Tier 3",
+                "active_sellers": 13,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Osmanabad",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Pali",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Lohardaga",
+                "Tier": "Tier 3",
+                "active_sellers": 13,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Latur",
+                "Tier": "Tier 3",
+                "active_sellers": 8,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Pilibhit",
+                "Tier": "Tier 3",
+                "active_sellers": 11,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Ratnagiri",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Prakasam",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Rampur",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Rewari",
+                "Tier": "Tier 3",
+                "active_sellers": 10,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Moga",
+                "Tier": "Tier 3",
+                "active_sellers": 5,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Pratapgarh",
+                "Tier": "Tier 3",
+                "active_sellers": 7,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Sant Ravidas Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 14,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Rajsamand",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Puri",
+                "Tier": "Tier 3",
+                "active_sellers": 6,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Panch Mahals",
+                "Tier": "Tier 3",
+                "active_sellers": 9,
+                "perc_active_sellers": 0.01,
+                "perc_active_sellers_rounded": "0.01",
+                "labels": ""
+            },
+            {
+                "City": "Nawanshahr",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Muktsar",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Navi Mumbai",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Narmada",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Narayanpur",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Nayagarh",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Nalbari",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Jamtara",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Nagapattinam",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Noida",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Morena",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Mohammadabad",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Mayurbhanj",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Marigaon",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Nilgiris",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "North Sikkim",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "North Tripura",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Nandurbar",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Pakur",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Neemuch",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Bhandara",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Raigad",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Jalor",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Papum Pare",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Barpeta",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Bassi",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Betul",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Daman",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Bidar",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Bijapur",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Bongaigaon",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Burhanpur",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Chamba",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Chamoli",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Champawat",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Chamrajnagar",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Chhatarpur",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Chickmagalur",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Chikkaballapur",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Chitradurga",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dahod",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Jaisalmer",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Palamau",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kodagu",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Parbhani",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kargil",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kathua",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Katni",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kendrapara",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Khammam",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Mahasamund",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Khandwa",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Khargone",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kinnaur",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kishanganj",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Barh",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Koppal",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Koriya",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kupwara",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Lakhimpur",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Latehar",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Lower Subansiri",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Madhyamgram",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Mahabub Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Mahabubnagar",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kasargod",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Karbi Anglong",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Peren",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Karaikal",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Pithoragarh",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Poonch",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Porbandar",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Pudukkottai",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Pulwama",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Purba Bardhaman",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Puruliya",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Rafiganj",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Mansa",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Mandla",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Mahoba",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kendujhar",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Janjgir-champa",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Jashpur",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Jharsuguda",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Jorhat",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kaithal",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kandhamal",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Kanyakumari",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Barnala",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dindori",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Bargarh",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "The Dangs",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Tarn Taran",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Tiruvannamalai",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Tiruvarur",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Tonk",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Sahibganj",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Rajauri",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "South Tripura",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Umaria",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "South Sikkim",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Rudraprayag",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "South Dinajpur",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "South 24 Parganas",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Una",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Seraikela-kharsawan",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Thiruvallur",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Rewa",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Vidisha",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Rangareddy",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Tiruppur",
+                "Tier": "Tier 2",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Tikamgarh",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Thoubal",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Banswara",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Visakhapatanam",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Wayanad",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Wardha",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "West Garo Hills",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Theni",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Sheopur",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Ramanathapuram",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Sivaganga",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Ramanagara",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "West Khasi Hills",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "West Siang",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "West Singhbhum",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Sindhudurg",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Sidhi",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Sibsagar",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Shrawasti",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Shivpuri",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Sirohi",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Shahdol",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Sheikhpura",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Khordha",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Raisen",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dungarpur",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Farukhabad",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Hailakandi",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Hathras",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Hazipur",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Imphal East",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Imphal West",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Jagatsinghapur",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Jaintia Hills",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dharmapuri",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dantewada",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Damoh",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Beed",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Amethi",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Ashok Nagar",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Bagalkot",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Bageshwar",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Balaghat",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Balangir",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Balrampur",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Banda",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Guna",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Gondia",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Golaghat",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dimapur",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Faridkot",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "East Singhbum",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "East Sikkim",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "East Siang",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "East Garo Hills",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dumka",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Jalaun",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Doda",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dhubri",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Godda",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dhenkanal",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Dhemaji",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Firozpur",
+                "Tier": "Tier 3",
+                "active_sellers": 4,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Gadag",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Gadchiroli",
+                "Tier": "Tier 3",
+                "active_sellers": 3,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Garhwa",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Goa",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Goalpara",
+                "Tier": "Tier 3",
+                "active_sellers": 2,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            },
+            {
+                "City": "Zunhebotto",
+                "Tier": "Tier 3",
+                "active_sellers": 1,
+                "perc_active_sellers": 0.0,
+                "perc_active_sellers_rounded": "0.0",
+                "labels": ""
+            }
+        ]
+    }
+}

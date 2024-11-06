@@ -1,0 +1,229 @@
+{
+    "cardTitle": "Which states lead in active seller participation?",
+    "mainText": "Karnataka and Delhi lead in seller engagement. Nearly half of sellers in Karnataka and one-third in Delhi are active.",
+    "footnote": "Active sellers are those who have made at least one order out of all the sellers registered in the state. Among union territories, Delhi, Jammu & Kashmir, and Chandigarh are considered for this analysis.",
+    "dataPeriod": "Date Period: Sep 2024",
+    "isDetailsVisible": true,
+    "metaData": {
+        "type": "optional_stacked_bar_chart",
+        "data": [
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Delhi",
+                "perc_active": 35.0,
+                "perc_inactive": 65.0,
+                "region": "NORTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Haryana",
+                "perc_active": 30.0,
+                "perc_inactive": 70.0,
+                "region": "NORTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Uttar Pradesh",
+                "perc_active": 27.0,
+                "perc_inactive": 73.0,
+                "region": "NORTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Chandigarh",
+                "perc_active": 21.0,
+                "perc_inactive": 79.0,
+                "region": "NORTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Punjab",
+                "perc_active": 19.0,
+                "perc_inactive": 81.0,
+                "region": "NORTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Uttarakhand",
+                "perc_active": 16.0,
+                "perc_inactive": 84.0,
+                "region": "NORTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Jammu & Kashmir",
+                "perc_active": 14.0,
+                "perc_inactive": 86.0,
+                "region": "NORTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Himachal Pradesh",
+                "perc_active": 10.0,
+                "perc_inactive": 90.0,
+                "region": "NORTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Maharashtra",
+                "perc_active": 28.0,
+                "perc_inactive": 72.0,
+                "region": "WESTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Gujarat",
+                "perc_active": 21.0,
+                "perc_inactive": 79.0,
+                "region": "WESTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Rajasthan",
+                "perc_active": 17.0,
+                "perc_inactive": 83.0,
+                "region": "WESTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Goa",
+                "perc_active": 10.0,
+                "perc_inactive": 90.0,
+                "region": "WESTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Karnataka",
+                "perc_active": 48.0,
+                "perc_inactive": 52.0,
+                "region": "SOUTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Telangana",
+                "perc_active": 33.0,
+                "perc_inactive": 67.0,
+                "region": "SOUTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Tamil Nadu",
+                "perc_active": 27.0,
+                "perc_inactive": 73.0,
+                "region": "SOUTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Andhra Pradesh",
+                "perc_active": 17.0,
+                "perc_inactive": 83.0,
+                "region": "SOUTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Kerala",
+                "perc_active": 13.0,
+                "perc_inactive": 87.0,
+                "region": "SOUTHERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "West Bengal",
+                "perc_active": 34.0,
+                "perc_inactive": 66.0,
+                "region": "CENTRAL & EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Madhya Pradesh",
+                "perc_active": 30.0,
+                "perc_inactive": 70.0,
+                "region": "CENTRAL & EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Odisha",
+                "perc_active": 23.0,
+                "perc_inactive": 77.0,
+                "region": "CENTRAL & EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Bihar",
+                "perc_active": 21.0,
+                "perc_inactive": 79.0,
+                "region": "CENTRAL & EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Jharkhand",
+                "perc_active": 18.0,
+                "perc_inactive": 82.0,
+                "region": "CENTRAL & EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Chhattisgarh",
+                "perc_active": 16.0,
+                "perc_inactive": 84.0,
+                "region": "CENTRAL & EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Meghalaya",
+                "perc_active": 19.0,
+                "perc_inactive": 81.0,
+                "region": "NORTH EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Assam",
+                "perc_active": 12.0,
+                "perc_inactive": 88.0,
+                "region": "NORTH EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Tripura",
+                "perc_active": 11.0,
+                "perc_inactive": 89.0,
+                "region": "NORTH EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Manipur",
+                "perc_active": 6.0,
+                "perc_inactive": 94.0,
+                "region": "NORTH EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Nagaland",
+                "perc_active": 5.0,
+                "perc_inactive": 95.0,
+                "region": "NORTH EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Sikkim",
+                "perc_active": 5.0,
+                "perc_inactive": 95.0,
+                "region": "NORTH EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Arunachal Pradesh",
+                "perc_active": 4.0,
+                "perc_inactive": 96.0,
+                "region": "NORTH EASTERN STATES"
+            },
+            {
+                "month_year": "Sep 2024",
+                "seller_state": "Mizoram",
+                "perc_active": 0.0,
+                "perc_inactive": 0.0,
+                "region": "NORTH EASTERN STATES"
+            }
+        ]
+    }
+}

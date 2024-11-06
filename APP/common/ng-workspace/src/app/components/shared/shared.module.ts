@@ -32,6 +32,10 @@ import { LogisticsSearchTopCardsComponent } from './logistics-search-top-cards/l
 import { LogisticsSearchDetailComponent } from './logistics-search-detail/logistics-search-detail.component';
 import { KeyInsightsCarouselComponent } from './key-insights-carousel/key-insights-carousel.component';
 import { KeyInsightsMetaDataComponent } from './key-insights-meta-data/key-insights-meta-data.component';
+import { TreeMapChartComponent } from '../global/charts/tree-map-chart/tree-map-chart.component';
+import { StackBarChartComponent } from '../global/charts/stack-bar-chart/stack-bar-chart.component';
+import { AreaChartComponent } from '../global/charts/area-chart/area-chart.component';
+import { DonutChartComponent } from '../global/charts/donut-chart/donut-chart.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -62,7 +66,11 @@ import { KeyInsightsMetaDataComponent } from './key-insights-meta-data/key-insig
     LogisticsSearchTopCardsComponent,
     LogisticsSearchDetailComponent,
     KeyInsightsCarouselComponent,
-    KeyInsightsMetaDataComponent
+    KeyInsightsMetaDataComponent,
+    TreeMapChartComponent,
+    StackBarChartComponent,
+    AreaChartComponent,
+    DonutChartComponent,
   ],
   imports: [
     CommonModule,
@@ -97,7 +105,11 @@ import { KeyInsightsMetaDataComponent } from './key-insights-meta-data/key-insig
     DomainDetailFiltersComponent,
     LogisticSearchFiltersComponent,
     KeyInsightsCarouselComponent,
-    KeyInsightsMetaDataComponent
+    KeyInsightsMetaDataComponent,
+    TreeMapChartComponent,
+    StackBarChartComponent,
+    AreaChartComponent,
+    DonutChartComponent,
   ]
 })
 export class SharedModule { }

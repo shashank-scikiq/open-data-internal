@@ -1,22 +1,25 @@
 <div class="key-insight-carousel-section">
-    <div class="cards-container">
-        <ul class="cards">
-            <li *ngFor="let card of items let i = index" 
-                class="card"
-                [class.card--current]="i === currentCardIndex"
-                [class.card--next]="i === nextCardIndex"
-                [class.card--out]="i === previousCardIndex"
-                (click)="onCardClick(i)">
-              <p class="margin-0 font-bolder">{{ card.cardTitle }}</p>
-            </li>
-
-        </ul>
-        <div (click)="onCardClick(nextCardIndex)" class="next-btn">
-            <i class="fa-solid fa-arrow-up"></i>
+    <div class="cards-section">
+        <div class="cards-container">
+            <div (click)="moveCard('previous')" class="next-btn">
+                <i class="fa-solid fa-chevron-left"></i>
+            </div>
+    
+            <div class="insight-card">
+                {{items[currentCardIndex].cardTitle}}
+            </div>
+            <div (click)="moveCard('next')" class="next-btn">
+                <i class="fa-solid fa-chevron-right"></i>
+            </div>
+        </div>
+        <div class="card-dots-section">
+            @for(card of items; track card.title; let i = $index) {
+                <div [ngClass]="{'dot': true, 'active': currentCardIndex == i}" (click)="onCardClick(i)">
+                </div>
+            }
         </div>
     </div>
-      
-    
+
     <app-key-insights-meta-data
         style="flex-grow: 1;"
         [metaData]="items[currentCardIndex]">
