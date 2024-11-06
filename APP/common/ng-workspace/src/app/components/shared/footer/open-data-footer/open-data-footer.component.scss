@@ -1,0 +1,109 @@
+@import "colors";
+@import "breakpoints";
+
+.footer-section {
+
+    .links-section {
+        padding: 16px 40px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        width: 100%;
+        margin: 24px auto;
+
+        @include media-below('sm') {
+            flex-direction: column;
+            place-content: center;
+            align-items: center;
+            text-align: center;
+        }
+    }
+    .links-container {
+        width: calc(25% - 12px);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        p {
+            font-weight: 700;
+        }
+
+        @include media-below('md') {
+            width: calc(50% - 12px);
+            margin-top: 24px;
+        }
+
+        // @include media-below('sm') {
+        //     width: calc(100% - 12px);
+        // }
+
+    }
+
+
+    .disclaimer-wrapper {
+        border-top: 1px solid #e2e2e2;
+        padding: 16px 40px;
+        display: flex;
+        align-items: center;
+        place-content: space-between;
+
+        @include media-below('md') {
+            flex-direction: column;
+            place-content: center;
+            align-items: center;
+            gap: 24px;
+        }
+        
+        img {
+            height: 32px;
+        }
+    
+        .copyright-text {
+            font-size: 14px;
+            color: $grey700;
+
+            @include media-below('md') {
+                font-size: 12px;
+            }
+        }
+    
+        .social-container {
+            display: flex;
+            place-content: center;
+            align-items: center;
+            gap: 12px;
+    
+            a {
+                border-radius: 4px;
+                background: #707070;
+                color: #ffffff;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                place-content: center;
+            }
+        }
+
+        .quick-links-section {
+            display: flex;
+            place-content: center;
+            align-items: center;
+            gap: 16px;
+    
+            a {
+                border-radius: 4px;
+                display: flex;
+                place-content: center;
+                align-items: center;
+                color: $grey800;
+                gap: 8px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                place-content: center;
+            }
+        }
+    }
+
+}

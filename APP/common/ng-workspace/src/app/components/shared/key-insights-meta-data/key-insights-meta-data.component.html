@@ -1,64 +1,60 @@
 <div class="meta-data-section">
-    @if(isLoadingData) {
-        Loading...
-    } @else {
-        <p class="main-text margin-0">{{metaData.mainText}}</p>
-        <p class="sub-text margin-0">{{metaData.subText}}</p>
-        
-        @if(metaData?.metaData?.type == 'tree_map') {
-          <app-tree-map-chart 
-          [series]="metaData.metaData.data.series" 
-          [colors]="metaData.metaData.data.colors">
-        </app-tree-map-chart>
-      } @else if(metaData?.metaData?.type == 'multiple_area_chart') {
-        <div style="display: flex; flex-direction: row; flex-wrap: wrap;">
-          <div *ngFor="let chartData of object.keys(metaData.metaData.data.charts)" style="width: 196px;">
-            <p class="margin-0 font-xs open-data-grey-800 text-center">{{ chartData }}</p>
-            <app-area-chart 
-              [series]="metaData.metaData.data.charts[chartData].series" 
-              [categories]="metaData.metaData.data.charts[chartData].categories" 
-              [colors]="metaData.metaData.data.charts[chartData].colors"
-              [height]="196">
-            </app-area-chart>
-          </div>
+  @if(isLoadingData) {
+  Loading...
+  } @else {
+  <p class="main-text margin-0">{{metaData.mainText}}</p>
+  <p class="sub-text margin-0">{{metaData.subText}}</p>
+    
+  @if(metaData?.metaData?.data?.legends ) {
+    <div class="meta-data-legends-section">
+      @for(legend of metaData.metaData.data.legends; track legend) {
+        <div class="legend-container">
+          <div class="color-div" [ngStyle]="{'background': metaData.metaData.data.colors[metaData.metaData.data.legends.indexOf(legend)]}"></div>
+           {{legend}}
         </div>
       }
-      @else if(metaData?.metaData?.type == 'optional_stacked_bar_chart') {
-        <app-bar-chart [optional]="true" [data]="metaData.metaData.data"></app-bar-chart>
-      }
+    </div>
+  }
 
-      @else if(metaData?.metaData?.type == 'multiple_donut_charts') {
-
-        <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px;">
-          <div *ngFor="let key of object.keys(metaData.metaData.data)">
-            <app-donut-chart 
-              [series]="metaData.metaData.data[key].series" 
-              [labels]="metaData.metaData.data[key].labels" 
-              [colors]="metaData.metaData.data[key].colors"
-              [showLegend]="false"
-              [width]="160">
-            </app-donut-chart>
-            <p class="margin-0 font-xs open-data-grey-800 text-center">{{ key }}</p>
-          </div>
-        </div>
-      }
-      @else {
-          <apx-chart
-            [series]="chartOptions.series"
-            [chart]="chartOptions.chart"
-            [grid]="chartOptions.grid"
-            [dataLabels]="chartOptions.dataLabels"
-            [plotOptions]="chartOptions.plotOptions"
-            [responsive]="chartOptions.responsive"
-            [xaxis]="chartOptions.xaxis"
-            [legend]="chartOptions.legend"
-            [fill]="chartOptions.fill"
-            [colors]="chartOptions.colors"
-          ></apx-chart>
-        }
-        <p class="footnote margin-0">{{metaData?.footnote}}</p>
-
-        <p class="font-xs font-bold" style="text-align: right;">{{metaData?.dataPeriod}}</p>
-    }
+  @if(metaData?.metaData?.type == 'tree_map') {
+  <app-tree-map-chart [series]="metaData.metaData.data.series" [colors]="metaData.metaData.data.colors">
+  </app-tree-map-chart>
+  } @else if(metaData?.metaData?.type == 'multiple_area_chart') {
+  <div style="display: flex; flex-direction: row; flex-wrap: wrap;">
+    <div *ngFor="let chartData of object.keys(metaData.metaData.data.charts)" style="width: 196px;">
+      <p class="margin-0 font-xs open-data-grey-800 text-center">{{ chartData }}</p>
+      <app-area-chart [series]="metaData.metaData.data.charts[chartData].series"
+        [categories]="metaData.metaData.data.charts[chartData].categories"
+        [colors]="metaData.metaData.data.colors" [height]="196" yAxisSuffix="%">
+      </app-area-chart>
+    </div>
   </div>
-  
+  }
+  @else if(metaData?.metaData?.type == 'optional_stacked_bar_chart') {
+  <app-bar-chart [fullStackType]="true" [optional]="true" [showLegends]="false"
+    [data]="metaData.metaData.data.charts" [colors]="metaData.metaData.data.colors"></app-bar-chart>
+  }
+
+  @else if(metaData?.metaData?.type == 'multiple_donut_charts') {
+
+  <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 20px;">
+    <div *ngFor="let key of object.keys(metaData.metaData.data.charts)">
+      <app-donut-chart [series]="metaData.metaData.data.charts[key].series" 
+        [labels]="metaData.metaData.data.charts[key].labels"
+        [colors]="metaData.metaData.data.colors" [showLegend]="false" [width]="160" size="30%"
+        [labelsColor]="metaData.metaData.data.charts[key].labelsColor">
+      </app-donut-chart>
+      <p class="margin-0 font-xxs open-data-grey-800 text-center">{{ key }}</p>
+    </div>
+  </div>
+  }
+  @else {
+  <app-area-chart [series]="metaData.metaData.data.series" [categories]="metaData.metaData.data.categories"
+    [colors]="metaData.metaData.data.colors" yAxisSuffix="%">
+  </app-area-chart>
+  }
+  <p class="footnote margin-0">{{metaData?.footnote}}</p>
+
+  <p class="font-xs font-bold" style="text-align: right;">{{metaData?.dataPeriod}}</p>
+  }
+</div>

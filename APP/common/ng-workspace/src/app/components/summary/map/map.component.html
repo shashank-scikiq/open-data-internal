@@ -34,7 +34,7 @@
     <!-- <i class="margin-0 info-text">**'Total Orders' and 'Avg Items per Order' include Digital vouchers; all other metrics are for Physical Orders only</i> -->
 </div>
 @if((mapStatewiseData && mapStateData)){
-<div class="lower-map-section">
+<!-- <div class="lower-map-section">
     <div id="mapLegends">
     </div>
     <div class="map-control-section">
@@ -62,5 +62,41 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->
+}
+
+@if((mapStatewiseData && mapStateData)){
+    <div id="mapLegends">
+    </div>
+    <div nz-menu nzMode="horizontal" nzIcon="setting" class="map-visual-btn">
+        <li nz-submenu nzPlacement="bottomCenter">
+            <span title >
+                    <i class="fa-solid fa-sliders margin-right-2"></i> Map Style & Visualization
+            </span>
+            <div nz-menu-group style="min-height: fit-content; margin-bottom: 12px; padding: 0 12px; border-radius: 8px; overflow: hidden;">
+                <div class="map-control-inner-section">
+                    @if(selectedState == 'TT'){
+                    <div style="display: flex;">
+                        @if(metrix=="map_total_active_sellers_metrics"){
+                        <button [class.active]="mapVisualOptions.isStateMap" (click)="handleMapChange('state')"
+                            class="btn-lt map-type-button" style="width: 100%; border-radius: 8px !important;">State
+                            Map</button>
+                        } @else {
+                        <button [class.active]="mapVisualOptions.isStateMap" (click)="handleMapChange('state')"
+                            class="btn-lt map-type-button">State Map</button>
+    
+                        <button [class.active]="mapVisualOptions.isDistrictMap" (click)="handleMapChange('district')"
+                            class="btn-rgt map-type-button">District Map</button>
+                        }
+                    </div>}
+                    <div style="display: flex;">
+                        <button [class.active]="mapVisualOptions.isChloropeth" (click)="handleMapChange('chloropeth')"
+                            class="btn-lt map-visual-button">Chloropeth</button>
+                        <button [class.active]="mapVisualOptions.isBubble" (click)="handleMapChange('bubble')"
+                            class="btn-rgt map-visual-button">Bubble</button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </div>
 }

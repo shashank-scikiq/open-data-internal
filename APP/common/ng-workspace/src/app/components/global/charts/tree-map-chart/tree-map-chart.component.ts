@@ -25,14 +25,15 @@ export class TreeMapChartComponent implements OnInit {
     },
     plotOptions: {
       treemap: {
-        borderRadius: 0 // Removes rounded corners
+        borderRadius: 0, // Removes rounded corners
+        enableShades: false,
       }
     },
     stroke: {
       show: false,
       // curve: "straight",
       lineCap: "butt",
-      colors: ["#676565"],
+      colors: ["#545454"],
       width: 0.1,
       dashArray: 0,
     },
@@ -63,10 +64,14 @@ export class TreeMapChartComponent implements OnInit {
         show: false,
       }
     },
-    title: {
-      text: "Multi-dimensional Treemap",
-      align: "center",
-    },
+    dataLabels: {
+      enabled: true,
+      style: {
+        fontSize: '14px',   // Adjust font size
+        fontWeight: 'light', // Set font weight to 'bold' or any other value like 'light', 'normal', etc.
+        colors: ['#545454'] // Set the color of the font (e.g., #FF5733 for a reddish color)
+      }
+    }
   };
   options: any = ['All'];
   selectedOption: any = 'All';
@@ -79,7 +84,6 @@ export class TreeMapChartComponent implements OnInit {
   }
 
   chooseOption(option: any) {
-    console.log(option, "here")
     this.activeOptionIndex = this.options.indexOf(option);
     this.updateChartData();
   }
@@ -88,7 +92,6 @@ export class TreeMapChartComponent implements OnInit {
     this.isLoading = true;
     this.chartOptions.series = this.activeOptionIndex ? [this.series[this.activeOptionIndex-1]] : this.series;
     this.chartOptions['colors'] = this.activeOptionIndex ? [this.colors[this.activeOptionIndex-1]] : this.colors;
-    console.log(this.chartOptions.colors, this.chartOptions.series)
     await delay(1000);
     this.isLoading = false;
   }

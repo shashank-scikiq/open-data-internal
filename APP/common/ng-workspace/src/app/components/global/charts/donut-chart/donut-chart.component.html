@@ -1,10 +1,14 @@
 @if(!isLoading) {
     <apx-chart
         [series]="chartOptions.series"
+        [stroke]="chartOptions.stroke"
         [chart]="chartOptions.chart"
         [colors]="chartOptions.colors"
         [dataLabels]="chartOptions.dataLabels"
         [legend]="chartOptions.legend"
         [labels]="chartOptions.labels"
+        [plotOptions]="chartOptions.plotOptions"
+        [tooltip]="chartOptions.tooltip"
+        [states]="chartOptions.states"
     ></apx-chart>
 }

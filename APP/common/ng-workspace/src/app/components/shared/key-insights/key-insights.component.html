@@ -1,10 +1,17 @@
 <div class="key-insight-main-container">
-  <div class="insight-banner">
-    Key Data Insights
+  @if(isLoading) {
+    <div class="loader-area">
+      <div class="dot-loader"></div>
+      <div class="dot-loader dot-loader--2"></div>
+      <div class="dot-loader dot-loader--3"></div>
   </div>
-  @if(elems && elems.length) {
-    <app-key-insights-carousel style="flex-grow: 1; display: flex;" [items]="elems"></app-key-insights-carousel>
+
+  } @else {
+      <app-key-insights-carousel style="flex-grow: 1; display: flex;" [items]="elems"></app-key-insights-carousel>
   }
+  <!-- <div class="insight-banner">
+    Key Data Insights
+  </div> -->
   <div class="input-section">
     <!-- <p class="text open-data-blue-700">Ask me anything!
       <span class="font-xs open-data-red-400"> (Coming soon ...)</span>
@@ -18,5 +25,7 @@
     </div>  
   </div>
 
-
+</div>
+<div class="margin-top-12">
+  <open-data-footer [smallView]="true"></open-data-footer>
 </div>

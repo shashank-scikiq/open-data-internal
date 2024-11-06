@@ -1,0 +1,52 @@
+@if(smallView) {
+    <div class="footer-section">
+        <div class="disclaimer-wrapper">
+            <a routerLink="/" class="no-decor">
+                <img src="static/assets/img/ondc_logo.svg" alt="ONDC footer logo">
+            </a>
+            <p class="copyright-text margin-0">ONDC | Open Network for Digital Commerce © 2024 </p>
+
+            <div class="quick-links-section">
+                @for(link of quickLinks; track link) {
+                <a [routerLink]="'/' + link.url" class="no-decor">
+                    <span>{{link.title}}</span>
+                </a>
+                }
+            </div>
+        </div>
+    </div>
+} @else {
+    <div class="footer-section">
+        <div class="links-section">
+            @if(data?.footerLinks) {
+            @for(footerLink of data.footerLinks; track footerLink) {
+            <div class="links-container">
+                <p class="font-sm font-bold">{{footerLink.heading}}</p>
+
+                @for(link of footerLink.links; track link) {
+                <a [href]="link.url" class="no-decor font-xs open-data-grey-700" target="_blank">
+                    {{link.title}}
+                </a>
+                }
+            </div>
+            }
+            }
+        </div>
+        <div class="disclaimer-wrapper">
+            <a routerLink="/" class="no-decor">
+                <img src="static/assets/img/ondc_logo.svg" alt="ONDC footer logo">
+            </a>
+            <p class="copyright-text margin-0">ONDC | Open Network for Digital Commerce © 2024 </p>
+
+            <div class="social-container">
+                @if(data?.socials) {
+                @for(social of data.socials; track social) {
+                <a [href]="social.url" target="_blank" class="no-decor">
+                    <i [class]="social.icon"></i>
+                </a>
+                }
+                }
+            </div>
+        </div>
+    </div>
+}

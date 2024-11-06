@@ -8,9 +8,15 @@ import { delay } from 'rxjs';
 })
 export class BarChartComponent implements OnInit {
   @Input() optional: boolean = false;
+  @Input() colors: any = [];
   @Input() data: any;
+  @Input() fullStackType: boolean = false;
+  @Input() showLegends: boolean = true;
 
   chartOptions: any = {
+    legend: {
+      show: true,
+    },
     grid: {
       yaxis: {
         lines: {
@@ -23,59 +29,44 @@ export class BarChartComponent implements OnInit {
     },
     series: [],
     chart: {
-    type: 'bar',
-    height: 350,
-    stacked: true,
-    toolbar: {
-      show: false
-    },
-    zoom: {
-      enabled: true
-    }
-  },
-  responsive: [{
-    breakpoint: 480,
-    options: {
-      legend: {
-        position: 'bottom',
-        offsetX: -10,
-        offsetY: 0
+      type: 'bar',
+      height: 350,
+      stacked: true,
+      toolbar: {
+        show: false
+      },
+      zoom: {
+        enabled: true
       }
-    }
-  }],
-  plotOptions: {
-    bar: {
-      horizontal: true,
     },
-  },
-  xaxis: {
-    categories: []
-  },
-  legend: {
-    position: 'right',
-    offsetY: 40
-  },
-  fill: {
-    opacity: 1
-  }
+    plotOptions: {
+      bar: {
+        horizontal: true,
+      },
+    },
+    xaxis: {
+      categories: []
+    },
+    fill: {
+      opacity: 1
+    }
   };
 
-  options:any = [];
+  options: any = [];
   selectedOption: any;
   isLoading: boolean = true;
 
   ngOnInit(): void {
     console.log(this.optional, this.data)
-    if(this.optional) {
+    if (this.optional) {
       this.options = Object.keys(this.data);
       this.selectedOption = this.options[0];
     }
-    
+
     this.updateChartData();
   }
 
   chooseOption(option: any) {
-    console.log(option, "here")
     this.selectedOption = option;
     this.updateChartData();
   }
@@ -84,7 +75,19 @@ export class BarChartComponent implements OnInit {
     this.isLoading = true;
     this.chartOptions.series = this.data[this.selectedOption].series;
     this.chartOptions.xaxis.categories = this.data[this.selectedOption].categories;
-    this.chartOptions['colors'] = this.data[this.selectedOption].colors;
+    this.chartOptions['colors'] = this.colors;
+    this.chartOptions.legend.show = this.showLegends;
+    if (this.fullStackType) {
+      // this.chartOptions.chart.stackType = '100%';
+      this.chartOptions.xaxis.labels = {
+        formatter: (value: number) => this.fullStackType ? `${value}%` : `${value}` // Adds '%' to only the last label
+      }
+      this.chartOptions.tooltip ={
+        y: {
+          formatter: (value: any) => {console.log(value); return `${value}%`} // Adds '%' to the tooltip value
+        }
+      }
+    }
     await delay(1000);
     this.isLoading = false;
   }
