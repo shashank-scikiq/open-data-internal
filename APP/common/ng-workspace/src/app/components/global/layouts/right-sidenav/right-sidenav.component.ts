@@ -118,7 +118,7 @@ export class RightSidenavComponent implements OnInit {
             title: 'Feedback',
             type: 'default',
             icon: 'fa-solid fa-message',
-            url: 'https://docs.google.com/forms/d/1SqqmejmJm36yY5cwH9ZL9QtBbc64f2uRHcZUzi0wbBE/edit?ts=65dee03c',
+            url: 'http://172.31.41.128:8083/s/cm35p9a5t000fhrda5e115fab',
             disabled: false,
             external: true
           },
