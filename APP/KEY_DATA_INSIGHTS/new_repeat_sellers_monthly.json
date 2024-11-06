@@ -1,0 +1,37 @@
+{
+    "cardTitle": "What share of active sellers on the network are repeat sellers?",
+    "mainText": "Eight out of ten sellers in September have done atleast one order in the last six months",
+    "footnote": "An active seller is classified as new in the month they place their first order starting April 2024. If the seller reappears in any subsequent month after April, they are then considered repeat.",
+    "dataPeriod": "Data Period: Apr - Sep 2024",
+    "isDetailsVisible": true,
+    "metaData": {
+        "type": "stacked_bar_chart",
+        "data": [
+            {
+                "month": "May'24",
+                "perc_new": 34,
+                "perc_repeat": 66
+            },
+            {
+                "month": "Jun'24",
+                "perc_new": 24,
+                "perc_repeat": 76
+            },
+            {
+                "month": "Jul'24",
+                "perc_new": 19,
+                "perc_repeat": 81
+            },
+            {
+                "month": "Aug'24",
+                "perc_new": 20,
+                "perc_repeat": 80
+            },
+            {
+                "month": "Sep'24",
+                "perc_new": 17,
+                "perc_repeat": 83
+            }
+        ]
+    }
+}

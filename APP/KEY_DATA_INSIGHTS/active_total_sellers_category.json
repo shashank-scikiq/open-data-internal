@@ -9,21 +9,51 @@
         "data": [
             {
                 "month_year": "Apr 2024",
-                "category": "Grocery",
-                "perc_active": "9",
-                "perc_inactive": "91"
+                "category": "Food & Beverage",
+                "perc_active": "32",
+                "perc_inactive": "68"
             },
             {
-                "month_year": "Aug 2024",
-                "category": "Grocery",
-                "perc_active": "9",
-                "perc_inactive": "91"
+                "month_year": "May 2024",
+                "category": "Food & Beverage",
+                "perc_active": "37",
+                "perc_inactive": "63"
+            },
+            {
+                "month_year": "Jun 2024",
+                "category": "Food & Beverage",
+                "perc_active": "38",
+                "perc_inactive": "62"
             },
             {
                 "month_year": "Jul 2024",
+                "category": "Food & Beverage",
+                "perc_active": "35",
+                "perc_inactive": "65"
+            },
+            {
+                "month_year": "Aug 2024",
+                "category": "Food & Beverage",
+                "perc_active": "26",
+                "perc_inactive": "74"
+            },
+            {
+                "month_year": "Sep 2024",
+                "category": "Food & Beverage",
+                "perc_active": "26",
+                "perc_inactive": "74"
+            },
+            {
+                "month_year": "Apr 2024",
                 "category": "Grocery",
-                "perc_active": "12",
-                "perc_inactive": "88"
+                "perc_active": "9",
+                "perc_inactive": "91"
+            },
+            {
+                "month_year": "May 2024",
+                "category": "Grocery",
+                "perc_active": "13",
+                "perc_inactive": "87"
             },
             {
                 "month_year": "Jun 2024",
@@ -32,10 +62,16 @@
                 "perc_inactive": "85"
             },
             {
-                "month_year": "May 2024",
+                "month_year": "Jul 2024",
                 "category": "Grocery",
-                "perc_active": "13",
-                "perc_inactive": "87"
+                "perc_active": "12",
+                "perc_inactive": "88"
+            },
+            {
+                "month_year": "Aug 2024",
+                "category": "Grocery",
+                "perc_active": "9",
+                "perc_inactive": "91"
             },
             {
                 "month_year": "Sep 2024",
@@ -50,16 +86,10 @@
                 "perc_inactive": "79"
             },
             {
-                "month_year": "Aug 2024",
+                "month_year": "May 2024",
                 "category": "Fashion",
-                "perc_active": "13",
-                "perc_inactive": "87"
-            },
-            {
-                "month_year": "Jul 2024",
-                "category": "Fashion",
-                "perc_active": "16",
-                "perc_inactive": "84"
+                "perc_active": "18",
+                "perc_inactive": "82"
             },
             {
                 "month_year": "Jun 2024",
@@ -68,10 +98,16 @@
                 "perc_inactive": "83"
             },
             {
-                "month_year": "May 2024",
+                "month_year": "Jul 2024",
                 "category": "Fashion",
-                "perc_active": "18",
-                "perc_inactive": "82"
+                "perc_active": "16",
+                "perc_inactive": "84"
+            },
+            {
+                "month_year": "Aug 2024",
+                "category": "Fashion",
+                "perc_active": "13",
+                "perc_inactive": "87"
             },
             {
                 "month_year": "Sep 2024",
@@ -81,18 +117,48 @@
             },
             {
                 "month_year": "Apr 2024",
+                "category": "Beauty & Personal Care",
+                "perc_active": "10",
+                "perc_inactive": "90"
+            },
+            {
+                "month_year": "May 2024",
+                "category": "Beauty & Personal Care",
+                "perc_active": "7",
+                "perc_inactive": "93"
+            },
+            {
+                "month_year": "Jun 2024",
+                "category": "Beauty & Personal Care",
+                "perc_active": "6",
+                "perc_inactive": "94"
+            },
+            {
+                "month_year": "Jul 2024",
+                "category": "Beauty & Personal Care",
+                "perc_active": "6",
+                "perc_inactive": "94"
+            },
+            {
+                "month_year": "Aug 2024",
+                "category": "Beauty & Personal Care",
+                "perc_active": "6",
+                "perc_inactive": "94"
+            },
+            {
+                "month_year": "Sep 2024",
+                "category": "Beauty & Personal Care",
+                "perc_active": "8",
+                "perc_inactive": "92"
+            },
+            {
+                "month_year": "Apr 2024",
                 "category": "Home & Kitchen",
                 "perc_active": "17",
                 "perc_inactive": "83"
             },
             {
-                "month_year": "Aug 2024",
-                "category": "Home & Kitchen",
-                "perc_active": "10",
-                "perc_inactive": "90"
-            },
-            {
-                "month_year": "Jul 2024",
+                "month_year": "May 2024",
                 "category": "Home & Kitchen",
                 "perc_active": "11",
                 "perc_inactive": "89"
@@ -104,10 +170,16 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "May 2024",
+                "month_year": "Jul 2024",
                 "category": "Home & Kitchen",
                 "perc_active": "11",
                 "perc_inactive": "89"
+            },
+            {
+                "month_year": "Aug 2024",
+                "category": "Home & Kitchen",
+                "perc_active": "10",
+                "perc_inactive": "90"
             },
             {
                 "month_year": "Sep 2024",
@@ -122,16 +194,10 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "Aug 2024",
+                "month_year": "May 2024",
                 "category": "Health & Wellness",
-                "perc_active": "7",
-                "perc_inactive": "93"
-            },
-            {
-                "month_year": "Jul 2024",
-                "category": "Health & Wellness",
-                "perc_active": "7",
-                "perc_inactive": "93"
+                "perc_active": "6",
+                "perc_inactive": "94"
             },
             {
                 "month_year": "Jun 2024",
@@ -140,10 +206,16 @@
                 "perc_inactive": "95"
             },
             {
-                "month_year": "May 2024",
+                "month_year": "Jul 2024",
                 "category": "Health & Wellness",
-                "perc_active": "6",
-                "perc_inactive": "94"
+                "perc_active": "7",
+                "perc_inactive": "93"
+            },
+            {
+                "month_year": "Aug 2024",
+                "category": "Health & Wellness",
+                "perc_active": "7",
+                "perc_inactive": "93"
             },
             {
                 "month_year": "Sep 2024",
@@ -158,16 +230,10 @@
                 "perc_inactive": "95"
             },
             {
-                "month_year": "Aug 2024",
+                "month_year": "May 2024",
                 "category": "Electronics",
                 "perc_active": "5",
                 "perc_inactive": "95"
-            },
-            {
-                "month_year": "Jul 2024",
-                "category": "Electronics",
-                "perc_active": "6",
-                "perc_inactive": "94"
             },
             {
                 "month_year": "Jun 2024",
@@ -176,7 +242,13 @@
                 "perc_inactive": "94"
             },
             {
-                "month_year": "May 2024",
+                "month_year": "Jul 2024",
+                "category": "Electronics",
+                "perc_active": "6",
+                "perc_inactive": "94"
+            },
+            {
+                "month_year": "Aug 2024",
                 "category": "Electronics",
                 "perc_active": "5",
                 "perc_inactive": "95"
@@ -194,10 +266,16 @@
                 "perc_inactive": "89"
             },
             {
-                "month_year": "Aug 2024",
+                "month_year": "May 2024",
                 "category": "Appliances",
-                "perc_active": "3",
-                "perc_inactive": "97"
+                "perc_active": "11",
+                "perc_inactive": "89"
+            },
+            {
+                "month_year": "Jun 2024",
+                "category": "Appliances",
+                "perc_active": "9",
+                "perc_inactive": "91"
             },
             {
                 "month_year": "Jul 2024",
@@ -206,16 +284,10 @@
                 "perc_inactive": "96"
             },
             {
-                "month_year": "Jun 2024",
+                "month_year": "Aug 2024",
                 "category": "Appliances",
-                "perc_active": "9",
-                "perc_inactive": "91"
-            },
-            {
-                "month_year": "May 2024",
-                "category": "Appliances",
-                "perc_active": "11",
-                "perc_inactive": "89"
+                "perc_active": "3",
+                "perc_inactive": "97"
             },
             {
                 "month_year": "Sep 2024",
