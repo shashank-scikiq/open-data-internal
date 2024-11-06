@@ -76,6 +76,7 @@ export class BarChartComponent implements OnInit {
     if (this.optional) {
       this.chartOptions.series = this.data[this.selectedOption].series;
       this.chartOptions.xaxis.categories = this.data[this.selectedOption].categories;
+
     } else {
       this.chartOptions.series = this.data.series;
       this.chartOptions.xaxis.categories = this.data.categories;
@@ -84,16 +85,17 @@ export class BarChartComponent implements OnInit {
     this.chartOptions.legend.show = this.showLegends;
     if (this.fullStackType) {
       this.chartOptions.chart.stackType = '100%';
-      this.chartOptions.xaxis.labels = {
-        formatter: (value: number) => this.fullStackType ? `${value}%` : `${value}` // Adds '%' to only the last label
-      }
-      this.chartOptions.tooltip ={
-        y: {
-          formatter: (value: any) => { return `${value}%`} // Adds '%' to the tooltip value
-        }
+    }
+    this.chartOptions.xaxis.labels = {
+      formatter: (value: number) => this.fullStackType ? `${value}%` : `${value}%` // Adds '%' to only the last label
+    }
+    this.chartOptions.tooltip ={
+      y: {
+        formatter: (value: any) => { return `${value}%`} // Adds '%' to the tooltip value
       }
     }
-    await delay(1000);
+    await delay(2000);
+    console.log(this.chartOptions)
     this.isLoading = false;
   }
 }
