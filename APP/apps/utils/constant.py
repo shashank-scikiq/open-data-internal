@@ -98,6 +98,8 @@ INSIGHTS_MAP = {
     "active_total_sellers_state_sep": 1,
     "qsr_distribution": 1,
     "flow_orders_sellers": 1,
+    "new_repeat_sellers_monthly": 1,
+    "qsr_sellers_orders": 1,
 
 
     "active_sellers_daily": 0,

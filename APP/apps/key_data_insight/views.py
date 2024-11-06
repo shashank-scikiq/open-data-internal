@@ -82,7 +82,8 @@ class FetchActiveSellerData(APIView):
                         "data": []
                     }
                 ],
-                "colors": ["#A8D8B9", "#6A9BD1", "#FFA500"]
+                "colors": ["#A8D8B9", "#6A9BD1", "#FFA500"],
+                "legends": ["Tier 1", "Tier 2", "Tier 3"]
 
             }
 
@@ -176,6 +177,45 @@ class FetchActiveSellerData(APIView):
                     "labels": ['QSR deliveries', 'Non-QSR deliveries'],
                     "labelsColor": ["#fff", "#000"]
                 }
+    
+        if file_name == 'qsr_sellers_orders':
+            meta_data = {
+                "colors": ['#8E8FD1', '#E0E0E0'],
+                "legends": ['QSR', 'Non-QSR'],
+                "charts": {}
+            }
+            for i in data:
+                if not meta_data['charts'].get(i['City'], None):
+                    meta_data['charts'][i['City']] = []
+                meta_data['charts'][i['City']].append({
+                    "series": [int(i['perc_QSR']), 100 - int(i['perc_QSR'])],
+                    "labels": ['QSR', 'Non-QSR'],
+                    "labelsColor": ["#fff", "#000"],
+                    "title": i['Category']
+                })
+
+        
+        if file_name == 'new_repeat_sellers_monthly':
+            meta_data = {
+                "series": [
+                    {
+                        "name": 'New Sellers',
+                        "data": []
+                    },
+                    {
+                        "name": 'Repeat Sellers',
+                        "data": []
+                    }
+                ],
+                "categories": [],
+                "colors": ["#B7B94C", "#3657BA"],
+                "legends": ["New Sellers", "Repeat Sellers"]
+            }
+
+            for i in data:
+                meta_data['series'][0]['data'].append(i['perc_new'])
+                meta_data['series'][1]['data'].append(i['perc_repeat'])
+                meta_data['categories'].append(i['month'])
 
         
         if file_name == 'new_repeat_sellers':
@@ -199,10 +239,7 @@ class FetchActiveSellerData(APIView):
                 meta_data['categories'].append(i['Month-Year'])
         
         if file_name == 'flow_orders_sellers':
-            meta_data = {
-                
-            }
-
+            meta_data = {}
 
             for i in data:
                 if not meta_data.get(i['Category'], None):
