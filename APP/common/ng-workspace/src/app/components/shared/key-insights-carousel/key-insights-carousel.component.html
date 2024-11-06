@@ -1,27 +1,29 @@
 <div class="key-insight-carousel-section">
     <div class="cards-section">
-        <div class="cards-container">
-            <div (click)="moveCard('previous')" class="next-btn">
-                <i class="fa-solid fa-chevron-left"></i>
-            </div>
-    
-            <div class="insight-card">
-                {{items[currentCardIndex].cardTitle}}
-            </div>
-            <div (click)="moveCard('next')" class="next-btn">
-                <i class="fa-solid fa-chevron-right"></i>
-            </div>
-        </div>
-        <div class="card-dots-section">
-            @for(card of items; track card.title; let i = $index) {
-                <div [ngClass]="{'dot': true, 'active': currentCardIndex == i}" (click)="onCardClick(i)">
+        <div class="cards-wrapper">
+            <div class="cards-container">
+                <div (click)="moveCard('previous')" class="next-btn">
+                    <i class="fa-solid fa-chevron-left"></i>
                 </div>
-            }
+        
+                <div class="insight-card">
+                    {{items[currentCardIndex].cardTitle}}
+                </div>
+                <div (click)="moveCard('next')" class="next-btn">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </div>
+            </div>
+            <div class="card-dots-section">
+                @for(card of items; track card.title; let i = $index) {
+                    <div [ngClass]="{'dot': true, 'active': currentCardIndex == i}" (click)="onCardClick(i)">
+                    </div>
+                }
+            </div>
         </div>
     </div>
 
     <app-key-insights-meta-data
-        style="flex-grow: 1;"
+        style="flex-grow: 1; width: 60%;"
         [metaData]="items[currentCardIndex]">
     </app-key-insights-meta-data>
 </div>

@@ -36,6 +36,7 @@ import { TreeMapChartComponent } from './components/global/charts/tree-map-chart
 import { StackBarChartComponent } from './components/global/charts/stack-bar-chart/stack-bar-chart.component';
 import { AreaChartComponent } from './components/global/charts/area-chart/area-chart.component';
 import { DonutChartComponent } from './components/global/charts/donut-chart/donut-chart.component';
+import { SankeyChartComponent } from './components/global/charts/sankey-chart/sankey-chart.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 

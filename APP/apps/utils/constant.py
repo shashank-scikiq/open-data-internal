@@ -97,6 +97,7 @@ INSIGHTS_MAP = {
     "active_total_sellers_national": 1,
     "active_total_sellers_state_sep": 1,
     "qsr_distribution": 1,
+    "flow_orders_sellers": 1,
 
 
     "active_sellers_daily": 0,

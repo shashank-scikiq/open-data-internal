@@ -67,10 +67,19 @@ export class KeyInsightsMetaDataComponent implements OnChanges {
   isLoadingData: boolean = true;
   object=Object;
 
+  selectedSankeyOption: any = '';
+
 
   ngOnChanges(changes: SimpleChanges): void {
     this.metaData = changes['metaData']['currentValue'];
+    if (this.metaData?.metaData?.type == 'sankey_chart') {
+      this.selectedSankeyOption = Object.keys(this.metaData.metaData.data)[0]
+    }
     this.loadData();
+  }
+
+  chooseSankeyOption(option: any) {
+    this.selectedSankeyOption = option;
   }
 
   async loadData() {
