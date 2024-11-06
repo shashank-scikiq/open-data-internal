@@ -669,7 +669,7 @@ class FetchTopStatesSellers(SummaryBaseDataAPI):
 
         params_list = [value for value in params.values() if value not in [None, 'None']]
 
-        p_d = "FetchTopDistrictSellers_Retail_b2c_$$$".join(params_list)
+        p_d = "FetchTopStatesSellers_Retail_b2c_$$$".join(params_list)
 
         data = get_cached_data(p_d)
 
