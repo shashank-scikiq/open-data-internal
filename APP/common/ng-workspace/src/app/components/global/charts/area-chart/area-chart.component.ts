@@ -11,6 +11,7 @@ export class AreaChartComponent implements OnInit {
   @Input() colors: any = [];
   @Input() categories: any = [];
   @Input() height: any = 350;
+  @Input() yAxisSuffix: string = '';
 
   chartOptions: any = {
     colors: [],
@@ -22,12 +23,20 @@ export class AreaChartComponent implements OnInit {
         }
       }
     },
+    yaxis: {
+      labels: {
+
+      }
+    },
     chart: {
       type: 'area',
       stacked: true,
       stackType: "100%",
       toolbar: {
         show: false,
+      },
+      zoom: {
+        enabled: false,
       }
     },
     responsive: [
@@ -79,6 +88,11 @@ export class AreaChartComponent implements OnInit {
     this.chartOptions.xaxis.categories = this.categories;
     this.chartOptions.chart.height = this.height;
     this.chartOptions['colors'] = this.colors;
+    if(this.yAxisSuffix) {
+      this.chartOptions.yaxis.labels = {
+        formatter: (value: any) => `${value}${this.yAxisSuffix}`
+      }
+    }
     await delay(1000);
     this.isLoading = false;
   }

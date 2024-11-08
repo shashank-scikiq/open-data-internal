@@ -1,0 +1,258 @@
+{
+    "cardTitle": "What is the penetration of Quick Service Restaurants (QSRs) across cities?",
+    "mainText": "Bengaluru, Chennai and Surat have high QSR demand while having low penetration of QSR outlets",
+    "footnote": "Quick Service Restaurants (QSRs) are branded fast food chains such as Domino's, McDonald's, KFC, etc. Location for orders is based on delivery pincode in the confirmed order data. Location for sellers is based on the pincode where they are registered.",
+    "dataPeriod": "Date Period: Sep 2024",
+    "isDetailsVisible": true,
+    "metaData": {
+        "type": "multiple_optional_donut_charts",
+        "data": [
+            {
+                "City": "Bengaluru",
+                "Category": "Total sellers",
+                "perc_QSR": 18,
+                "perc_NonQSR": 82
+            },
+            {
+                "City": "Bengaluru",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 53,
+                "perc_NonQSR": 47,
+                "Value": 53
+            },
+            {
+                "City": "Ahmedabad",
+                "Category": "Total sellers",
+                "perc_QSR": 17,
+                "perc_NonQSR": 83
+            },
+            {
+                "City": "Ahmedabad",
+                "Category": "Orders delivered",
+                "perc_QSR": 38,
+                "perc_NonQSR": 62
+            },
+
+            {
+                "City": "Chennai",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 37,
+                "perc_NonQSR": 63,
+                "Value": 37
+            },
+            {
+                "City": "Chennai",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 62,
+                "perc_NonQSR": 38,
+                "Value": 62
+            },
+            {
+                "City": "Delhi",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 12,
+                "perc_NonQSR": 88,
+                "Value": 12
+            },
+            {
+                "City": "Delhi",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 17,
+                "perc_NonQSR": 62,
+                "Value": 83
+            },
+
+
+            {
+                "City": "GB Nagar",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 17,
+                "perc_NonQSR": 83,
+                "Value": 17
+            },
+            {
+                "City": "GB Nagar",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 28,
+                "perc_NonQSR": 72,
+                "Value": 28
+            },
+
+            {
+                "City": "Gurugram",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 17,
+                "perc_NonQSR": 62,
+                "Value": 83
+            },
+            {
+                "City": "Gurugram",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 32,
+                "perc_NonQSR": 68,
+                "Value": 32
+            },
+            {
+                "City": "Hyderabad",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 17,
+                "perc_NonQSR": 83,
+                "Value": 17
+            },
+            {
+                "City": "Hyderabad",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 16,
+                "perc_NonQSR": 62,
+                "Value": 84
+            },
+            {
+                "City": "Jaipur",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 10,
+                "perc_NonQSR": 90,
+                "Value": 10
+            },
+            {
+                "City": "Jaipur",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 33,
+                "perc_NonQSR": 67,
+                "Value": 33
+            },
+            {
+                "City": "K.V.Rangareddy",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 16,
+                "perc_NonQSR": 84,
+                "Value": 16
+            },
+            {
+                "City": "K.V.Rangareddy",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 14,
+                "perc_NonQSR": 62,
+                "Value": 86
+            },
+
+            {
+                "City": "Kolkata",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 22,
+                "perc_NonQSR": 62,
+                "Value": 78
+            },
+            {
+                "City": "Kolkata",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 19,
+                "perc_NonQSR": 62,
+                "Value": 81
+            },
+
+
+            {
+                "City": "Lucknow",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 9,
+                "perc_NonQSR": 62,
+                "Value": 91
+            },
+            {
+                "City": "Lucknow",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 25,
+                "perc_NonQSR": 62,
+                "Value": 75
+            },
+
+            {
+                "City": "Mumbai",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 19,
+                "perc_NonQSR": 62,
+                "Value": 81
+            },
+            {
+                "City": "Mumbai",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 30,
+                "perc_NonQSR": 70,
+                "Value": 70
+            },
+
+            {
+                "City": "Pune",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 19,
+                "perc_NonQSR": 81,
+                "Value": 81
+            },
+            {
+                "City": "Pune",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 26,
+                "perc_NonQSR": 74,
+                "Value": 74
+            },
+
+            {
+                "City": "Surat",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 37,
+                "perc_NonQSR": 63,
+                "Value": 37
+            },
+            {
+                "City": "Surat",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 72,
+                "perc_NonQSR": 28,
+                "Value": 72
+            },
+
+
+            {
+                "City": "Thane",
+                "Category": "Total sellers",
+                "Type": "QSR",
+                "perc_QSR": 23,
+                "perc_NonQSR": 77,
+                "Value": 23
+            },
+            {
+                "City": "Thane",
+                "Category": "Orders delivered",
+                "Type": "QSR",
+                "perc_QSR": 33,
+                "perc_NonQSR": 67,
+                "Value": 33
+            }
+        ]
+    }
+}

@@ -1,6 +1,6 @@
 {
     "cardTitle": "What share of sellers are active on the network?",
-    "mainText": "Three in ten sellers on the network are active.",
+    "mainText": "Three in ten sellers on the network are active",
     "subText": "Active sellers as percentage of total sellers (Apr - Sep 2024, in %)",
     "footnote": "Total sellers are sellers registered on the network. Active sellers are sellers that have made atleast one order.",
     "isDetailsVisible": true,

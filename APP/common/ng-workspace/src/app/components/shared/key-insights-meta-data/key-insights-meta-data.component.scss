@@ -4,7 +4,7 @@
 
 .meta-data-section {
     display: flex;
-    padding: 1rem 3rem;
+    padding: 4rem 1rem 3rem;
     place-content: center;
     // align-items: center;
     flex-direction: column;
@@ -28,5 +28,28 @@
         line-height: 14px;
         color: $grey700;
         font-style: italic;
+    }
+}
+
+.meta-data-legends-section {
+    display: flex;
+    place-content: start;
+    gap: 12px;
+    margin: 4px 16px;
+
+    .color-div {
+        height: 16px;
+        width: 16px;
+        border-radius: 2px;
+    }
+
+    .legend-container {
+        display: flex;
+        gap: 4px;
+        place-content: center;
+        align-items: center;
+        font-size: 14px;
+        color: $grey800;
+        line-height: 16px;
     }
 }
