@@ -55,6 +55,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.BrokenLinkEmailsMiddleware',
+    'security.middleware.SQLInjectionMiddleware',
 ]
 
 CACHE_MIDDLEWARE_SECONDS = 60
