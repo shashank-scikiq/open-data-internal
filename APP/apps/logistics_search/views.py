@@ -5,7 +5,7 @@ from django.http import HttpRequest
 from django.core.cache import cache
 from django.db import connection
 from collections import defaultdict
-
+from rest_framework import status
 import pandas as pd
 import numpy as np
 from datetime import datetime
@@ -256,7 +256,9 @@ class FetchCityWiseData(SummaryBaseDataAPI):
 
 
 class FetchDateRange(SummaryBaseDataAPI):
+    
     def get(self, request, *args):
+
         df = data_service.get_logistic_searched_data_date_range()
         date_range = {  
             "min_date": df.min()['min'].strftime('%Y-%m-%d'),
@@ -264,3 +266,37 @@ class FetchDateRange(SummaryBaseDataAPI):
         }
 
         return JsonResponse(date_range, status=200, safe=False) 
+
+
+class FetchStateWiseData(APIView):
+    @exceptionAPI(ondcLogger)
+    def get(self, request, *args):
+        """
+            APIView BaseDataAPI FetchStateWiseData
+        """
+        start_date = request.GET.get('startDate')
+        end_date = request.GET.get('endDate')
+        if not start_date and not end_date:
+            error_message={'error': f"an error occured"}
+            return JsonResponse(error_message, status=400)
+        params = {
+
+            'start_date' : start_date,
+            'end_date' : end_date
+        }
+        try:
+            cache_key = f"Logistic_search_FetchStateWiseData_{self.generate_cache_key(params)}"
+            data = get_cached_data(cache_key)
+            if data is None:
+                df = data_service.get_total_searches_per_state(start_date, end_date)
+                result = df.to_dict(orient="records")
+                return JsonResponse({"mapdata": result}, safe=False)
+        
+        except Exception as e:
+            error_message = {'error': f"An error occurred: {str(e)}"}
+            return JsonResponse(error_message, status=500)
+
+    def generate_cache_key(self, params):
+        p_d = params.values()
+        cleaned_list = [element for element in p_d if element not in [None, 'None']]
+        return "FetchStateWiseData_Logistic_Search_$$$".join(cleaned_list)
