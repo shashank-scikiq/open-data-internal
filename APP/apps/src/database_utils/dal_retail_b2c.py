@@ -552,7 +552,6 @@ class DataAccessLayer:
         """
         
         orders_count = self.db_utility.execute_query(query)
-        import pdb; pdb.set_trace()
         return orders_count
 
     
@@ -1051,7 +1050,6 @@ class DataAccessLayer:
             and sub.seller_state is not NULL
             ORDER BY sub.delivery_state, sub.flow_percentage DESC;
         """
-
         df = self.db_utility.execute_query(query)
         return df
 

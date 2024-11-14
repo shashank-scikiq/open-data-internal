@@ -689,6 +689,9 @@ class FetchTopStatesSellers(SummaryBaseDataAPI):
         return JsonResponse(formatted_data, safe=False)
 
 
+class FetchStateZonalOrder(SummaryBaseDataAPI):
+    pass
+
 @log_function_call(ondcLogger)
 def angular_app(request):
     return render(request, 'common/web/index.html', {})

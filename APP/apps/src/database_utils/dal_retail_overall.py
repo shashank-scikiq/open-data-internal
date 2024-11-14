@@ -923,7 +923,7 @@ class DataAccessLayer:
                 -- COALESCE(NULLIF(TRIM(sub.seller_district), ''), 'Missing') AS seller_district,
                 sub.seller_district,
                 sub.order_demand,
-                ROUND(sub.flow_percentage, 2) AS flow_percentage
+                ROUND(sub.flow_percentage::numeric, 2) AS flow_percentage
             FROM (
                 SELECT 
                     om.delivery_district,
@@ -988,7 +988,6 @@ class DataAccessLayer:
             and sub.seller_district != ''
             ORDER BY sub.delivery_district, sub.flow_percentage DESC;
         """
-
         df = self.db_utility.execute_query(query, parameters)
         return df
 
