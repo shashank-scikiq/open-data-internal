@@ -206,6 +206,8 @@ class SummaryBaseDataAPI(APIView):
         from_area = 'seller_state'
         if tree_type == 'delivery_district':
             from_area = 'seller_district'
+        elif tree_type== 'seller_district':
+            from_area = 'delivery_district'
         state_data = {}
         for state in zonal_commerce_df[tree_type].unique():
             state_data = {

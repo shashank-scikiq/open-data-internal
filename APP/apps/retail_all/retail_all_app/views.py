@@ -689,9 +689,63 @@ class FetchTopStatesSellers(SummaryBaseDataAPI):
         return JsonResponse(formatted_data, safe=False)
 
 
-class FetchStateZonalOrder(SummaryBaseDataAPI):
-    pass
+class FetchTop5DeliveryState(SummaryBaseDataAPI):
+    """
+        API for fetching top 5 delivery state
+    
+    """
+    @exceptionAPI(ondcLogger)
+    def get(self, request, *args, **Kwargs):
+        """
+        APIView BaseDataAPI FetchTop5DeliveryState
+        """
+        params= self.extract_common_params(request)
+        params['domain_name'] = 'Retail'
+        param_list= [value for value in params.values() if value not in [None, 'None']]
+
+        p_d = "FetchTop5DeliveryState_Retail_Overall_$$$".join(param_list)
+        data= get_cached_data(p_d)
+        if data is None:
+            data= data_service.get_overall_top_delivery_state(**params)
+            formatted_data= self.zonal_commerce_format(data, tree_type="delivery_state")
+            cache.set(p_d, formatted_data, constant.CACHE_EXPIRY)
+        else:
+            formatted_data=data
+        return JsonResponse(formatted_data, safe=False)
 
 @log_function_call(ondcLogger)
 def angular_app(request):
     return render(request, 'common/web/index.html', {})
+
+
+class FetchTop5DeliveryDistrict(SummaryBaseDataAPI):
+    """
+    API view for fetching the top district orders.
+    """
+
+    @exceptionAPI(ondcLogger)
+    def get(self, request, *args, **kwargs):
+        """
+        APIView BaseDataAPI FetchTop5DeliveryDistrict
+        """
+        params = self.extract_common_params(request)
+       
+        params['domain_name'] = 'Retail'
+        district = request.query_params.get('district_name', None)
+        if district == 'None' or district == 'undefined':
+            district = None
+        params['district'] = district
+        params_list = [value for value in params.values() if value not in [None, 'None']]
+
+        p_d = "FetchTop5DeliveryDistrict_Retail_Overall_$$$".join(params_list)
+
+        data = get_cached_data(p_d)
+
+        if data is None:
+
+            data = data_service.get_overall_top_delivery_district(**params)
+            formatted_data = self.zonal_commerce_format(data, tree_type='seller_district')
+            cache.set(p_d, formatted_data, constant.CACHE_EXPIRY)
+        else:
+            formatted_data = data
+        return JsonResponse(formatted_data, safe=False)

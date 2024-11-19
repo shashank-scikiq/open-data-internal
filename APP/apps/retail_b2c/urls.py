@@ -31,6 +31,8 @@ urlpatterns = [
     path('api/retail/b2c/max_sellers/', views.FetchMaxSellersAPI.as_view(), name='max_sellers'),
     path('api/retail/b2c/sellers_per_state/', views.FetchSellersPerState.as_view(), name='seller_per_state'),
 
+    path('api/retail/b2c/top_delivery_states/', views.FetchTop5DeliveryState.as_view(), name='top_delivery_states'),
+    path('api/retail/b2c/top_delivery_district/', views.FetchTop5DeliveryDistrict.as_view(), name='top_delivery_district'),
 ]
 
 
