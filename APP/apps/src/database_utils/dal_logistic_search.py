@@ -83,6 +83,7 @@ class DataAccessLayer:
                 from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
                     where date between '{start_date}' and '{end_date}' and {where_condition} group by ls.pick_up_pincode  )
                     order by pick_up_pincode, time_of_day"""
+        
         df = self.db_utility.execute_query(query)
         return df
     
@@ -157,3 +158,25 @@ class DataAccessLayer:
         """
         df = self.db_utility.execute_query(query)
         return df
+    
+
+    @log_function_call(ondcLogger)
+    def get_total_searches_per_state(self, start_date=None, end_date=None):
+        table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
+        date_filter = ""
+        if start_date and end_date:
+            date_filter = f"WHERE date BETWEEN '{start_date}' AND '{end_date}'"
+        
+        query = f"""
+        SELECT DISTINCT state, SUM(searched) AS total_searches, sum(confirmed) as order_confirmed
+        FROM {table_name}
+        {date_filter} 
+        AND time_of_day IN ('3am-6am', '6am-8am', '8am-10am', '10am-12pm', '12pm-3pm', 
+                      '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am') 
+        GROUP BY state
+        ORDER BY total_searches DESC
+        """
+        
+        df= self.db_utility.execute_query(query)
+        return df
+

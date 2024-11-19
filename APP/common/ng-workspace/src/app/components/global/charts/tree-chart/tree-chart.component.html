@@ -1,9 +1,9 @@
 <div class="options-container">
     <div class="switch-container">
-        <div class="btn text-center font-xxs"  [class.disabled]="selectedType != 'states'"
-            [class.active]="selectedType == 'states'">States</div>
-        <div class="btn text-center font-xxs" [class.disabled]="selectedType != 'districts'"
-            [class.active]="selectedType == 'districts'">Districts</div>
+        <div class="btn text-center font-xxs"
+            [class.active]="selectedType == 'states'" (click)="updateView('states')">States</div>
+        <div class="btn text-center font-xxs" [class.disabled]="selectedState == 'TT'"
+            [class.active]="selectedType == 'districts'" (click)="updateView('districts')">Districts</div>
     </div>
 
     <div class="selection-section">

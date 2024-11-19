@@ -125,3 +125,19 @@ class DataService:
     
     def get_logistic_searched_data_date_range(self):
         return self.dal.fetch_logistic_searched_data_date_range()
+    
+    def get_total_searches_per_state(self, start_date, end_date):
+        return self.dal.get_total_searches_per_state(start_date, end_date)
+    
+
+    '''FetchTop5DeliveryState - tree chart state'''
+    def get_overall_top_delivery_state(self, start_date, end_date, category=None, sub_category=None, domain_name=None,
+                                         state=None, district=None, seller_type='Total'):
+        return self.dal.fetch_overall_top_delivery_state(start_date, end_date, category, sub_category, domain_name,
+                                                    state)
+    
+    '''FetchTop5DeliveryDistrict - tree chart district'''
+    def get_overall_top_delivery_district(self, start_date, end_date, category=None, sub_category=None, domain_name=None,
+                                         state=None, district=None, seller_type='Total'):
+        return self.dal.fetch_overall_top5_delivery_districts(start_date, end_date, category, sub_category, domain_name,
+                                                    state, district)

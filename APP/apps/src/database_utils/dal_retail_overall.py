@@ -923,7 +923,7 @@ class DataAccessLayer:
                 -- COALESCE(NULLIF(TRIM(sub.seller_district), ''), 'Missing') AS seller_district,
                 sub.seller_district,
                 sub.order_demand,
-                ROUND(sub.flow_percentage, 2) AS flow_percentage
+                ROUND(sub.flow_percentage::numeric, 2) AS flow_percentage
             FROM (
                 SELECT 
                     om.delivery_district,
@@ -988,7 +988,7 @@ class DataAccessLayer:
             and sub.seller_district != ''
             ORDER BY sub.delivery_district, sub.flow_percentage DESC;
         """
-
+        
         df = self.db_utility.execute_query(query, parameters)
         return df
 
@@ -1190,5 +1190,160 @@ class DataAccessLayer:
         aggregated_df = self.db_utility.execute_query(query, parameters)
 
         return aggregated_df
+
+    @log_function_call(ondcLogger)
+    def fetch_overall_top_delivery_state(self, start_date, end_date, category=None, sub_category=None, domain='Retail',
+                                     state=None):
+
+        table_name = constant.MONTHLY_DISTRICT_TABLE
+
+        if category:
+            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
+        if sub_category:
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
+        query = f"""
+            SELECT 
+                sub.seller_state as delivery_state,
+                sub.delivery_state as seller_state,
+                sub.order_demand,
+                sub.flow_percentage
+            FROM (
+                SELECT 
+                    om.seller_state,
+                    om.delivery_state,
+                    SUM(om.total_orders_delivered) AS order_demand,
+                    (SUM(om.total_orders_delivered) * 100.0) / total.total_orders AS flow_percentage,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY om.seller_state 
+                        ORDER BY SUM(om.total_orders_delivered) DESC
+                    ) AS rn
+                FROM 
+                    {table_name} om
+                INNER JOIN (
+                    SELECT 
+                        swdlo.seller_state, 
+                        SUM(swdlo.total_orders_delivered) AS total_orders 
+                    FROM {table_name} swdlo
+                    WHERE 
+                        ((swdlo.order_year * 100) + swdlo.order_month) BETWEEN 
+                        (({params.start_year}*100) + {params.start_month}) AND
+                        (({params.end_year}*100) + {params.end_month})
+                    AND swdlo.domain_name = 'Retail' 
+                    AND swdlo.sub_domain = 'B2C'
+                    AND swdlo.seller_state <> ''
+                    GROUP BY swdlo.seller_state
+                ) total ON om.seller_state = total.seller_state
+                WHERE 
+                    ((om.order_year * 100) + om.order_month) BETWEEN
+                    (({params.start_year}*100) + {params.start_month}) AND
+                    (({params.end_year}*100) + {params.end_month})
+                    AND om.domain_name = 'Retail'
+                    AND om.sub_domain = 'B2C'
+                    AND UPPER(om.seller_state) = UPPER('{state}')
+                    AND om.delivery_state <> ''
+        """
+
+        if category:
+            query += f" AND upper(category) = upper('{category}')"
+        if sub_category:
+            query += f" AND upper(sub_category) = upper('{sub_category}')"
+
+        query += """
+                GROUP BY 
+                    om.seller_state, om.delivery_state, total.total_orders
+            ) sub
+            WHERE sub.rn <= 5
+            ORDER BY sub.seller_state, sub.flow_percentage DESC;
+        """
+        
+        df = self.db_utility.execute_query(query)
+        return df
+    
+    @log_function_call(ondcLogger)
+    def fetch_overall_top5_delivery_districts(self, start_date, end_date, category=None, sub_category=None, domain=None,
+                                          state=None, seller_district=None):
+
+       
+        domain = 'Retail' if domain is None else domain
+
+        
+        table_name = constant.MONTHLY_DISTRICT_TABLE
+
+        
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
+
+        
+        query = f"""
+            SELECT 
+                sub.seller_district,
+                sub.delivery_district,
+                sub.order_demand,
+                ROUND(sub.flow_percentage::numeric, 2) AS flow_percentage
+            FROM (
+                SELECT 
+                    om.seller_district,
+                    om.delivery_district,
+                    SUM(om.total_orders_delivered) AS order_demand,
+                    (SUM(om.total_orders_delivered) * 100.0) / total.total_orders AS flow_percentage,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY om.seller_district 
+                        ORDER BY SUM(om.total_orders_delivered) DESC
+                    ) AS rn
+                FROM 
+                    {table_name} om
+                INNER JOIN (
+                    SELECT 
+                        swdlo.seller_district, 
+                        SUM(swdlo.total_orders_delivered) AS total_orders 
+                    FROM {table_name} swdlo
+                    WHERE 
+                        (swdlo.order_year = %s AND swdlo.order_month BETWEEN %s AND %s)
+                        AND swdlo.domain_name = %s
+                        AND swdlo.delivery_district <> ''
+                        AND swdlo.seller_district <> ''
+                        AND swdlo.seller_district IS NOT NULL
+        """
+
+        
+        parameters = [params.start_year, params.start_month, params.end_month, domain]
+
+        
+        if seller_district:
+            query += " AND upper(swdlo.seller_district) = upper(%s)"
+            parameters.append(seller_district)
+
+        
+        query += """
+                    GROUP BY swdlo.seller_district
+                ) total ON upper(om.seller_district) = upper(total.seller_district)
+                WHERE 
+                    (om.order_year = %s AND om.order_month BETWEEN %s AND %s)
+                    AND om.domain_name = %s
+        """
+
+        
+        parameters.extend([params.start_year, params.start_month, params.end_month, domain])
+
+        
+        if seller_district:
+            query += " AND upper(om.seller_district) = upper(%s)"
+            parameters.append(seller_district)
+
+        
+        query += """
+                GROUP BY 
+                    om.seller_district, om.delivery_district, total.total_orders
+            ) sub
+            WHERE sub.rn <= 5
+            AND sub.delivery_district != ''
+            ORDER BY sub.seller_district, sub.flow_percentage DESC;
+        """
+
+        df = self.db_utility.execute_query(query, parameters)
+
+        
+        return df
 
 
