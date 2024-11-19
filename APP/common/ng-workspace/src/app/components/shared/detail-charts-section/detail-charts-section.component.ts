@@ -51,6 +51,8 @@ export class DetailChartsSectionComponent implements OnInit, OnChanges {
   isLoadingMaxData: boolean = false;
   isLoadingStateWiseBin: boolean = false;
 
+  treeChartDir: 'ltr' | 'rtl' = 'ltr';
+
   selectedSupplyOptions: 'Total' | 'Active' = 'Total';
 
   activeUrl: any = '';

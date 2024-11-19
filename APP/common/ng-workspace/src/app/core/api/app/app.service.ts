@@ -314,7 +314,7 @@ export class AppService {
   }
 
 
-  getTopSellersData(uri: string, state: string, district: string,) {
+  getTopSellersData(type: string, uri: string, state: string, district: string,) {
     this.cancelTopSellersDataPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
     const params = {
@@ -324,7 +324,7 @@ export class AppService {
       category: this.selectedCategory,
       subCategory: this.selectedSubCategory
     }
-    return this.http.get(this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_seller_${uri}/`, {params}).pipe(
+    return this.http.get(this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/top_${type}_${uri}/`, {params}).pipe(
       takeUntil(this.cancelTopSellersDataPrevious$)
     );
   }

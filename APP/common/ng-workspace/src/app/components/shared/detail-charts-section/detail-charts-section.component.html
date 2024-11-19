@@ -213,12 +213,20 @@
     activeUrl.includes('/retail') || activeUrl.includes('/retail/b2c') || activeUrl.includes('/logistics'))
     ) {
     <div class="order-detail-section">
-        <div class="card-header-section font-xs">
-            Zonal Commerce 
+        <div class="card-header-section">
+            <p class="margin-0 font-xs">Zonal Commerce</p>
+            <div class="card-header-toggle-btn-section">
+                <div (click)="treeChartDir='ltr'" [ngClass]="{'cursor-pointer': true, 'active': treeChartDir == 'ltr'}">
+                    <i class="fa-solid fa-code-branch ltr"></i>
+                </div>
+                <div (click)="treeChartDir='rtl'" [ngClass]="{'cursor-pointer': true, 'active': treeChartDir == 'rtl'}">
+                    <i class="fa-solid fa-code-branch rtl"></i>
+                </div>
+            </div>
         </div>
 
         <div class="card-body-section">
-            <app-tree-chart class="width-100"></app-tree-chart>
+            <app-tree-chart class="width-100" [direction]="treeChartDir"></app-tree-chart>
         </div>
     </div>
 }
