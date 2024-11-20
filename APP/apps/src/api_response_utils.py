@@ -221,14 +221,14 @@ class SummaryBaseDataAPI(APIView):
 
                 seller_state_data = {
                     "name": f"{row[from_area]} ({row['flow_percentage']:.2f} %)",
-                    "value": row['order_demand']
+                    # "value": row['order_demand']
                 }
                 state_data["children"].append(seller_state_data)
 
             if cumulative_percentage < 100.0:
                 others_data = {
                     "name": f"Others ({100 - cumulative_percentage:.2f} %)",
-                    "value": 100 - cumulative_percentage
+                    # "value": 100 - cumulative_percentage
                 }
                 state_data["children"].append(others_data)
 
