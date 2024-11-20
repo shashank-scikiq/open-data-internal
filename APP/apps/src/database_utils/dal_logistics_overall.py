@@ -1083,16 +1083,9 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_overall_top5_delivery_districts(self, start_date, end_date, category=None, sub_category=None, domain=None,
                                           state=None, seller_district=None):
-
-       
-        domain = 'Logistics' if domain is None else domain
-
-        
         table_name = constant.LOGISTICS_DISTRICT_TABLE
-
-
        
-        query_1 = f"""
+        query = f"""
             SELECT 
                 sub.seller_district as delivery_district,
                 COALESCE(NULLIF(TRIM(sub.delivery_district), ''), 'Missing') AS seller_district,
@@ -1133,7 +1126,7 @@ class DataAccessLayer:
             WHERE sub.rn <= 4
             ORDER BY sub.seller_district, sub.flow_percentage DESC;
         """
-        df = self.db_utility.execute_query(query_1)
+        df = self.db_utility.execute_query(query)
 
         
         return df
