@@ -215,13 +215,24 @@
     <div class="order-detail-section">
         <div class="card-header-section">
             <p class="margin-0 font-xs">Zonal Commerce</p>
-            <div class="card-header-toggle-btn-section">
+            <!-- <div class="card-header-toggle-btn-section">
                 <div (click)="treeChartDir='ltr'" [ngClass]="{'cursor-pointer': true, 'active': treeChartDir == 'ltr'}">
-                    <i class="fa-solid fa-code-branch ltr"></i>
+                     <p class="font-xxs margin-0 padding-y-1 padding-x-1">Originating from</p>
+                    
                 </div>
                 <div (click)="treeChartDir='rtl'" [ngClass]="{'cursor-pointer': true, 'active': treeChartDir == 'rtl'}">
-                    <i class="fa-solid fa-code-branch rtl"></i>
+                    <p class="font-xxs margin-0 padding-y-1 padding-x-1">Ordered from</p>
                 </div>
+            </div> -->
+
+            <div class="card-header-toggle-btn-section cursor-pointer" 
+                (click)="treeChartDir= treeChartDir == 'ltr' ? 'rtl' : 'ltr'">
+                <i 
+                    class="fa-solid fa-arrow-right-arrow-left padding-1" 
+                    [ngClass]="{'active': treeChartDir == 'rtl'}"
+                    nz-tooltip nzTooltipPlacement="left" 
+                    nzTooltipTitle="Reverse view">
+                </i>
             </div>
         </div>
 
