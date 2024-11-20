@@ -51,39 +51,54 @@ class DataAccessLayer:
             if city == 'Bangalore' else "state = 'DELHI'"
         
         query = f"""
-            (SELECT 
-                    ls.time_of_day as time_of_day, 
-                    ls.pick_up_pincode, 
-                    case
-                        when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
-                    end as conversion_rate,
-                    case
-                        when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
-                        else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
-                    end as assigned_rate,
-                    sum(ls.searched) as searched_data
-                from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
-                    where date between '{start_date}' and '{end_date}' and {where_condition}
-                group by ls.time_of_day, ls.pick_up_pincode )
+                    (
+                        SELECT 
+                            ls.time_of_day AS time_of_day, 
+                            ls.pick_up_pincode, 
+                            CASE
+                                WHEN SUM(ls.searched) = 0 OR SUM(ls.confirmed) = 0 THEN 0 
+                                ELSE ROUND((SUM(ls.confirmed) / SUM(ls.searched)) * 100.0, 1) 
+                            END AS conversion_rate,
+                            CASE
+                                WHEN SUM(ls.searched) = 0 OR SUM(ls.assigned) = 0 THEN 0 
+                                ELSE ROUND((SUM(ls.assigned) / SUM(ls.searched)) * 100.0, 1) 
+                            END AS assigned_rate,
+                            SUM(ls.searched) AS searched_data,
+                            CASE 
+                                WHEN EXTRACT(DOW FROM MIN(ls.date)) IN (6, 0) THEN 'weekend' 
+                                ELSE 'weekday'
+                            END AS is_weekend
+                        FROM ec2_all.logistic_search_pincode ls
+                        WHERE ls.date BETWEEN '2024-10-15' AND '2024-10-21' AND ls.state = 'DELHI'
+                        GROUP BY ls.time_of_day, ls.pick_up_pincode
+                    )
+                    UNION
+                    (
+                        SELECT 
+                            'Overall' AS time_of_day,
+                            ls.pick_up_pincode, 
+                            CASE
+                                WHEN SUM(ls.searched) = 0 OR SUM(ls.confirmed) = 0 THEN 0 
+                                ELSE ROUND((SUM(ls.confirmed) / SUM(ls.searched)) * 100.0, 1) 
+                            END AS conversion_rate,
+                            CASE
+                                WHEN SUM(ls.searched) = 0 OR SUM(ls.assigned) = 0 THEN 0 
+                                ELSE ROUND((SUM(ls.assigned) / SUM(ls.searched)) * 100.0, 1) 
+                            END AS assigned_rate,
+                            SUM(ls.searched) AS searched_data,
+                            CASE 
+                                WHEN EXTRACT(DOW FROM MIN(ls.date)) IN (6, 0) THEN 'weekend' 
+                                ELSE 'weekday'
+                            END AS is_weekend
+                        FROM ec2_all.logistic_search_pincode ls
+                        WHERE ls.date BETWEEN '2024-10-15' AND '2024-10-21' AND ls.state = 'DELHI'
+                        GROUP BY ls.pick_up_pincode
+                    )
+                    ORDER BY pick_up_pincode, time_of_day
 
-                    Union
-                (SELECT 
-                    'Overall' as time_of_day,
-                    ls.pick_up_pincode, 
-                    case
-                        when sum(ls.searched) = 0 or sum(ls.confirmed) = 0 then 0 
-                        else round((sum(ls.confirmed)/sum(ls.searched))*100.0, 1) 
-                    end as conversion_rate,
-                    case
-                        when sum(ls.searched) = 0 or sum(ls.assigned) = 0 then 0 
-                        else round((sum(ls.assigned)/sum(ls.searched))*100.0, 1) 
-                    end as assigned_rate,
-                    sum(ls.searched) as searched_data
-                from {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
-                    where date between '{start_date}' and '{end_date}' and {where_condition} group by ls.pick_up_pincode  )
-                    order by pick_up_pincode, time_of_day"""
-        
+                    """
+        # import pdb
+        # pdb.set_trace()
         df = self.db_utility.execute_query(query)
         return df
     
@@ -165,16 +180,45 @@ class DataAccessLayer:
         table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
         date_filter = ""
         if start_date and end_date:
-            date_filter = f"WHERE date BETWEEN '{start_date}' AND '{end_date}'"
+            date_filter = f" date BETWEEN '{start_date}' AND '{end_date}'"
         
         query = f"""
-        SELECT DISTINCT state, SUM(searched) AS total_searches, sum(confirmed) as order_confirmed
-        FROM {table_name}
-        {date_filter} 
-        AND time_of_day IN ('3am-6am', '6am-8am', '8am-10am', '10am-12pm', '12pm-3pm', 
-                      '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am') 
-        GROUP BY state
-        ORDER BY total_searches DESC
+                    SELECT DISTINCT 
+                            state, 
+                            time_of_day,
+                            SUM(searched) AS total_searches, 
+                            SUM(confirmed) AS order_confirmed
+                    FROM 
+                        {table_name}
+                    WHERE 
+                        {date_filter}
+                        AND time_of_day IN (
+                            '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
+                            '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
+                        )
+                    GROUP BY 
+                        state, time_of_day 
+
+                UNION ALL
+
+                    SELECT 
+                        state, 
+                        'overall' AS time_of_day, 
+                        SUM(searched) AS total_searches, 
+                        SUM(confirmed) AS order_confirmed
+                    FROM 
+                        {table_name}
+                    WHERE 
+                        {date_filter}
+                        AND time_of_day IN (
+                            '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
+                            '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
+                        )
+                    GROUP BY 
+                        state
+
+                    ORDER BY 
+                        total_searches DESC;
         """
         
         df= self.db_utility.execute_query(query)

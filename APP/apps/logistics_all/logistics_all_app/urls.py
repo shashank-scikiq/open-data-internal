@@ -19,6 +19,9 @@ urlpatterns = [
 
     path('api/logistics/overall/top_seller_states/', views.FetchTop5SellerStates.as_view(), name='top_seller_states'),
     path('api/logistics/overall/top_seller_districts/', views.FetchTop5SellersDistrict.as_view(), name='top_seller_districts'),
+
+    path('api/logistics/overall/top_delivery_states/', views.FetchTop5DeliveryState.as_view(), name='top_delivery_states'),
+    path('api/logistics/overall/top_delivery_districts/', views.FetchTop5DeliverysDistrict.as_view(), name='top_delivery_districts'),
 ]
 
 
