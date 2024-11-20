@@ -1091,73 +1091,7 @@ class DataAccessLayer:
         table_name = constant.LOGISTICS_DISTRICT_TABLE
 
 
-        
-        query = f"""
-            SELECT 
-                sub.seller_district,
-                sub.delivery_district,
-                sub.order_demand,
-                ROUND(sub.flow_percentage::numeric, 2) AS flow_percentage
-            FROM (
-                SELECT 
-                    om.seller_district,
-                    om.delivery_district,
-                    SUM(om.total_orders_delivered) AS order_demand,
-                    (SUM(om.total_orders_delivered) * 100.0) / total.total_orders AS flow_percentage,
-                    ROW_NUMBER() OVER (
-                        PARTITION BY om.seller_district 
-                        ORDER BY SUM(om.total_orders_delivered) DESC
-                    ) AS rn
-                FROM 
-                    {table_name} om
-                INNER JOIN (
-                    SELECT 
-                        swdlo.seller_district, 
-                        SUM(swdlo.total_orders_delivered) AS total_orders 
-                    FROM {table_name} swdlo
-                    WHERE 
-                        WHERE swdlo.order_date BETWEEN %s AND %s
-                        AND swdlo.domain_name = 'Logistics'
-                        AND swdlo.delivery_district <> ''
-                        AND swdlo.seller_district <> ''
-                        AND swdlo.seller_district IS NOT NULL
-        """
-
-        
-        parameters = [start_date, end_date, start_date, end_date]
-
-
-        
-        if seller_district:
-            query += " AND upper(swdlo.seller_district) = upper(%s)"
-            parameters.append(seller_district)
-
-        
-        query += """
-                    GROUP BY swdlo.seller_district
-                ) total ON upper(om.seller_district) = upper(total.seller_district)
-                WHERE 
-                    (om.order_year = %s AND om.order_month BETWEEN %s AND %s)
-                    AND om.domain_name = %s
-        """
-
-        
-        parameters.extend([start_date, end_date, start_date, end_date])
-
-        
-        if seller_district:
-            query += " AND upper(om.seller_district) = upper(%s)"
-            parameters.append(seller_district)
-
-        
-        query += """
-                GROUP BY 
-                    om.seller_district, om.delivery_district, total.total_orders
-            ) sub
-            WHERE sub.rn <= 5
-            AND sub.delivery_district != ''
-            ORDER BY sub.seller_district, sub.flow_percentage DESC;
-        """
+       
         query_1 = f"""
             SELECT 
                 sub.seller_district as delivery_district,
