@@ -12,6 +12,7 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class TreeChartComponent implements OnInit, OnChanges {
   @Input() direction: 'ltr' | 'rtl' = 'ltr';
+  @Input() titleText: string = '';
   metrix: any = 'map_total_orders_metrics';
   selectedState: any;
   isLoading: boolean = false;
