@@ -266,27 +266,17 @@
     }
 
     .card-header-toggle-btn-section {
-        border-radius: 4px;
+        border-radius: 50px;
         background: #e2e5ed;
         border: 1px solid #c0ccda;
-        // padding: 2px;
+        padding: 0px 12px 0 4px;
         display: flex;
         align-items: center;
         overflow: hidden;
 
-        .active {
+        &.active {
             background-color: #1C75BC !important;
             color: #ffffff;
-        }
-
-        .ltr {
-            transform: rotate(-90deg) rotateY(180deg);
-            padding: 4px 12px;
-        }
-
-        .rtl {
-            transform: rotate(90deg);
-            padding: 4px 12px;
         }
     }
 

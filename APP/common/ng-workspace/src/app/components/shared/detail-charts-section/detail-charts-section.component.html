@@ -215,29 +215,24 @@
     <div class="order-detail-section">
         <div class="card-header-section">
             <p class="margin-0 font-xs">Zonal Commerce</p>
-            <!-- <div class="card-header-toggle-btn-section">
-                <div (click)="treeChartDir='ltr'" [ngClass]="{'cursor-pointer': true, 'active': treeChartDir == 'ltr'}">
-                     <p class="font-xxs margin-0 padding-y-1 padding-x-1">Originating from</p>
-                    
-                </div>
-                <div (click)="treeChartDir='rtl'" [ngClass]="{'cursor-pointer': true, 'active': treeChartDir == 'rtl'}">
-                    <p class="font-xxs margin-0 padding-y-1 padding-x-1">Ordered from</p>
-                </div>
-            </div> -->
 
-            <div class="card-header-toggle-btn-section cursor-pointer" 
-                (click)="treeChartDir= treeChartDir == 'ltr' ? 'rtl' : 'ltr'">
+            <div class="font-xxs card-header-toggle-btn-section cursor-pointer" 
+                [ngClass]="{'active': treeChartDir == 'rtl'}"
+                (click)="treeChartDir = treeChartDir == 'ltr' ? 'rtl' : 'ltr'">
                 <i 
-                    class="fa-solid fa-arrow-right-arrow-left padding-1" 
-                    [ngClass]="{'active': treeChartDir == 'rtl'}"
+                    class="font-xxs fa-solid fa-rotate padding-1"
                     nz-tooltip nzTooltipPlacement="left" 
                     nzTooltipTitle="Reverse view">
-                </i>
+                </i> Reverse view
             </div>
         </div>
 
         <div class="card-body-section">
-            <app-tree-chart class="width-100" [direction]="treeChartDir"></app-tree-chart>
+            <app-tree-chart class="width-100" [direction]="treeChartDir"
+                [titleText]="treeChartDir == 'ltr'?
+                    'Share (%) of sellers coming from..' : 
+                    'Share (%) of orders going to..'">
+            </app-tree-chart>
         </div>
     </div>
 }
