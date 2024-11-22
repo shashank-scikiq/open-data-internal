@@ -1362,13 +1362,32 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_category_penetration_orders(self, start_date, end_date, category=None, sub_category=None, domain='Retail',
                                           state=None):
-        selected_view = constant.SUB_CATEGORY_PENETRATION_TABLE
-        # params = DotDict(self.get_query_month_parameters(start_date, end_date))
-        # parameters = [params.start_year, params.start_year, params.start_month,
-        #               params.end_year, params.end_year, params.end_month]
-        parameters = [start_date, end_date]
+        selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+
+        start_month = datetime.strptime(start_date, '%Y-%m-%d').month
+        end_month = datetime.strptime(end_date, '%Y-%m-%d').month
 
         query = f'''
+            (
+                SELECT 
+                COALESCE(category, 'Missing') AS category,
+                'ALL' AS sub_category,
+                SUM(total_orders_delivered) AS order_demand  
+            FROM 
+                {selected_view}
+            WHERE 
+                 order_month BETWEEN {start_month} AND {end_month} 
+            '''
+
+        if bool(category) and (category != 'None'):
+            query += f" And category='{category}'"
+        
+        if state:
+            query += f" AND upper(delivery_state) = upper('{state}')"
+
+        query += f'''
+            group by 1
+            ) union all (
             SELECT 
                 COALESCE(category, 'Missing') AS category,
                 COALESCE(sub_category, 'Missing') AS sub_category,
@@ -1376,28 +1395,20 @@ class DataAccessLayer:
             FROM 
                 {selected_view} 
             WHERE 
-                order_date between %s and %s
+                order_month BETWEEN {start_month} AND {end_month} 
         '''
-                # (order_year > %s OR (order_year = %s AND order_month >= %s))
-                # AND (order_year < %s OR (order_year = %s AND order_month <= %s))
-
+                
         if bool(category) and (category != 'None'):
             query += f" And category='{category}'"
         if bool(sub_category) and (sub_category != 'None'):
             query += f" And sub_category='{sub_category}'"
         
         if state:
-            query += " AND upper(delivery_state) = upper(%s)"
-            parameters.append(state)
+            query += f" AND upper(delivery_state) = upper('{state}')"
 
-        query += '''
-            GROUP BY 
-                COALESCE(category, 'Missing'),
-                COALESCE(sub_category, 'Missing')
-            ORDER BY 
-                order_demand DESC;
-        '''
-        df = self.db_utility.execute_query(query, parameters)
+        query += ' GROUP BY 1,2)'
+        
+        df = self.db_utility.execute_query(query)
         
         return df
 
