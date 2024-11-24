@@ -88,10 +88,17 @@
 }
 
 ::ng-deep {
-    .selection-main-container .ant-select {
-        width: 200px !important;
-        border-radius: 4px !important;
+    .selection-main-container {
+        .ant-select {
+            width: 200px !important;
+            border-radius: 4px !important;
+        }
+
+        .ant-switch-checked {
+            background-color: $blue700 !important;
+        }
     }
+    
 
     .selection-main-container .ant-select-single .ant-select-selector .ant-select-selection-item{
         font-size: 12px;

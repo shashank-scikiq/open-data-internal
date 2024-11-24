@@ -69,7 +69,7 @@ class DataAccessLayer:
                                 ELSE 'weekday'
                             END AS is_weekend
                         FROM ec2_all.logistic_search_pincode ls
-                        WHERE ls.date BETWEEN '2024-10-15' AND '2024-10-21' AND ls.state = 'DELHI'
+                        WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND ls.state = 'DELHI'
                         GROUP BY ls.time_of_day, ls.pick_up_pincode
                     )
                     UNION
@@ -91,7 +91,7 @@ class DataAccessLayer:
                                 ELSE 'weekday'
                             END AS is_weekend
                         FROM ec2_all.logistic_search_pincode ls
-                        WHERE ls.date BETWEEN '2024-10-15' AND '2024-10-21' AND ls.state = 'DELHI'
+                        WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND ls.state = 'DELHI'
                         GROUP BY ls.pick_up_pincode
                     )
                     ORDER BY pick_up_pincode, time_of_day
@@ -176,11 +176,8 @@ class DataAccessLayer:
     
 
     @log_function_call(ondcLogger)
-    def get_total_searches_per_state(self, start_date=None, end_date=None):
+    def fetch_overall_total_searches(self, start_date=None, end_date=None):
         table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
-        date_filter = ""
-        if start_date and end_date:
-            date_filter = f" date BETWEEN '{start_date}' AND '{end_date}'"
         
         query = f"""
                     SELECT DISTINCT 
@@ -191,7 +188,7 @@ class DataAccessLayer:
                     FROM 
                         {table_name}
                     WHERE 
-                        {date_filter}
+                        date BETWEEN '{start_date}' AND '{end_date}'
                         AND time_of_day IN (
                             '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
                             '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
@@ -203,13 +200,13 @@ class DataAccessLayer:
 
                     SELECT 
                         state, 
-                        'overall' AS time_of_day, 
+                        'Overall' AS time_of_day, 
                         SUM(searched) AS total_searches, 
                         SUM(confirmed) AS order_confirmed
                     FROM 
                         {table_name}
                     WHERE 
-                        {date_filter}
+                        date BETWEEN '{start_date}' AND '{end_date}'
                         AND time_of_day IN (
                             '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
                             '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
@@ -221,6 +218,54 @@ class DataAccessLayer:
                         total_searches DESC;
         """
         
+        df= self.db_utility.execute_query(query)
+        return df
+    
+    def fetch_total_searches_per_state(self, start_date, end_date, state):
+        table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
+
+        query = f"""
+                    (
+                    SELECT 
+                            state,
+                            district,
+                            time_of_day,
+                            SUM(searched) AS total_searches, 
+                            SUM(confirmed) AS order_confirmed
+                    FROM 
+                        {table_name}
+                    WHERE 
+                        date BETWEEN '{start_date}' AND '{end_date}' AND upper(state)=upper('{state}')
+                        AND time_of_day IN (
+                            '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
+                            '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
+                        )
+                    GROUP BY 
+                        1,2,3)
+
+                UNION ALL
+
+                    (SELECT 
+                        state,
+                        district,
+                        'Overall' AS time_of_day, 
+                        SUM(searched) AS total_searches, 
+                        SUM(confirmed) AS order_confirmed
+                    FROM 
+                        {table_name}
+                    WHERE 
+                        date BETWEEN '{start_date}' AND '{end_date}'
+                        AND upper(state)=upper('{state}')
+                        AND time_of_day IN (
+                            '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
+                            '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
+                        )
+                    GROUP BY 
+                        1,2
+
+                    ORDER BY 
+                        total_searches DESC);
+        """
         df= self.db_utility.execute_query(query)
         return df
 

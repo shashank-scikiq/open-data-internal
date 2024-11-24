@@ -268,11 +268,11 @@ class FetchDateRange(SummaryBaseDataAPI):
         return JsonResponse(date_range, status=200, safe=False) 
 
 
-class FetchStateWiseData(APIView):
+class FetchOverallIndiaData(APIView):
     @exceptionAPI(ondcLogger)
     def get(self, request, *args):
         """
-            APIView BaseDataAPI FetchStateWiseData
+            APIView BaseDataAPI FetchOverallIndiaData
         """
         start_date = request.GET.get('startDate')
         end_date = request.GET.get('endDate')
@@ -285,10 +285,45 @@ class FetchStateWiseData(APIView):
             'end_date' : end_date
         }
         try:
-            cache_key = f"Logistic_search_FetchStateWiseData_{self.generate_cache_key(params)}"
+            cache_key = f"Logistic_search_FetchOverallIndiaData_{self.generate_cache_key(params)}"
             data = get_cached_data(cache_key)
             if data is None:
-                df = data_service.get_total_searches_per_state(start_date, end_date)
+                df = data_service.get_overall_total_searches(start_date, end_date)
+                result = df.to_dict(orient="records")
+                return JsonResponse({"mapdata": result}, safe=False)
+        
+        except Exception as e:
+            error_message = {'error': f"An error occurred: {str(e)}"}
+            return JsonResponse(error_message, status=500)
+
+    def generate_cache_key(self, params):
+        p_d = params.values()
+        cleaned_list = [element for element in p_d if element not in [None, 'None']]
+        return "FetchStateWiseData_Logistic_Search_$$$".join(cleaned_list)
+    
+
+class FetchStateData(APIView):
+    @exceptionAPI(ondcLogger)
+    def get(self, request, *args):
+        """
+            APIView BaseDataAPI FetchStateData
+        """
+        start_date = request.GET.get('startDate')
+        end_date = request.GET.get('endDate')
+        state = request.GET.get('state')
+        if not (start_date and end_date and state):
+            error_message={'error': f"an error occured"}
+            return JsonResponse(error_message, status=400)
+        params = {
+            'start_date' : start_date,
+            'end_date' : end_date,
+            'state': state
+        }
+        try:
+            cache_key = f"Logistic_search_FetchStateData_{self.generate_cache_key(params)}"
+            data = get_cached_data(cache_key)
+            if data is None:
+                df = data_service.get_total_searches_per_state(start_date, end_date, state)
                 result = df.to_dict(orient="records")
                 return JsonResponse({"mapdata": result}, safe=False)
         
