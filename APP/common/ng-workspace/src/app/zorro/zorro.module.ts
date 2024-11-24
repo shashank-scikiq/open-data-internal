@@ -14,6 +14,8 @@ import { NzRadioModule } from 'ng-zorro-antd/radio';
 import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
+import { NzSwitchModule } from 'ng-zorro-antd/switch';
+
 
 
 @NgModule({
@@ -33,7 +35,8 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
     NzRadioModule,
     NzDividerModule,
     NzCheckboxModule,
-    NzMenuModule
+    NzMenuModule,
+    NzSwitchModule
   ],
   exports: [
     NzButtonModule,
@@ -50,7 +53,8 @@ import { NzMenuModule } from 'ng-zorro-antd/menu';
     NzRadioModule,
     NzDividerModule,
     NzCheckboxModule,
-    NzMenuModule
+    NzMenuModule,
+    NzSwitchModule
   ]
 })
 export class ZorroModule { }

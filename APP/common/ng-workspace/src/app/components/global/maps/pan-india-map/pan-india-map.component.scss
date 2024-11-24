@@ -1,0 +1,59 @@
+@import 'colors';
+@import 'breakpoints';
+
+.pan-india-map-svg {
+  display: flex;
+  place-content: center;
+  align-items: center;
+  height: 70vh;
+  width: 100vw;
+  position: relative;
+
+  svg {
+    height: 100%;
+    width: 100%;
+  }
+}
+
+.map-control {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    // transform: translate(-50%);
+    background: white;
+    display: flex;
+    flex-direction: column;
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
+    -webkit-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
+    -moz-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
+  
+    .btn {
+      padding: 8px;
+      height: 40px;
+      width: 40px;
+      display: flex;
+      place-content: center;
+      align-items: center;
+      background-color: $white;
+      color: $grey850;
+      cursor: pointer;
+    }
+  
+    .active {
+      background-color: $blue700;
+      color: $white;
+    }
+  }
+
+  .tooltip {
+    position: absolute;
+    background: black;
+    color: white;
+    border: 1px solid #ccc;
+    padding: 8px;
+    pointer-events: none;
+    font-size: 12px;
+    border-radius: 4px;
+  }

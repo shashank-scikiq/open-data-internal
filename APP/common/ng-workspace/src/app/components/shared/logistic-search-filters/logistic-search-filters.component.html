@@ -1,8 +1,12 @@
 <div class="selection-main-container">
     <app-date-range-picker [dateRange]="dateRange" [availableDateRange]="availableDateRange" (selectedDateRange)="setDateRange($event)" />
+    <div style="display: flex; gap: 8px;" class="margin-x-2">
+        <p class="font-xs margin-0 font-bolder">Pincode level view</p>
+        <nz-switch [(ngModel)]="isPincodeView" (ngModelChange)="updatePincodeView($event)" nzSize="small"></nz-switch>
+    </div>
     <div class="selection-container">
         <div class="label">Choose City</div>
-        <nz-select nzsize="small" [(ngModel)]="selectedCity" (ngModelChange)="updateValue('city')">
+        <nz-select [nzDisabled]="!isPincodeView" nzsize="small" [(ngModel)]="selectedCity" (ngModelChange)="updateValue('city')">
             @for(option of cities; track option) {
             <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
             }

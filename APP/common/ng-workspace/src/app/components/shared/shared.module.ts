@@ -38,6 +38,10 @@ import { AreaChartComponent } from '../global/charts/area-chart/area-chart.compo
 import { DonutChartComponent } from '../global/charts/donut-chart/donut-chart.component';
 import { OpenDataFooterComponent } from './footer/open-data-footer/open-data-footer.component';
 import { SankeyChartComponent } from '../global/charts/sankey-chart/sankey-chart.component';
+import { PanIndiaMapComponent } from '../global/maps/pan-india-map/pan-india-map.component';
+import { MapLegendsComponent } from '../global/maps/map-legends/map-legends.component';
+import { StateLevelMapComponent } from '../global/maps/state-level-map/state-level-map.component';
+
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -74,7 +78,10 @@ import { SankeyChartComponent } from '../global/charts/sankey-chart/sankey-chart
     AreaChartComponent,
     DonutChartComponent,
     OpenDataFooterComponent,
-    SankeyChartComponent
+    SankeyChartComponent,
+    PanIndiaMapComponent,
+    MapLegendsComponent,
+    StateLevelMapComponent,
   ],
   imports: [
     CommonModule,
@@ -115,7 +122,10 @@ import { SankeyChartComponent } from '../global/charts/sankey-chart/sankey-chart
     AreaChartComponent,
     DonutChartComponent,
     OpenDataFooterComponent,
-    SankeyChartComponent
+    SankeyChartComponent,
+    PanIndiaMapComponent,
+    MapLegendsComponent,
+    StateLevelMapComponent,
   ]
 })
 export class SharedModule { }

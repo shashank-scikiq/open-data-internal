@@ -16,6 +16,12 @@ export class LogisticSearchService {
   activeTimeInterval = new BehaviorSubject<string>("Overall");
   activeTimeInterval$ = this.activeTimeInterval.asObservable();
 
+  activeState = new BehaviorSubject<string>("TT");
+  activeState$ = this.activeState.asObservable();
+
+  pincodeLevelView = new BehaviorSubject<boolean>(false);
+  pincodeLevelView$ = this.pincodeLevelView.asObservable();
+
   dateRange = new BehaviorSubject<any>(null);
   choosableDateRange = new BehaviorSubject<any>(null);
   dateRange$ = this.dateRange.asObservable();
@@ -77,8 +83,41 @@ export class LogisticSearchService {
     ).pipe(
       takeUntil(this.cancelCityWiseDataPrevious$)
     )
+  }
 
 
+  private cancelstateWiseDataPrevious$ = new Subject<void>();
+  getStateWiseData() {
+    this.cancelstateWiseDataPrevious$.next();
+    let [startDate, endDate] = this.getFormattedDateRange();
+    const params = {
+      state: this.activeState.value,
+      startDate,
+      endDate
+    }
+    return this.http.get(
+      this.baseUrl + `api/logistics/search/state_wise_data/`,
+      { params }
+    ).pipe(
+      takeUntil(this.cancelstateWiseDataPrevious$)
+    )
+  }
+
+
+  private cancelOverallDataPrevious$ = new Subject<void>();
+  getOverallData() {
+    this.cancelOverallDataPrevious$.next();
+    let [startDate, endDate] = this.getFormattedDateRange();
+    const params = {
+      startDate,
+      endDate
+    }
+    return this.http.get(
+      this.baseUrl + `api/logistics/search/overall_data/`,
+      { params }
+    ).pipe(
+      takeUntil(this.cancelOverallDataPrevious$)
+    )
   }
 
   private cancelTopCardsDataPrevious$ = new Subject<void>();
