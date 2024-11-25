@@ -14,7 +14,7 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
   @Input() visualType: 'chloro' | 'bubble' | 'both' = 'chloro';
   @Input() configData: any = {
     chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
-    bubbleColorRange: [],
+    bubbleColorRange: ["RGBA( 0, 139, 139, 0.4)", "RGBA( 0, 139, 139, 0.8)"],
     bubbleDataKey: '',
     chloroDataKey: '',
     maxChloroData: 0,
@@ -53,7 +53,6 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
       this.initMap();
     }
     if (changes['mapData'] || changes['visualType']) {
-      console.log(this.mapData)
       this.initMap();
     }
   }
@@ -129,14 +128,9 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
     if(!this.mapData) return;
     let g = this.svg.selectAll('#pincodeGroup');
 
-    let maxChloroData = Math.max(
-      ...Object.values(this.mapData).map(
-        (data: any) => Number(data[this.configData.chloroDataKey])
-      )
-    );
     if (this.visualType == 'chloro' || this.visualType=='both') {
       this.customColorRange = d3.scaleLinear()
-        .domain([0, 1, maxChloroData])
+        .domain([0, 1, this.configData.maxChloroData])
         .range(this.configData.chloroColorRange);
   
       g.selectAll('path')
@@ -176,15 +170,8 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
     }
     
     if (this.visualType == 'bubble' || this.visualType == 'both') {
-
-      const maxBubbleData = Math.max(
-        ...Object.values(this.mapData).map(
-          (data: any) => Number(data[this.configData.bubbleDataKey])
-        )
-      );
-      console.log("max bubble key", maxBubbleData)
       this.bubbleRadiusMethod = d3.scaleSqrt()
-      .domain([0, maxBubbleData])
+      .domain([0, this.configData.maxBubbleData])
       .range([1, 12]);
       
       g.selectAll('path')
@@ -201,11 +188,10 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
                 return 1;
               }
               const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(data[this.configData.bubbleDataKey])));
-              console.log(radius)
               return radius
             })
-            .attr('fill', 'RGBA( 0, 139, 139, 0.4 )	')
-            .attr('stroke', 'RGBA( 0, 139, 139, 0.8)')
+            .attr('fill', this.configData.bubbleColorRange[0])
+            .attr('stroke', this.configData.bubbleColorRange[1])
             .attr('stroke-width', 0.5)
             .on('mouseover', (event: any) => {
               const data = this.mapData[key];
@@ -230,6 +216,9 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
             })
             .on('mouseout', () => {
               this.tooltip.style('opacity', 0);
+            })
+            .on('click', (event: any) => {
+              this.logisticSearchService.activeState.next(d.properties.st_nm);
             });
       })
     }

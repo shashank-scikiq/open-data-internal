@@ -270,7 +270,10 @@ export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
         d3.select('.map-tooltip').transition()
           .duration(200)
           .style('visibility', 'hidden');
-      });
+      })
+      .on('click', (event: any, d: any) => {
+        this.setState(d);
+      });;
   }
 
 

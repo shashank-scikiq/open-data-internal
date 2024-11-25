@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import * as d3 from "d3";
 import { LogisticSearchService } from '@openData/app/core/api/logistic-search/logistic-search.service';
 import { CityWiseGeoJSONPincodeFiles, CityLatLong } from '@openData/app/core/utils/map';
@@ -9,7 +9,7 @@ import { CityWiseGeoJSONPincodeFiles, CityLatLong } from '@openData/app/core/uti
   templateUrl: './pincode-level-map-view.component.html',
   styleUrl: './pincode-level-map-view.component.scss'
 })
-export class PincodeLevelMapViewComponent implements OnInit {
+export class PincodeLevelMapViewComponent implements OnInit, OnDestroy {
 
   city: string = 'Bangalore';
   isLoadingMap: boolean = true;
@@ -649,5 +649,9 @@ export class PincodeLevelMapViewComponent implements OnInit {
   updateViewSelection(option: any) {
     this.activeView = option.type;
     this.addBubbles();
+  }
+
+  ngOnDestroy(): void {
+    this.resetMap();
   }
 }

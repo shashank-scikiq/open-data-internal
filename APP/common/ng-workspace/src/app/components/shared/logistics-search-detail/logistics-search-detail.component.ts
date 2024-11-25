@@ -10,9 +10,8 @@ export class LogisticsSearchDetailComponent implements OnInit {
   isLoading: boolean = true;
   isPincodeLevelView: boolean = false;
   activeState: string = 'TT';
-  activeView: any = 'chloro';
   rawData: any=null;
-
+  
   activeStateInitialized: boolean = false;
   isPincodeLevelViewInitialized: boolean = false;
   dateRangeInitialized: boolean = false;
@@ -22,7 +21,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
 
   configData: any = {
     chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
-    bubbleColorRange: [],
+    bubbleColorRange: ["RGBA( 0, 139, 139, 0.4)", "RGBA( 0, 139, 139, 0.8)"],
     bubbleDataKey: 'Confirm percentage',
     chloroDataKey: 'Search count',
     maxChloroData: 0,
@@ -31,7 +30,20 @@ export class LogisticsSearchDetailComponent implements OnInit {
 
   loadingData: boolean = false;
 
+  legendConfigData: any = {
+    bubbleMaxData: 0,
+    bubbleColorRange: ["RGBA( 0, 139, 139, 0.4)", "RGBA( 0, 139, 139, 0.8)"],
+    bubbleTitle: "% Search to confirm",
+    bubbleSuffixText: "%",
 
+    chloroMaxData: 0,
+    chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
+    chloroTitle: "Search counts",
+    chloroSuffixText: "",
+  }
+
+
+  activeView: any = 'chloro';
   viewsOptions: any = [
     {
       type: 'chloro',
@@ -89,7 +101,6 @@ export class LogisticsSearchDetailComponent implements OnInit {
       (val: boolean) => {
         this.isPincodeLevelView = val;
         this.isPincodeLevelViewInitialized = true;
-        console.log(this.isPincodeLevelView, "here")
         if (!val) {
           this.loadingData = true;
           this.getMapData();
@@ -154,6 +165,8 @@ export class LogisticsSearchDetailComponent implements OnInit {
       return;
     }
     this.loadingData = true;
+    let maxSearchCount = 0;
+    let maxConfirmPercentage = 0;
     if (this.activeState == 'TT') {
       this.overallData = data.mapdata.filter(
           (item: any) => item.time_of_day === this.logisticSearchService.activeTimeInterval.value
@@ -169,6 +182,9 @@ export class LogisticsSearchDetailComponent implements OnInit {
               'Confirm percentage': item.order_confirmed 
             };
           }
+
+          if (maxSearchCount < item.total_searches) maxSearchCount = item.total_searches
+          if (maxConfirmPercentage < item.order_confirmed) maxConfirmPercentage = item.order_confirmed
           return acc;
         }, {});
     } else {
@@ -181,16 +197,29 @@ export class LogisticsSearchDetailComponent implements OnInit {
             'Search count': item.total_searches, 
             'Confirm percentage': item.order_confirmed 
           };
+          if (maxSearchCount < item.total_searches) maxSearchCount = item.total_searches
+          if (maxConfirmPercentage < item.order_confirmed) maxConfirmPercentage = item.order_confirmed
         return acc;
       }, {});
     } 
+
+    this.legendConfigData = {
+      ...this.legendConfigData,
+      bubbleMaxData: maxConfirmPercentage,
+      chloroMaxData: maxSearchCount
+    }
+
+    this.configData = {
+      ...this.configData,
+      maxChloroData: maxSearchCount,
+      maxBubbleData: maxConfirmPercentage
+    }
 
     this.loadingData = false;
   }
 
   updateViewSelection(option: any) {
     this.activeView = option.type;
-    console.log(option);
   }
 
   updateStyleSelection(option: any) {

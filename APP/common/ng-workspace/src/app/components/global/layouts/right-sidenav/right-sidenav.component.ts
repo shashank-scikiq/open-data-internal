@@ -85,7 +85,7 @@ export class RightSidenavComponent implements OnInit {
                 external: false
               },
               {
-                title: 'Search by city',
+                title: 'Search',
                 url: 'logistics/search',
                 disabled: false,
                 external: false,

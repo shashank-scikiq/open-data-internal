@@ -12,6 +12,15 @@
             }
         </nz-select>
     </div>
+
+    <div class="selection-container">
+        <div class="label">Choose Day type</div>
+        <nz-select nzsize="small" [(ngModel)]="selectedDayType" (ngModelChange)="updateDayType($event)">
+            @for(option of dayTypes; track option) {
+            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+            }
+        </nz-select>
+    </div>
     
     <!-- <div class="selection-container">
         <div class="label">Choose Time Interval</div>
