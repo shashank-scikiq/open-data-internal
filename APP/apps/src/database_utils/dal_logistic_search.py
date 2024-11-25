@@ -69,7 +69,7 @@ class DataAccessLayer:
                                 ELSE 'weekday'
                             END AS is_weekend
                         FROM ec2_all.logistic_search_pincode ls
-                        WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND ls.state = 'DELHI'
+                        WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND {where_condition}
                         GROUP BY ls.time_of_day, ls.pick_up_pincode
                     )
                     UNION
@@ -91,14 +91,13 @@ class DataAccessLayer:
                                 ELSE 'weekday'
                             END AS is_weekend
                         FROM ec2_all.logistic_search_pincode ls
-                        WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND ls.state = 'DELHI'
+                        WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND {where_condition}
                         GROUP BY ls.pick_up_pincode
                     )
                     ORDER BY pick_up_pincode, time_of_day
 
                     """
-        # import pdb
-        # pdb.set_trace()
+
         df = self.db_utility.execute_query(query)
         return df
     
@@ -180,44 +179,65 @@ class DataAccessLayer:
         table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
         
         query = f"""
-                    SELECT DISTINCT 
-                            state, 
-                            time_of_day,
+                    with 
+                        req_table as (
+                            select * 
+                        from 
+                            {table_name}
+                        WHERE 
+                            date BETWEEN '{start_date}' and '{end_date}'
+                            AND time_of_day IN (
+                                    '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
+                                '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
+                            )
+                        )
+                        (SELECT DISTINCT 
+                                state, 
+                            district,
+                                time_of_day,
+                                SUM(searched) AS total_searches, 
+                                SUM(confirmed) AS order_confirmed
+                        FROM 
+                            req_table
+                        GROUP BY 
+                            1,2, 3)             
+                        UNION ALL
+                        (SELECT 
+                            state,
+                            district,
+                            'Overall' AS time_of_day, 
                             SUM(searched) AS total_searches, 
                             SUM(confirmed) AS order_confirmed
-                    FROM 
-                        {table_name}
-                    WHERE 
-                        date BETWEEN '{start_date}' AND '{end_date}'
-                        AND time_of_day IN (
-                            '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
-                            '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
-                        )
-                    GROUP BY 
-                        state, time_of_day 
-
-                UNION ALL
-
-                    SELECT 
-                        state, 
-                        'Overall' AS time_of_day, 
-                        SUM(searched) AS total_searches, 
-                        SUM(confirmed) AS order_confirmed
-                    FROM 
-                        {table_name}
-                    WHERE 
-                        date BETWEEN '{start_date}' AND '{end_date}'
-                        AND time_of_day IN (
-                            '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
-                            '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
-                        )
-                    GROUP BY 
-                        state
-
-                    ORDER BY 
-                        total_searches DESC;
+                            FROM 
+                            req_table
+                            GROUP BY 
+                            1,2)
+                            UNION ALL
+                            
+                            (SELECT DISTINCT 
+                                state, 
+                            'All' as district,
+                                time_of_day,
+                                SUM(searched) AS total_searches, 
+                                SUM(confirmed) AS order_confirmed
+                        FROM 
+                            req_table
+                        GROUP BY 
+                            1, 3)             
+                        UNION ALL
+                        (SELECT 
+                            state,
+                                'All' as district,
+                                'Overall' AS time_of_day, 
+                            SUM(searched) AS total_searches, 
+                                SUM(confirmed) AS order_confirmed
+                            FROM 
+                            req_table
+                            GROUP BY 
+                        1,3)
+                            
+                            order by 1,2,3;
         """
-        
         df= self.db_utility.execute_query(query)
         return df
     

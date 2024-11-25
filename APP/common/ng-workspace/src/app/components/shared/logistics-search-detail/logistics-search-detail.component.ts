@@ -29,6 +29,8 @@ export class LogisticsSearchDetailComponent implements OnInit {
     maxBubbleData: 0
   }
 
+  loadingData: boolean = false;
+
 
   viewsOptions: any = [
     {
@@ -87,13 +89,16 @@ export class LogisticsSearchDetailComponent implements OnInit {
       (val: boolean) => {
         this.isPincodeLevelView = val;
         this.isPincodeLevelViewInitialized = true;
+        console.log(this.isPincodeLevelView, "here")
         if (!val) {
+          this.loadingData = true;
           this.getMapData();
         }
       }
     )
     this.logisticSearchService.activeTimeInterval$.subscribe(
       (val: any) => {
+        this.loadingData = true;
         this.prepareMapData();
       }
     )
@@ -102,6 +107,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
       (state: string) => {
         this.activeStateInitialized = true;
         this.activeState = state;
+        this.loadingData = true;
         this.getMapData();
       }
     );
@@ -116,6 +122,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
       return;
     }
     if (!this.isPincodeLevelView) {
+      this.loadingData = true;
       if (this.activeState == 'TT') {
         this.overallData = null;
         this.rawData = null;
@@ -146,14 +153,22 @@ export class LogisticsSearchDetailComponent implements OnInit {
     if (!data) {
       return;
     }
+    this.loadingData = true;
     if (this.activeState == 'TT') {
       this.overallData = data.mapdata.filter(
           (item: any) => item.time_of_day === this.logisticSearchService.activeTimeInterval.value
         ).reduce((acc: any, item: any) => {
-          acc[item.state] = { 
-            'Search count': item.total_searches, 
-            'Confirm percentage': item.order_confirmed 
-          };
+          if (this.activeStyle == 'state_map') {
+            acc[item.state] = { 
+              'Search count': item.total_searches, 
+              'Confirm percentage': item.order_confirmed 
+            };
+          } else {
+            acc[item.district] = { 
+              'Search count': item.total_searches, 
+              'Confirm percentage': item.order_confirmed 
+            };
+          }
           return acc;
         }, {});
     } else {
@@ -161,13 +176,16 @@ export class LogisticsSearchDetailComponent implements OnInit {
       this.stateData = data.mapdata.filter(
         (item: any) => item.time_of_day === this.logisticSearchService.activeTimeInterval.value
       ).reduce((acc: any, item: any) => {
-        acc[item.district] = {
-          'Search count': item.total_searches, 
-          'Confirm percentage': item.order_confirmed 
-        };
+        
+          acc[item.district] = { 
+            'Search count': item.total_searches, 
+            'Confirm percentage': item.order_confirmed 
+          };
         return acc;
       }, {});
     } 
+
+    this.loadingData = false;
   }
 
   updateViewSelection(option: any) {
@@ -177,5 +195,6 @@ export class LogisticsSearchDetailComponent implements OnInit {
 
   updateStyleSelection(option: any) {
     this.activeStyle = option.type;
+    this.prepareMapData();
   }
 }
