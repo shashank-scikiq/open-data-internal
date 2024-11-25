@@ -41,7 +41,7 @@ import { SankeyChartComponent } from '../global/charts/sankey-chart/sankey-chart
 import { PanIndiaMapComponent } from '../global/maps/pan-india-map/pan-india-map.component';
 import { MapLegendsComponent } from '../global/maps/map-legends/map-legends.component';
 import { StateLevelMapComponent } from '../global/maps/state-level-map/state-level-map.component';
-
+import { OdLoaderComponent } from '../global/loader/od-loader/od-loader.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -82,6 +82,7 @@ import { StateLevelMapComponent } from '../global/maps/state-level-map/state-lev
     PanIndiaMapComponent,
     MapLegendsComponent,
     StateLevelMapComponent,
+    OdLoaderComponent
   ],
   imports: [
     CommonModule,
@@ -126,6 +127,7 @@ import { StateLevelMapComponent } from '../global/maps/state-level-map/state-lev
     PanIndiaMapComponent,
     MapLegendsComponent,
     StateLevelMapComponent,
+    OdLoaderComponent
   ]
 })
 export class SharedModule { }

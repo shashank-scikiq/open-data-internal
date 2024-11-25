@@ -21,6 +21,6 @@ export class MapLegendsComponent implements OnInit, OnChanges {
 
   setLegends() {
     
-  }
+  } 
 
 }

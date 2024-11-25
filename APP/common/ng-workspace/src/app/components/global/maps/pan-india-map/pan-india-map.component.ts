@@ -141,15 +141,18 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
   
       g.selectAll('path')
       .style('fill', (d: any) => {
-        let data = this.mapData[d.id.toUpperCase()];
+        let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
+        let data = this.mapData[key];
         return data ? this.customColorRange(
-            this.mapData[d.id.toUpperCase()][this.configData.chloroDataKey]
+            this.mapData[key][this.configData.chloroDataKey]
           ) :
           this.configData.chloroColorRange[0]
       })
       .on('mouseover', (event: any, d: any) => {
-        const data = this.mapData[d.id.toUpperCase()];
-        let htmlString = `<b>State:</b> ${d.id} <br>` 
+        let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
+        const data = this.mapData[key];
+        let htmlString = this.viewType == 'state_map' ? `<b>State:</b> ${d.id} <br>` :
+          `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>` 
         if (data) {
           htmlString += Object.entries(data)
           .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
@@ -187,7 +190,8 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
       g.selectAll('path')
       .each((d: any) => {
         const centroid = this.mapProjectionResult[0](d3.geoCentroid(d));
-        let data = this.mapData[d.id.toUpperCase()];
+        let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
+        let data = this.mapData[key];
 
         this.svg.select('#pincodeGroup').append('circle')
             .attr('cx', centroid[0])
@@ -204,8 +208,9 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
             .attr('stroke', 'RGBA( 0, 139, 139, 0.8)')
             .attr('stroke-width', 0.5)
             .on('mouseover', (event: any) => {
-              const data = this.mapData[d.id.toUpperCase()];
-              let htmlString = `<b>State:</b> ${d.id} <br>` 
+              const data = this.mapData[key];
+              let htmlString = this.viewType == 'state_map' ? `<b>State:</b> ${d.id} <br>` :
+              `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>` 
               if (data) {
                 htmlString += Object.entries(data)
                 .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
