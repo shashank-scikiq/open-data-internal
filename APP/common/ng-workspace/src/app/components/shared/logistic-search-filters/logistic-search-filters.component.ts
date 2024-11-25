@@ -16,6 +16,9 @@ export class LogisticSearchFiltersComponent implements OnInit {
   overallSelected: boolean = true;
   isPincodeView: boolean = false;
 
+  dayTypes: string[] = ['All', 'Weekends', 'Week days']
+  selectedDayType: string = 'All';
+
   cities: string[] = ['New Delhi', 'Bangalore'];
   selectedCity: string = 'New Delhi';
   dateRange: any = [];
@@ -76,5 +79,9 @@ export class LogisticSearchFiltersComponent implements OnInit {
 
   updatePincodeView(value: any) {
     this.logisticSearchService.pincodeLevelView.next(value);
+  }
+
+  updateDayType(value: any) {
+    this.logisticSearchService.activeDayType.next(value);
   }
 }

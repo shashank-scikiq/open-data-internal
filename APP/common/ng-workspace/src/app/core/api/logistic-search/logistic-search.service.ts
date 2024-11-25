@@ -19,6 +19,9 @@ export class LogisticSearchService {
   activeState = new BehaviorSubject<string>("TT");
   activeState$ = this.activeState.asObservable();
 
+  activeDayType = new BehaviorSubject<string>("All");
+  activeDayType$ = this.activeDayType.asObservable();
+
   pincodeLevelView = new BehaviorSubject<boolean>(false);
   pincodeLevelView$ = this.pincodeLevelView.asObservable();
 
