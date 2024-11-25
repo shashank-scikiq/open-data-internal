@@ -176,17 +176,11 @@ export class LogisticsSearchDetailComponent implements OnInit {
       this.stateData = data.mapdata.filter(
         (item: any) => item.time_of_day === this.logisticSearchService.activeTimeInterval.value
       ).reduce((acc: any, item: any) => {
-        if (this.activeStyle == 'state_map') {
-          acc[item.state] = { 
-            'Search count': item.total_searches, 
-            'Confirm percentage': item.order_confirmed 
-          };
-        } else {
+        
           acc[item.district] = { 
             'Search count': item.total_searches, 
             'Confirm percentage': item.order_confirmed 
           };
-        }
         return acc;
       }, {});
     } 

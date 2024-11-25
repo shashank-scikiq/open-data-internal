@@ -69,7 +69,7 @@ class DataAccessLayer:
                                 ELSE 'weekday'
                             END AS is_weekend
                         FROM ec2_all.logistic_search_pincode ls
-                        WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND {where_condition}'
+                        WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND {where_condition}
                         GROUP BY ls.time_of_day, ls.pick_up_pincode
                     )
                     UNION
