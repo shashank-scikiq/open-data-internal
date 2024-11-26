@@ -1,5 +1,3 @@
-
-
 __author__ = "Bikas Pandey"
 
 from datetime import datetime
@@ -202,7 +200,15 @@ class DataAccessLayer:
                             district,
                                 time_of_day,
                                 SUM(searched) AS total_searches, 
-                                ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) as order_confirmed
+                                SUM(confirmed) AS order_confirmed,
+                                CASE
+                                    WHEN SUM(searched) = 0 OR SUM(confirmed) = 0 THEN 0 
+                                    ELSE ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) 
+                                END AS total_conversion_percentage,
+                                CASE
+                                    WHEN SUM(searched) = 0 OR SUM(assigned) = 0 THEN 0 
+                                    ELSE ROUND((SUM(assigned) / SUM(searched)) * 100.0, 1) 
+                                END AS total_assigned_percentage
                         FROM 
                             req_table
                         GROUP BY 
@@ -213,19 +219,34 @@ class DataAccessLayer:
                             district,
                             'Overall' AS time_of_day, 
                             SUM(searched) AS total_searches, 
-                            ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) as order_confirmed
-                            FROM 
+                            SUM(confirmed) AS order_confirmed,
+                            CASE
+                                WHEN SUM(searched) = 0 OR SUM(confirmed) = 0 THEN 0 
+                                ELSE ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) 
+                            END AS total_conversion_percentage,
+                            CASE
+                                WHEN SUM(searched) = 0 OR SUM(assigned) = 0 THEN 0 
+                                ELSE ROUND((SUM(assigned) / SUM(searched)) * 100.0, 1) 
+                            END AS total_assigned_percentage
+                        FROM 
                             req_table
-                            GROUP BY 
-                            1,2)
-                            UNION ALL
+                        GROUP BY 1,2)
+                        UNION ALL
                             
                             (SELECT DISTINCT 
                                 state, 
                             'All' as district,
                                 time_of_day,
                                 SUM(searched) AS total_searches, 
-                                ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) as order_confirmed
+                                SUM(confirmed) AS order_confirmed,
+                                CASE
+                                    WHEN SUM(searched) = 0 OR SUM(confirmed) = 0 THEN 0 
+                                    ELSE ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) 
+                                END AS total_conversion_percentage,
+                                CASE
+                                    WHEN SUM(searched) = 0 OR SUM(assigned) = 0 THEN 0 
+                                    ELSE ROUND((SUM(assigned) / SUM(searched)) * 100.0, 1) 
+                                END AS total_assigned_percentage
                         FROM 
                             req_table
                         GROUP BY 
@@ -235,10 +256,18 @@ class DataAccessLayer:
                             state,
                                 'All' as district,
                                 'Overall' AS time_of_day, 
-                            SUM(searched) AS total_searches, 
-                            ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) as order_confirmed
+                                SUM(searched) AS total_searches, 
+                                SUM(confirmed) AS order_confirmed,
+                                CASE
+                                    WHEN SUM(searched) = 0 OR SUM(confirmed) = 0 THEN 0 
+                                    ELSE ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) 
+                                END AS total_conversion_percentage,
+                                CASE
+                                    WHEN SUM(searched) = 0 OR SUM(assigned) = 0 THEN 0 
+                                    ELSE ROUND((SUM(assigned) / SUM(searched)) * 100.0, 1) 
+                                END AS total_assigned_percentage
                             FROM 
-                            req_table
+                                req_table
                             GROUP BY 
                         1,3)
                             
@@ -250,15 +279,9 @@ class DataAccessLayer:
     def fetch_total_searches_per_state(self, start_date, end_date, state):
         table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
 
-        query = f"""
-                    (
-                    SELECT 
-                            state,
-                            district,
-                            time_of_day,
-                            SUM(searched) AS total_searches, 
-                            SUM(confirmed) AS order_confirmed
-                    FROM 
+        query = f"""with req_table as (
+                    
+                    select * from 
                         {table_name}
                     WHERE 
                         date BETWEEN '{start_date}' AND '{end_date}' AND upper(state)=upper('{state}')
@@ -266,6 +289,24 @@ class DataAccessLayer:
                             '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
                             '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
                         )
+                    )
+                    (
+                    SELECT 
+                            state,
+                            district,
+                            time_of_day,
+                            SUM(searched) AS total_searches, 
+                            SUM(confirmed) AS order_confirmed,
+                            CASE
+                                    WHEN SUM(searched) = 0 OR SUM(confirmed) = 0 THEN 0 
+                                    ELSE ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) 
+                                END AS total_conversion_percentage,
+                                CASE
+                                    WHEN SUM(searched) = 0 OR SUM(assigned) = 0 THEN 0 
+                                    ELSE ROUND((SUM(assigned) / SUM(searched)) * 100.0, 1) 
+                                END AS total_assigned_percentage
+                    FROM 
+                        req_table
                     GROUP BY 
                         1,2,3)
 
@@ -276,16 +317,17 @@ class DataAccessLayer:
                         district,
                         'Overall' AS time_of_day, 
                         SUM(searched) AS total_searches, 
-                        SUM(confirmed) AS order_confirmed
+                        SUM(confirmed) AS order_confirmed,
+                        CASE
+                            WHEN SUM(searched) = 0 OR SUM(confirmed) = 0 THEN 0 
+                            ELSE ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) 
+                        END AS total_conversion_percentage,
+                        CASE
+                            WHEN SUM(searched) = 0 OR SUM(assigned) = 0 THEN 0 
+                            ELSE ROUND((SUM(assigned) / SUM(searched)) * 100.0, 1) 
+                        END AS total_assigned_percentage
                     FROM 
-                        {table_name}
-                    WHERE 
-                        date BETWEEN '{start_date}' AND '{end_date}'
-                        AND upper(state)=upper('{state}')
-                        AND time_of_day IN (
-                            '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
-                            '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
-                        )
+                        req_table
                     GROUP BY 
                         1,2
 
