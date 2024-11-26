@@ -99,6 +99,7 @@ class DataAccessLayer:
                     """
 
         df = self.db_utility.execute_query(query)
+
         return df
     
     @log_function_call(ondcLogger)

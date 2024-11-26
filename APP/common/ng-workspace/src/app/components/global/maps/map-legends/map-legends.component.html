@@ -1,13 +1,8 @@
-<div class="absolute" [ngStyle]="{'visibility': 'visible'}" style="left: 4px; bottom: -16px;">
-    @if(!(legendType != 'chloro')) {
-    <div id="bubble-legends">
-        <p class="font-xxs font-bolder margin-0">% Search to confirm</p>
-    </div>
-    }
 
-    @if(!(legendType != 'bubble')) {
-        <div id="chloro-legends">
-            <p class="font-xxs font-bolder margin-0">Search counts</p>
+    <div class="absolute" [ngStyle]="{'visibility': isLoading ? 'hidden':'visible'}" style="left: 4px; bottom: -16px;">
+        <div id="bubble-legends">
         </div>
-    }
-</div>
+    
+        <div id="chloro-legends">
+        </div>
+    </div>

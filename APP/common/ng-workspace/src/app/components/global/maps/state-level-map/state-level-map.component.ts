@@ -131,14 +131,12 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
           (data: any) => Number(data[this.configData.chloroDataKey])
         )
       );
-      console.log(this.mapData, maxChloroData)
       this.customColorRange = d3.scaleLinear()
         .domain([0, 1, maxChloroData])
         .range(this.configData.chloroColorRange);
   
       g.selectAll('path')
       .style('fill', (d: any) => {
-        console.log(d)
         let data = this.mapData[d.properties.district];
         return data ? this.customColorRange(
             this.mapData[d.properties.district][this.configData.chloroDataKey]
@@ -194,11 +192,10 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
                 return 1;
               }
               const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(data[this.configData.bubbleDataKey])));
-              console.log(radius)
-              return radius
+              return radius;
             })
-            .attr('fill', 'RGBA( 0, 139, 139, 0.4 )	')
-            .attr('stroke', 'RGBA( 0, 139, 139, 0.8)')
+            .attr('fill', this.configData.bubbleColorRange[0])
+            .attr('stroke', this.configData.bubbleColorRange[1])
             .attr('stroke-width', 0.5)
             .on('mouseover', (event: any) => {
               const data = this.mapData[d.properties.district];
