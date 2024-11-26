@@ -1022,8 +1022,15 @@ class DataAccessLayer:
                     AND swdlo.domain_name = 'Retail' 
                     AND swdlo.sub_domain = 'B2C'
                     AND swdlo.delivery_state <> ''
+        """
 
-                    GROUP BY swdlo.delivery_state
+        if bool(category) and (category != 'None'):
+            query += f" AND upper(swdlo.category)=upper('{category}')"
+        
+        if bool(sub_category) and (sub_category != 'None'):
+            query += f" AND upper(swdlo.sub_category)=upper('{sub_category}')"
+
+        query += f""" GROUP BY swdlo.delivery_state
                 ) total ON om.delivery_state = total.delivery_state
                 WHERE 
                     ((om.order_year*100) + om.order_month) between
@@ -1885,6 +1892,13 @@ class DataAccessLayer:
                     AND swdlo.domain_name = '{domain}' 
                     AND swdlo.sub_domain = 'B2C'
                     AND swdlo.seller_state <> ''
+        """
+        if category:
+            query += f" AND UPPER(swdlo.category) = UPPER('{category}')"
+        if sub_category:
+            query += f" AND UPPER(swdlo.sub_category) = UPPER('{sub_category}')"
+
+        query += f"""
                     GROUP BY swdlo.seller_state
                 ) total ON om.seller_state = total.seller_state
                 WHERE 
