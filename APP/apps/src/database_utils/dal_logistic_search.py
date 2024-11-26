@@ -104,12 +104,14 @@ class DataAccessLayer:
     
     @log_function_call(ondcLogger)
     def fetch_logistic_searched_top_card_data(self, start_date, end_date, city):
-        where_condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
-            if city == 'Bangalore' else " state = 'DELHI' "
-        
-        query = f"""
-            WITH A AS (
+        table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
+
+        condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
+            if city == 'Bangalore' else ('' if not city else " state = 'DELHI' ")    
+
+        query = f"""WITH A AS (
                 SELECT 
+                	state, 
                     ls.time_of_day,
                     CASE
                         WHEN SUM(ls.searched) = 0 OR SUM(ls.confirmed) = 0 THEN 0 
@@ -120,9 +122,9 @@ class DataAccessLayer:
                         ELSE ROUND((SUM(ls.assigned) / SUM(ls.searched)) * 100.0, 1) 
                     END AS total_assigned_percentage,
                     SUM(ls.searched) AS searched_data
-                FROM {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
-                    where date between '{start_date}' and '{end_date}' and {where_condition} 
-                GROUP BY ls.time_of_day
+                FROM ec2_all.logistic_search_pincode ls
+                    where date between '{start_date}' and '{end_date}' {' and ' + condition if condition else ''}
+                GROUP BY 1,2
             ),
             B AS (
                 SELECT time_of_day
@@ -139,6 +141,7 @@ class DataAccessLayer:
                 ) AS time_ranges(time_of_day)
             )
             SELECT 
+            A.state as state,
                 B.time_of_day, 
                 COALESCE(A.total_conversion_percentage, 0) AS total_conversion_percentage, 
                 COALESCE(A.total_assigned_percentage, 0) AS total_assigned_percentage, 
@@ -148,6 +151,7 @@ class DataAccessLayer:
 
             UNION ALL
             SELECT 
+            	state,
                 'Overall' AS time_of_day,
                 CASE
                     WHEN SUM(ls.searched) = 0 OR SUM(ls.confirmed) = 0 THEN 0 
@@ -158,8 +162,9 @@ class DataAccessLayer:
                     ELSE ROUND((SUM(ls.assigned) / SUM(ls.searched)) * 100.0, 1) 
                 END AS total_assigned_percentage,
                 SUM(ls.searched) AS searched_data
-            FROM {constant.LOGISTIC_SEARCH_PINCODE_TBL} ls
-            where date between '{start_date}' and '{end_date}' and {where_condition} ;
+            FROM {table_name} ls
+            where date between '{start_date}' and '{end_date}' {' and ' + condition if condition else ''}
+            group by 1;
         """
         
         df = self.db_utility.execute_query(query)
@@ -197,7 +202,7 @@ class DataAccessLayer:
                             district,
                                 time_of_day,
                                 SUM(searched) AS total_searches, 
-                                SUM(confirmed) AS order_confirmed
+                                ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) as order_confirmed
                         FROM 
                             req_table
                         GROUP BY 
@@ -208,7 +213,7 @@ class DataAccessLayer:
                             district,
                             'Overall' AS time_of_day, 
                             SUM(searched) AS total_searches, 
-                            SUM(confirmed) AS order_confirmed
+                            ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) as order_confirmed
                             FROM 
                             req_table
                             GROUP BY 
@@ -220,7 +225,7 @@ class DataAccessLayer:
                             'All' as district,
                                 time_of_day,
                                 SUM(searched) AS total_searches, 
-                                SUM(confirmed) AS order_confirmed
+                                ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) as order_confirmed
                         FROM 
                             req_table
                         GROUP BY 
@@ -231,7 +236,7 @@ class DataAccessLayer:
                                 'All' as district,
                                 'Overall' AS time_of_day, 
                             SUM(searched) AS total_searches, 
-                                SUM(confirmed) AS order_confirmed
+                            ROUND((SUM(confirmed) / SUM(searched)) * 100.0, 1) as order_confirmed
                             FROM 
                             req_table
                             GROUP BY 
@@ -289,4 +294,3 @@ class DataAccessLayer:
         """
         df= self.db_utility.execute_query(query)
         return df
-

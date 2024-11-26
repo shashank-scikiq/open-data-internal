@@ -62,10 +62,6 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
 
         if not start_date or not end_date:
             return JsonResponse(error_message, status=400, safe=False)
-
-        if not city:
-            error_message = {'error': "Bad request! City not provided"}
-            return JsonResponse(error_message, status=400, safe=False)
         
         params = {
             'city': city,

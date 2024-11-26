@@ -144,3 +144,4 @@ class DataService:
                                          state=None, district=None, seller_type='Total'):
         return self.dal.fetch_overall_top5_delivery_districts(start_date, end_date, category, sub_category, domain_name,
                                                     state, district)
+    
