@@ -1964,12 +1964,12 @@ class DataAccessLayer:
                         ORDER BY SUM(om.total_orders_delivered) DESC
                     ) AS rn
                 FROM 
-                    ec2_all.cat_district_wise_monthly_aggregates om
+                    {table_name} om
                 INNER JOIN (
                     SELECT 
                         swdlo.seller_district, 
                         SUM(swdlo.total_orders_delivered) AS total_orders 
-                    FROM ec2_all.cat_district_wise_monthly_aggregates swdlo
+                    FROM {table_name} swdlo
                     WHERE 
                         ((swdlo.order_year * 100) + swdlo.order_month) BETWEEN 
                         (({params.start_year}*100) + {params.start_month}) and
