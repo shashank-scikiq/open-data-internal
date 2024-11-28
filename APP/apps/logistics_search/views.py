@@ -328,7 +328,6 @@ class FetchOverallIndiaData(APIView):
             error_message={'error': f"an error occured"}
             return JsonResponse(error_message, status=400)
         params = {
-
             'start_date' : start_date,
             'end_date' : end_date,
             'day_type': day_type
@@ -338,7 +337,7 @@ class FetchOverallIndiaData(APIView):
             data = get_cached_data(cache_key)
             if data is None:
                 df = data_service.get_overall_total_searches(**params)
-
+                df['total_searches'] = df['total_searches'].astype(int)
                 result = df.to_dict(orient="records")
                 return JsonResponse({"mapdata": result}, safe=False)
         
@@ -376,7 +375,7 @@ class FetchStateData(APIView):
             cache_key = f"Logistic_search_FetchStateData_{self.generate_cache_key(params)}"
             data = get_cached_data(cache_key)
             if data is None:
-                df = data_service.get_total_searches_per_state(**params)
+                df = data_service.get_overall_total_searches(**params)
                 result = df.to_dict(orient="records")
                 return JsonResponse({"mapdata": result}, safe=False)
         

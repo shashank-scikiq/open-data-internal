@@ -238,6 +238,8 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
 
   backToIndiaMap() {
     this.logisticSearchService.activeState.next('TT');
+    this.logisticSearchService.filterUpdated.next({updated: false, updatedFor: 'activeState'})
+    console.log("here")
   }
 
 }

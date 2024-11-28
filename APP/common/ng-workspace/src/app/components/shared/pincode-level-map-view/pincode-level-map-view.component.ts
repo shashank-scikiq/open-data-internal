@@ -136,6 +136,15 @@ export class PincodeLevelMapViewComponent implements OnInit, OnDestroy {
       }
     )
 
+    this.logisticSearchService.activeDayType$.subscribe(
+      (value: any) => {
+        this.isLoadingMap = true;
+        this.getMapData();
+        this.activeInsight = this.insightOptions[0];
+        this.activeView = this.viewsOptions[0].type;
+      }
+    )
+
     this.logisticSearchService.activeCity$.subscribe(
       (value: string) => {
         this.city = value;
