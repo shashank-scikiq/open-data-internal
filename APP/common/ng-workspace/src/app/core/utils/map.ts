@@ -153,7 +153,7 @@ export const getStateTooltipContent = (d: any, casetype: any, color: any, top3Da
             <p class="font-bolder selection-name margin-0"><i class="margin-right-2 fa-solid fa-location-dot"></i>  ${d.id}</p>
             <h3 class="font-bolder margin-bottom-1 count-section" style="
                 color: ${colorValue};">
-                    ${metricKey === 'Registered Sellers' && d.properties.totalcasedata[casetype] === 0
+                    ${metricKey === 'Sellers' && d.properties.totalcasedata[casetype] === 0
             ? 'No Data'
             : (metricKey === 'Intrastate Percentage'
                 ? new Intl.NumberFormat().format(d.properties.totalcasedata[casetype]) + '%'
@@ -203,7 +203,7 @@ export const getDistrictTooltipContent = (d: any, casetype: any, color: any, top
         colorValue = "#1C75BC";
     }
 
-    const isNoData = metricKey === 'Registered Sellers' && d.properties.totalcasedata[casetype] === 0;
+    const isNoData = metricKey === 'Sellers' && d.properties.totalcasedata[casetype] === 0;
 
     const metricValue = isNoData
         ? 'No Data'
