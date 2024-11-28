@@ -15,6 +15,7 @@ import { NzDividerModule } from 'ng-zorro-antd/divider';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { NzMenuModule } from 'ng-zorro-antd/menu';
 import { NzSwitchModule } from 'ng-zorro-antd/switch';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 
 
 
@@ -36,7 +37,8 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
     NzDividerModule,
     NzCheckboxModule,
     NzMenuModule,
-    NzSwitchModule
+    NzSwitchModule,
+    NzModalModule
   ],
   exports: [
     NzButtonModule,
@@ -54,7 +56,8 @@ import { NzSwitchModule } from 'ng-zorro-antd/switch';
     NzDividerModule,
     NzCheckboxModule,
     NzMenuModule,
-    NzSwitchModule
+    NzSwitchModule,
+    NzModalModule
   ]
 })
 export class ZorroModule { }

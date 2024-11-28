@@ -119,6 +119,7 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
       .attr('stroke', 'black')
       .on('click', (event: any, d: any) => {
         this.logisticSearchService.activeState.next(d.properties.st_nm);
+        this.logisticSearchService.filterUpdated.next({ updated: true, updatedFor: 'activeState' });
       })
 
       this.updateMapWithData();
@@ -187,7 +188,9 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
               if(!(data && data[this.configData.bubbleDataKey])) {
                 return 1;
               }
-              const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(data[this.configData.bubbleDataKey])));
+              const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(
+                Number(data[this.configData.bubbleDataKey].slice(0,-1))
+              )));
               return radius
             })
             .attr('fill', this.configData.bubbleColorRange[0])
@@ -219,6 +222,7 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
             })
             .on('click', (event: any) => {
               this.logisticSearchService.activeState.next(d.properties.st_nm);
+              this.logisticSearchService.filterUpdated.next({ updated: true, updatedFor: 'activeState' });
             });
       })
     }

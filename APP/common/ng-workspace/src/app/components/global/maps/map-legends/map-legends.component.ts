@@ -33,8 +33,6 @@ export class MapLegendsComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   setLegends() {
-    console.log(this.legendType, this.configData);
-
     this.removeLegends()
 
     if (this.legendType != 'chloro') {

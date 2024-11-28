@@ -4,7 +4,6 @@ import { StateCode } from '@openData/app/core/utils/map';
 import * as d3 from "d3";
 import * as topojson from 'topojson-client';
 
-
 @Component({
   selector: 'app-state-level-map',
   templateUrl: './state-level-map.component.html',
@@ -54,6 +53,7 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
     if (changes['mapData'] || changes['visualType']) {
       this.initMap();
     }
+    
   }
 
   // Zoom in method
@@ -170,13 +170,8 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
     
     if (this.visualType == 'bubble' || this.visualType == 'both') {
 
-      const maxBubbleData = Math.max(
-        ...Object.values(this.mapData).map(
-          (data: any) => Number(data[this.configData.bubbleDataKey])
-        )
-      );
       this.bubbleRadiusMethod = d3.scaleSqrt()
-      .domain([0, maxBubbleData])
+      .domain([0, this.configData.maxBubbleData])
       .range([1, 12]);
       
       g.selectAll('path')
@@ -191,7 +186,9 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
               if(!(data && data[this.configData.bubbleDataKey])) {
                 return 1;
               }
-              const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(data[this.configData.bubbleDataKey])));
+              const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(
+                Number(data[this.configData.bubbleDataKey].slice(0,-1))
+              )));
               return radius;
             })
             .attr('fill', this.configData.bubbleColorRange[0])

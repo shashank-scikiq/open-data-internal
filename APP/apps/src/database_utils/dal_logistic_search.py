@@ -44,10 +44,13 @@ class DataAccessLayer:
 
 
     @log_function_call(ondcLogger)
-    def fetch_logistic_searched_data(self, start_date, end_date, city):
+    def fetch_logistic_searched_data(self, start_date, end_date, city, day_type='All'):
         where_condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
             if city == 'Bangalore' else "state = 'DELHI'"
         
+        day_type_condition = " and extract(dow from date) in (6,0) " if day_type == 'Weekends' else (
+            " and extract(dow from date) in (1,2,3,4,5)" if day_type == 'Week days' else ''
+        )
         query = f"""
                     (
                         SELECT 
@@ -68,6 +71,7 @@ class DataAccessLayer:
                             END AS is_weekend
                         FROM ec2_all.logistic_search_pincode ls
                         WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND {where_condition}
+                        {day_type_condition}
                         GROUP BY ls.time_of_day, ls.pick_up_pincode
                     )
                     UNION
@@ -90,6 +94,7 @@ class DataAccessLayer:
                             END AS is_weekend
                         FROM ec2_all.logistic_search_pincode ls
                         WHERE ls.date BETWEEN '{start_date}' AND '{end_date}' AND {where_condition}
+                        {day_type_condition}
                         GROUP BY ls.pick_up_pincode
                     )
                     ORDER BY pick_up_pincode, time_of_day
@@ -101,11 +106,15 @@ class DataAccessLayer:
         return df
     
     @log_function_call(ondcLogger)
-    def fetch_logistic_searched_top_card_data(self, start_date, end_date, city):
+    def fetch_logistic_searched_top_card_data(self, start_date, end_date, city, day_type='All'):
         table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
 
         condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
             if city == 'Bangalore' else ('' if not city else " state = 'DELHI' ")    
+        
+        day_type_condition = " and extract(dow from date) in (6,0) " if day_type == 'Weekends' else (
+            " and extract(dow from date) in (1,2,3,4,5)" if day_type == 'Week days' else ''
+        )
 
         query = f"""WITH A AS (
                 SELECT 
@@ -119,9 +128,12 @@ class DataAccessLayer:
                         WHEN SUM(ls.searched) = 0 OR SUM(ls.assigned) = 0 THEN 0 
                         ELSE ROUND((SUM(ls.assigned) / SUM(ls.searched)) * 100.0, 1) 
                     END AS total_assigned_percentage,
+                    SUM(ls.confirmed) AS confirmed_data,
+                    SUM(ls.assigned) AS assigned_data,
                     SUM(ls.searched) AS searched_data
                 FROM ec2_all.logistic_search_pincode ls
                     where date between '{start_date}' and '{end_date}' {' and ' + condition if condition else ''}
+                    {day_type_condition}
                 GROUP BY 1,2
             ),
             B AS (
@@ -142,8 +154,11 @@ class DataAccessLayer:
             A.state as state,
                 B.time_of_day, 
                 COALESCE(A.total_conversion_percentage, 0) AS total_conversion_percentage, 
-                COALESCE(A.total_assigned_percentage, 0) AS total_assigned_percentage, 
+                COALESCE(A.total_assigned_percentage, 0) AS total_assigned_percentage,
+                COALESCE(A.confirmed_data, 0) AS confirmed_data,
+                COALESCE(A.assigned_data, 0) AS assigned_data, 
                 COALESCE(A.searched_data, 0) AS searched_data
+                
             FROM B
             LEFT JOIN A ON B.time_of_day = A.time_of_day
 
@@ -159,9 +174,12 @@ class DataAccessLayer:
                     WHEN SUM(ls.searched) = 0 OR SUM(ls.assigned) = 0 THEN 0 
                     ELSE ROUND((SUM(ls.assigned) / SUM(ls.searched)) * 100.0, 1) 
                 END AS total_assigned_percentage,
+                SUM(ls.confirmed) AS confirmed_data,
+                SUM(ls.assigned) AS assigned_data,
                 SUM(ls.searched) AS searched_data
             FROM {table_name} ls
             where date between '{start_date}' and '{end_date}' {' and ' + condition if condition else ''}
+            {day_type_condition}
             group by 1;
         """
         
@@ -179,8 +197,11 @@ class DataAccessLayer:
     
 
     @log_function_call(ondcLogger)
-    def fetch_overall_total_searches(self, start_date=None, end_date=None):
+    def fetch_overall_total_searches(self, start_date=None, end_date=None, day_type='All'):
         table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
+        day_type_condition = " and extract(dow from date) in (6,0) " if day_type == 'Weekends' else (
+            " and extract(dow from date) in (1,2,3,4,5)" if day_type == 'Week days' else ''
+        )
         
         query = f"""
                     with 
@@ -190,6 +211,7 @@ class DataAccessLayer:
                             {table_name}
                         WHERE 
                             date BETWEEN '{start_date}' and '{end_date}'
+                            {day_type_condition}
                             AND time_of_day IN (
                                     '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
                                 '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'
@@ -276,8 +298,11 @@ class DataAccessLayer:
         df= self.db_utility.execute_query(query)
         return df
     
-    def fetch_total_searches_per_state(self, start_date, end_date, state):
+    def fetch_total_searches_per_state(self, start_date, end_date, state, day_type='All'):
         table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
+        day_type_condition = " and extract(dow from date) in (6,0) " if day_type == 'Weekends' else (
+            " and extract(dow from date) in (1,2,3,4,5)" if day_type == 'Week days' else ''
+        )
 
         query = f"""with req_table as (
                     
@@ -285,6 +310,7 @@ class DataAccessLayer:
                         {table_name}
                     WHERE 
                         date BETWEEN '{start_date}' AND '{end_date}' AND upper(state)=upper('{state}')
+                        {day_type_condition}
                         AND time_of_day IN (
                             '3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
                             '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am'

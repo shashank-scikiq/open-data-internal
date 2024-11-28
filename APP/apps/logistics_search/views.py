@@ -59,6 +59,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         city = request.GET.get('city', None)
         start_date = request.GET.get('startDate', None)
         end_date = request.GET.get('endDate', None)
+        day_type = request.GET.get('dayType', 'All')
 
         if not start_date or not end_date:
             return JsonResponse(error_message, status=400, safe=False)
@@ -66,7 +67,8 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         params = {
             'city': city,
             'start_date': start_date,
-            'end_date': end_date
+            'end_date': end_date,
+            'day_type': day_type
         }
 
         try:
@@ -74,13 +76,59 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             data = get_cached_data(cache_key)
             if data is None:
                 card_data = data_service.get_logistic_searched_top_card_data(**params)
-                card_data['city'] = city
 
-                fetched_data = card_data.to_dict(orient="records")
-                cache.set(cache_key, fetched_data, constant.CACHE_EXPIRY)
+                card_data['city'] = city
+                
+                fetched_data = []
+                
+                if not city:
+                    time_of_days = card_data['time_of_day'].unique()
+
+                    for time in time_of_days:
+                        df_data = card_data[card_data['time_of_day'] == time]
+
+                        searched_sum = df_data['searched_data'].sum()
+
+                        fetched_data.append(
+                            {
+                                'state': 'TT', 
+                                'time_of_day': time, 
+                                'total_conversion_percentage': "{:.2f}".format((df_data['confirmed_data'].sum()/(searched_sum if searched_sum else 1))*100),
+                                'total_assigned_percentage':"{:.2f}".format((df_data['assigned_data'].sum()/(searched_sum if searched_sum else 1))*100),
+                                'searched_data': searched_sum
+                            }
+                        )
+                
+                card_data = card_data.drop(columns=['confirmed_data', 'assigned_data'])
+
+                fetched_data += card_data.to_dict(orient="records")
+                formatted_response = {"data": {}}
+
+                if not city:
+                    for record in fetched_data:
+                        state = record["state"]
+                        time_of_day = record["time_of_day"]
+                        # Ensure state exists in the formatted structure
+                        if state not in formatted_response["data"]:
+                            formatted_response["data"][state] = {}
+                        # Add the time_of_day data
+                        formatted_response["data"][state][time_of_day] = {
+                            k: v for k, v in record.items() if k not in ["state", "time_of_day"]
+                        }
+                else:
+                    for record in fetched_data:
+                        time_of_day = record["time_of_day"]
+                        # Ensure state exists in the formatted structure
+                        if city not in formatted_response["data"]:
+                            formatted_response["data"][city] = {}
+                        # Add the time_of_day data
+                        formatted_response["data"][city][time_of_day] = {
+                            k: v for k, v in record.items() if k not in ["city", "time_of_day"]
+                        }
+                cache.set(cache_key, formatted_response, constant.CACHE_EXPIRY)
             else:
-                fetched_data = data
-            return JsonResponse({"data": fetched_data}, safe=False)
+                formatted_response = data
+            return JsonResponse(formatted_response, safe=False)
 
         except Exception as e:
             error_message = {'error': f"An error occurred: {str(e)}"}
@@ -102,6 +150,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
         city = request.GET.get('city', None)
         start_date = request.GET.get('startDate', None)
         end_date = request.GET.get('endDate', None)
+        day_type = request.GET.get('dayType', 'All')
 
         if not start_date or not end_date:
             return JsonResponse(error_message, status=400, safe=False)
@@ -113,7 +162,8 @@ class FetchCityWiseData(SummaryBaseDataAPI):
         params = {
             'city': city,
             'start_date': start_date,
-            'end_date': end_date
+            'end_date': end_date,
+            'day_type': day_type
         }
 
         try:
@@ -270,21 +320,25 @@ class FetchOverallIndiaData(APIView):
         """
             APIView BaseDataAPI FetchOverallIndiaData
         """
-        start_date = request.GET.get('startDate')
-        end_date = request.GET.get('endDate')
+        start_date = request.GET.get('startDate', None)
+        end_date = request.GET.get('endDate', None)
+        day_type = request.GET.get('dayType', 'All')
+
         if not start_date and not end_date:
             error_message={'error': f"an error occured"}
             return JsonResponse(error_message, status=400)
         params = {
 
             'start_date' : start_date,
-            'end_date' : end_date
+            'end_date' : end_date,
+            'day_type': day_type
         }
         try:
             cache_key = f"Logistic_search_FetchOverallIndiaData_{self.generate_cache_key(params)}"
             data = get_cached_data(cache_key)
             if data is None:
-                df = data_service.get_overall_total_searches(start_date, end_date)
+                df = data_service.get_overall_total_searches(**params)
+
                 result = df.to_dict(orient="records")
                 return JsonResponse({"mapdata": result}, safe=False)
         
@@ -304,22 +358,25 @@ class FetchStateData(APIView):
         """
             APIView BaseDataAPI FetchStateData
         """
-        start_date = request.GET.get('startDate')
-        end_date = request.GET.get('endDate')
-        state = request.GET.get('state')
+        start_date = request.GET.get('startDate', None)
+        end_date = request.GET.get('endDate', None)
+        state = request.GET.get('state', None)
+        day_type = request.GET.get('dayType', 'All')
+
         if not (start_date and end_date and state):
             error_message={'error': f"an error occured"}
             return JsonResponse(error_message, status=400)
         params = {
             'start_date' : start_date,
             'end_date' : end_date,
-            'state': state
+            'state': state,
+            'day_type': day_type
         }
         try:
             cache_key = f"Logistic_search_FetchStateData_{self.generate_cache_key(params)}"
             data = get_cached_data(cache_key)
             if data is None:
-                df = data_service.get_total_searches_per_state(start_date, end_date, state)
+                df = data_service.get_total_searches_per_state(**params)
                 result = df.to_dict(orient="records")
                 return JsonResponse({"mapdata": result}, safe=False)
         

@@ -78,7 +78,8 @@ export class LogisticSearchService {
     const params = {
       city: this.activeCity.value,
       startDate,
-      endDate
+      endDate,
+      dayType: this.activeDayType.value,
     }
     return this.http.get(
       this.baseUrl + `api/logistics/search/city_wise_data/`,
@@ -96,7 +97,8 @@ export class LogisticSearchService {
     const params = {
       state: this.activeState.value,
       startDate,
-      endDate
+      endDate,
+      dayType: this.activeDayType.value,
     }
     return this.http.get(
       this.baseUrl + `api/logistics/search/state_wise_data/`,
@@ -113,7 +115,8 @@ export class LogisticSearchService {
     let [startDate, endDate] = this.getFormattedDateRange();
     const params = {
       startDate,
-      endDate
+      endDate,
+      dayType: this.activeDayType.value,
     }
     return this.http.get(
       this.baseUrl + `api/logistics/search/overall_data/`,
@@ -128,10 +131,12 @@ export class LogisticSearchService {
     this.cancelTopCardsDataPrevious$.next();
     let [startDate, endDate] = this.getFormattedDateRange();
     const params = {
-      city: this.activeCity.value,
       startDate,
-      endDate
-    }
+      endDate,
+      dayType: this.activeDayType.value,
+      ...(this.pincodeLevelView.value && { city: this.activeCity.value })
+    };
+    
     return this.http.get(
       this.baseUrl + `api/logistics/search/top_card_delta/`,
       { params }

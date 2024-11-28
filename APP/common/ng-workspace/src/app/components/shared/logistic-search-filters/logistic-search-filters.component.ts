@@ -55,7 +55,7 @@ export class LogisticSearchFiltersComponent implements OnInit {
 
   setDateRange(value: any) {
     this.logisticSearchService.setDateRange(value);
-    this.logisticSearchService.filterUpdated.next({ updated: true });
+    this.logisticSearchService.filterUpdated.next({ updated: true});
   }
 
   updateTimeInterval(option: string) {
@@ -79,9 +79,34 @@ export class LogisticSearchFiltersComponent implements OnInit {
 
   updatePincodeView(value: any) {
     this.logisticSearchService.pincodeLevelView.next(value);
+    this.logisticSearchService.filterUpdated.next({ updated: false, updatedFor: 'isPincodeView' });
   }
 
   updateDayType(value: any) {
     this.logisticSearchService.activeDayType.next(value);
+    this.logisticSearchService.filterUpdated.next({ updated: true, updatedFor: 'dayType' });
+  }
+
+  isVisible = false;
+  isConfirmLoading = false;
+
+  showModal(): void {
+    this.isVisible = true;
+  }
+
+  handleReset(): void {
+    this.isConfirmLoading = true;
+    setTimeout(() => {
+      this.isVisible = false;
+      this.selectedCity = this.cities[0];
+      this.updatePincodeView(!this.isPincodeView);
+      this.updateValue('city');
+      this.updateDayType(this.dayTypes[0]);
+      this.isConfirmLoading = false;
+    }, 1000);
+  }
+
+  handleClose(): void {
+    this.isVisible = false;
   }
 }

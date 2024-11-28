@@ -300,9 +300,6 @@ export class PincodeLevelMapViewComponent implements OnInit, OnDestroy {
         (this.height - scale * (bounds[1][1] + bounds[0][1])) / 2
       ];
 
-      console.log(scale)
-
-
       const projection: any = d3.geoMercator()
       .center(CityLatLong[this.city])
       .scale(scale)
