@@ -345,7 +345,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                     'Unique count of Districts where order has been delivered within the date range. Districts are fetched using districts mapping using End pincode'
                 ),
                 self.create_metric_data(
-                    0, 'Registered sellers', 0,
+                    0, 'Sellers', 0,
                     'Unique count of combination of (Provider ID + Seller App) where order has been delivered within the date range'
                 ),
                 self.create_max_orders_delivered_area_data('No Data to Display')

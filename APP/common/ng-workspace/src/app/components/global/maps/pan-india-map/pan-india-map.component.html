@@ -1,4 +1,4 @@
-<div id="pan-india-map" class="pan-india-map-svg">
+<div id="pan-india-map" class="pan-india-map-svg" [ngStyle]="{'visibility': isLoading ? 'hidden' : 'visible'}">
 
     <div class="map-control">
         <div class="btn" (click)="zoomIn()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Zoom in">
@@ -14,4 +14,4 @@
 
     
 </div>
-<div class="tooltip"></div>
+<div class="tooltip" [ngStyle]="{'visibility': isLoading ? 'hidden' : 'visible'}"></div>
