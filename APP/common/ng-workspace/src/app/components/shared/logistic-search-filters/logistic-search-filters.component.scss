@@ -7,84 +7,110 @@
     place-content: center;
     align-items: center;
 
+}
 
-    .selection-container {
-        position: relative;
-        min-width: 160px;
+.filter-dialog-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
 
+.selection-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .title {
+        font-size: 16px;
+        color: $grey800;
     }
+}
 
-    .label {
-        position: absolute;
-        cursor: text;
-        font-size: 75%;
-        opacity: 1;
-        -webkit-transition: all .2s;
-        transition: all .2s;
-        top: -.5em;
-        left: .5rem;
-        z-index: 1;
-        line-height: 1;
-        padding: 0 4px;
-        background-color: $white;
+.pincode-level-toggle-section {
+    display: flex;
+    flex-direction: row;
+    place-content: space-between;
+    align-items: center;
+    border: 1px solid $grey300;
+    border-radius: 4px;
+    padding: 8px 12px;
+    
+    .title {
+        font-size: 14px;
         color: $grey700;
     }
+}
 
-    .time-slider-container {
-        padding: 0 8px;
-        border-left: 1px solid #d4d4d4;
 
-        .time-slider-filter {
-            height: 8px;
-            // width: 224px;
-            border-radius: 8px;
-            background-color: white;
-            box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
-            -webkit-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
-            -moz-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
-            display: flex;
-            overflow: hidden;
-            place-content: space-evenly;
-            margin: 0 4px 4px 8px;
-            width: 100%;
+.label {
+    position: absolute;
+    cursor: text;
+    font-size: 75%;
+    opacity: 1;
+    -webkit-transition: all .2s;
+    transition: all .2s;
+    top: -.5em;
+    left: .5rem;
+    z-index: 1;
+    line-height: 1;
+    padding: 0 4px;
+    background-color: $white;
+    color: $grey700;
+}
 
-    
-        }   
-        .slider-step {
-            width: 100%;
-            border-right: 1px solid #f4f4f4;
-            cursor: pointer;
-            &:hover {
-                background-color: $blue700;
-            }
-            &.active {
-                background-color: $blue700;
-            }
-        }
-        .slider-text {
-            font-size: 10px;
-            display: flex;
-            gap: 25px;
-            margin-left: -4px;
-            .title {
-                width: 16px;
-                text-align: center;
-            }
-        }
-    }
+.time-slider-container {
+    // padding: 0 8px;
+    // border-left: 1px solid #d4d4d4;
+    gap: 24px;
 
-    .reset-btn {
+    .time-slider-filter {
+        height: 8px;
+        // width: 224px;
+        border-radius: 8px;
+        background-color: white;
+        box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
+        -webkit-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
+        -moz-box-shadow: -1px 1px 5px 0px rgba(0, 0, 0, 0.28);
         display: flex;
-        place-content: center;
-        align-items: center;
-        gap: 8px;
-        background: $blue700;
-        color: white;
-        padding: 4px 10px;
-        font-size: 12px;
-        border-radius: 5px;
+        overflow: hidden;
+        place-content: space-evenly;
+        margin: 0 4px 4px 8px;
+        width: 100%;
+    }   
+    .slider-step {
+        width: 100%;
+        border-right: 1px solid #f4f4f4;
+        cursor: pointer;
+        &:hover {
+            background-color: $blue700;
+        }
+        &.active {
+            background-color: $blue700;
+        }
     }
+    .slider-text {
+        font-size: 10px;
+        display: flex;
+        gap: 25px;
+        margin-left: -4px;
+        .time-txt {
+            // width: 16px;
+            text-align: center;
+        }
+    }
+}
 
+.reset-btn {
+    display: flex;
+    place-content: center;
+    align-items: center;
+    gap: 8px;
+    background: $blue700;
+    color: white;
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 5px;
 }
 
 ::ng-deep {

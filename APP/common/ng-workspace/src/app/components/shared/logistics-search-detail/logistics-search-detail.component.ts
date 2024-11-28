@@ -10,8 +10,8 @@ export class LogisticsSearchDetailComponent implements OnInit {
   isLoading: boolean = true;
   isPincodeLevelView: boolean = false;
   activeState: string = 'TT';
-  rawData: any=null;
-  
+  rawData: any = null;
+
   activeStateInitialized: boolean = false;
   isPincodeLevelViewInitialized: boolean = false;
   dateRangeInitialized: boolean = false;
@@ -68,11 +68,11 @@ export class LogisticsSearchDetailComponent implements OnInit {
     }
   ];
 
-  constructor(private logisticSearchService: LogisticSearchService) {}
+  constructor(private logisticSearchService: LogisticSearchService) { }
 
   ngOnInit(): void {
     this.isLoading = true;
-    
+
     this.logisticSearchService.getDateRange().subscribe(
       (response: any) => {
         this.logisticSearchService.setDateRange(
@@ -82,9 +82,9 @@ export class LogisticsSearchDetailComponent implements OnInit {
           [new Date(response.min_date), new Date(response.max_date)]
         );
         this.isLoading = false;
-      }, (error: Error) => { 
-        console.log(error); 
-        this.isLoading = true 
+      }, (error: Error) => {
+        console.log(error);
+        this.isLoading = true
       }
     )
 
@@ -97,41 +97,65 @@ export class LogisticsSearchDetailComponent implements OnInit {
       }
     )
 
-    this.logisticSearchService.pincodeLevelView$.subscribe(
-      (val: boolean) => {
-        this.isPincodeLevelView = val;
-        this.isPincodeLevelViewInitialized = true;
-        if (!val) {
+    this.logisticSearchService.filterUpdated$.subscribe(
+      (val: any) => {
+        if(val?.updatedFor && ['timeInterval', 'dayType', 'activeState'].includes(val.updatedFor)) {}
+
+        if (val?.updatedFor && val.updatedFor == 'activeState') {
+          this.activeState = this.logisticSearchService.activeState.value;
           this.loadingData = true;
           this.getMapData();
+        } else if (val?.updatedFor && val.updatedFor == 'dayType') {
+          this.loadingData = true;
+          this.getMapData();
+        } else if (val?.updatedFor && val.updatedFor == 'isPincodeView') {
+          this.isPincodeLevelView = this.logisticSearchService.pincodeLevelView.value;
+          if (!this.isPincodeLevelView) {
+            this.loadingData = true;
+            this.getMapData();
+          }
+        } else if (val?.updatedFor && val.updatedFor == 'timeInterval') {
+          this.loadingData = true;
+          this.prepareMapData();
         }
       }
     )
-    this.logisticSearchService.activeTimeInterval$.subscribe(
-      (val: any) => {
-        this.loadingData = true;
-        this.prepareMapData();
-      }
-    )
 
-    this.logisticSearchService.activeState$.subscribe(
-      (state: string) => {
-        this.activeStateInitialized = true;
-        this.activeState = state;
-        this.loadingData = true;
-        this.getMapData();
-      }
-    );
+    // this.logisticSearchService.pincodeLevelView$.subscribe(
+    //   (val: boolean) => {
+    //     this.isPincodeLevelView = val;
+    //     this.isPincodeLevelViewInitialized = true;
+    //     if (!val) {
+    //       this.loadingData = true;
+    //       this.getMapData();
+    //     }
+    //   }
+    // )
+    // this.logisticSearchService.activeTimeInterval$.subscribe(
+    //   (val: any) => {
+    //     this.loadingData = true;
+    //     this.prepareMapData();
+    //   }
+    // )
+
+    // this.logisticSearchService.activeState$.subscribe(
+    //   (state: string) => {
+    //     this.activeStateInitialized = true;
+    //     this.activeState = state;
+    //     this.loadingData = true;
+    //     this.getMapData();
+    //   }
+    // );
   }
 
   getMapData() {
-    if (!(
-      this.activeStateInitialized && 
-      this.isPincodeLevelViewInitialized && 
-      this.dateRangeInitialized
-    )) {
-      return;
-    }
+    // if (!(
+    //   this.activeStateInitialized &&
+    //   this.isPincodeLevelViewInitialized &&
+    //   this.dateRangeInitialized
+    // )) {
+    //   return;
+    // }
     if (!this.isPincodeLevelView) {
       this.loadingData = true;
       if (this.activeState == 'TT') {
@@ -159,7 +183,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
     }
   }
 
-  prepareMapData() {
+  async prepareMapData() {
     let data = this.rawData;
     if (!data) {
       return;
@@ -168,40 +192,46 @@ export class LogisticsSearchDetailComponent implements OnInit {
     let maxSearchCount = 0;
     let maxConfirmPercentage = 0;
     if (this.activeState == 'TT') {
-      this.overallData = data.mapdata.filter(
-          (item: any) => item.time_of_day === this.logisticSearchService.activeTimeInterval.value
-        ).reduce((acc: any, item: any) => {
-          if (this.activeStyle == 'state_map') {
-            acc[item.state] = { 
-              'Search count': item.total_searches, 
-              'Confirm percentage': item.order_confirmed 
-            };
-          } else {
-            acc[item.district] = { 
-              'Search count': item.total_searches, 
-              'Confirm percentage': item.order_confirmed 
-            };
-          }
-
-          if (maxSearchCount < item.total_searches) maxSearchCount = item.total_searches
-          if (maxConfirmPercentage < item.order_confirmed) maxConfirmPercentage = item.order_confirmed
-          return acc;
-        }, {});
-    } else {
-      this.stateData = null;
-      this.stateData = data.mapdata.filter(
-        (item: any) => item.time_of_day === this.logisticSearchService.activeTimeInterval.value
+      this.overallData = await data.mapdata.filter(
+        (item: any) => (
+          item.time_of_day === this.logisticSearchService.activeTimeInterval.value
+        ) && (
+          this.activeStyle == 'state_map' ? item.district === 'All' : item.district != 'All'
+        )
       ).reduce((acc: any, item: any) => {
-        
-          acc[item.district] = { 
-            'Search count': item.total_searches, 
-            'Confirm percentage': item.order_confirmed 
+        if (this.activeStyle == 'state_map') {
+          acc[item.state] = {
+            'Search count': item.total_searches,
+            'Confirm percentage': `${item.total_conversion_percentage}%`,
+            'Assigned percentage': `${item.total_assigned_percentage}%`
           };
-          if (maxSearchCount < item.total_searches) maxSearchCount = item.total_searches
-          if (maxConfirmPercentage < item.order_confirmed) maxConfirmPercentage = item.order_confirmed
+        } else {
+          acc[item.district] = {
+            'Search count': item.total_searches,
+            'Confirm percentage': `${item.total_conversion_percentage}%`,
+            'Assigned percentage': `${item.total_assigned_percentage}%`
+          };
+        }
+        if (Number(maxSearchCount) < Number(item.total_searches)) maxSearchCount = item.total_searches
+        if (Number(maxConfirmPercentage) < Number(item.total_conversion_percentage)) maxConfirmPercentage = item.total_conversion_percentage
         return acc;
       }, {});
-    } 
+    } else {
+      this.stateData = null;
+      this.stateData = await data.mapdata.filter(
+        (item: any) => item.time_of_day === this.logisticSearchService.activeTimeInterval.value
+      ).reduce((acc: any, item: any) => {
+
+        acc[item.district] = {
+          'Search count': item.total_searches,
+          'Confirm percentage': `${item.total_conversion_percentage}%`,
+          'Assigned percentage': `${item.total_assigned_percentage}%`
+        };
+        if (Number(maxSearchCount) < Number(item.total_searches)) maxSearchCount = item.total_searches
+        if (Number(maxConfirmPercentage) < Number(item.total_conversion_percentage)) maxConfirmPercentage = item.total_conversion_percentage
+        return acc;
+      }, {});
+    }
 
     this.legendConfigData = {
       ...this.legendConfigData,

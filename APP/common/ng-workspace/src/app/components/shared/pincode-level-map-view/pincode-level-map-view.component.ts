@@ -136,6 +136,15 @@ export class PincodeLevelMapViewComponent implements OnInit, OnDestroy {
       }
     )
 
+    this.logisticSearchService.activeDayType$.subscribe(
+      (value: any) => {
+        this.isLoadingMap = true;
+        this.getMapData();
+        this.activeInsight = this.insightOptions[0];
+        this.activeView = this.viewsOptions[0].type;
+      }
+    )
+
     this.logisticSearchService.activeCity$.subscribe(
       (value: string) => {
         this.city = value;
@@ -299,9 +308,6 @@ export class PincodeLevelMapViewComponent implements OnInit, OnDestroy {
         (this.width - scale * (bounds[1][0] + bounds[0][0])) / 2,
         (this.height - scale * (bounds[1][1] + bounds[0][1])) / 2
       ];
-
-      console.log(scale)
-
 
       const projection: any = d3.geoMercator()
       .center(CityLatLong[this.city])

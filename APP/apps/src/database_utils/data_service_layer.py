@@ -117,20 +117,17 @@ class DataService:
         return self.dal.fetch_state_sellers(start_date, end_date, category, sub_category, domain_name, state)
 
 
-    def get_logistic_searched_data(self, start_date, end_date, city):
-        return self.dal.fetch_logistic_searched_data(start_date, end_date, city)
+    def get_logistic_searched_data(self, start_date, end_date, city, day_type):
+        return self.dal.fetch_logistic_searched_data(start_date, end_date, city, day_type)
 
-    def get_logistic_searched_top_card_data(self, start_date, end_date, city):
-        return self.dal.fetch_logistic_searched_top_card_data(start_date, end_date, city)
+    def get_logistic_searched_top_card_data(self, start_date, end_date, city, day_type):
+        return self.dal.fetch_logistic_searched_top_card_data(start_date, end_date, city, day_type)
     
     def get_logistic_searched_data_date_range(self):
         return self.dal.fetch_logistic_searched_data_date_range()
-    
-    def get_total_searches_per_state(self, start_date, end_date, state):
-        return self.dal.fetch_total_searches_per_state(start_date, end_date, state)
 
-    def get_overall_total_searches(self, start_date, end_date):
-        return self.dal.fetch_overall_total_searches(start_date, end_date)
+    def get_overall_total_searches(self, start_date, end_date, state=None, day_type='All'):
+        return self.dal.fetch_overall_total_searches(start_date, end_date, state, day_type)
     
 
     '''FetchTop5DeliveryState - tree chart state'''
@@ -144,3 +141,4 @@ class DataService:
                                          state=None, district=None, seller_type='Total'):
         return self.dal.fetch_overall_top5_delivery_districts(start_date, end_date, category, sub_category, domain_name,
                                                     state, district)
+    

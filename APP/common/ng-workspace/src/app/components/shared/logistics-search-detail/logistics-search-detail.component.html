@@ -52,42 +52,37 @@
                 }
             </nz-radio-group>
         </div>
-        <div class="view-options-section" *ngIf="activeState =='TT'">
-            <div style="display: flex; align-items: center; gap: 8px" class="margin-bottom-3">
-                <div style="
-                    padding: 4px;
-                    background: #1c75bc;
-                    border-radius: 20px;
-                    height: 22px;
-                    width: 22px;
-                    display: flex;
-                    place-content: center;
-                    align-items: center;
-                ">
-                    <i class="fa-solid fa-eye" style="color: #1c75bc;
-                        background: white;
-                        border-radius: 50%;
-                        padding: 2px;
-                        font-size: 10px;
-                        display: flex;
-                        place-content: center;
-                        align-items: center;"></i>
-                </div>
-                <p class="margin-0 font-bolder font-xs">Choose Map Style</p>
-                <!-- <div class="pulse"></div> -->
-            </div>
-            <nz-divider style="margin: 4px 0;"></nz-divider>
-            <nz-radio-group style="padding: 12px 4px 4px" [(ngModel)]="activeStyle" class="options-container">
-                @for(option of stylesOptions; track option.type) {
-                <label nz-radio [nzValue]="option.type" (click)="updateStyleSelection(option)">
-                    {{option.title}}
-                </label>
-                }
-            </nz-radio-group>
-        </div>
+    
     </div>
     <div class="absolute bottom-1 left-1">
         <app-map-legends [legendType]="activeView" [configData]="legendConfigData" [isLoading]="loadingData"></app-map-legends>
+    </div>
+
+    <div nz-menu nzMode="horizontal" nzIcon="setting" class="map-visual-btn absolute">
+        <li nz-submenu nzPlacement="bottomCenter">
+            <span title >
+                    <i class="fa-solid fa-sliders margin-right-2"></i> Map Style & Visualization
+            </span>
+            <div nz-menu-group style="min-height: fit-content; margin-bottom: 12px; padding: 0 12px; border-radius: 8px; overflow: hidden;">
+                <div class="map-control-inner-section">
+                    @if(activeState == 'TT'){
+                    <div style="display: flex;">
+                        
+                        <button [class.active]="activeStyle == 'state_map'" (click)="updateStyleSelection(stylesOptions[0])"
+                            class="btn-lt map-type-button">State Map</button>
+    
+                        <button [class.active]="activeStyle == 'district_map'" (click)="updateStyleSelection(stylesOptions[1])"
+                            class="btn-rgt map-type-button">District Map</button>
+                    </div>}
+                    <div style="display: flex;">
+                        <button [class.active]="activeView == 'chloro'" (click)="updateViewSelection(viewsOptions[0])"
+                            class="btn-lt map-visual-button">Chloropeth</button>
+                        <button [class.active]="activeView == 'bubble'" (click)="updateViewSelection(viewsOptions[1])"
+                            class="btn-rgt map-visual-button">Bubble</button>
+                    </div>
+                </div>
+            </div>
+        </li>
     </div>
     }
 

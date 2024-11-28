@@ -18,8 +18,8 @@ export class LogisticsSearchTopCardsComponent implements OnInit {
     this.logisticSearchService.filterUpdated$.subscribe(
       (val: any) => {
         this.topCardsGroupData = [];
-        if(val?.updatedFor == 'timeInterval') {
-          if (this.topCardData?.length) {
+        if (val?.updatedFor && ['timeInterval', 'activeState'].includes(val.updatedFor)) {
+          if (Object.keys(this.topCardData)?.length) {
             this.prepareData();
           }
         } else {
@@ -35,41 +35,41 @@ export class LogisticsSearchTopCardsComponent implements OnInit {
       (response: any) => {
         if (response) {
           this.topCardData = response.data;
-          if (this.topCardData?.length) {
+          if (Object.keys(this.topCardData)?.length) {
             this.prepareData();
           }
         }
       }, (error: Error) => {
-      console.log(error);
-    }
+        console.log(error);
+      }
     )
   }
 
   prepareData() {
     let cardsData = [];
-
-    for (let data of this.topCardData) {
-      if (data.time_of_day == this.logisticSearchService.activeTimeInterval.value) {
-        cardsData.push({
-          count: `${data.searched_data}`,
-          heading: "Total searches",
-          showVarience: false,
-          type: "default"
-        })
-        cardsData.push({
-          count: `${data.total_conversion_percentage}%`,
-          heading: "% Search-to-confirm",
-          showVarience: false,
-          type: "default"
-        })
-        cardsData.push({
-          count: `${data.total_assigned_percentage}%`,
-          heading: "% Search-to-rider-assign",
-          showVarience: false,
-          type: "default"
-        })
-      }
-    }
+    const key = this.logisticSearchService.pincodeLevelView.value ?
+      this.logisticSearchService.activeCity.value :
+      this.logisticSearchService.activeState.value.toUpperCase()
+    const data = this.topCardData[key][this.logisticSearchService.activeTimeInterval.value]
+    console.log(data, key)
+    cardsData.push({
+      count: `${data.searched_data}`,
+      heading: "Total searches",
+      showVarience: false,
+      type: "default"
+    })
+    cardsData.push({
+      count: `${data.total_conversion_percentage}%`,
+      heading: "% Search-to-confirm",
+      showVarience: false,
+      type: "default"
+    })
+    cardsData.push({
+      count: `${data.total_assigned_percentage}%`,
+      heading: "% Search-to-rider-assign",
+      showVarience: false,
+      type: "default"
+    })
 
     this.topCardsGroupData = cardsData;
     delay(500);

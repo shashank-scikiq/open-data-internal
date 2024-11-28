@@ -1,72 +1,89 @@
 <div class="selection-main-container">
-    <app-date-range-picker [dateRange]="dateRange" [availableDateRange]="availableDateRange" (selectedDateRange)="setDateRange($event)" />
-    <div style="display: flex; gap: 8px;" class="margin-x-2">
-        <p class="font-xs margin-0 font-bolder">Pincode level view</p>
-        <nz-switch [(ngModel)]="isPincodeView" (ngModelChange)="updatePincodeView($event)" nzSize="small"></nz-switch>
-    </div>
-    <div class="selection-container">
-        <div class="label">Choose City</div>
-        <nz-select [nzDisabled]="!isPincodeView" nzsize="small" [(ngModel)]="selectedCity" (ngModelChange)="updateValue('city')">
-            @for(option of cities; track option) {
-            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
-            }
-        </nz-select>
-    </div>
+    <app-date-range-picker 
+        [dateRange]="dateRange" 
+        [availableDateRange]="availableDateRange" 
+        (selectedDateRange)="setDateRange($event)">
+    </app-date-range-picker>
+    <button nz-button nzType="primary" (click)="showModal()">
+        <span>Filters</span>
+      </button>
+      <nz-modal
+        [(nzVisible)]="isVisible"
+        nzWidth="720px"
+        [nzTitle]="modalTitle"
+        [nzContent]="modalContent"
+        [nzFooter]="modalFooter"
+        (nzOnCancel)="handleClose()"
+      >
+        <ng-template #modalTitle>Filters</ng-template>
+  
+        <ng-template #modalContent>
+            <div class="filter-dialog-container">
 
-    <div class="selection-container">
-        <div class="label">Choose Day type</div>
-        <nz-select nzsize="small" [(ngModel)]="selectedDayType" (ngModelChange)="updateDayType($event)">
-            @for(option of dayTypes; track option) {
-            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
-            }
-        </nz-select>
-    </div>
-    
-    <!-- <div class="selection-container">
-        <div class="label">Choose Time Interval</div>
-        <nz-select nzsize="small" [(ngModel)]="selectedInterval" (ngModelChange)="updateValue('timeInterval')">
-            @for(option of timeIntervals; track option) {
-            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
-            }
-        </nz-select>
-    </div> -->
-
-    <div class="time-slider-container">
-        <nz-divider nzText="Choose Time Interval" nzOrientation="left"></nz-divider>
-        <div style="display: flex; place-content: center; gap: 16px;">
-            <i class="fa-solid fa-sun"></i>
-            <div style="display: flex; flex-direction: column; place-content: center; align-items: center;">
-                <div class="time-slider-filter">
-                    @for(option of timeIntervals.slice(1,timeIntervals.length); track option) {
-                        <div [ngClass]="{'slider-step': true, 'active': (selectedInterval == option) ||overallSelected}"
-                        (click)="updateTimeInterval(option)"></div>
-                    }
+                <div class="pincode-level-toggle-section">
+                    <p class="title margin-0">Pincode level view</p>
+                    <nz-switch [(ngModel)]="isPincodeView" (ngModelChange)="updatePincodeView($event)" nzSize="small"></nz-switch>
                 </div>
-                <div class="slider-text">
-                    <p class="margin-0 title">3am</p>
-                    <p class="margin-0 title">6am</p>
-                    <p class="margin-0 title">8am</p>
-                    <p class="margin-0 title">10am</p>
-                    <p class="margin-0 title">12pm</p>
-                    <p class="margin-0 title">3pm</p>
-                    <p class="margin-0 title">6pm</p>
-                    <p class="margin-0 title">9pm</p>
-                    <p class="margin-0 title">12am</p>
-                    <p class="margin-0 title">3am</p>
+                @if(isPincodeView) {
+                    <div class="selection-container">
+                        <div class="title margin-0">Choose City</div>
+                        <nz-select [nzDisabled]="!isPincodeView" nzsize="small" [(ngModel)]="selectedCity" (ngModelChange)="updateValue('city')">
+                            @for(option of cities; track option) {
+                            <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                            }
+                        </nz-select>
+                    </div>
+                }
+            
+                <div class="selection-container">
+                    <div class="title margin-0">Choose Day type</div>
+                    <nz-select nzsize="small" [(ngModel)]="selectedDayType" (ngModelChange)="updateDayType($event)">
+                        @for(option of dayTypes; track option) {
+                        <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                        }
+                    </nz-select>
+                </div>
+            
+                <div class="selection-container time-slider-container">
+                    <!-- <nz-divider nzText="Choose Time Interval" nzOrientation="left"></nz-divider> -->
+                    <div class="title margin-0">Choose Time Interval</div>
+                    <div style="display: flex; place-content: center; gap: 16px;">
+                        <i class="fa-solid fa-sun"></i>
+                        <div style="display: flex; flex-direction: column; place-content: center; align-items: center;">
+                            <div class="time-slider-filter">
+                                @for(option of timeIntervals.slice(1,timeIntervals.length); track option) {
+                                    <div [ngClass]="{'slider-step': true, 'active': (selectedInterval == option) ||overallSelected}"
+                                    (click)="updateTimeInterval(option)"></div>
+                                }
+                            </div>
+                            <div class="slider-text">
+                                <p class="margin-0 time-txt">3am</p>
+                                <p class="margin-0 time-txt">6am</p>
+                                <p class="margin-0 time-txt">8am</p>
+                                <p class="margin-0 time-txt">10am</p>
+                                <p class="margin-0 time-txt">12pm</p>
+                                <p class="margin-0 time-txt">3pm</p>
+                                <p class="margin-0 time-txt">6pm</p>
+                                <p class="margin-0 time-txt">9pm</p>
+                                <p class="margin-0 time-txt">12am</p>
+                                <p class="margin-0 time-txt">3am</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-moon"></i>
+                        @if(!overallSelected) {
+                            <div class="reset-btn cursor-pointer" (click)="updateTimeInterval('Overall')">
+                                <i class="fa-solid fa-rotate-right"></i>
+                                Reset
+                            </div>
+                        }        
+                    </div>
                 </div>
             </div>
-            <i class="fa-solid fa-moon"></i>
-            @if(!overallSelected) {
-                <div class="reset-btn cursor-pointer" (click)="updateTimeInterval('Overall')">
-                    <i class="fa-solid fa-rotate-right"></i>
-                    Reset
-                </div>
-            }
-
-            <!-- <label nz-checkbox 
-                style="font-size: 12px;"
-                [(ngModel)]="overallSelected"
-                >Overall</label> -->
-        </div>
-    </div>
+        </ng-template>
+  
+        <ng-template #modalFooter>
+          <button nz-button nzType="default" (click)="handleClose()">Close</button>
+          <button nz-button nzType="primary" (click)="handleReset()" [nzLoading]="isConfirmLoading">Reset All</button>
+        </ng-template>
+      </nz-modal>
 </div>
