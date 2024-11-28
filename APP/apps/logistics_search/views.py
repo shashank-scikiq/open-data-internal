@@ -45,7 +45,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             "Total Orders": """Count of Distinct Network Order Id within the selected range.""",
             "Districts": """Unique count of Districts where orders have been delivered in the latest month within the date range. 
                 Districts are fetched using districts mapping using End pincode""",
-            "Registered sellers": 'Unique count of combination of (Provider ID + Seller App) within the date range',
+            "Sellers": 'Unique count of combination of (Provider ID + Seller App) within the date range',
             "records the highest order count": """Maximum Orders by State/Districts, basis the date range. 
                 It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode."""
         }

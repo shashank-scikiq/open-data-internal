@@ -185,7 +185,7 @@ export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
     let district = `District: ${mapType == 'State' ? '' : data.properties.district}`;
     let metricValue;
 
-    if (metrixText === "Registered Sellers" && (value <= 0 || value < 3)) {
+    if (metrixText === "Sellers" && (value <= 0 || value < 3)) {
       metricValue = 'No data available';
     } else if (metrixText === "Intrastate Percentage") {
       metricValue = `${value}%`;
@@ -227,7 +227,7 @@ export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
         let metricValue;
         let image;
 
-        if (metrixText === "Registered Sellers") {
+        if (metrixText === "Sellers") {
           iconClass = "pointer-icon fa-solid fa-user";
           metricValue = i.properties.totalcasedata[caseType];
         } else if (metrixText === "Intrastate Percentage") {
