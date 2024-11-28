@@ -1126,6 +1126,7 @@ class DataAccessLayer:
             WHERE sub.rn <= 4
             ORDER BY sub.seller_district, sub.flow_percentage DESC;
         """
+        
         df = self.db_utility.execute_query(query)
 
         
