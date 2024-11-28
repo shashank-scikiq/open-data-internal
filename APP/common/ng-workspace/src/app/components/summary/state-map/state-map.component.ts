@@ -324,7 +324,7 @@ export class StateMapComponent implements OnInit, OnChanges {
     let district = `District: ${data.properties.district}`;
     let metricValue;
 
-    if (metrixText === "Registered Sellers" && (value <= 0 || value < 3)) {
+    if (metrixText === "Sellers" && (value <= 0 || value < 3)) {
       metricValue = 'No data available';
     } else if (metrixText === "Intrastate Percentage") {
       metricValue = `${value}%`;
@@ -366,7 +366,7 @@ export class StateMapComponent implements OnInit, OnChanges {
         let metricValue;
         let image;
 
-        if (metrixText === "Registered Sellers") {
+        if (metrixText === "Sellers") {
           iconClass = "pointer-icon fa-solid fa-user";
           metricValue = i.properties.totalcasedata[caseType];
         } else if (metrixText === "Intrastate Percentage") {
@@ -514,7 +514,7 @@ export class StateMapComponent implements OnInit, OnChanges {
       customColorRange = d3.scaleLinear()
         .domain([0, 1, this.maxData[caseType]])
         .range(this.chloroplethcolormapper2[caseType]);
-    } else if (metricText === "Registered Sellers") {
+    } else if (metricText === "Sellers") {
       customColorRange = d3.scaleLinear()
         .domain([0, 1, this.maxData[caseType]])
         .range(this.chloroplethcolormapper2[caseType]);

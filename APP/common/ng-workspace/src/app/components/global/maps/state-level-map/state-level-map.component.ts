@@ -10,6 +10,7 @@ import * as topojson from 'topojson-client';
   styleUrl: './state-level-map.component.scss'
 })
 export class StateLevelMapComponent implements OnInit, OnChanges {
+  @Input() isLoading: boolean = false;
   @Input() visualType: 'chloro' | 'bubble' | 'both' = 'chloro';
   @Input() configData: any = {
     chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],

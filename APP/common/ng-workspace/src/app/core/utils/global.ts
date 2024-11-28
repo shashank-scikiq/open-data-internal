@@ -21,7 +21,7 @@ export const METRICS: MetrixType[] = [
 
 const MetricKeyMap: any = {
     "sellers": [
-      { "key": "Registered Sellers", "id": "map_total_active_sellers_metrics" }
+      { "key": "Sellers", "id": "map_total_active_sellers_metrics" }
     ],
     "orders": [
       { "key": "Total Orders ", "id": "map_total_orders_metrics" },
