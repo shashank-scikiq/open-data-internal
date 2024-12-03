@@ -70,43 +70,13 @@
     
             <div class="width-100 map-meta-data-section">
                 <div class="charts-main-container invisible-scrollbar">
-                    <!-- <div class="chart-metrix-section">
-                        <div class="btn-container">
-                            <div [ngClass]="{'btn': true, 'active': activeMetric == 'map_total_orders_metrics'}"
-                                (click)="handleClick(metrics[0])">
-                                <img src="static/assets/img/buyer-icon.svg" alt="Order">
-                                <p class="margin-0 text">Orders</p>
-                            </div>
-                            @if(pageTitle !== "Logistics") {
-                                <div [ngClass]="{'btn': true, 'active': activeMetric == 'map_total_active_sellers_metrics'}"
-                                    (click)="handleClick(metrics[1])">
-                                    <img src="static/assets/img/sellers.png" alt="Seller">
-                                    <p class="margin-0 text">Supply</p>
-                                </div>
-                            }
-                            <div [ngClass]="{'btn': true, 'active': activeMetric == 'map_total_zonal_commerce_metrics'}"
-                                (click)="handleClick(metrics[2])">
-                                <img src="static/assets/img/logistics-icon.svg" alt="Logistic">
-                                <p class="margin-0 text">Zonal Commerce</p>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="charts-section invisible-scrollbar">
-    
                         <app-detail-charts-section [metrix]="activeMetric" [selectedState]="selectedState" (changeMatrix)="setMetrix($event)">
                         </app-detail-charts-section>
                     </div>
                 </div>
             </div>
             }
-            <!-- <div class="download-btn">
-                <button mat-raised-button (click)="openDownloadDialog()">
-                    <div class="button-label">
-                        <i class="fa-solid fa-file-arrow-down btn-icon"></i>
-                        <p class="margin-0 btn-text">Download Data</p>
-                    </div>
-                </button>
-            </div> -->
         </div>
     } @else {
         waiting for date range

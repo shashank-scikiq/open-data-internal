@@ -346,3 +346,194 @@ class DataAccessLayer:
  
         df= self.db_utility.execute_query(query)
         return df
+    
+    @log_function_call(ondcLogger)
+    def fetch_pan_india_search_distribution(self, start_date, end_date, day_type):
+        table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
+
+        day_type_condition = " and extract(dow from date) in (6,0) " if day_type == 'Weekends' else (
+            " and extract(dow from date) in (1,2,3,4,5)" if day_type == 'Week days' else ''
+        )
+
+        query = f"""
+                with A as (
+                    select date, 
+                        time_of_day, 
+                        sum(searched) as searched_count 
+                    from {table_name} 
+	                where date BETWEEN '{start_date}' and '{end_date}'
+                    {day_type_condition} 
+	                group by 1,2),
+                B as (
+                    SELECT 
+	                    time_of_day
+                    FROM (VALUES
+                        ('3am-6am'),
+                        ('6am-8am'),
+                        ('8am-10am'),
+                        ('10am-12pm'),
+                        ('12pm-3pm'),
+                        ('3pm-6pm'),
+                        ('6pm-9pm'),
+                        ('9pm-12am'),
+                        ('12am-3am')
+                    ) AS time_ranges(time_of_day)
+	
+                ) 
+                select 
+                    A.date, 
+                    B.time_of_day, 
+                    COALESCE(A.searched_count, 0) as searched_count 
+                from 
+                    A right join B on A.time_of_day = B.time_of_day
+            """
+        
+        df= self.db_utility.execute_query(query)
+        return df
+
+    @log_function_call(ondcLogger)
+    def fetch_top_states_search_distribution(self, start_date, end_date, day_type):
+        table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
+
+        day_type_condition = " and extract(dow from date) in (6,0) " if day_type == 'Weekends' else (
+            " and extract(dow from date) in (1,2,3,4,5)" if day_type == 'Week days' else ''
+        )
+
+        query = f"""
+                WITH 
+                    req_table AS (
+                        SELECT 
+                            time_of_day, 
+                            date, 
+                            state, 
+                            SUM(searched) AS searched
+                        FROM {table_name}
+                        WHERE 
+                            date BETWEEN '{start_date}' AND '{end_date}' 
+                            {day_type_condition}
+                            AND state IS NOT NULL
+                            AND state <> ''
+                        GROUP BY time_of_day, date, state
+                    ),
+                    ranked_data AS (
+                        SELECT 
+                            time_of_day,
+                            state,
+                            date,
+                            SUM(searched) AS searched_count,
+                            ROW_NUMBER() OVER (PARTITION BY time_of_day, date ORDER BY SUM(searched) DESC) AS rank
+                        FROM req_table
+                        WHERE 
+                            time_of_day IN ('10am-12pm', '12am-3am', '12pm-3pm', '3am-6am', '3pm-6pm', '6am-8am', '6pm-9pm', '8am-10am', '9pm-12am') 
+                        GROUP BY time_of_day, state, date
+                    ),
+                    overall_ranked_data AS (
+                        SELECT 
+                            'Overall' AS time_of_day,
+                            state,
+                            date,
+                            SUM(searched) AS searched_count,
+                            ROW_NUMBER() OVER (PARTITION BY date ORDER BY SUM(searched) DESC) AS rank
+                        FROM req_table
+                        GROUP BY state, date
+                    )
+                    SELECT 
+                        time_of_day, 
+                        state, 
+                        date, 
+                        searched_count
+                    FROM ranked_data
+                    WHERE rank <= 3
+
+                    UNION ALL
+
+                    SELECT 
+                        time_of_day, 
+                        state, 
+                        date, 
+                        searched_count
+                    FROM overall_ranked_data
+                    WHERE rank <= 3
+
+                    ORDER BY 
+                        time_of_day, 
+                        date, 
+                        searched_count DESC;
+            """
+        
+        df= self.db_utility.execute_query(query)
+        return df
+
+    @log_function_call(ondcLogger)
+    def fetch_top_districts_search_distribution(self, start_date, end_date, day_type):
+        table_name = constant.LOGISTIC_SEARCH_PINCODE_TBL
+
+        day_type_condition = " and extract(dow from date) in (6,0) " if day_type == 'Weekends' else (
+            " and extract(dow from date) in (1,2,3,4,5)" if day_type == 'Week days' else ''
+        )
+
+        query = f"""
+            WITH 
+                req_table AS (
+                    SELECT 
+                        time_of_day, 
+                        date, 
+                        district, 
+                        SUM(searched) AS searched
+                    FROM {table_name}
+                    WHERE 
+                        date BETWEEN '{start_date}' AND '{end_date}' 
+                        {day_type_condition}
+                        AND district IS NOT NULL
+                        AND district <> ''
+                    GROUP BY time_of_day, date, district
+                ),
+                ranked_data AS (
+                    SELECT 
+                        time_of_day,
+                        district,
+                        date,
+                        SUM(searched) AS searched_count,
+                        ROW_NUMBER() OVER (PARTITION BY time_of_day, date ORDER BY SUM(searched) DESC) AS rank
+                    FROM req_table
+                    WHERE 
+                        time_of_day IN ('10am-12pm', '12am-3am', '12pm-3pm', '3am-6am', '3pm-6pm', '6am-8am', '6pm-9pm', '8am-10am', '9pm-12am') 
+                    GROUP BY time_of_day, district, date
+                ),
+                overall_ranked_data AS (
+                    SELECT 
+                        'Overall' AS time_of_day,
+                        district,
+                        date,
+                        SUM(searched) AS searched_count,
+                        ROW_NUMBER() OVER (PARTITION BY date ORDER BY SUM(searched) DESC) AS rank
+                    FROM req_table
+                    GROUP BY district, date
+                )
+                SELECT 
+                    time_of_day, 
+                    district, 
+                    date, 
+                    searched_count
+                FROM ranked_data
+                WHERE rank <= 3
+
+                UNION ALL
+
+                SELECT 
+                    time_of_day, 
+                    district, 
+                    date, 
+                    searched_count
+                FROM overall_ranked_data
+                WHERE rank <= 3
+
+                ORDER BY 
+                    time_of_day, 
+                    date, 
+                    searched_count DESC;
+            """
+        
+        df= self.db_utility.execute_query(query)
+        return df
+

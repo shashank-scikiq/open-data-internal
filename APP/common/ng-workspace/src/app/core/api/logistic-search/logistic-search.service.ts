@@ -149,4 +149,41 @@ export class LogisticSearchService {
     return this.http.get(this.baseUrl + 'api/logistics/search/data_date_range/');
   }
 
+
+  getTopCummulativeSearches() {
+    let [startDate, endDate] = this.getFormattedDateRange();
+    const params = {
+      startDate, endDate, dayType: this.activeDayType.value
+    }
+    return this.http.get(
+      this.baseUrl + `api/logistics/search/top_cummulative_searches/`,
+      { params }
+    )
+    
+  }
+
+  getTopStateSearches() {
+    let [startDate, endDate] = this.getFormattedDateRange();
+    const params = {
+      startDate, endDate, dayType: this.activeDayType.value
+    }
+    return this.http.get(
+      this.baseUrl + `api/logistics/search/top_state_searches/`,
+      { params }
+    )
+    
+  }
+
+  getTopDistrictSearches() {
+    let [startDate, endDate] = this.getFormattedDateRange();
+    const params = {
+      startDate, endDate, dayType: this.activeDayType.value
+    }
+    return this.http.get(
+      this.baseUrl + `api/logistics/search/top_district_searches/`,
+      { params }
+    )
+    
+  }
+
 }

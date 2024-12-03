@@ -1,7 +1,7 @@
 __author__ = "Shashank Katyayan"
 from rest_framework.views import APIView
 import apps.utils.constant as constant
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 from apps.logging_conf import log_function_call, ondcLogger
 from decimal import Decimal
@@ -13,6 +13,26 @@ class SummaryBaseDataAPI(APIView):
     """
     This class handles the base data API.
     """
+    @log_function_call(ondcLogger)
+    def get_dates_between(self, start_date: str, end_date: str, day_type: str = 'All'):
+        # Convert the string dates to datetime objects
+        start = datetime.strptime(start_date, "%Y-%m-%d")
+        end = datetime.strptime(end_date, "%Y-%m-%d")
+
+        date_list = []
+
+        for i in range((end - start).days + 1):
+            date = start + timedelta(days=i)
+            is_weekend = date.isoweekday() in (6, 7)
+
+            if day_type == 'Weekends' and is_weekend:
+                date_list.append(date.strftime("%Y-%m-%d"))
+            elif day_type == 'Week days' and not is_weekend:
+                date_list.append(date.strftime("%Y-%m-%d"))
+            elif day_type == 'All':
+                date_list.append(date.strftime("%Y-%m-%d"))
+        
+        return date_list
 
     
     @log_function_call(ondcLogger)

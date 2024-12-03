@@ -51,7 +51,7 @@ export class LogisticsSearchTopCardsComponent implements OnInit {
       this.logisticSearchService.activeCity.value :
       this.logisticSearchService.activeState.value.toUpperCase()
     const data = this.topCardData[key][this.logisticSearchService.activeTimeInterval.value]
-    console.log(data, key)
+
     cardsData.push({
       count: `${data.searched_data}`,
       heading: "Total searches",
