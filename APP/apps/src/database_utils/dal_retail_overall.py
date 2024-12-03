@@ -845,7 +845,6 @@ class DataAccessLayer:
         query = f"""
             SELECT 
                 sub.delivery_state,
-                -- COALESCE(NULLIF(TRIM(sub.seller_state), ''), 'Missing') AS seller_state,
                 sub.seller_state,
                 sub.order_demand,
                 sub.flow_percentage as flow_percentage
@@ -905,7 +904,7 @@ class DataAccessLayer:
             and sub.seller_state is not NULL
             ORDER BY sub.delivery_state, sub.flow_percentage DESC;
         """
-
+        
         df = self.db_utility.execute_query(query, parameters)
         return df
 
@@ -920,7 +919,6 @@ class DataAccessLayer:
         query = f"""
             SELECT 
                 sub.delivery_district,
-                -- COALESCE(NULLIF(TRIM(sub.seller_district), ''), 'Missing') AS seller_district,
                 sub.seller_district,
                 sub.order_demand,
                 ROUND(sub.flow_percentage::numeric, 2) AS flow_percentage
@@ -1197,12 +1195,8 @@ class DataAccessLayer:
 
         table_name = constant.MONTHLY_DISTRICT_TABLE
 
-        if category:
-            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
-        if sub_category:
-            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
-
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
+        
         query = f"""
             SELECT 
                 sub.seller_state as delivery_state,
@@ -1245,19 +1239,15 @@ class DataAccessLayer:
                     AND om.delivery_state <> ''
         """
 
-        if category:
-            query += f" AND upper(category) = upper('{category}')"
-        if sub_category:
-            query += f" AND upper(sub_category) = upper('{sub_category}')"
 
         query += """
                 GROUP BY 
                     om.seller_state, om.delivery_state, total.total_orders
             ) sub
-            WHERE sub.rn <= 5
+            WHERE sub.rn <= 4
             ORDER BY sub.seller_state, sub.flow_percentage DESC;
         """
-        
+       
         df = self.db_utility.execute_query(query)
         return df
     
@@ -1340,10 +1330,8 @@ class DataAccessLayer:
             AND sub.delivery_district != ''
             ORDER BY sub.seller_district, sub.flow_percentage DESC;
         """
-
-        df = self.db_utility.execute_query(query, parameters)
-
         
+        df = self.db_utility.execute_query(query, parameters)
         return df
 
 

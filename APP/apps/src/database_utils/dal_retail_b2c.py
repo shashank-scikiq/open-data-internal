@@ -994,7 +994,6 @@ class DataAccessLayer:
         query = f"""
             SELECT 
                 sub.delivery_state,
-                -- COALESCE(NULLIF(TRIM(sub.seller_state), ''), 'Missing') AS seller_state,
                 sub.seller_state,
                 sub.order_demand,
                 sub.flow_percentage as flow_percentage
@@ -1078,7 +1077,6 @@ class DataAccessLayer:
         query = f"""
             SELECT 
                 sub.delivery_district,
-                -- COALESCE(NULLIF(TRIM(sub.seller_district), ''), 'Missing') AS seller_district,
                 sub.seller_district,
                 sub.order_demand,
                 sub.flow_percentage AS flow_percentage
@@ -1945,7 +1943,7 @@ class DataAccessLayer:
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
 
-        # Correct query formatting
+        
         query = f"""
             SELECT 
                 sub.seller_district,
@@ -2020,8 +2018,6 @@ class DataAccessLayer:
 
 
         """
-
-        
         
         df = self.db_utility.execute_query(query)
         return df
