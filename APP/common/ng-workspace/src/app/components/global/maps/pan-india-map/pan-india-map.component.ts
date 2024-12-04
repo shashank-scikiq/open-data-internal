@@ -42,10 +42,7 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
 
 
   ngOnInit(): void {
-    const element = document.getElementsByClassName('pan-india-map-svg')[0];
     
-    this.width = element.clientWidth;
-    this.height = element.clientHeight;
     this.initMap();
   }
 
@@ -89,6 +86,10 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
       this.statemapGeojson = await topojson.feature(this.indiamapdata, this.indiamapdata.objects.states);
       this.districtmapGeojson = await topojson.feature(this.indiamapdata, this.indiamapdata.objects.districts);
     }
+    const element = document.getElementsByClassName('pan-india-map-svg')[0];
+    
+    this.width = element.clientWidth;
+    this.height = element.clientHeight;
     this.resetMap();
 
     const mapGeopJson =

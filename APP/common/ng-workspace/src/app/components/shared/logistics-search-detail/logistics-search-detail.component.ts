@@ -196,7 +196,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
         (item: any) => (
           item.time_of_day === this.logisticSearchService.activeTimeInterval.value
         ) && (
-          this.activeStyle == 'state_map' ? item.district === 'All' : item.district != 'All'
+          this.activeStyle == 'state_map' ? item.district == 'All' : true
         )
       ).reduce((acc: any, item: any) => {
         if (this.activeStyle == 'state_map') {
@@ -216,6 +216,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
         if (Number(maxConfirmPercentage) < Number(item.total_conversion_percentage)) maxConfirmPercentage = item.total_conversion_percentage
         return acc;
       }, {});
+
     } else {
       this.stateData = null;
       this.stateData = await data.mapdata.filter(

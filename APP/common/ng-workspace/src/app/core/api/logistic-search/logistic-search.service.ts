@@ -149,4 +149,54 @@ export class LogisticSearchService {
     return this.http.get(this.baseUrl + 'api/logistics/search/data_date_range/');
   }
 
+  private cancelTopCummulativeSearchesPrevious$ = new Subject<void>();
+  getTopCummulativeSearches() {
+    this.cancelTopCummulativeSearchesPrevious$.next();
+    let [startDate, endDate] = this.getFormattedDateRange();
+    const params = {
+      startDate, endDate, dayType: this.activeDayType.value
+    }
+    return this.http.get(
+      this.baseUrl + `api/logistics/search/top_cummulative_searches/`,
+      { params }
+    ).pipe(
+      takeUntil(this.cancelTopCummulativeSearchesPrevious$)
+    );
+    
+  }
+
+  private cancelTopStateSearchesPrevious$ = new Subject<void>();
+  getTopStateSearches() {
+    this.cancelTopStateSearchesPrevious$.next();
+    let [startDate, endDate] = this.getFormattedDateRange();
+    const params = {
+      startDate, endDate, dayType: this.activeDayType.value,
+      ...(this.activeState.value != 'TT' && { state: this.activeState.value })
+    }
+    return this.http.get(
+      this.baseUrl + `api/logistics/search/top_state_searches/`,
+      { params }
+    ).pipe(
+      takeUntil(this.cancelTopStateSearchesPrevious$)
+    );
+    
+  }
+
+  private cancelTopDistrictSearchesPrevious$ = new Subject<void>();
+  getTopDistrictSearches() {
+    this.cancelTopDistrictSearchesPrevious$.next();
+    let [startDate, endDate] = this.getFormattedDateRange();
+    const params = {
+      startDate, endDate, dayType: this.activeDayType.value,
+      ...(this.activeState.value != 'TT' && { state: this.activeState.value })
+    }
+    return this.http.get(
+      this.baseUrl + `api/logistics/search/top_district_searches/`,
+      { params }
+    ).pipe(
+      takeUntil(this.cancelTopDistrictSearchesPrevious$)
+    );
+    
+  }
+
 }

@@ -1,0 +1,52 @@
+<div class="trend-charts-section">
+    <div class="charts-main-container invisible-scrollbar">
+        <div class="charts-section invisible-scrollbar">
+                <div class="chart-container">
+                    <div class="card-title-section">
+                        <p class="font-xs font-bold margin-y-0 open-data-grey-900">Overall Trend for India</p>
+                        <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                            Searches
+                            <!-- <span class="cursor-pointer">
+                                <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
+                                [nzTooltipTitle]="'tooltip text'"></i>
+                            </span> -->
+                        </p>
+                    </div>
+                    <app-line-chart chartType="cumulative" [options]="visiblePanIndiaSearchData" [isLoading]="isLoadingOverall">
+                    </app-line-chart>            
+                </div>
+
+            <div class="chart-container">
+                <div class="card-title-section">
+                    <p class="font-xs font-bold margin-y-0 open-data-grey-900">{{ activeState == 'TT' ? 'Top 3 states' : activeState }}</p>
+                    <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                        with highest searches
+                        <!-- <span class="cursor-pointer">
+                            <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
+                            [nzTooltipTitle]="'tooltip text'"></i>
+                        </span> -->
+                    </p>
+                </div>
+                <app-line-chart [options]="visibleTopStatesSearchData" [isLoading]="isLoadingStatesData">
+                </app-line-chart>            
+            </div>
+
+            <div class="chart-container">
+                <div class="card-title-section">
+                    <p class="font-xs font-bold margin-y-0 open-data-grey-900">
+                        Top 3 districts {{activeState == 'TT' ? '' : 'of ' + activeState}}
+                    </p>
+                    <p class="font-xxs margin-y-0 font-bold open-data-grey-600 subtitle">
+                        with highest searches
+                        <!-- <span class="cursor-pointer">
+                            <i class="fa-solid fa-circle-info" nz-tooltip nzTooltipPlacement="right" 
+                            [nzTooltipTitle]="'tooltip text'"></i>
+                        </span> -->
+                    </p>
+                </div>
+                <app-line-chart [options]="visibleTopDistrictsSearchData" [isLoading]="isLoadingDistrictsData">
+                </app-line-chart>            
+            </div>
+        </div>
+    </div>
+</div>

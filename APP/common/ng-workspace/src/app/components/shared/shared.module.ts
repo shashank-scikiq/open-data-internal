@@ -42,6 +42,7 @@ import { PanIndiaMapComponent } from '../global/maps/pan-india-map/pan-india-map
 import { MapLegendsComponent } from '../global/maps/map-legends/map-legends.component';
 import { StateLevelMapComponent } from '../global/maps/state-level-map/state-level-map.component';
 import { OdLoaderComponent } from '../global/loader/od-loader/od-loader.component';
+import { LogisticSearchChartsComponent } from './logistic-search-charts/logistic-search-charts.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -82,7 +83,8 @@ import { OdLoaderComponent } from '../global/loader/od-loader/od-loader.componen
     PanIndiaMapComponent,
     MapLegendsComponent,
     StateLevelMapComponent,
-    OdLoaderComponent
+    OdLoaderComponent,
+    LogisticSearchChartsComponent
   ],
   imports: [
     CommonModule,
