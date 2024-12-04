@@ -99,7 +99,6 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                                 'searched_data': searched_sum
                             }
                         )
-                
                 card_data = card_data.drop(columns=['confirmed_data', 'assigned_data'])
 
                 fetched_data += card_data.to_dict(orient="records")
@@ -303,9 +302,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
 
 
 class FetchDateRange(SummaryBaseDataAPI):
-    
     def get(self, request, *args):
-
         df = data_service.get_logistic_searched_data_date_range()
         date_range = {  
             "min_date": df.min()['min'].strftime('%Y-%m-%d'),
@@ -338,10 +335,9 @@ class FetchOverallIndiaData(SummaryBaseDataAPI):
             data = get_cached_data(cache_key)
             if data is None:
                 df = data_service.get_overall_total_searches(**params)
-                df['total_searches'] = df['total_searches'].astype(int)
-                result = df.to_dict(orient="records")
+                formatted_response = df.to_dict(orient='records')
 
-                resp_data = {"mapdata": result}
+                resp_data = {"mapdata": formatted_response}
                 cache.set(cache_key, resp_data, constant.CACHE_EXPIRY)
             else:
                 resp_data = data
@@ -355,7 +351,7 @@ class FetchOverallIndiaData(SummaryBaseDataAPI):
         p_d = params.values()
         cleaned_list = [element for element in p_d if element not in [None, 'None']]
         return "_$$FLS$$$_".join(cleaned_list)
-    
+       
 
 class FetchStateData(SummaryBaseDataAPI):
     @exceptionAPI(ondcLogger)
@@ -394,6 +390,7 @@ class FetchStateData(SummaryBaseDataAPI):
         cleaned_list = [element for element in p_d if element not in [None, 'None']]
         return "_$$FLS$$$_".join(cleaned_list)
 
+
 def format_overall_chart_data(df, date_range):
     time_of_days = ['3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
                 '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am', 'Overall']
@@ -425,98 +422,52 @@ def format_overall_chart_data(df, date_range):
             "series": [{"name": "India", "data": series_data['searched_count'].tolist()}],
             "categories": categories
         }
-    
     return response
 
-
-def format_time_of_day_chart_data_for_state(df, date_range):
-    from itertools import product
-    
-    time_of_days = ['3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
+def format_seach_data_by_time_of_day(df, date_list, level='state'):
+    series_key = level
+    df['searched'] = pd.to_numeric(df['searched'], errors='coerce').fillna(0)
+    df['date'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m-%d')
+    time_of_days = ['3am-6am', '6am-8am', '8am-10am', '10am-12pm',
                     '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am', 'Overall']
+    category_data = [date.strftime("%b %d, %y") for date in pd.to_datetime(date_list)]
 
-    df['date'] = pd.to_datetime(df['date'])
-    date_range = pd.to_datetime(date_range)
-
-    # Fill missing combinations for time_of_day, state, and date with 0
-    complete_index = pd.DataFrame(
-        list(product(date_range, time_of_days[:-1], df['state'].unique())),  # Exclude "Overall"
-        columns=["date", "time_of_day", "state"]
-    )
-    df = complete_index.merge(df, on=["date", "time_of_day", "state"], how="left").fillna(0)
-
-    # Calculate "Overall" searched_count per date and state
-    overall_data = df.groupby(['date', 'state'])['searched_count'].sum().reset_index()
-    overall_data['time_of_day'] = 'Overall'
-
-    # Add "Overall" data to the main DataFrame
-    df = pd.concat([df, overall_data])
-
-    # Prepare response for each time_of_day
     response = {}
-    categories = [date.strftime("%b %d, %y") for date in date_range]  # Format dates as "Apr 24, 2024"
 
     for tod in time_of_days:
-        # Filter data for the current time_of_day
         tod_data = df[df['time_of_day'] == tod]
 
-        # Prepare series data for each state
-        series = []
-        for state, state_data in tod_data.groupby('state'):
-            state_series = state_data.set_index('date').reindex(date_range, fill_value=0)
-            series.append({"name": state, "data": state_series['searched_count'].tolist()})
+        if tod_data.empty:
+            response[tod] = None
+            continue
+
+        top_level = (
+            tod_data.groupby(series_key)['searched']
+            .sum()
+            .nlargest(3)
+            .index
+        )
+
+        top_level_data = []
+        for state in top_level:
+            state_data = (
+                tod_data[tod_data[series_key] == state]
+                .set_index('date')['searched']
+                .to_dict()
+            )
+            
+            top_level_data.append({
+                "name": state,
+                "data": [int(state_data.get(date, 0)) for date in date_list]
+            })
 
         response[tod] = {
-            "series": series,
-            "categories": categories
+            "series": top_level_data,
+            "categories": category_data,
+            "colors": ["#A8D8B9", "#6A9BD1", "#FFA500"]
         }
 
     return response
-
-def format_time_of_day_chart_data_for_district(df, date_range):
-    from itertools import product
-    
-    time_of_days = ['3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
-                    '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am', 'Overall']
-
-    df['date'] = pd.to_datetime(df['date'])
-    date_range = pd.to_datetime(date_range)
-
-    # Fill missing combinations for time_of_day, district, and date with 0
-    complete_index = pd.DataFrame(
-        list(product(date_range, time_of_days[:-1], df['district'].unique())),  # Exclude "Overall"
-        columns=["date", "time_of_day", "district"]
-    )
-    df = complete_index.merge(df, on=["date", "time_of_day", "district"], how="left").fillna(0)
-
-    # Calculate "Overall" searched_count per date and district
-    overall_data = df.groupby(['date', 'district'])['searched_count'].sum().reset_index()
-    overall_data['time_of_day'] = 'Overall'
-
-    # Add "Overall" data to the main DataFrame
-    df = pd.concat([df, overall_data])
-
-    # Prepare response for each time_of_day
-    response = {}
-    categories = [date.strftime("%b %d, %y") for date in date_range]  # Format dates as "Apr 24, 2024"
-
-    for tod in time_of_days:
-        # Filter data for the current time_of_day
-        tod_data = df[df['time_of_day'] == tod]
-
-        # Prepare series data for each district
-        series = []
-        for district, district_data in tod_data.groupby('district'):
-            district_series = district_data.set_index('date').reindex(date_range, fill_value=0)
-            series.append({"name": district, "data": district_series['searched_count'].tolist()})
-
-        response[tod] = {
-            "series": series,
-            "categories": categories
-        }
-
-    return response
-
 
 
 class FetchCumulativeSearches(SummaryBaseDataAPI):
@@ -570,6 +521,7 @@ class FetchTopStatesSearches(SummaryBaseDataAPI):
         start_date = request.GET.get('startDate', None)
         end_date = request.GET.get('endDate', None)
         day_type = request.GET.get('dayType', 'All')
+        state = request.GET.get('state', None)
 
         if not (start_date and end_date):
             error_message={'error': f"Bad request! Date range not provided."}
@@ -578,7 +530,8 @@ class FetchTopStatesSearches(SummaryBaseDataAPI):
         params = {
             'start_date' : start_date,
             'end_date' : end_date,
-            'day_type': day_type
+            'day_type': day_type,
+            'state': state
         }
 
         try:
@@ -587,7 +540,7 @@ class FetchTopStatesSearches(SummaryBaseDataAPI):
             if data is None:
                 df = data_service.get_top_states_search_distribution(**params)
                 date_list = self.get_dates_between(start_date, end_date, day_type)
-                response_data = format_time_of_day_chart_data_for_state(df, date_list)
+                response_data = format_seach_data_by_time_of_day(df, date_list, "state")
                 cache.set(cache_key, response_data, constant.CACHE_EXPIRY)
             else:
                 response_data = data
@@ -612,6 +565,7 @@ class FetchTopDistrictSearches(SummaryBaseDataAPI):
         start_date = request.GET.get('startDate', None)
         end_date = request.GET.get('endDate', None)
         day_type = request.GET.get('dayType', 'All')
+        state = request.GET.get('state', None)
 
         if not (start_date and end_date):
             error_message={'error': f"Bad request! Date range not provided."}
@@ -620,7 +574,8 @@ class FetchTopDistrictSearches(SummaryBaseDataAPI):
         params = {
             'start_date' : start_date,
             'end_date' : end_date,
-            'day_type': day_type
+            'day_type': day_type,
+            'state': state
         }
 
         try:
@@ -629,7 +584,7 @@ class FetchTopDistrictSearches(SummaryBaseDataAPI):
             if data is None:
                 df = data_service.get_top_districts_search_distribution(**params)
                 date_list = self.get_dates_between(start_date, end_date, day_type)
-                response_data = format_time_of_day_chart_data_for_district(df, date_list)
+                response_data = format_seach_data_by_time_of_day(df, date_list, "district")
                 cache.set(cache_key, response_data, constant.CACHE_EXPIRY)
             else:
                 response_data = data

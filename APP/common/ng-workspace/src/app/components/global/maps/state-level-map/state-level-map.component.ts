@@ -43,10 +43,7 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
 
 
   ngOnInit(): void {
-    const element = document.getElementsByClassName('state-level-map-svg')[0];
     
-    this.width = element.clientWidth;
-    this.height = element.clientHeight;
     this.initMap();
   }
 
@@ -90,6 +87,10 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
 
       this.statemapGeojson = await topojson.feature(this.stateMapData, this.stateMapData.objects.districts);
     }
+    const element = document.getElementsByClassName('state-level-map-svg')[0];
+    
+    this.width = element.clientWidth;
+    this.height = element.clientHeight;
     this.resetMap();
 
     const mapGeopJson = this.statemapGeojson;
@@ -240,7 +241,6 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
   backToIndiaMap() {
     this.logisticSearchService.activeState.next('TT');
     this.logisticSearchService.filterUpdated.next({updated: false, updatedFor: 'activeState'})
-    console.log("here")
   }
 
 }

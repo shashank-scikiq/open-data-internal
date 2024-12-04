@@ -20,6 +20,7 @@ export class LogisticSearchChartsComponent implements OnInit {
   visibleTopDistrictsSearchData: any = null;
 
   activeTimeInterval: any;
+  activeState: string = 'TT';
 
 
   constructor(private logisticsSearchService: LogisticSearchService) {}
@@ -27,7 +28,9 @@ export class LogisticSearchChartsComponent implements OnInit {
   ngOnInit(): void {
     this.logisticsSearchService.filterUpdated$.subscribe(
       (val: any) => {
-        console.log(val, "here");
+        if (val.updatedFor && ['dayType', 'activeState'].includes(val.updatedFor)) {
+          this.fetchTrendChartsData();
+        }
       }
     )
 
@@ -38,26 +41,38 @@ export class LogisticSearchChartsComponent implements OnInit {
       }
     )
 
+    this.logisticsSearchService.activeState$.subscribe(
+      (val: any) => {
+        this.activeState = val;
+      }
+    )
+
     this.fetchTrendChartsData();
   }
 
   updateData() {
-    this.visiblePanIndiaSearchData = this.panIndiaSearchData[this.activeTimeInterval] ?? null;
+    if (this.panIndiaSearchData)
+      this.visiblePanIndiaSearchData = this.panIndiaSearchData[this.activeTimeInterval] ?? null;
+    if (this.topStatesSearchData)
+      this.visibleTopStatesSearchData = this.topStatesSearchData[this.activeTimeInterval] ?? null;
+    if (this.topDistrictsSearchData)
+      this.visibleTopDistrictsSearchData = this.topDistrictsSearchData[this.activeTimeInterval] ?? null;
   }
 
   fetchTrendChartsData() {
-    this.isLoadingOverall = true;
-    this.logisticsSearchService.getTopCummulativeSearches().subscribe(
-      (response: any) => {
-        console.log(response);
-        this.panIndiaSearchData = response;
-        this.visiblePanIndiaSearchData = this.panIndiaSearchData[this.activeTimeInterval];
-        this.isLoadingOverall = false;
-      }, (error: Error) => {
-        console.log(error);
-        this.isLoadingOverall = false;
-      }
-    )
+    if (this.logisticsSearchService.activeState.value == 'TT') {
+      this.isLoadingOverall = true;
+      this.logisticsSearchService.getTopCummulativeSearches().subscribe(
+        (response: any) => {
+          this.panIndiaSearchData = response;
+          this.visiblePanIndiaSearchData = this.panIndiaSearchData[this.activeTimeInterval];
+          this.isLoadingOverall = false;
+        }, (error: Error) => {
+          console.log(error);
+          this.isLoadingOverall = false;
+        }
+      )
+    }
 
     this.isLoadingStatesData = true;
     this.logisticsSearchService.getTopStateSearches().subscribe(

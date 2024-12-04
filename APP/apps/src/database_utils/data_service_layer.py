@@ -147,10 +147,10 @@ class DataService:
         return self.dal.fetch_pan_india_search_distribution(start_date, end_date, day_type)
 
     '''Fetch top states search count at day level'''
-    def get_top_states_search_distribution(self, start_date, end_date, day_type='All'):
-        return self.dal.fetch_top_states_search_distribution(start_date, end_date, day_type)
+    def get_top_states_search_distribution(self, start_date, end_date, day_type='All', state=None):
+        return self.dal.fetch_top_states_search_distribution(start_date, end_date, day_type, state)
 
     '''Fetch top districts search count at day level'''
-    def get_top_districts_search_distribution(self, start_date, end_date, day_type='All'):
-        return self.dal.fetch_top_districts_search_distribution(start_date, end_date, day_type)
+    def get_top_districts_search_distribution(self, start_date, end_date, day_type='All', state=None):
+        return self.dal.fetch_top_districts_search_distribution(start_date, end_date, day_type, state)
     
