@@ -55,7 +55,7 @@ export class LogisticSearchFiltersComponent implements OnInit {
 
   setDateRange(value: any) {
     this.logisticSearchService.setDateRange(value);
-    this.logisticSearchService.filterUpdated.next({ updated: true});
+    this.logisticSearchService.filterUpdated.next({ updated: true, updatedFor: 'dateRange'});
   }
 
   updateTimeInterval(option: string) {
