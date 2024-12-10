@@ -19,7 +19,14 @@ export class LogisticSearchFiltersComponent implements OnInit {
   dayTypes: string[] = ['All', 'Weekends', 'Week days']
   selectedDayType: string = 'All';
 
-  cities: string[] = ['New Delhi', 'Bangalore'];
+  cities: string[] = [
+    'Ahmedabad', 'Bangalore rural', 'Bangalore', 'Chennai',
+    'Faridabad', 'Gautam Buddha Nagar', 'Ghaziabad', 'Gurugram',
+    'Hyderabad', 'Indore', 'Jaipur', 'Kancheepuram', 'Kolkata',
+    'Lucknow', 'Mumbai', 'New Delhi', 'North 24 Parganas', 'Pune',
+    'Raigarh', 'Ranga Reddy', 'South 24 Parganas', 'Thane'
+  ];
+
   selectedCity: string = 'New Delhi';
   dateRange: any = [];
   availableDateRange: any = [];

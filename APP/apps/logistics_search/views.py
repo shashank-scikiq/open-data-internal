@@ -184,7 +184,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
                         result[pincode][row['time_of_day']] = {
                             'conversion_rate': row['conversion_rate'],
                             'assigned_rate': row['assigned_rate'],
-                            'searched_data': row['searched_data'],
+                            'searched_data': int(row['searched_data']),
                             'pincode': int(pincode)
                         }
                 fetched_data = result
@@ -242,7 +242,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             for _, row in high_conversion_rate_df.iterrows():
                 data[row['pick_up_pincode']] = {
                     'conversion_rate': row['conversion_rate'],
-                    'searched_data': row['searched_data'],
+                    'searched_data': int(row['searched_data']),
                     'pincode': int(row['pick_up_pincode'])
                 }
             
@@ -270,7 +270,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             for _, row in filtered_df_1.iterrows():
                 data[row['pick_up_pincode']] = {
                     'conversion_rate': row['conversion_rate'],
-                    'searched_data': row['searched_data'],
+                    'searched_data': int(row['searched_data']),
                     'pincode': int(row['pick_up_pincode'])
                 }
             
@@ -285,7 +285,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             for _, row in filtered_df_2.iterrows():
                 data[row['pick_up_pincode']] = {
                     'conversion_rate': row['conversion_rate'],
-                    'searched_data': row['searched_data'],
+                    'searched_data': int(row['searched_data']),
                     'pincode': int(row['pick_up_pincode'])
                 }
             insight_data['high_demand_and_low_conversion_rate'][str(time)] = data

@@ -1,9 +1,24 @@
 <div class="selection-main-container">
+    <div class="pincode-level-toggle-section">
+        <p class="title margin-0">Pincode level view of cities</p>
+        <nz-switch [(ngModel)]="isPincodeView" (ngModelChange)="updatePincodeView($event)" nzSize="small"></nz-switch>
+    </div>
+    @if(isPincodeView) {
+        <div class="selection-container relative">
+            <div class="margin-0 label">Choose City</div>
+            <nz-select [nzDisabled]="!isPincodeView" nzsize="small" [(ngModel)]="selectedCity" (ngModelChange)="updateValue('city')">
+                @for(option of cities; track option) {
+                <nz-option [nzValue]="option" [nzLabel]="option"></nz-option>
+                }
+            </nz-select>
+        </div>
+    }
     <app-date-range-picker 
         [dateRange]="dateRange" 
         [availableDateRange]="availableDateRange" 
         (selectedDateRange)="setDateRange($event)">
     </app-date-range-picker>
+
     <button nz-button nzType="primary" (click)="showModal()">
         <span>Filters</span>
       </button>
@@ -20,7 +35,7 @@
         <ng-template #modalContent>
             <div class="filter-dialog-container">
 
-                <div class="pincode-level-toggle-section">
+                <!-- <div class="pincode-level-toggle-section">
                     <p class="title margin-0">Pincode level view of cities</p>
                     <nz-switch [(ngModel)]="isPincodeView" (ngModelChange)="updatePincodeView($event)" nzSize="small"></nz-switch>
                 </div>
@@ -33,7 +48,7 @@
                             }
                         </nz-select>
                     </div>
-                }
+                } -->
             
                 <div class="selection-container">
                     <div class="title margin-0">Choose Day type</div>

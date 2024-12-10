@@ -18,6 +18,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
 
   overallData: any = null;
   stateData: any = null;
+  cityData: any = null;
 
   configData: any = {
     chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
@@ -68,6 +69,54 @@ export class LogisticsSearchDetailComponent implements OnInit {
     }
   ];
 
+  insightOptions: any = [
+    {
+      title: 'Top searched areas',
+      tooltip: `Areas with high demand`,
+      selected: false,
+      type: 'high_demand',
+      defaultView: this.viewsOptions[0]
+    },
+    {
+      title: 'Top Conversion rate Areas',
+      tooltip: `Areas with high conversion rate`,
+      selected: false,
+      type: 'high_conversion_rate',
+      defaultView: this.viewsOptions[0]
+    },
+    {
+      title: 'Areas with high search and high conversion rate',
+      tooltip: `Areas that contribute to 75% of total searches (capped to 30 pincodes). 
+            And conversion rates within these areas that are more than average.`,
+      selected: false,
+      type: 'high_demand_and_high_conversion_rate',
+      defaultView: this.viewsOptions[2]
+    },
+    {
+      title: 'Areas with high search and low conversion rate',
+      tooltip: `Areas that contribute to 75% of total searches (capped to 30 pincodes) and 
+        conversion rates within these areas that are less than average`,
+      selected: false,
+      type: 'high_demand_and_low_conversion_rate',
+      defaultView: this.viewsOptions[2]
+    },
+    // {
+    //   title: 'Areas with high search in peak morning hours',
+    //   tooltip: `Areas with high demand between 8am-10am`,
+    //   selected: false,
+    //   type: 'high_demand_in_morning_hours',
+    //   defaultView: this.viewsOptions[0]
+    // },
+    // {
+    //   title: 'Areas with high search in peak evening hours',
+    //   tooltip: `Areas with high demand between 6pm-9pm`,
+    //   selected: false,
+    //   type: 'high_demand_in_evening_hours',
+    //   defaultView: this.viewsOptions[0]
+    // }
+  ];
+  activeInsight: any;
+
   constructor(private logisticSearchService: LogisticSearchService) { }
 
   ngOnInit(): void {
@@ -94,12 +143,12 @@ export class LogisticsSearchDetailComponent implements OnInit {
         this.dateRangeInitialized = true;
         this.getMapData();
         this.activeView = this.viewsOptions[0].type;
+        this.activeInsight = this.insightOptions[0];
       }
     )
 
     this.logisticSearchService.filterUpdated$.subscribe(
       (val: any) => {
-        if(val?.updatedFor && ['timeInterval', 'dayType', 'activeState'].includes(val.updatedFor)) {}
 
         if (val?.updatedFor && val.updatedFor == 'activeState') {
           this.activeState = this.logisticSearchService.activeState.value;
@@ -108,57 +157,38 @@ export class LogisticsSearchDetailComponent implements OnInit {
         } else if (val?.updatedFor && val.updatedFor == 'dayType') {
           this.loadingData = true;
           this.getMapData();
-        } else if (val?.updatedFor && val.updatedFor == 'isPincodeView') {
+        } else if (val?.updatedFor == 'isPincodeView') {
           this.isPincodeLevelView = this.logisticSearchService.pincodeLevelView.value;
-          if (!this.isPincodeLevelView) {
-            this.loadingData = true;
-            this.getMapData();
-          }
+          this.loadingData = true;
+          this.getMapData();
         } else if (val?.updatedFor && val.updatedFor == 'timeInterval') {
           this.loadingData = true;
           this.prepareMapData();
+        } else if (val?.updatedFor == 'city') {
+          this.loadingData = true;
+          this.getMapData();
         }
       }
     )
-
-    // this.logisticSearchService.pincodeLevelView$.subscribe(
-    //   (val: boolean) => {
-    //     this.isPincodeLevelView = val;
-    //     this.isPincodeLevelViewInitialized = true;
-    //     if (!val) {
-    //       this.loadingData = true;
-    //       this.getMapData();
-    //     }
-    //   }
-    // )
-    // this.logisticSearchService.activeTimeInterval$.subscribe(
-    //   (val: any) => {
-    //     this.loadingData = true;
-    //     this.prepareMapData();
-    //   }
-    // )
-
-    // this.logisticSearchService.activeState$.subscribe(
-    //   (state: string) => {
-    //     this.activeStateInitialized = true;
-    //     this.activeState = state;
-    //     this.loadingData = true;
-    //     this.getMapData();
-    //   }
-    // );
   }
 
   getMapData() {
-    // if (!(
-    //   this.activeStateInitialized &&
-    //   this.isPincodeLevelViewInitialized &&
-    //   this.dateRangeInitialized
-    // )) {
-    //   return;
-    // }
-    if (!this.isPincodeLevelView) {
       this.loadingData = true;
-      if (this.activeState == 'TT') {
+      if (this.isPincodeLevelView) {
+        this.cityData = null;
+        this.rawData = null;
+        this.logisticSearchService.getCityWiseData().subscribe(
+          (response: any) => {
+            this.rawData = response.data;
+            this.preparePincodeLevelViewData();
+          },
+          (error: Error) => {
+            console.log(error);
+            this.loadingData = false;
+          }
+        )
+      }
+      else if (this.activeState == 'TT') {
         this.overallData = null;
         this.rawData = null;
         this.logisticSearchService.getOverallData().subscribe(
@@ -166,7 +196,10 @@ export class LogisticsSearchDetailComponent implements OnInit {
             this.rawData = response;
             this.prepareMapData();
           },
-          (error: Error) => console.log(error)
+          (error: Error) => {
+            console.log(error);
+            this.loadingData = false;
+          }
         )
       }
       else {
@@ -177,10 +210,55 @@ export class LogisticsSearchDetailComponent implements OnInit {
             this.rawData = response;
             this.prepareMapData();
           },
-          (error: Error) => console.log(error)
+          (error: Error) => {
+            console.log(error);
+            this.loadingData = false;
+          }
         )
       }
+  }
+
+  async preparePincodeLevelViewData() {
+    let data = this.rawData;
+
+    if(!data || !Object.keys(data).length) {
+      this.isLoading = false;
+      return;
     }
+
+    this.loadingData = true;
+    let maxSearchCount = 0;
+    let maxConfirmPercentage = 0;
+
+    const cityLevelData: any = {};
+    const pincodeData: any = Object.entries(data.mapData);
+
+    for (const [pincode, timeData] of pincodeData) {
+      const data = timeData[this.logisticSearchService.activeTimeInterval.value];
+      cityLevelData[pincode] = {
+        "Assigned percentage": `${parseFloat(data.assigned_rate)}%`,
+        "Confirm percentage": `${parseFloat(data.conversion_rate)}%`,
+        "Search count": data.searched_data
+      };
+
+      if (maxSearchCount < data.searched_data) maxSearchCount = data.searched_data;
+      if (maxConfirmPercentage < parseFloat(data.conversion_rate)) maxConfirmPercentage = parseFloat(data.conversion_rate);
+    }
+    this.cityData = cityLevelData;
+
+    this.legendConfigData = {
+      ...this.legendConfigData,
+      bubbleMaxData: maxConfirmPercentage,
+      chloroMaxData: maxSearchCount
+    }
+
+    this.configData = {
+      ...this.configData,
+      maxChloroData: maxSearchCount,
+      maxBubbleData: maxConfirmPercentage
+    }
+
+    this.loadingData = false;
   }
 
   async prepareMapData() {
@@ -256,5 +334,10 @@ export class LogisticsSearchDetailComponent implements OnInit {
   updateStyleSelection(option: any) {
     this.activeStyle = option.type;
     this.prepareMapData();
+  }
+
+  updateInsightSelection(option: any) {
+    this.activeInsight = option;
+    this.activeView = option.defaultView.type;
   }
 }

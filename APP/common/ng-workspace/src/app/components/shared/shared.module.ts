@@ -43,6 +43,7 @@ import { MapLegendsComponent } from '../global/maps/map-legends/map-legends.comp
 import { StateLevelMapComponent } from '../global/maps/state-level-map/state-level-map.component';
 import { OdLoaderComponent } from '../global/loader/od-loader/od-loader.component';
 import { LogisticSearchChartsComponent } from './logistic-search-charts/logistic-search-charts.component';
+import { PincodeLevelMapComponent } from './pincode-level-map/pincode-level-map.component';
 // import { PlotlyModule } from 'angular-plotly.js';
 
 @NgModule({
@@ -84,7 +85,8 @@ import { LogisticSearchChartsComponent } from './logistic-search-charts/logistic
     MapLegendsComponent,
     StateLevelMapComponent,
     OdLoaderComponent,
-    LogisticSearchChartsComponent
+    LogisticSearchChartsComponent,
+    PincodeLevelMapComponent
   ],
   imports: [
     CommonModule,
@@ -129,7 +131,8 @@ import { LogisticSearchChartsComponent } from './logistic-search-charts/logistic
     PanIndiaMapComponent,
     MapLegendsComponent,
     StateLevelMapComponent,
-    OdLoaderComponent
+    OdLoaderComponent,
+    PincodeLevelMapComponent
   ]
 })
 export class SharedModule { }

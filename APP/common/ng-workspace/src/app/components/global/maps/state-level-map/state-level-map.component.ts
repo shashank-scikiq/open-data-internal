@@ -46,10 +46,11 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
     
     this.initMap();
   }
-
+  
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['mapData'] || changes['visualType']) {
       this.initMap();
+      console.log(this.mapData, this.configData)
     }
     
   }
@@ -128,13 +129,8 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
 
     if (this.visualType == 'chloro' || this.visualType=='both') {
       
-      let maxChloroData = Math.max(
-        ...Object.values(this.mapData).map(
-          (data: any) => Number(data[this.configData.chloroDataKey])
-        )
-      );
       this.customColorRange = d3.scaleLinear()
-        .domain([0, 1, maxChloroData])
+        .domain([0, 1, this.configData.maxChloroData])
         .range(this.configData.chloroColorRange);
   
       g.selectAll('path')
