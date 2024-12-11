@@ -92,8 +92,7 @@ DATABASES = {
         'PORT':  os.getenv("POSTGRES_PORT"),
         'OPTIONS':
             {
-                # 'options': f'-c search_path={os.getenv("POSTGRES_SCHEMA")}',
-                'options': '-c search_path=ec2_all',
+                'options': f'-c search_path={os.getenv("POSTGRES_SCHEMA")}',
             },
     }
 }
