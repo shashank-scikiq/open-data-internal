@@ -234,35 +234,29 @@ class DataAccessLayer:
         table_name = constant.MONTHLY_DISTRICT_TABLE
         provider_table = constant.ACTIVE_TOTAL_SELLER_TBL
         aggregate_value = "'AGG'"
-
-        if (category):
-            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
-
-        if (sub_category):
-            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
         
         parameters = self.get_query_month_parameters(start_date, end_date)
-    
-        query = f"""
-            WITH 
-            req_table as (
-                select 
-                    * 
-                from {table_name} 
-                where
-                    ((order_year*100) + order_month) between 
-                        (({parameters['start_year']} * 100) + {parameters['start_month']}) 
-                        and 
-                        (({parameters['end_year']} * 100) + {parameters['end_month']})
-                    and sub_domain = 'B2C' """
-        
-        if bool(category) and (category != 'None'):
-            query += f" AND upper(category)=upper('{category}')"
+        query = ''
+        if category or sub_category:
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+            query = f"""
+                WITH 
+                req_table as (
+                    select 
+                        * 
+                    from {table_name} 
+                    where
+                        ((order_year*100) + order_month) between 
+                            (({parameters['start_year']} * 100) + {parameters['start_month']}) 
+                            and 
+                            (({parameters['end_year']} * 100) + {parameters['end_month']})
 
-        if bool(sub_category) and (sub_category != 'None'):
-            query += f" AND upper(sub_category)=upper('{sub_category}')"
-
-        query +=    f"""),
+                        and sub_domain = 'B2C'
+                        and delivery_state <> 'AGG'
+                        and delivery_district <> 'AGG'
+                        and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
+                        and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
+                        ),
             DistrictRanking AS (
                 SELECT
                     delivery_state AS delivery_state_code,
@@ -397,36 +391,54 @@ class DataAccessLayer:
             LEFT JOIN
                 StateRanking SRnk ON SRnk.rank_in_state = 1
         """
-        
-        orders_count = self.db_utility.execute_query(query)
-        return orders_count
 
-    
-    @log_function_call(ondcLogger)
-    def fetch_total_orders_summary_prev(self, start_date, end_date, category=None,
-                                        sub_category=None, domain='Retail', state=None):
-        table_name = constant.MONTHLY_DISTRICT_TABLE
-        provider_table = constant.ACTIVE_TOTAL_SELLER_TBL
-        aggregate_value = "'AGG'"
+        else:
+            query = f"""
+                WITH 
+                req_table as (
+                    select 
+                        * 
+                    from {table_name} 
+                    where
+                        ((order_year*100) + order_month) between 
+                            (({parameters['start_year']} * 100) + {parameters['start_month']}) 
+                            and 
+                            (({parameters['end_year']} * 100) + {parameters['end_month']})
+                        and sub_domain = 'B2C' """
+            
+            if bool(category) and (category != 'None'):
+                query += f" AND upper(category)=upper('{category}')"
 
-        if category:
-            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
+            if bool(sub_category) and (sub_category != 'None'):
+                query += f" AND upper(sub_category)=upper('{sub_category}')"
 
-        if sub_category:
-            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
-
-        parameters = self.get_query_month_parameters(start_date, end_date)
-
-        query = f"""
-            WITH 
+            query +=    f"""),
+            DistrictRanking AS (
+                SELECT
+                    delivery_state AS delivery_state_code,
+                    delivery_state,
+                    delivery_district,
+                    SUM(total_orders_delivered) AS total_orders_in_district,
+                    case 
+                        when sum(total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(total_items)/sum(total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district,
+                    ROW_NUMBER() OVER (PARTITION BY delivery_state ORDER BY SUM(total_orders_delivered) DESC) AS rank_in_state
+                FROM
+                    req_table
+                WHERE
+                    delivery_state <> '' AND delivery_state IS NOT NULL AND delivery_state_code IS NOT NULL
+                GROUP BY
+                    delivery_state, delivery_district
+            ),
             Sellers AS (
                 SELECT
-                    ds.seller_state_code AS seller_state_code,
-                    ds.seller_state AS seller_state,
+                    seller_state_code,
+                    seller_state,
                     max(active_sellers) as active_sellers,
                     max(total_sellers) as total_sellers
                 FROM
-                    {provider_table} ds
+                    {provider_table}
                 WHERE
                     ((year_val*100) + mnth_val) = (({parameters['end_year']} * 100) + {parameters['end_month']})
                     and seller_district = {aggregate_value}
@@ -437,34 +449,38 @@ class DataAccessLayer:
             ),
             AggregatedData AS (
                 SELECT
-                    swdlo.delivery_state_code AS delivery_state_code,
-                    swdlo.delivery_state AS delivery_state,
-                    COUNT(DISTINCT CONCAT(swdlo.delivery_state, '_', swdlo.delivery_district)) as total_districts,
+                    delivery_state_code AS delivery_state_code,
+                    delivery_state AS delivery_state,
+                    COUNT(DISTINCT CONCAT(delivery_state, '_', delivery_district)) as total_districts,
+                    SUM(total_orders_delivered) AS delivered_orders,
                     case 
-                        when sum(swdlo.total_orders_delivered) = 0 then 0 
-                        else round(cast((sum(swdlo.total_items)/sum(swdlo.total_orders_delivered)) as numeric), 1) end
-                    as avg_items_per_order_in_district,
-                    SUM(swdlo.total_orders_delivered) AS delivered_orders
+                        when sum(total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(total_items)/sum(total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district
                 FROM
-                    {table_name} swdlo
+                    req_table
                 WHERE
-                    ((swdlo.order_year*100) + swdlo.order_month) between 
-                        (({parameters['start_year']} * 100) + {parameters['start_month']}) 
-                        and 
-                        (({parameters['end_year']} * 100) + {parameters['end_month']})
-                    AND swdlo.delivery_state <> '' AND swdlo.delivery_state IS NOT NULL
-                    AND sub_domain='B2C'
-            """
-
-        if bool(category) and (category != 'None'):
-            query += f" AND category='{category}'"
-
-        if bool(sub_category) and (sub_category != 'None'):
-            query += " AND sub_category='{sub_category}'"
-
-        query += f"""
+                    delivery_state <> '' AND delivery_state IS NOT NULL
                 GROUP BY
-                    swdlo.delivery_state_code, swdlo.delivery_state
+                    delivery_state_code, delivery_state
+            ),
+            StateRanking AS (
+                SELECT
+                    delivery_state_code AS delivery_state_code,
+                    delivery_state,
+                    SUM(total_orders_delivered) AS total_orders_in_state,
+                    case 
+                        when sum(total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(total_items)/sum(total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district,
+                    ROW_NUMBER() OVER (ORDER BY SUM(total_orders_delivered) DESC) AS rank_in_state
+                FROM
+                    req_table
+                WHERE
+                    delivery_state <> '' AND delivery_state_code IS NOT NULL
+                GROUP BY
+                    delivery_state_code,
+                    delivery_state
             ),
             ActiveSellersTotal AS (
                 SELECT
@@ -472,8 +488,8 @@ class DataAccessLayer:
                     'TOTAL' AS seller_state,
                     max(total_sellers) as total_sellers,
                     max(active_sellers) as active_sellers
-                FROM    
-                    {provider_table} ds
+                FROM
+                    {provider_table}
                 WHERE
                     ((year_val*100) + mnth_val) = (({parameters['end_year']} * 100) + {parameters['end_month']})
                     and seller_district = {aggregate_value}
@@ -486,48 +502,32 @@ class DataAccessLayer:
                 SELECT
                     'TT' AS delivery_state_code,
                     'TOTAL' AS delivery_state,
-                    COUNT(DISTINCT CONCAT(swdlo.delivery_state, '_', swdlo.delivery_district)) AS total_districts,
+                    COUNT(DISTINCT CONCAT(delivery_state, '_', delivery_district)) AS total_districts,
+                    SUM(total_orders_delivered) AS delivered_orders,
                     case 
-                        when sum(swdlo.total_orders_delivered) = 0 then 0 
-                        else round(cast((sum(swdlo.total_items)/sum(swdlo.total_orders_delivered)) as numeric), 1) end
-                    as avg_items_per_order_in_district,
-                    SUM(swdlo.total_orders_delivered) AS delivered_orders
+                        when sum(total_orders_delivered) = 0 then 0 
+                        else round(cast((sum(total_items)/sum(total_orders_delivered)) as numeric), 2) end
+                    as avg_items_per_order_in_district
                 FROM
-                    {table_name} swdlo
-                WHERE
-                    ((swdlo.order_year*100) + swdlo.order_month) between 
-                        (({parameters['start_year']} * 100) + {parameters['start_month']}) 
-                        and 
-                        (({parameters['end_year']} * 100) + {parameters['end_month']})
-                    AND sub_domain='B2C'
-            """
-
-        if bool(category) and (category != 'None'):
-            query += f" AND category='{category}'"
-
-        if bool(sub_category) and (sub_category != 'None'):
-            query += f" AND sub_category='{sub_category}'"
-
-        query += f"""
+                    req_table
             )
-               SELECT
+            SELECT
                 COALESCE(AD.delivery_state_code, 'Missing') AS delivery_state_code,
                 COALESCE(AD.delivery_state, 'Missing') AS delivery_state,
                 AD.total_districts,
                 AD.delivered_orders,
                 AD.avg_items_per_order_in_district,
-                COALESCE(
-                    CASE
-                        WHEN ASel.total_sellers < 3 THEN 0
-                        ELSE ASel.total_sellers
-                        END, 0) AS total_sellers,
-                    case when ASel.active_sellers <= 3 or ASel.total_sellers = 0 then 0
-                    else round(cast((ASel.active_sellers/ASel.total_sellers)*100 as numeric), 2) end
-                AS active_sellers
+                COALESCE(ASel.total_sellers, 0) AS total_sellers,
+                COALESCE(case when (ASel.active_sellers = 0 or ASel.total_sellers = 0) then 0.00
+                    else round(cast(((ASel.active_sellers*100.0)/ASel.total_sellers) as numeric), 1) end, 0)
+                AS active_sellers,
+                DR.delivery_district AS most_ordering_district
             FROM
                 AggregatedData AD
             LEFT JOIN
                 Sellers ASel ON AD.delivery_state = ASel.seller_state
+            LEFT JOIN
+                (SELECT * FROM DistrictRanking WHERE rank_in_state = 1) DR ON AD.delivery_state = DR.delivery_state
             UNION ALL
             SELECT
                 'TT' AS delivery_state_code,
@@ -535,26 +535,21 @@ class DataAccessLayer:
                 ADT.total_districts,
                 ADT.delivered_orders,
                 ADT.avg_items_per_order_in_district,
-                COALESCE(
-                    CASE
-                        WHEN ASelt.total_sellers < 3 THEN 0
-                        ELSE ASelt.total_sellers
-                    END, 0) AS total_sellers,
-                
-                
-                case when ASelt.active_sellers <= 3 or ASelt.total_sellers = 0 then 0
-                    else round(cast((ASelt.active_sellers/ASelt.total_sellers)*100 as numeric), 2) end
-                AS active_sellers
+                COALESCE(ASelt.total_sellers, 0) AS total_sellers,
+                case when ASelt.active_sellers = 0 or ASelt.total_sellers = 0 then 0
+                    else round(cast((ASelt.active_sellers*100.0)/ASelt.total_sellers as numeric), 1) end
+                AS active_sellers,
+                SRnk.delivery_state AS most_ordering_district
             FROM
                 AggregatedDataTotal ADT
             LEFT JOIN
-                ActiveSellersTotal ASelt ON 1=1
+                ActiveSellersTotal ASelt ON 1=1 
+            LEFT JOIN
+                StateRanking SRnk ON SRnk.rank_in_state = 1
         """
-        
+
         orders_count = self.db_utility.execute_query(query)
         return orders_count
-
-    
 
     @log_function_call(ondcLogger)
     def fetch_retail_overall_orders(self, start_date, end_date, category=None,
@@ -1156,40 +1151,56 @@ class DataAccessLayer:
                                                   category=None, sub_category=None,
                                                   domain='Retail', state=None):
         domain = 'Retail' if domain is None else domain
+        aggregate_value = "'AGG'"
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
         table_name = constant.MONTHLY_DISTRICT_TABLE
+        query = ''
 
-        if (category):
-            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
-        if(sub_category):
+        if category or sub_category:
             table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
-        
-        query = f'''
-                    SELECT 
-                        delivery_state_code AS delivery_state_code,
-                        delivery_state AS delivery_state,
-                        count(distinct concat(delivery_state, delivery_district)) AS district_count
-                    FROM {table_name}
-                    WHERE 
-                        (order_year = %s AND order_month = %s)
-                    
-                '''
+            query = f"""
+                select 
+                    delivery_state_code AS delivery_state_code,
+                    delivery_state AS delivery_state,
+                    count(distinct concat(delivery_state, delivery_district)) AS district_count
+                from {constant.SUB_CAT_MONTHLY_DISTRICT_TABLE}
+                    where
+                        (order_year = '{params.end_year}' and order_month = '{params.end_month}')
+                        and sub_domain = 'B2C'
+                        and delivery_state <> 'AGG'
+                        and delivery_district <> 'AGG'
+                        and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
+                        and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
+                    group by 1,2
+            """
+            parameters = []
+        else:
+            query = f'''
+                        SELECT 
+                            delivery_state_code AS delivery_state_code,
+                            delivery_state AS delivery_state,
+                            count(distinct concat(delivery_state, delivery_district)) AS district_count
+                        FROM {table_name}
+                        WHERE 
+                            (order_year = %s AND order_month = %s)
+                        
+                    '''
 
-        parameters = [params.end_year, params.end_month]
+            parameters = [params.end_year, params.end_month]
 
-        query += " AND domain_name = %s AND sub_domain = 'B2C'"
-        parameters.append(domain)
+            query += " AND domain_name = %s AND sub_domain = 'B2C'"
+            parameters.append(domain)
 
-        if bool(category) and (category != 'None'):
-            query += " AND category=%s"
-            parameters.append(category)
-        
-        if bool(sub_category) and (sub_category != 'None'):
-            query += " AND sub_category=%s"
-            parameters.append(sub_category)
+            if bool(category) and (category != 'None'):
+                query += " AND category=%s"
+                parameters.append(category)
+            
+            if bool(sub_category) and (sub_category != 'None'):
+                query += " AND sub_category=%s"
+                parameters.append(sub_category)
 
-        query += " group by delivery_state_code, delivery_state"
+            query += " group by delivery_state_code, delivery_state"
         district_count = self.db_utility.execute_query(query, parameters)
 
         return district_count
@@ -1201,11 +1212,13 @@ class DataAccessLayer:
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
         table_name = constant.MONTHLY_DISTRICT_TABLE
-        if (category):
-            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
-        if(sub_category):
+        aggregate_value = "'AGG'"
+
+        query = ''
+
+        if category or sub_category:
             table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
-        query = f'''
+            query = f'''
             SELECT 
                 delivery_state_code AS delivery_state_code,
                 delivery_state AS delivery_state,
@@ -1214,30 +1227,45 @@ class DataAccessLayer:
                 SUM(intradistrict_orders) AS intradistrict_orders,
                 SUM(intrastate_orders) AS intrastate_orders
             FROM {table_name}
-            WHERE 
-
-                ((order_year*100) + order_month) between 
+                 WHERE 
+                    ((order_year*100) + order_month) between 
                     (({params.start_year}*100) + {params.start_month}) and
                     (({params.end_year}*100) + {params.end_month}) and
-                domain_name = 'Retail' and sub_domain = 'B2C'
-        '''
-        conditions = []
+                    sub_domain = 'B2C'
+                    and delivery_state <> 'AGG'
+                    and delivery_district <> 'AGG'
+                    and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
+                    and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
+                    {"upper(delivery_state) = upper('"+state+"')" if state else ''}
+                GROUP BY delivery_state_code, delivery_state, delivery_district
+            '''
+        else:
+            query = f'''
+                SELECT 
+                    delivery_state_code AS delivery_state_code,
+                    delivery_state AS delivery_state,
+                    delivery_district AS delivery_district,
+                    SUM(total_orders_delivered) AS total_orders_delivered,
+                    SUM(intradistrict_orders) AS intradistrict_orders,
+                    SUM(intrastate_orders) AS intrastate_orders
+                FROM {table_name}
+                WHERE 
 
-        if state:
-            conditions.append(f"AND upper(delivery_state) = upper('{state}')")
-        
-        if bool(category) and (category != 'None'):
-            conditions.append(f" AND category='{category}'")
+                    ((order_year*100) + order_month) between 
+                        (({params.start_year}*100) + {params.start_month}) and
+                        (({params.end_year}*100) + {params.end_month}) and
+                    domain_name = 'Retail' and sub_domain = 'B2C'
+            '''
+            conditions = []
 
-        if bool(sub_category) and (sub_category != 'None'):
-            conditions.append(f" AND sub_category='{sub_category}'")
-
-        conditions_str = ' '.join(conditions)
-        query = query + conditions_str + '''
-            GROUP BY delivery_state_code, delivery_state, delivery_district 
-            ORDER BY delivery_state_code, total_orders_delivered DESC
-        '''
-        
+            if state:
+                conditions.append(f"AND upper(delivery_state) = upper('{state}')")
+            
+            conditions_str = ' '.join(conditions)
+            query = query + conditions_str + '''
+                GROUP BY delivery_state_code, delivery_state, delivery_district 
+                ORDER BY delivery_state_code, total_orders_delivered DESC
+            '''
         aggregated_df = self.db_utility.execute_query(query)
 
         return aggregated_df
@@ -1274,92 +1302,61 @@ class DataAccessLayer:
         return df
 
 
-    # @log_function_call(ondcLogger)
-    # def fetch_overall_active_sellers_statedata(self, start_date, end_date,
-    #                                            category=None, sub_category=None,
-    #                                            domain='Retail', state=None):
-    #     table_name = constant.MONTHLY_PROVIDERS
-    #     params = DotDict(self.get_query_month_parameters(start_date, end_date))
-    #     query = f"""
-    #         SELECT 
-    #             seller_state AS seller_state,
-    #             seller_state_code AS seller_state_code,
-    #             -- seller_district AS seller_district,
-    #             COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
-    #         FROM 
-    #             {table_name}
-    #         WHERE
-    #             (order_year > %s OR (order_year = %s AND order_month >= %s))
-    #             AND (order_year < %s OR (order_year = %s AND order_month <= %s))
-    #             AND seller_state <> ''
-    #             AND seller_state is not null
-    #             AND seller_district is not null
-    #             AND seller_district <> ''
-    #     """
-
-    #     parameters = [params.start_year, params.start_year, params.start_month,
-    #                   params.end_year, params.end_year, params.end_month]
-
-    #     conditions = []
-
-    #     if state:
-    #         conditions.append("AND upper(seller_state) = upper(%s)")
-    #         parameters.append(state)
-        
-    #     # if bool(category) and (category != 'None'):
-    #     #     conditions.append(" AND category=%s")
-    #     #     parameters.append(category)
-    #     # if bool(sub_category) and (sub_category != 'None'):
-    #     #     conditions.append(" AND sub_category=%s")
-    #     #     parameters.append(sub_category)
-
-    #     conditions_str = ' '.join(conditions)
-    #     query = query + conditions_str + " GROUP BY  seller_state, seller_state_code"
-
-    #     df = self.db_utility.execute_query(query, parameters)
-        
-    #     return df
-
-
     @log_function_call(ondcLogger)
     def fetch_cumulative_orders_statewise_summary(self, start_date, end_date,
                                                   category=None, sub_category=None, domain='Retail', state=None):
         table_name = constant.MONTHLY_DISTRICT_TABLE
-        if (category):
-            table_name = constant.CAT_MONTHLY_DISTRICT_TABLE
-        if(sub_category):
-            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
         
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
+        query = ''
+        aggregate_value = "'AGG'"
 
-        query = f"""
+        if category or sub_category:
+            table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+            query = f"""
                 SELECT 
-                    delivery_state_code AS delivery_state_code,
-                    delivery_state AS delivery_state,
-                    SUM(total_orders_delivered) AS total_orders,
-                    SUM(intradistrict_orders) AS intradistrict_orders,
-                    SUM(intrastate_orders) AS intrastate_orders
-                FROM {table_name}
-                WHERE
-                    ((order_year*100)+order_month) between 
-                        (({params.start_year} * 100) + {params.start_month}) 
-                            and 
-                        (({params.end_year} * 100) + {params.end_month})
-                        and domain_name = 'Retail' and sub_domain = 'B2C'
+                        delivery_state_code AS delivery_state_code,
+                        delivery_state AS delivery_state,
+                        SUM(total_orders_delivered) AS total_orders,
+                        SUM(intradistrict_orders) AS intradistrict_orders,
+                        SUM(intrastate_orders) AS intrastate_orders
+                    FROM {table_name}
+                    where
+                        ((order_year*100)+order_month) between 
+                            (({params.start_year} * 100) + {params.start_month}) 
+                                and 
+                            (({params.end_year} * 100) + {params.end_month})
+                        and sub_domain = 'B2C'
+                        and delivery_state <> 'AGG'
+                        and delivery_district <> 'AGG'
+                        and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
+                        and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
+                       {"upper(delivery_state) = upper('"+state+"')" if state else ''}
+                     GROUP BY delivery_state_code, delivery_state ORDER BY total_orders DESC
             """
+        else:
 
-        if state:
-            query += f" AND upper(delivery_state) = upper('{state}')"
+            query = f"""
+                    SELECT 
+                        delivery_state_code AS delivery_state_code,
+                        delivery_state AS delivery_state,
+                        SUM(total_orders_delivered) AS total_orders,
+                        SUM(intradistrict_orders) AS intradistrict_orders,
+                        SUM(intrastate_orders) AS intrastate_orders
+                    FROM {table_name}
+                    WHERE
+                        ((order_year*100)+order_month) between 
+                            (({params.start_year} * 100) + {params.start_month}) 
+                                and 
+                            (({params.end_year} * 100) + {params.end_month})
+                            and domain_name = 'Retail' and sub_domain = 'B2C'
+                """
 
-        if bool(category) and (category != 'None'):
-            query += f" AND upper(category) = upper('{category}')"
+            if state:
+                query += f" AND upper(delivery_state) = upper('{state}')"
 
-        if sub_category:
-            query += f" AND upper(sub_category) = upper('{sub_category}')"
+            query  += ' GROUP BY delivery_state_code, delivery_state ORDER BY total_orders DESC'
 
-        query  += ' GROUP BY delivery_state_code, delivery_state ORDER BY total_orders DESC'
-
-        
         aggregated_df = self.db_utility.execute_query(query)
         return aggregated_df
 
@@ -1367,54 +1364,32 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_category_penetration_orders(self, start_date, end_date, category=None, sub_category=None, domain='Retail',
                                           state=None):
-        selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
-        start_month = datetime.strptime(start_date, '%Y-%m-%d').month
-        end_month = datetime.strptime(end_date, '%Y-%m-%d').month
-
+        params = DotDict(self.get_query_month_parameters(start_date, end_date))
+        parameters = []
+        table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+        aggregated_value= "'AGG'"
+        
         query = f'''
-            (
-                SELECT 
-                COALESCE(category, 'Missing') AS category,
-                'ALL' AS sub_category,
-                SUM(total_orders_delivered) AS order_demand  
-            FROM 
-                {selected_view}
-            WHERE 
-                 order_month BETWEEN {start_month} AND {end_month} 
-            '''
-
-        if bool(category) and (category != 'None'):
-            query += f" And category='{category}'"
-        
-        if state:
-            query += f" AND upper(delivery_state) = upper('{state}')"
-
-        query += f'''
-            group by 1
-            ) union all (
-            SELECT 
-                COALESCE(category, 'Missing') AS category,
-                COALESCE(sub_category, 'Missing') AS sub_category,
-                SUM(total_orders_delivered) AS order_demand  
-            FROM 
-                {selected_view} 
-            WHERE 
-                order_month BETWEEN {start_month} AND {end_month} 
-        '''
-                
-        if bool(category) and (category != 'None'):
-            query += f" And category='{category}'"
-        if bool(sub_category) and (sub_category != 'None'):
-            query += f" And sub_category='{sub_category}'"
-        
-        if state:
-            query += f" AND upper(delivery_state) = upper('{state}')"
-
-        query += ' GROUP BY 1,2)'
-        
-        df = self.db_utility.execute_query(query)
-        
+                select 
+                    category, 
+                    case 
+                        when sub_category = {aggregated_value} then 'ALL' 
+                        else sub_category 
+                    end as sub_category, 
+                    max(total_orders_delivered) as order_demand
+                from 
+                    {table_name}
+                where ((order_year*100)+order_month) =  (({params.end_year}*100)+{params.end_month})
+                    and upper(category) { " = upper('"+ category +"') " if category else ' <> ' + aggregated_value}
+                    { (" and upper(sub_category) = upper('" + sub_category + "') ") if sub_category else ' '}
+                    and upper(seller_state) = {aggregated_value} 
+                    and not category in ('Undefined', '')  
+                    and seller_state <> ''
+                group by 1,2
+                order by category
+                '''
+        df = self.db_utility.execute_query(query, parameters)
         return df
 
     @log_function_call(ondcLogger)
@@ -1445,6 +1420,7 @@ class DataAccessLayer:
                 group by 1,2
                 order by category
                 '''
+
         df = self.db_utility.execute_query(query, parameters)
 
         return df
