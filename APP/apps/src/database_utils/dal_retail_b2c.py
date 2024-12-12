@@ -561,37 +561,57 @@ class DataAccessLayer:
         if(sub_category):
             selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
         parameters = self.get_query_month_parameters(start_date, end_date)
+        aggregate_value = "'AGG'"
+        query = ''
 
-        query = f"""
-            SELECT 
-                order_month AS order_month,
-                order_year AS order_year,
-                SUM(total_orders_delivered) AS total_orders_delivered
-            FROM 
-                {selected_view}
-            WHERE 
-                (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
-                AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
-                AND domain_name = 'Retail' and sub_domain = 'B2C'
-        """
+        if category or sub_category:
+            query = f"""
+                SELECT 
+                    order_month AS order_month,
+                    order_year AS order_year,
+                    SUM(total_orders_delivered) AS total_orders_delivered
+                from 
+                    {constant.SUB_CAT_MONTHLY_DISTRICT_TABLE}
+                where
+                    ((order_year*100) + order_month) between 
+                        (({parameters['start_year']} * 100) + {parameters['start_month']}) 
+                        and 
+                        (({parameters['end_year']} * 100) + {parameters['end_month']})
 
-        if state:
-            query += " AND delivery_state = %(state)s"
-            parameters['state'] = state
-        
-        if bool(category) and (category != 'None'):
-            query += f" AND category='{category}'"
+                    and sub_domain = 'B2C'
+                    and upper(delivery_state) = upper({f"'{state}'" if state else aggregate_value})
+                    and delivery_district = 'AGG'
+                    and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
+                    and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
+                group by 1,2
+            """
+        else:
 
-        if bool(sub_category) and (sub_category != 'None'):
-            query += f" AND sub_category='{sub_category}'"
+
+            query = f"""
+                SELECT 
+                    order_month AS order_month,
+                    order_year AS order_year,
+                    SUM(total_orders_delivered) AS total_orders_delivered
+                FROM 
+                    {selected_view}
+                WHERE 
+                    (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
+                    AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
+                    AND domain_name = 'Retail' and sub_domain = 'B2C'
+            """
+
+            if state:
+                query += " AND delivery_state = %(state)s"
+                parameters['state'] = state
 
 
-        query += """
-            GROUP BY 
-                order_month, order_year 
-            ORDER BY 
-                order_year, order_month
-        """
+            query += """
+                GROUP BY 
+                    order_month, order_year 
+                ORDER BY 
+                    order_year, order_month
+            """
 
         df = self.db_utility.execute_query(query, parameters)
         return df
@@ -686,79 +706,68 @@ class DataAccessLayer:
                                           sub_category=None, domain='Retail', state=None):
 
         selected_view = constant.MONTHLY_DISTRICT_TABLE
-        if (category):
-            selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
-        if(sub_category):
-            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
-        query_template = f"""
-            WITH 
-            TopDistricts AS (
-                SELECT 
-                    delivery_district,
-                    SUM(total_orders_delivered) AS total_order_demand
-                FROM {selected_view}
-                WHERE ((order_year*100) + order_month) between 
-                            (({params.start_year}*100)+{params.start_month}) and 
-                            (({params.end_year}*100) + {params.end_month})
-                      AND delivery_district <> '' 
-                      AND delivery_district IS NOT NULL
-                      AND delivery_state IS NOT NULL 
-                      AND delivery_state <> ''
-                      and domain_name = 'Retail' and sub_domain = 'B2C'
+        query = ''
+
+        if category or sub_category:
+            query = f""""""
+        else:
+            query = f"""
+                WITH 
+                TopDistricts AS (
+                    SELECT 
+                        delivery_district,
+                        SUM(total_orders_delivered) AS total_order_demand
+                    FROM {selected_view}
+                    WHERE ((order_year*100) + order_month) between 
+                                (({params.start_year}*100)+{params.start_month}) and 
+                                (({params.end_year}*100) + {params.end_month})
+                        AND delivery_district <> '' 
+                        AND delivery_district IS NOT NULL
+                        AND delivery_state IS NOT NULL 
+                        AND delivery_state <> ''
+                        and domain_name = 'Retail' and sub_domain = 'B2C'
+                """
+
+            if state:
+                query += f"AND upper(delivery_state) = upper('{state}')"
+            
+            query += f"""
+                    GROUP BY delivery_district
+                    ORDER BY total_order_demand DESC
+                    LIMIT 3
+                ),
+                FinalResult AS (
+                    SELECT
+                        foslm.order_month AS order_month,
+                        foslm.order_year AS order_year,
+                        td.delivery_district AS delivery_district,
+                        COALESCE(SUM(foslm.total_orders_delivered), 0) AS total_orders_delivered
+                    FROM TopDistricts td
+                    LEFT JOIN {selected_view} foslm 
+                        ON foslm.delivery_district = td.delivery_district 
+                    WHERE 
+                        ((foslm.order_year*100) + foslm.order_month) between 
+                                (({params.start_year}*100)+{params.start_month}) and 
+                                (({params.end_year}*100) + {params.end_month})
+                        AND td.delivery_district <> '' 
+                        AND upper(td.delivery_district) <> upper('undefined') 
+                        AND td.delivery_district IS NOT NULL 
+                        and foslm.domain_name = 'Retail' and foslm.sub_domain='B2C' """
+
+            if state:
+                query+= f"AND upper(foslm.delivery_state) = upper('{state}')"
+            
+            query+= """
+                    GROUP BY foslm.order_month, foslm.order_year, td.delivery_district
+                    ORDER BY foslm.order_year, foslm.order_month, total_orders_delivered DESC
+                )
+                SELECT * FROM FinalResult;
             """
 
-        if state:
-            query_template += f"AND upper(delivery_state) = upper('{state}')"
-        
-        if bool(category) and (category != 'None'):
-            query_template += f" AND upper(category)=upper('{category}')"
 
-        if bool(sub_category) and (sub_category != 'None'):
-            query_template += f" AND upper(sub_category)=upper('{sub_category}')"
-        
-        query_template += f"""
-                GROUP BY delivery_district
-                ORDER BY total_order_demand DESC
-                LIMIT 3
-            ),
-            FinalResult AS (
-                SELECT
-                    foslm.order_month AS order_month,
-                    foslm.order_year AS order_year,
-                    td.delivery_district AS delivery_district,
-                    COALESCE(SUM(foslm.total_orders_delivered), 0) AS total_orders_delivered
-                FROM TopDistricts td
-                LEFT JOIN {selected_view} foslm 
-                    ON foslm.delivery_district = td.delivery_district 
-                WHERE 
-                      ((foslm.order_year*100) + foslm.order_month) between 
-                            (({params.start_year}*100)+{params.start_month}) and 
-                            (({params.end_year}*100) + {params.end_month})
-                      AND td.delivery_district <> '' 
-                      AND upper(td.delivery_district) <> upper('undefined') 
-                      AND td.delivery_district IS NOT NULL 
-                      and foslm.domain_name = 'Retail' and foslm.sub_domain='B2C' """
-        
-        if bool(category) and (category != 'None'):
-            query_template+= f" AND upper(foslm.category)=upper('{category}')"
-
-        if bool(sub_category) and (sub_category != 'None'):
-            query_template+= f" AND upper(foslm.sub_category)=upper('{sub_category}')"
-
-        if state:
-            query_template+= f"AND upper(foslm.delivery_state) = upper('{state}')"
-        
-        query_template+= """
-                GROUP BY foslm.order_month, foslm.order_year, td.delivery_district
-                ORDER BY foslm.order_year, foslm.order_month, total_orders_delivered DESC
-            )
-            SELECT * FROM FinalResult;
-        """
-
-
-        df = self.db_utility.execute_query(query_template)
+        df = self.db_utility.execute_query(query)
         return df
 
     @log_function_call(ondcLogger)
