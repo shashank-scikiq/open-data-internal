@@ -44,7 +44,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
   }
 
 
-  activeView: any = 'chloro';
+  activeView: any = 'both';
   viewsOptions: any = [
     {
       type: 'chloro',
@@ -163,7 +163,15 @@ export class LogisticsSearchDetailComponent implements OnInit {
           this.getMapData();
         } else if (val?.updatedFor && val.updatedFor == 'timeInterval') {
           this.loadingData = true;
-          this.prepareMapData();
+          if (this.logisticSearchService.pincodeLevelView.value) {
+            (async () => {
+
+              await this.preparePincodeLevelViewData();
+              this.loadingData = false;
+            })()
+          } else {
+            this.prepareMapData();
+          }
         } else if (val?.updatedFor == 'city') {
           this.loadingData = true;
           this.getMapData();
@@ -178,13 +186,13 @@ export class LogisticsSearchDetailComponent implements OnInit {
         this.cityData = null;
         this.rawData = null;
         this.logisticSearchService.getCityWiseData().subscribe(
-          (response: any) => {
+          async (response: any) => {
             this.rawData = response.data;
-            this.preparePincodeLevelViewData();
+            await this.preparePincodeLevelViewData();
+            this.loadingData = false;
           },
           (error: Error) => {
             console.log(error);
-            this.loadingData = false;
           }
         )
       }
@@ -198,7 +206,6 @@ export class LogisticsSearchDetailComponent implements OnInit {
           },
           (error: Error) => {
             console.log(error);
-            this.loadingData = false;
           }
         )
       }
@@ -212,7 +219,6 @@ export class LogisticsSearchDetailComponent implements OnInit {
           },
           (error: Error) => {
             console.log(error);
-            this.loadingData = false;
           }
         )
       }
@@ -222,7 +228,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
     let data = this.rawData;
 
     if(!data || !Object.keys(data).length) {
-      this.isLoading = false;
+      // this.isLoading = false;
       return;
     }
 
@@ -232,19 +238,37 @@ export class LogisticsSearchDetailComponent implements OnInit {
 
     const cityLevelData: any = {};
     const pincodeData: any = Object.entries(data.mapData);
+    const insightData: any = Object.entries(
+      data.insightData[this.activeInsight.type][this.logisticSearchService.activeTimeInterval.value]
+    );
+    const iconData: any = {}
+
 
     for (const [pincode, timeData] of pincodeData) {
       const data = timeData[this.logisticSearchService.activeTimeInterval.value];
       cityLevelData[pincode] = {
-        "Assigned percentage": `${parseFloat(data.assigned_rate)}%`,
-        "Confirm percentage": `${parseFloat(data.conversion_rate)}%`,
-        "Search count": data.searched_data
+        "Search count": data?.searched_data ?? 'No Data',
+        "Confirm percentage": `${parseFloat(data?.conversion_rate) ?? 0}%`,
+        "Assigned percentage": `${parseFloat(data?.assigned_rate ?? 0)}%`,
       };
 
-      if (maxSearchCount < data.searched_data) maxSearchCount = data.searched_data;
-      if (maxConfirmPercentage < parseFloat(data.conversion_rate)) maxConfirmPercentage = parseFloat(data.conversion_rate);
+      if (data?.searched_data && maxSearchCount < data.searched_data) 
+        maxSearchCount = data.searched_data;
+
+      if (data?.conversion_rate && maxConfirmPercentage < parseFloat(data.conversion_rate)) 
+        maxConfirmPercentage = parseFloat(data.conversion_rate);
     }
-    this.cityData = cityLevelData;
+    
+    if (insightData) {
+      for (const [pincode, timeData] of insightData) {
+        iconData[pincode] = {
+          "Search count": timeData?.searched_data ?? 'No Data',
+          "Confirm percentage": `${parseFloat(timeData?.conversion_rate) ?? 0}%`,
+          "Assigned percentage": `${parseFloat(timeData?.assigned_rate ?? 0)}%`,
+        };
+      }
+    }
+    this.cityData = {mapData: cityLevelData, iconData };
 
     this.legendConfigData = {
       ...this.legendConfigData,
@@ -258,7 +282,6 @@ export class LogisticsSearchDetailComponent implements OnInit {
       maxBubbleData: maxConfirmPercentage
     }
 
-    this.loadingData = false;
   }
 
   async prepareMapData() {
@@ -290,8 +313,12 @@ export class LogisticsSearchDetailComponent implements OnInit {
             'Assigned percentage': `${item.total_assigned_percentage}%`
           };
         }
-        if (Number(maxSearchCount) < Number(item.total_searches)) maxSearchCount = item.total_searches
-        if (Number(maxConfirmPercentage) < Number(item.total_conversion_percentage)) maxConfirmPercentage = item.total_conversion_percentage
+        if (Number(maxSearchCount) < Number(item.total_searches)) 
+          maxSearchCount = item.total_searches;
+
+        if (Number(maxConfirmPercentage) < Number(item.total_conversion_percentage)) 
+          maxConfirmPercentage = item.total_conversion_percentage;
+
         return acc;
       }, {});
 
@@ -306,8 +333,12 @@ export class LogisticsSearchDetailComponent implements OnInit {
           'Confirm percentage': `${item.total_conversion_percentage}%`,
           'Assigned percentage': `${item.total_assigned_percentage}%`
         };
-        if (Number(maxSearchCount) < Number(item.total_searches)) maxSearchCount = item.total_searches
-        if (Number(maxConfirmPercentage) < Number(item.total_conversion_percentage)) maxConfirmPercentage = item.total_conversion_percentage
+        if (Number(maxSearchCount) < Number(item.total_searches)) 
+          maxSearchCount = item.total_searches;
+
+        if (Number(maxConfirmPercentage) < Number(item.total_conversion_percentage)) 
+          maxConfirmPercentage = item.total_conversion_percentage;
+
         return acc;
       }, {});
     }

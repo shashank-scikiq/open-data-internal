@@ -1,4 +1,5 @@
-<div id="pincode-level-map" class="pincode-level-map-svg" [ngStyle]="{'visibility': isLoading ? 'hidden' : 'visible'}">
+<div id="pincode-level-map" class="pincode-level-map-svg" 
+    [ngStyle]="{'visibility': isLoading || updatingData ? 'hidden' : 'visible'}">
 
     <div class="map-control">
         <div class="btn" (click)="zoomIn()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Zoom in">

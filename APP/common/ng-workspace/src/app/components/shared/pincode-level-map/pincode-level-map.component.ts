@@ -4,6 +4,10 @@ import { StateCode } from '@openData/app/core/utils/map';
 import * as d3 from "d3";
 import * as topojson from 'topojson-client';
 
+interface Data {
+  mapData: any;
+  iconData?: any;
+}
 @Component({
   selector: 'app-pincode-level-map',
   templateUrl: './pincode-level-map.component.html',
@@ -20,7 +24,7 @@ export class PincodeLevelMapComponent implements OnChanges {
     maxChloroData: 0,
     maxBubbleData: 0
   }
-  @Input() mapData: any;
+  @Input() data: any;
 
   pincodeMapGeojson: any;
 
@@ -37,13 +41,15 @@ export class PincodeLevelMapComponent implements OnChanges {
   bubbleRadiusMethod: any;
   tooltip: any;
   selectedCity: any;
+  updatingData: boolean = false;
 
-  constructor(private logisticSearchService: LogisticSearchService) {}
-  
+  constructor(private logisticSearchService: LogisticSearchService) { }
+
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['mapData'] || changes['visualType']) {
+    if (changes['data'] || changes['visualType']) {
+      this.updatingData = true;
       this.initMap();
-    } 
+    }
   }
 
   // Zoom in method
@@ -71,12 +77,13 @@ export class PincodeLevelMapComponent implements OnChanges {
   }
 
   async initMap() {
-    if(!this.pincodeMapData || this.selectedCity != this.logisticSearchService.activeCity.value) {
+    this.updatingData = true;
+    if (!this.pincodeMapData || this.selectedCity != this.logisticSearchService.activeCity.value) {
       this.selectedCity = this.logisticSearchService.activeCity.value;
       this.pincodeMapData = await d3.json(`static/assets/data/map/pincode/${this.selectedCity.toLowerCase()}-pincodes.json`);
     }
     const element = document.getElementsByClassName('pincode-level-map-svg')[0];
-    
+
     this.width = element.clientWidth;
     this.height = element.clientHeight;
     this.resetMap();
@@ -106,74 +113,80 @@ export class PincodeLevelMapComponent implements OnChanges {
       .attr('stroke-width', 0.5)
       .attr('stroke', 'black')
 
-      this.updateMapWithData();
-  }
-
-  updateMapWithDat_1a() {
-    if(!this.mapData) return;
+    this.updateMapWithData();
   }
 
   updateMapWithData() {
-    if(!this.mapData) return;
+    if (!this.data?.mapData) {
+      this.updatingData = false;
+      return;
+    }
     let g = this.svg.selectAll('#pincodeGroup');
-    if (this.visualType == 'chloro' || this.visualType=='both') {
+    if (this.visualType == 'chloro' || this.visualType == 'both') {
       this.customColorRange = d3.scaleLinear()
         .domain([0, 1, this.configData.maxChloroData])
         .range(this.configData.chloroColorRange);
-  
+
       g.selectAll('path')
-      .style('fill', (d: any) => {
-        let data = this.mapData[d.properties.pincode];
-        return data ? this.customColorRange(
-            this.mapData[d.properties.pincode][this.configData.chloroDataKey]
-          ) :
-          this.configData.chloroColorRange[0]
-      })
-      .on('mouseover', (event: any, d: any) => {
-        const data = this.mapData[d.properties.pincode];
-        let htmlString = `<b>City:</b> ${this.selectedCity} <br> <b>Pincode:</b> ${d.properties.pincode} <br>` 
-        if (data) {
-          htmlString += Object.entries(data)
-          .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
-          .join('');
-        }
-        this.tooltip.style('opacity', 1)
-          .html(htmlString);
-      })
-      .on('mousemove', (event: any) => {
-        const svgElement: any = document.getElementById('pincode-level-map')?.getBoundingClientRect();
-  
-        // Adjust the position relative to the SVG element, not the whole page
-        const offsetX = event.clientX - svgElement.left;
-        const offsetY = event.clientY - svgElement.top;
-        this.tooltip.style('left', (offsetX + 5) + 'px')
-          .style('top', (offsetY - 28) + 'px');
-      })
-      .on('mouseout', () => {
-        this.tooltip.style('opacity', 0);
-      })
+        .style('fill', (d: any) => {
+          if (d.properties.pincode == "110039") {
+            console.log(this.data.mapData[d.properties.pincode])
+          }
+          let color = this.configData.chloroColorRange[0];
+          if (this.data.mapData[d.properties.pincode]) {
+            color = this.customColorRange(
+              this.data.mapData[d.properties.pincode][this.configData.chloroDataKey]
+            )
+          } else {
+            color = this.configData.chloroColorRange[0];
+          }
+          return color
+        })
+        .on('mouseover', (event: any, d: any) => {
+          let htmlString = `<b>City:</b> ${this.selectedCity} <br> <b>Pincode:</b> ${d.properties.pincode} <br>`
+          if (this.data.mapData[d.properties.pincode]) {
+            htmlString += Object.entries(this.data.mapData[d.properties.pincode])
+              .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
+              .join('');
+          }
+          this.tooltip.style('opacity', 1)
+            .html(htmlString);
+        })
+        .on('mousemove', (event: any) => {
+          const svgElement: any = document.getElementById('pincode-level-map')?.getBoundingClientRect();
+
+          // Adjust the position relative to the SVG element, not the whole page
+          const offsetX = event.clientX - svgElement.left;
+          const offsetY = event.clientY - svgElement.top;
+          this.tooltip.style('left', (offsetX + 5) + 'px')
+            .style('top', (offsetY - 28) + 'px');
+        })
+        .on('mouseout', () => {
+          this.tooltip.style('opacity', 0);
+        })
     }
-    
+
     if (this.visualType == 'bubble' || this.visualType == 'both') {
-
       this.bubbleRadiusMethod = d3.scaleSqrt()
-      .domain([0, this.configData.maxBubbleData])
-      .range([1, 12]);
-      
-      g.selectAll('path')
-      .each((d: any) => {
-        const centroid = this.mapProjectionResult[0](d3.geoCentroid(d));
-        let data = this.mapData[d.properties.pincode];
+        .domain([0, this.configData.maxBubbleData])
+        .range([1, 12]);
 
-        this.svg.select('#pincodeGroup').append('circle')
+      g.selectAll('path')
+        .each((d: any) => {
+          const centroid = this.mapProjectionResult[0](d3.geoCentroid(d));
+
+          this.svg.select('#pincodeGroup').append('circle')
             .attr('cx', centroid[0])
             .attr('cy', centroid[1])
             .attr('r', (el: any) => {
-              if(!(data && data[this.configData.bubbleDataKey])) {
+              if (
+                !(this.data.mapData[d.properties.pincode] && 
+                  this.data.mapData[d.properties.pincode][this.configData.bubbleDataKey])
+                ) {
                 return 1;
               }
               const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(
-                Number(data[this.configData.bubbleDataKey].slice(0,-1))
+                Number(this.data.mapData[d.properties.pincode][this.configData.bubbleDataKey].slice(0, -1))
               )));
               return radius;
             })
@@ -181,12 +194,11 @@ export class PincodeLevelMapComponent implements OnChanges {
             .attr('stroke', this.configData.bubbleColorRange[1])
             .attr('stroke-width', 0.5)
             .on('mouseover', (event: any) => {
-              const data = this.mapData[d.properties.pincode];
-              let htmlString = `<b>City:</b> ${this.selectedCity} <br> <b>Pincode:</b> ${d.properties.pincode} <br>` 
-              if (data) {
-                htmlString += Object.entries(data)
-                .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
-                .join('');
+              let htmlString = `<b>City:</b> ${this.selectedCity} <br> <b>Pincode:</b> ${d.properties.pincode} <br>`
+              if (this.data.mapData[d.properties.pincode]) {
+                htmlString += Object.entries(this.data.mapData[d.properties.pincode])
+                  .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
+                  .join('');
               }
               this.tooltip.style('opacity', 1)
                 .html(htmlString);
@@ -203,9 +215,44 @@ export class PincodeLevelMapComponent implements OnChanges {
             .on('mouseout', () => {
               this.tooltip.style('opacity', 0);
             });
-      })
+        })
     }
+    if (!this.data.iconData) {
+      this.updatingData = false;
+      return;
+    }
+    this.setIconContainer();
+  }
 
+  setIconContainer() {
+    let g = this.svg.selectAll('#pincodeGroup');
+
+    const iconWidth = 35;
+    const iconHeight = 35;
+
+    g.selectAll('path')
+      .each((d: any) => {
+        const centroid = this.mapProjectionResult[0](d3.geoCentroid(d));
+        const iconData = this.data?.iconData[d.properties.pincode];
+
+        if (!iconData) return;
+
+        this.svg.select('#pincodeGroup').append('foreignObject')
+          .attr('x', centroid[0] - iconWidth / 2 + 5)
+          .attr('y', centroid[1] - 40)
+          .attr('width', iconWidth)
+          .attr('height', iconHeight)
+          .attr('overflow', 'visible')
+          .attr('d', (data: any) => this.mapProjectionResult[1](data))
+          .html((i: any) => {
+            let iconClass = "pointer-icon fa-solid fa-person-biking";
+            return `<div class="pointer bounce">
+                  <i class="${iconClass}"></i>
+                  </div>
+                <div class="pulse"></div>`;
+          })
+      })
+      this.updatingData = false;
   }
 
   mapprojection(data: any) {
