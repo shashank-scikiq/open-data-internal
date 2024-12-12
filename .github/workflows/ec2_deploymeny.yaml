@@ -83,7 +83,7 @@ jobs:
           git pull origin dev_4
           docker stop od_internal
           docker rm od_internal
-          docker rmi OD_INTERNAL
+          docker rmi od_internal
           docker compose -f /home/shashank_daaslabs/git/open-data-internal/docker-compose.yaml up -d
           EOF
 
