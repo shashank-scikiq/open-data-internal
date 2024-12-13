@@ -619,14 +619,46 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_retail_overall_top_states_orders(self, start_date, end_date, category=None,
                                                sub_category=None, domain_name=None, state=None):
-        try:
-            selected_view = constant.MONTHLY_DISTRICT_TABLE
-            if (category):
-                selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
-            if(sub_category):
-                selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
-            parameters = self.get_query_month_parameters(start_date, end_date)
+        selected_view = constant.MONTHLY_DISTRICT_TABLE
+        
+        parameters = self.get_query_month_parameters(start_date, end_date)
 
+        query = ''
+
+        if category or sub_category:
+            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+            query = f'''
+                with TopStates as (
+                    SELECT 
+                        delivery_state, sum(total_orders_delivered)
+                    from {selected_view}
+                        where ((order_year*100) + order_month) between 
+                        (({parameters['start_year']}*100)+{parameters['start_month']}) and 
+                        (({parameters['end_year']}*100) + {parameters['end_month']})
+                        and not delivery_state in ('AGG', 'Missing', 'MISSING') 
+                        and delivery_state is not null
+                        and upper(category) = upper({f"'{category}'" if category else "'AGG'"})
+                        and upper(sub_category) = upper({f"'{sub_category}'" if sub_category else "'AGG'"})
+                        and delivery_district = 'AGG'
+                        and sub_domain = 'B2C'
+                    group by 1
+                        order by 2 desc limit 3
+                )
+                    SELECT order_month, order_year,
+                        delivery_state, 
+                    sum(total_orders_delivered)  as total_orders_delivered 
+                    from {selected_view}
+                        where ((order_year*100) + order_month) between 
+                        (({parameters['start_year']}*100)+{parameters['start_month']}) and 
+                        (({parameters['end_year']}*100) + {parameters['end_month']})
+                        and delivery_state in (select delivery_state from TopStates) 
+                        and upper(category) = upper({f"'{category}'" if category else "'AGG'"})
+                        and upper(sub_category) = upper({f"'{sub_category}'" if sub_category else "'AGG'"})
+                        and delivery_district = 'AGG'
+                        and sub_domain = 'B2C'
+                    group by 1, 2, 3
+                '''
+        else:
             query = f'''
                 WITH TopStates AS (
                     SELECT 
@@ -693,13 +725,10 @@ class DataAccessLayer:
                 )
                 SELECT * FROM FinalResult 
             '''
-            df = self.db_utility.execute_query(query, parameters)
-           
-            return df
-
-        except Exception as e:
-            ondcLogger.error(str(e))
-            raise
+        print(query)
+        print(parameters)
+        df = self.db_utility.execute_query(query, parameters)
+        return df
 
     @log_function_call(ondcLogger)
     def fetch_overall_top_district_orders(self, start_date, end_date, category=None,
@@ -711,7 +740,35 @@ class DataAccessLayer:
         query = ''
 
         if category or sub_category:
-            query = f""""""
+            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+            query = f'''
+                with TopStates as (
+                    SELECT 
+                        delivery_district, sum(total_orders_delivered)
+                    from {selected_view}
+                        where ((order_year*100) + order_month) between 
+                        (({params['start_year']}*100)+{params['start_month']}) and 
+                        (({params['end_year']}*100) + {params['end_month']})
+                        and not delivery_district in ('AGG', 'Missing', 'MISSING')  
+                        and upper(category) = upper({f"'{category}'" if category else "'AGG'"})
+                        and upper(sub_category) = upper({f"'{sub_category}'" if sub_category else "'AGG'"})
+                        and sub_domain = 'B2C'
+                    group by 1
+                        order by 2 desc limit 3
+                )
+                    SELECT order_month, order_year,
+                        delivery_district, 
+                    sum(total_orders_delivered)  as total_orders_delivered 
+                    from {selected_view}
+                        where ((order_year*100) + order_month) between 
+                        (({params['start_year']}*100)+{params['start_month']}) and 
+                        (({params['end_year']}*100) + {params['end_month']})
+                        and delivery_district in (select delivery_district from TopStates) 
+                        and upper(category) = upper({f"'{category}'" if category else "'AGG'"})
+                        and upper(sub_category) = upper({f"'{sub_category}'" if sub_category else "'AGG'"})
+                        and sub_domain = 'B2C'
+                    group by 1, 2, 3
+                '''
         else:
             query = f"""
                 WITH 
@@ -807,79 +864,121 @@ class DataAccessLayer:
                                                    domain_name=None, state=None):
 
         selected_view = constant.MONTHLY_DISTRICT_TABLE
-        if (category):
-            selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
-        if(sub_category):
-            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
 
-        base_query = f"""
-            WITH TopStates AS (
-                SELECT 
-                    COALESCE(delivery_state, 'MISSING') AS delivery_state,
-                    SUM(total_orders_delivered) AS total_orders_delivered,
-                    SUM(intrastate_orders) AS intrastate_orders_total,
-                    ROUND(SUM(intrastate_orders::numeric) / NULLIF(SUM(total_orders_delivered::numeric), 0), 2) * 100 AS intrastate_orders_percentage
-                FROM 
-                    {selected_view}
-                WHERE
-                    ((order_year * 100) + order_month) between
-                        (({params.start_year} * 100) + {params.start_month})
-                            and 
-                        (({params.end_year} * 100) + {params.end_month})
-                    AND delivery_state != 'MISSING'
-                    AND delivery_state is not NULL
-                    AND domain_name = 'Retail' and sub_domain = 'B2C'
-        """
-        
-        if bool(category) and (category != 'None'):
-            base_query += f" AND upper(category)=upper('{category}')"
+        base_query = ''
 
-        if bool(sub_category) and (sub_category != 'None'):
-            base_query += f" AND upper(sub_category)=upper('{sub_category}')"
+        if category or sub_category:
+            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+            base_query = f'''
+                with TopStates as (
+                    SELECT 
+                        COALESCE(delivery_state, 'MISSING') AS delivery_state,
+                        SUM(total_orders_delivered) AS total_orders_delivered,
+                        SUM(intrastate_orders) AS intrastate_orders_total,
+                        ROUND(SUM(intrastate_orders::numeric) / NULLIF(SUM(total_orders_delivered::numeric), 0), 2) * 100 AS intrastate_orders_percentage
+                    from {selected_view}
+                        where ((order_year*100) + order_month) between 
+                            (({params['start_year']}*100)+{params['start_month']}) and 
+                            (({params['end_year']}*100) + {params['end_month']})
+                            and not delivery_state in ('AGG', 'Missing', 'MISSING') 
+                            and delivery_state is not null
+                            and upper(category) = upper({f"'{category}'" if category else "'AGG'"})
+                            and upper(sub_category) = upper({f"'{sub_category}'" if sub_category else "'AGG'"})
+                            and delivery_district = 'AGG'
+                            and sub_domain = 'B2C'
+                    GROUP BY 
+                        delivery_state
+                    HAVING SUM(total_orders_delivered) >= 1
+                    ORDER BY 
+                        intrastate_orders_percentage DESC,
+                        delivery_state ASC
+                    LIMIT 3
+                ), FinalResult as (
+                    SELECT order_month AS order_month,
+                        om.order_year AS order_year,
+                        COALESCE(om.delivery_state, 'MISSING') AS delivery_state,
+                        SUM(om.total_orders_delivered) AS total_orders_delivered,
+                        ROUND(SUM(om.intrastate_orders::numeric) / NULLIF(SUM(om.total_orders_delivered::numeric), 0), 2) * 100 AS intrastate_orders_percentage
+                    from {selected_view} om inner join TopStates ts on  om.delivery_state=ts.delivery_state
+                        where ((om.order_year*100) + om.order_month) between 
+                            (({params['start_year']}*100)+{params['start_month']}) and 
+                            (({params['end_year']}*100) + {params['end_month']})
+                            and upper(om.category) = upper({f"'{category}'" if category else "'AGG'"})
+                            and upper(om.sub_category) = upper({f"'{sub_category}'" if sub_category else "'AGG'"})
+                            and om.delivery_district = 'AGG'
+                            and om.sub_domain = 'B2C'
+                    GROUP BY
+                        om.order_month, om.order_year, om.delivery_state
+                    ORDER BY
+                        om.order_year, om.order_month, om.intrastate_orders_percentage DESC,
+                        om.delivery_state ASC
+                )
+                select * from FinalResult
+                    where intrastate_orders_percentage > 0
+                '''
+        else:
 
-        if state:
-            base_query += f" AND upper(delivery_state) = upper('{state}')"
+            base_query = f"""
+                WITH TopStates AS (
+                    SELECT 
+                        COALESCE(delivery_state, 'MISSING') AS delivery_state,
+                        SUM(total_orders_delivered) AS total_orders_delivered,
+                        SUM(intrastate_orders) AS intrastate_orders_total,
+                        ROUND(SUM(intrastate_orders::numeric) / NULLIF(SUM(total_orders_delivered::numeric), 0), 2) * 100 AS intrastate_orders_percentage
+                    FROM 
+                        {selected_view}
+                    WHERE
+                        ((order_year * 100) + order_month) between
+                            (({params.start_year} * 100) + {params.start_month})
+                                and 
+                            (({params.end_year} * 100) + {params.end_month})
+                        AND delivery_state != 'MISSING'
+                        AND delivery_state is not NULL
+                        AND domain_name = 'Retail' and sub_domain = 'B2C'
+            """
+            if state:
+                base_query += f" AND upper(delivery_state) = upper('{state}')"
 
-        base_query += f"""
-                GROUP BY 
-                    delivery_state
-                HAVING SUM(total_orders_delivered) >= 1
-                ORDER BY 
-                    intrastate_orders_percentage DESC,
-                    delivery_state ASC
-                LIMIT 3
-            ),
-            FinalResult AS (
-                SELECT 
-                    om.order_month AS order_month,
-                    om.order_year AS order_year,
-                    COALESCE(om.delivery_state, 'MISSING') AS delivery_state,
-                    SUM(om.total_orders_delivered) AS total_orders_delivered,
-                    ROUND(SUM(om.intrastate_orders::numeric) / NULLIF(SUM(om.total_orders_delivered::numeric), 0), 2) * 100 AS intrastate_orders_percentage
-                FROM 
-                    {selected_view} om
-                INNER JOIN 
-                    TopStates ts ON COALESCE(om.delivery_state, 'MISSING') = ts.delivery_state
-                WHERE 
-                    ((om.order_year * 100) + om.order_month) between
-                        (({params.start_year} * 100) + {params.start_month})
-                            and 
-                        (({params.end_year} * 100) + {params.end_month})
-                    and om.domain_name = 'Retail' and om.sub_domain = 'B2C'
-        """
+            base_query += f"""
+                    GROUP BY 
+                        delivery_state
+                    HAVING SUM(total_orders_delivered) >= 1
+                    ORDER BY 
+                        intrastate_orders_percentage DESC,
+                        delivery_state ASC
+                    LIMIT 3
+                ),
+                FinalResult AS (
+                    SELECT 
+                        om.order_month AS order_month,
+                        om.order_year AS order_year,
+                        COALESCE(om.delivery_state, 'MISSING') AS delivery_state,
+                        SUM(om.total_orders_delivered) AS total_orders_delivered,
+                        ROUND(SUM(om.intrastate_orders::numeric) / NULLIF(SUM(om.total_orders_delivered::numeric), 0), 2) * 100 AS intrastate_orders_percentage
+                    FROM 
+                        {selected_view} om
+                    INNER JOIN 
+                        TopStates ts ON COALESCE(om.delivery_state, 'MISSING') = ts.delivery_state
+                    WHERE 
+                        ((om.order_year * 100) + om.order_month) between
+                            (({params.start_year} * 100) + {params.start_month})
+                                and 
+                            (({params.end_year} * 100) + {params.end_month})
+                        and om.domain_name = 'Retail' and om.sub_domain = 'B2C'
+            """
 
-        if state:
-            base_query += f" AND upper(om.delivery_state) = upper('{state}')"
-        
-        if bool(category) and (category != 'None'):
-            base_query += f" AND upper(om.category)=upper('{category}')"
+            if state:
+                base_query += f" AND upper(om.delivery_state) = upper('{state}')"
+            
+            if bool(category) and (category != 'None'):
+                base_query += f" AND upper(om.category)=upper('{category}')"
 
-        if bool(sub_category) and (sub_category != 'None'):
-            base_query += f" AND upper(om.sub_category)=upper('{sub_category}')"
+            if bool(sub_category) and (sub_category != 'None'):
+                base_query += f" AND upper(om.sub_category)=upper('{sub_category}')"
 
-        base_query += """
+            base_query += """
                 GROUP BY 
                     om.order_month, om.order_year, om.delivery_state
                 ORDER BY 
@@ -889,6 +988,7 @@ class DataAccessLayer:
             select * from FinalResult 
             where intrastate_orders_percentage > 0
         """
+        print(base_query)
         df = self.db_utility.execute_query(base_query)
         return df
 
@@ -896,81 +996,130 @@ class DataAccessLayer:
     def fetch_overall_top_district_hyperlocal_orders(self, start_date, end_date, category=None, sub_category=None,
                                                      domain_name=None, state=None):
         selected_view = constant.MONTHLY_DISTRICT_TABLE
-        if (category):
-            selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
-        if(sub_category):
-            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
 
         parameters = self.get_query_month_parameters(start_date, end_date)
 
-        base_query = f"""
-            WITH TopDistricts AS (
-                SELECT 
-                    delivery_district,
-                    SUM(total_orders_delivered) AS total_order_demand,
-                    SUM(intradistrict_orders) AS intradistrict_orders,
-                    ROUND((SUM(intradistrict_orders::numeric) / NULLIF(SUM(total_orders_delivered::numeric), 0)), 2) * 100 AS intradistrict_percentage
-                FROM 
-                    {selected_view}
-                WHERE 
-                    ((order_year * 100) + order_month) between
-                        (({parameters['start_year']} * 100) + {parameters['start_month']})
-                            and 
-                        (({parameters['end_year']} * 100) + {parameters['end_month']})
-                    AND delivery_district <> '' AND UPPER(delivery_district) <> 'UNDEFINED'
-                    AND delivery_district IS NOT NULL
-                    AND delivery_district <> ''
-                    AND domain_name = 'Retail' 
-                    AND sub_domain = 'B2C'
-        """
+        if category or sub_category:
+            selected_view = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+            base_query = f'''
+                with TopStates as (
+                    SELECT 
+                        COALESCE(delivery_district, 'MISSING') AS delivery_district,
+                        SUM(total_orders_delivered) AS total_orders_delivered,
+                        SUM(intrastate_orders) AS intrastate_orders_total,
+                        ROUND(SUM(intrastate_orders::numeric) / NULLIF(SUM(total_orders_delivered::numeric), 0), 2) * 100 AS intrastate_orders_percentage
+                    from {selected_view}
+                        where ((order_year*100) + order_month) between 
+                            (({parameters['start_year']}*100)+{parameters['start_month']}) and 
+                            (({parameters['end_year']}*100) + {parameters['end_month']})
+                            and not delivery_district in ('AGG', 'Missing', 'MISSING') 
+                            and delivery_district is not null
+                            and upper(category) = upper({f"'{category}'" if category else "'AGG'"})
+                            and upper(sub_category) = upper({f"'{sub_category}'" if sub_category else "'AGG'"})
+                            and sub_domain = 'B2C'
+                    GROUP BY 
+                        delivery_district
+                    HAVING SUM(total_orders_delivered) >= 1
+                    ORDER BY 
+                        intrastate_orders_percentage DESC,
+                        delivery_district ASC
+                    LIMIT 3
+                ), FinalResult as (
+                    SELECT om.order_month AS order_month,
+                        om.order_year AS order_year,
+                        om.delivery_district AS delivery_district,
+                        SUM(om.total_orders_delivered) AS total_orders_delivered,
+                        SUM(om.intradistrict_orders) AS intradistrict_orders,
+                        ROUND((SUM(om.intradistrict_orders::numeric) / NULLIF(SUM(om.total_orders_delivered::numeric), 0)), 2) * 100 AS intrastate_orders_percentage
+                    FROM 
+                        {selected_view} om
+                    INNER JOIN 
+                        TopDistricts td ON om.delivery_district = td.delivery_district
+                        where ((om.order_year*100) + om.order_month) between 
+                            (({parameters['start_year']}*100)+{parameters['start_month']}) and 
+                            (({parameters['end_year']}*100) + {parameters['end_month']}) 
+                            and upper(om.category) = upper({f"'{category}'" if category else "'AGG'"})
+                            and upper(om.sub_category) = upper({f"'{sub_category}'" if sub_category else "'AGG'"})
+                            and om.sub_domain = 'B2C'
+                    GROUP BY
+                        om.order_month, om.order_year, om.delivery_district
+                    ORDER BY
+                        om.order_year, om.order_month, om.intrastate_orders_percentage DESC,
+                        om.delivery_district ASC
+                )
+                select * from FinalResult
+                    where intrastate_orders_percentage > 0
+                '''
+        else:
 
-        if bool(category) and (category != 'None'):
-            base_query += f" AND upper(category)=upper('{category}')"
+            base_query = f"""
+                WITH TopDistricts AS (
+                    SELECT 
+                        delivery_district,
+                        SUM(total_orders_delivered) AS total_order_demand,
+                        SUM(intradistrict_orders) AS intradistrict_orders,
+                        ROUND((SUM(intradistrict_orders::numeric) / NULLIF(SUM(total_orders_delivered::numeric), 0)), 2) * 100 AS intradistrict_percentage
+                    FROM 
+                        {selected_view}
+                    WHERE 
+                        ((order_year * 100) + order_month) between
+                            (({parameters['start_year']} * 100) + {parameters['start_month']})
+                                and 
+                            (({parameters['end_year']} * 100) + {parameters['end_month']})
+                        AND delivery_district <> '' AND UPPER(delivery_district) <> 'UNDEFINED'
+                        AND delivery_district IS NOT NULL
+                        AND delivery_district <> ''
+                        AND domain_name = 'Retail' 
+                        AND sub_domain = 'B2C'
+            """
 
-        if bool(sub_category) and (sub_category != 'None'):
-            base_query += f" AND upper(sub_category)=upper('{sub_category}')"
-        
-        if state:
-            base_query += f" AND upper(delivery_state) = upper('{state}')"
+            if bool(category) and (category != 'None'):
+                base_query += f" AND upper(category)=upper('{category}')"
 
-        base_query += f"""
-                GROUP BY 
-                    delivery_district
-                HAVING SUM(total_orders_delivered) >= 1
-                ORDER BY 
-                    intradistrict_percentage DESC
-                LIMIT 3
-            ),
-            FinalResult AS (
-                SELECT 
-                    om.order_month AS order_month,
-                    om.order_year AS order_year,
-                    om.delivery_district AS delivery_district,
-                    SUM(om.total_orders_delivered) AS total_orders_delivered,
-                    SUM(om.intradistrict_orders) AS intradistrict_orders,
-                    ROUND((SUM(om.intradistrict_orders::numeric) / NULLIF(SUM(om.total_orders_delivered::numeric), 0)), 2) * 100 AS intrastate_orders_percentage
-                FROM 
-                    {selected_view} om
-                INNER JOIN 
-                    TopDistricts td ON om.delivery_district = td.delivery_district
-                WHERE 
-                    ((om.order_year * 100) + om.order_month) between
-                        (({parameters['start_year']} * 100) + {parameters['start_month']})
-                            and 
-                        (({parameters['end_year']} * 100) + {parameters['end_month']})
-                    and om.domain_name = 'Retail' and om.sub_domain = 'B2C'
-        """
+            if bool(sub_category) and (sub_category != 'None'):
+                base_query += f" AND upper(sub_category)=upper('{sub_category}')"
+            
+            if state:
+                base_query += f" AND upper(delivery_state) = upper('{state}')"
 
-        if state:
-            base_query += f" AND upper(om.delivery_state) = upper('{state}')"
-        
-        if bool(category) and (category != 'None'):
-            base_query += f" AND upper(category)=upper('{category}')"
+            base_query += f"""
+                    GROUP BY 
+                        delivery_district
+                    HAVING SUM(total_orders_delivered) >= 1
+                    ORDER BY 
+                        intradistrict_percentage DESC
+                    LIMIT 3
+                ),
+                FinalResult AS (
+                    SELECT 
+                        om.order_month AS order_month,
+                        om.order_year AS order_year,
+                        om.delivery_district AS delivery_district,
+                        SUM(om.total_orders_delivered) AS total_orders_delivered,
+                        SUM(om.intradistrict_orders) AS intradistrict_orders,
+                        ROUND((SUM(om.intradistrict_orders::numeric) / NULLIF(SUM(om.total_orders_delivered::numeric), 0)), 2) * 100 AS intrastate_orders_percentage
+                    FROM 
+                        {selected_view} om
+                    INNER JOIN 
+                        TopDistricts td ON om.delivery_district = td.delivery_district
+                    WHERE 
+                        ((om.order_year * 100) + om.order_month) between
+                            (({parameters['start_year']} * 100) + {parameters['start_month']})
+                                and 
+                            (({parameters['end_year']} * 100) + {parameters['end_month']})
+                        and om.domain_name = 'Retail' and om.sub_domain = 'B2C'
+            """
 
-        if bool(sub_category) and (sub_category != 'None'):
-            base_query += f" AND upper(sub_category)=upper('{sub_category}')"
+            if state:
+                base_query += f" AND upper(om.delivery_state) = upper('{state}')"
+            
+            if bool(category) and (category != 'None'):
+                base_query += f" AND upper(category)=upper('{category}')"
 
-        base_query += """
+            if bool(sub_category) and (sub_category != 'None'):
+                base_query += f" AND upper(sub_category)=upper('{sub_category}')"
+
+            base_query += """
                 GROUP BY 
                     om.order_month, om.order_year, om.delivery_district
                 ORDER BY 
