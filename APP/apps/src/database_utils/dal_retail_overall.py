@@ -47,7 +47,7 @@ class DataAccessLayer:
     def fetch_top_district_sellers(self, start_date, end_date, category=None, sub_category=None,
                                             domain=None, state=None, seller_type='Total'):
 
-        table_name = constant.MONTHLY_PROVIDERS
+        table_name = constant.ACTIVE_TOTAL_SELLER_TBL
         if domain == 'Logistics':
             table_name = constant.LOGISTICS_MONTHLY_PROVIDERS
 
@@ -57,15 +57,18 @@ class DataAccessLayer:
             WITH TopDistricts AS (
                 SELECT 
                     seller_district,
-                    COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
+                    SUM(total_sellers) as active_sellers_count
                 FROM 
                     {table_name}
                 WHERE
-                    (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
-                    AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
+                    (year_val > %(start_year)s OR (year_val = %(start_year)s AND mnth_val >= %(start_month)s))
+                    AND (year_val < %(end_year)s OR (year_val = %(end_year)s AND mnth_val <= %(end_month)s))
                     AND seller_district <> 'Undefined'
                     AND seller_district IS NOT NULL
                     AND seller_district <> ''
+                    AND category = 'AGG'
+                    AND seller_district <> 'Missing'
+                    AND seller_district <> 'AGG'
         """
 
         if state:
@@ -75,24 +78,24 @@ class DataAccessLayer:
         query += f"""
                 GROUP BY 
                     seller_district
-                HAVING COUNT(DISTINCT TRIM(LOWER(provider_key))) > 0  -- Add any necessary masking logic here
+                 
                 ORDER BY 
                     active_sellers_count DESC
                 LIMIT 3
             ),
             FinalResult AS (
                 SELECT 
-                    om.order_month AS order_month,
-                    om.order_year AS order_year,
+                    om.mnth_val AS order_month,
+                    om.year_val AS order_year,
                     om.seller_district AS district,
-                    COUNT(DISTINCT TRIM(LOWER(om.provider_key))) AS active_sellers_count
+                    SUM(total_sellers) as active_sellers_count
                 FROM 
                     {table_name} om
                 INNER JOIN 
                     TopDistricts td ON om.seller_district = td.seller_district
                 WHERE
-                    (om.order_year > %(start_year)s OR (om.order_year = %(start_year)s AND om.order_month >= %(start_month)s))
-                    AND (om.order_year < %(end_year)s OR (om.order_year = %(end_year)s AND om.order_month <= %(end_month)s))
+                    (om.year_val > %(start_year)s OR (om.year_val = %(start_year)s AND om.mnth_val >= %(start_month)s))
+                    AND (om.year_val < %(end_year)s OR (om.year_val = %(end_year)s AND om.mnth_val <= %(end_month)s))
         """
 
         if state:
@@ -101,20 +104,20 @@ class DataAccessLayer:
 
         query += """
                 GROUP BY 
-                    om.order_month, om.order_year, om.seller_district
+                    om.mnth_val, om.year_val, om.seller_district
                 ORDER BY 
-                    om.order_year, om.order_month, COUNT(DISTINCT TRIM(LOWER(provider_key))) DESC
+                    om.year_val, om.mnth_val, active_sellers_count DESC
             )
             SELECT * FROM FinalResult;
         """
-
+        
         df = self.db_utility.execute_query(query, parameters)
         return df
 
     @log_function_call(ondcLogger)
     def fetch_top_state_sellers(self, start_date, end_date, category=None, sub_category=None,
                                           domain=None, state=None, seller_type='Total'):
-        base_table = constant.MONTHLY_PROVIDERS
+        base_table = constant.ACTIVE_TOTAL_SELLER_TBL
         if domain == 'Logistics':
             base_table = constant.LOGISTICS_MONTHLY_PROVIDERS
 
@@ -124,14 +127,17 @@ class DataAccessLayer:
             WITH StateSellerCounts AS (
                 SELECT 
                     COALESCE(seller_state, 'MISSING') AS seller_state,
-                    COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
+                    SUM(total_sellers) AS active_sellers_count
                 FROM 
                     {base_table}
                 WHERE
-                    (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
-                    AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
+                    (year_val > %(start_year)s OR (year_val = %(start_year)s AND mnth_val >= %(start_month)s))
+                    AND (year_val < %(end_year)s OR (year_val = %(end_year)s AND mnth_val <= %(end_month)s))
                     AND seller_state <> ''
                     AND seller_state is not null
+                    AND category = 'AGG'
+                    AND seller_state <> 'AGG'
+                    AND seller_state <> 'Missing'
         '''
 
         if state:
@@ -153,18 +159,18 @@ class DataAccessLayer:
                 LIMIT 3
             )
             SELECT 
-                om.order_month AS order_month,
-                om.order_year AS order_year,
+                om.mnth_val AS order_month,
+                om.year_val AS order_year,
                 COALESCE(om.seller_state, 'MISSING') AS state,
-                COUNT(DISTINCT TRIM(LOWER(om.provider_key))) AS active_sellers_count,
+                SUM(total_sellers) AS active_sellers_count,
                 rs.state_rank
             FROM 
                 {base_table} om
             INNER JOIN 
                 RankedStates rs ON COALESCE(om.seller_state, 'MISSING') = rs.seller_state
             WHERE
-                (om.order_year > %(start_year)s OR (om.order_year = %(start_year)s AND om.order_month >= %(start_month)s))
-                AND (om.order_year < %(end_year)s OR (om.order_year = %(end_year)s AND om.order_month <= %(end_month)s))
+                (om.year_val > %(start_year)s OR (om.year_val = %(start_year)s AND om.mnth_val >= %(start_month)s))
+                AND (om.year_val < %(end_year)s OR (om.year_val = %(end_year)s AND om.mnth_val <= %(end_month)s))
         '''
 
         if state:
@@ -173,11 +179,11 @@ class DataAccessLayer:
 
         query += '''
             GROUP BY 
-                om.order_month, om.order_year, om.seller_state, rs.state_rank
+                om.mnth_val, om.year_val, om.seller_state, rs.state_rank
             ORDER BY 
-                rs.state_rank, om.order_year, om.order_month
+                rs.state_rank, om.year_val, om.mnth_val
         '''
-
+        
         df = self.db_utility.execute_query(query, parameters)
         return df
 
@@ -217,12 +223,16 @@ class DataAccessLayer:
                 SELECT
                     seller_state AS seller_state_code,
                     seller_state,
-                    COUNT(DISTINCT TRIM(LOWER(provider_key))) AS total_active_sellers
+                    SUM(total_sellers) AS total_active_sellers
                 FROM
-                    {constant.MONTHLY_PROVIDERS}
+                    {constant.ACTIVE_TOTAL_SELLER_TBL}
                 WHERE
                     
-                    ((order_year * 100) + order_month)= ((%(end_year)s * 100) + %(end_month)s)
+                    ((year_val * 100) + mnth_val)= ((%(end_year)s * 100) + %(end_month)s)
+                    
+                    AND category = 'AGG'
+                    AND sub_category ='AGG'
+                    AND seller_state != 'Missing'
         """
 
         if state:
@@ -265,7 +275,7 @@ class DataAccessLayer:
                 WHERE
                     (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
                     AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
-                    AND delivery_state <> '' AND delivery_state_code IS NOT NULL
+                    AND delivery_state <> '' AND delivery_state_code IS NOT NULL AND delivery_state <> 'Missing'
         """
 
         if domain:
@@ -280,11 +290,16 @@ class DataAccessLayer:
                 SELECT
                     'TT' AS seller_state_code,
                     'TOTAL' AS seller_state,
-                    COUNT(DISTINCT TRIM(LOWER(provider_key))) AS total_active_sellers
+                    SUM(total_sellers) AS total_active_sellers
                 FROM
-                    {constant.MONTHLY_PROVIDERS}
+                    {constant.ACTIVE_TOTAL_SELLER_TBL}
                 WHERE
-                    ((order_year * 100) + order_month)= ((%(end_year)s * 100) + %(end_month)s)
+                    ((year_val * 100) + mnth_val)= ((%(end_year)s * 100) + %(end_month)s)
+                    AND seller_state = 'AGG'    
+                    AND seller_district = 'AGG'
+                    AND category = 'AGG'
+                    AND sub_category ='AGG'
+                    AND seller_state != 'Missing'
             ),
             AggregatedDataTotal AS (
                 SELECT
@@ -297,6 +312,7 @@ class DataAccessLayer:
                 WHERE
                     (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
                     AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
+                    
             """
 
         if domain:
@@ -352,11 +368,15 @@ class DataAccessLayer:
                 SELECT
                     ds.seller_state AS seller_state_code,
                     ds.seller_state AS seller_state,
-                    COUNT(DISTINCT TRIM(LOWER(ds.provider_key)))  AS total_active_sellers
+                    SUM(total_sellers)  AS total_active_sellers
                 FROM
-                    {constant.MONTHLY_PROVIDERS} ds
+                    {constant.ACTIVE_TOTAL_SELLER_TBL} ds
                 WHERE
-                    ((ds.order_year * 100) + ds.order_month)= ((%(end_year)s * 100) + %(end_month)s)
+                    ((ds.year_val * 100) + ds.mnth_val)= ((%(end_year)s * 100) + %(end_month)s)
+                    
+                    AND category = 'AGG'
+                    AND sub_category ='AGG'
+                    AND seller_state != 'Missing'
         """
         
         if state:
@@ -391,11 +411,15 @@ class DataAccessLayer:
                 SELECT
                     'TT' AS seller_state_code,
                     'TOTAL' AS seller_state,
-                    COUNT(DISTINCT TRIM(LOWER(ds.provider_key))) AS total_active_sellers
+                    SUM(total_sellers) AS total_active_sellers
                 FROM
-                    {constant.MONTHLY_PROVIDERS} ds
+                    {constant.ACTIVE_TOTAL_SELLER_TBL} ds
                 WHERE
-                    ((ds.order_year * 100) + ds.order_month)= ((%(end_year)s * 100) + %(end_month)s)
+                    ((ds.year_val * 100) + ds.mnth_val)= ((%(end_year)s * 100) + %(end_month)s)
+                    
+                    AND category = 'AGG'
+                    AND sub_category ='AGG'
+                    AND seller_state != 'Missing'
             ),
             AggregatedDataTotal AS (
                 SELECT
@@ -523,6 +547,7 @@ class DataAccessLayer:
             query += f'''
                     GROUP BY 
                         delivery_state
+                    HAVING delivery_state NOT IN ('Missing')
                     ORDER BY 
                         total_orders_delivered DESC
                     LIMIT 3
@@ -556,7 +581,7 @@ class DataAccessLayer:
                 )
                 SELECT * FROM FinalResult 
             '''
-
+            
             df = self.db_utility.execute_query(query, parameters)
             return df
 
@@ -586,6 +611,7 @@ class DataAccessLayer:
                       AND delivery_state <> '' 
                       {conditions}
                 GROUP BY delivery_district
+                HAVING delivery_district NOT IN ('Missing')
                 ORDER BY total_order_demand DESC
                 LIMIT 3
             ),
@@ -647,25 +673,28 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_overall_cumulative_sellers(self, start_date, end_date, category=None,
                                          sub_category=None, domain_name=None, state=None, seller_type='Total'):
-        table_name = constant.MONTHLY_PROVIDERS
+        table_name = constant.ACTIVE_TOTAL_SELLER_TBL
         parameters = self.get_query_month_parameters(start_date, end_date)
 
         query = f"""
             SELECT 
-                order_month,
-                order_year,
-                COUNT(DISTINCT TRIM(LOWER(provider_key))) AS total_orders_delivered
+                mnth_val as order_month,
+                year_val as order_year,
+                SUM(total_sellers) AS total_orders_delivered
             FROM 
                 {table_name}
             WHERE
-                ((order_year*100) + order_month) between ((%(start_year)s*100) + %(start_month)s) and ((%(end_year)s*100) + %(end_month)s)
+                ((year_val*100) + mnth_val) between ((%(start_year)s*100) + %(start_month)s) and ((%(end_year)s*100) + %(end_month)s)
+                AND seller_state = 'AGG'
+                AND seller_district = 'AGG'
+                AND category = 'AGG'
         """
 
         if state:
             query += " AND delivery_state = %(state)s"
             parameters['state'] = state
 
-        query += " GROUP BY order_month, order_year ORDER BY order_year, order_month"
+        query += " GROUP BY mnth_val, year_val ORDER BY year_val, mnth_val"
         df = self.db_utility.execute_query(query, parameters)
         
         return df
@@ -1070,20 +1099,25 @@ class DataAccessLayer:
                                      sub_category=None, domain=None, state=None):
 
         params = DotDict(self.get_query_month_parameters(start_date, end_date))
-        table_name = constant.MONTHLY_PROVIDERS
+        table_name = constant.ACTIVE_TOTAL_SELLER_TBL
 
         query = f"""
             SELECT 
                 seller_state AS seller_state,
                 seller_state_code AS seller_state_code,
-                COUNT(DISTINCT TRIM(LOWER(provider_key))) AS active_sellers_count
+                SUM(total_sellers) AS active_sellers_count
             FROM 
                 {table_name}
             WHERE
-                (order_year > %s OR (order_year = %s AND order_month >= %s))
-                AND (order_year < %s OR (order_year = %s AND order_month <= %s))
+                (year_val > %s OR (year_val = %s AND mnth_val >= %s))
+                AND (year_val < %s OR (year_val = %s AND mnth_val <= %s))
                 AND seller_state <> ''
                 AND seller_state is not null
+                AND category = 'AGG'
+                AND sub_category = 'AGG'
+                AND seller_state <> 'Missing'
+                AND seller_state <> 'AGG'
+                AND seller_district = 'AGG'
         """
 
         parameters = [params.start_year, params.start_year, params.start_month,
@@ -1097,7 +1131,7 @@ class DataAccessLayer:
 
         conditions_str = ' '.join(conditions)
         query = query + conditions_str + " GROUP BY seller_state, seller_state_code"
-
+        
         df = self.db_utility.execute_query(query, parameters)
 
         return df
@@ -1227,6 +1261,7 @@ class DataAccessLayer:
                     AND swdlo.domain_name = 'Retail' 
                     AND swdlo.sub_domain = 'B2C'
                     AND swdlo.seller_state <> ''
+                    AND swdlo.seller_state <> 'Missing'
                     GROUP BY swdlo.seller_state
                 ) total ON om.seller_state = total.seller_state
                 WHERE 
@@ -1237,6 +1272,7 @@ class DataAccessLayer:
                     AND om.sub_domain = 'B2C'
                     AND UPPER(om.seller_state) = UPPER('{state}')
                     AND om.delivery_state <> ''
+                    AND om.delivery_state <> 'Missing'
         """
 
 
@@ -1244,10 +1280,10 @@ class DataAccessLayer:
                 GROUP BY 
                     om.seller_state, om.delivery_state, total.total_orders
             ) sub
-            WHERE sub.rn <= 4
+            WHERE sub.rn <= 4 and delivery_state <> 'Missing'
             ORDER BY sub.seller_state, sub.flow_percentage DESC;
         """
-       
+        
         df = self.db_utility.execute_query(query)
         return df
     
@@ -1294,6 +1330,7 @@ class DataAccessLayer:
                         AND swdlo.delivery_district <> ''
                         AND swdlo.seller_district <> ''
                         AND swdlo.seller_district IS NOT NULL
+                        and swdlo.seller_district <> 'Missing'
         """
 
         
@@ -1311,6 +1348,7 @@ class DataAccessLayer:
                 WHERE 
                     (om.order_year = %s AND om.order_month BETWEEN %s AND %s)
                     AND om.domain_name = %s
+                    and om.delivery_district <> 'Missing'
         """
 
         
@@ -1326,7 +1364,7 @@ class DataAccessLayer:
                 GROUP BY 
                     om.seller_district, om.delivery_district, total.total_orders
             ) sub
-            WHERE sub.rn <= 5
+            WHERE sub.rn <= 4
             AND sub.delivery_district != ''
             ORDER BY sub.seller_district, sub.flow_percentage DESC;
         """

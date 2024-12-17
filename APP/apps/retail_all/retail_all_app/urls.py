@@ -11,7 +11,7 @@ urlpatterns = [
 
     path('api/retail/overall/map_state_data/', views.FetchMapStateData.as_view(), name='map_state_data'),
     path('api/retail/overall/map_statewise_data/', views.FetchMapStateWiseData.as_view(), name='map_statewise_data'),
-    path('api/retail/overall/top_card_delta/', views.FetchTopCardDeltaData.as_view(), name='map_statewise_data'),
+    path('api/retail/overall/top_card_delta/', views.FetchTopCardDeltaData.as_view(), name='top_card_delta'),
 
 
     path('api/retail/overall/top_state_orders/', views.FetchTopStatesOrders.as_view(), name='top_state_orders'),
