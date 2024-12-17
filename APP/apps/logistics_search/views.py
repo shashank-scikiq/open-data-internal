@@ -63,7 +63,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         day_type = request.GET.get('dayType', 'All')
 
         if not start_date or not end_date:
-            return JsonResponse(error_message, status=400, safe=False)
+            return JsonResponse("Badrequest", status=400, safe=False)
         
         params = {
             'city': city,
@@ -72,67 +72,67 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             'day_type': day_type
         }
 
-        try:
-            cache_key = f"Logistic_search_FetchTopCardDeltaData_{self.generate_cache_key(params)}"
-            data = get_cached_data(cache_key)
-            if data is None:
-                card_data = data_service.get_logistic_searched_top_card_data(**params)
+        cache_key = f"Logistic_search_FetchTopCardDeltaData_{self.generate_cache_key(params)}"
+        data = get_cached_data(cache_key)
+        if data is None:
+            card_data = data_service.get_logistic_searched_top_card_data(**params)
+            # import pdb; pdb.set_trace()
+            card_data['city'] = city
+            
+            fetched_data = []
+            
+            if not city:
+                time_of_days = card_data['time_of_day'].unique()
 
-                card_data['city'] = city
-                
-                fetched_data = []
-                
-                if not city:
-                    time_of_days = card_data['time_of_day'].unique()
+                for time in time_of_days:
+                    df_data = card_data[card_data['time_of_day'] == time]
 
-                    for time in time_of_days:
-                        df_data = card_data[card_data['time_of_day'] == time]
+                    searched_sum = df_data['searched_data'].sum()
 
-                        searched_sum = df_data['searched_data'].sum()
-
-                        fetched_data.append(
-                            {
-                                'state': 'TT', 
-                                'time_of_day': time, 
-                                'total_conversion_percentage': "{:.2f}".format((df_data['confirmed_data'].sum()/(searched_sum if searched_sum else 1))*100),
-                                'total_assigned_percentage':"{:.2f}".format((df_data['assigned_data'].sum()/(searched_sum if searched_sum else 1))*100),
-                                'searched_data': searched_sum
-                            }
-                        )
-                card_data = card_data.drop(columns=['confirmed_data', 'assigned_data'])
-
-                fetched_data += card_data.to_dict(orient="records")
-                formatted_response = {"data": {}}
-
-                if not city:
-                    for record in fetched_data:
-                        state = record["state"]
-                        time_of_day = record["time_of_day"]
-                        # Ensure state exists in the formatted structure
-                        if state not in formatted_response["data"]:
-                            formatted_response["data"][state] = {}
-                        # Add the time_of_day data
-                        formatted_response["data"][state][time_of_day] = {
-                            k: v for k, v in record.items() if k not in ["state", "time_of_day"]
+                    fetched_data.append(
+                        {
+                            'state': 'TT', 
+                            'time_of_day': time, 
+                            'total_conversion_percentage': "{:.2f}".format((df_data['confirmed_data'].sum()/(searched_sum if searched_sum else 1))*100),
+                            'total_assigned_percentage':"{:.2f}".format((df_data['assigned_data'].sum()/(searched_sum if searched_sum else 1))*100),
+                            'searched_data': searched_sum
                         }
-                else:
-                    for record in fetched_data:
-                        time_of_day = record["time_of_day"]
-                        # Ensure state exists in the formatted structure
-                        if city not in formatted_response["data"]:
-                            formatted_response["data"][city] = {}
-                        # Add the time_of_day data
-                        formatted_response["data"][city][time_of_day] = {
-                            k: v for k, v in record.items() if k not in ["city", "time_of_day"]
-                        }
-                cache.set(cache_key, formatted_response, constant.CACHE_EXPIRY)
+                    )
+            card_data = card_data.drop(columns=['confirmed_data', 'assigned_data'])
+
+            fetched_data += card_data.to_dict(orient="records")
+            formatted_response = {"data": {}}
+
+            if not city:
+                for record in fetched_data:
+                    state = record["state"]
+                    time_of_day = record["time_of_day"]
+                    # Ensure state exists in the formatted structure
+                    if state not in formatted_response["data"]:
+                        formatted_response["data"][state] = {}
+                    # Add the time_of_day data
+                    formatted_response["data"][state][time_of_day] = {
+                        k: v for k, v in record.items() if k not in ["state", "time_of_day"]
+                    }
             else:
-                formatted_response = data
-            return JsonResponse(formatted_response, safe=False)
+                for record in fetched_data:
+                    time_of_day = record["time_of_day"]
+                    # Ensure state exists in the formatted structure
+                    if city not in formatted_response["data"]:
+                        formatted_response["data"][city] = {}
+                    # Add the time_of_day data
+                    formatted_response["data"][city][time_of_day] = {
+                        k: v for k, v in record.items() if k not in ["city", "time_of_day"]
+                    }
+            cache.set(cache_key, formatted_response, constant.CACHE_EXPIRY)
+        else:
+            formatted_response = data
+        return JsonResponse(formatted_response, safe=False)
+        # try:
 
-        except Exception as e:
-            error_message = {'error': f"An error occurred: {str(e)}"}
-            return JsonResponse(error_message, status=500, safe=False)
+        # except Exception as e:
+        #     error_message = {'error': f"An error occurred: {str(e)}"}
+        #     return JsonResponse(error_message, status=500, safe=False)
 
     def generate_cache_key(self, params):
         p_d = params.values()
