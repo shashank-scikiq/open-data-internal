@@ -678,7 +678,7 @@ class FetchTop5DeliverysDistrict(SummaryBaseDataAPI):
 
         if data is None:
             data = data_service.get_overall_top_delivery_district(**params)
-            formatted_data = self.zonal_commerce_format(data, tree_type='delivery_district')
+            formatted_data = self.zonal_commerce_format(data, tree_type='seller_district')
             cache.set(p_d, formatted_data, constant.CACHE_EXPIRY)
         else:
             formatted_data = data
