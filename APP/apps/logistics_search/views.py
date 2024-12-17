@@ -95,7 +95,7 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
                             'time_of_day': time, 
                             'total_conversion_percentage': "{:.2f}".format((df_data['confirmed_data'].sum()/(searched_sum if searched_sum else 1))*100),
                             'total_assigned_percentage':"{:.2f}".format((df_data['assigned_data'].sum()/(searched_sum if searched_sum else 1))*100),
-                            'searched_data': searched_sum
+                            'searched_data': int(searched_sum)
                         }
                     )
             card_data = card_data.drop(columns=['confirmed_data', 'assigned_data'])
@@ -127,7 +127,8 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             cache.set(cache_key, formatted_response, constant.CACHE_EXPIRY)
         else:
             formatted_response = data
-        return JsonResponse(formatted_response, safe=False)
+        # import pdb; pdb.set_trace()
+        return JsonResponse(formatted_response, status=200, safe=False)
         # try:
 
         # except Exception as e:

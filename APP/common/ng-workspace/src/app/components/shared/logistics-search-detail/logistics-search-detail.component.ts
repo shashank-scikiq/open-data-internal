@@ -370,5 +370,10 @@ export class LogisticsSearchDetailComponent implements OnInit {
   updateInsightSelection(option: any) {
     this.activeInsight = option;
     this.activeView = option.defaultView.type;
+    (async () => {
+
+      await this.preparePincodeLevelViewData();
+      this.loadingData = false;
+    })()
   }
 }
