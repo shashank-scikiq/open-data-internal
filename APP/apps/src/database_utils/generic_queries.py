@@ -1,12 +1,11 @@
 from apps.utils.constant import (
-    DIM_CATEGORIES, DIM_DISTRICTS, DIM_DATES, PINCODE_TABLE,
-    LANDING_PAGE_ECHART_DATA_TILL, LANDING_PAGE_ECHART_TABLE,
+    DIM_CATEGORIES, DIM_DATES, PINCODE_TABLE, LANDING_PAGE_ECHART_TABLE,
     LOGISTICS_DISTRICT_TABLE, MONTHLY_DISTRICT_TABLE
 )
 
 fetch_district_list_query = f'''
-        SELECT delivery_state, delivery_district 
-        FROM {DIM_DISTRICTS}  
+        SELECT state_name as delivery_state, district_name as delivery_district 
+        FROM {PINCODE_TABLE} group by 1, 2
     '''
 
 
@@ -18,7 +17,7 @@ max_date_retail_overall = f'''
         MIN(order_year::int * 100 + order_month::int) AS min_year_month,
         MAX(order_year::int * 100 + order_month::int) AS max_year_month
     FROM {MONTHLY_DISTRICT_TABLE}
-    where domain_name = 'Retail'
+    where domain = 'Retail'
 ),
 MaxPreviousMonth AS (
     SELECT 
@@ -39,7 +38,7 @@ max_date_logistics_overall = f'''
         MIN(order_year::int * 100 + order_month::int) AS min_year_month,
         MAX(order_year::int * 100 + order_month::int) AS max_year_month
     FROM {MONTHLY_DISTRICT_TABLE}
-    where domain_name = 'Retail'
+    where domain = 'Retail'
 ),
 MaxPreviousMonth AS (
     SELECT 
@@ -58,10 +57,10 @@ SELECT
 max_date_logistics = f'''select min(order_date) as min_date, max(order_date) as max_date from {LOGISTICS_DISTRICT_TABLE}'''
 
 pincode_query = f''' select 
-                    "Statecode" as "State Code", 
-                    "Statename" as "State", 
-                    "Districtname" as "District", 
-                    "Pincode"
+                    state_code as "State Code", 
+                    state_name as "State", 
+                    district_name as "District", 
+                    pincode as "Pincode"
                 from {PINCODE_TABLE} order by "Statecode"'''
 
 fetch_category_list_query = f'''

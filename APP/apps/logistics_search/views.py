@@ -28,7 +28,7 @@ round_off_offset = 0
 
 
 def fetch_state_list():
-    query = f''' select distinct "Statecode" as delivery_state_code_current from {constant.PINCODE_TABLE}'''
+    query = f''' select distinct state_code as delivery_state_code_current from {constant.PINCODE_TABLE}'''
     db_util = DatabaseUtility(alias='default')
     df = db_util.execute_query(query, return_type='df')
     return df
@@ -82,17 +82,17 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             fetched_data = []
             
             if not city:
-                time_of_days = card_data['time_of_day'].unique()
+                time_intervals = card_data['time_interval'].unique()
 
-                for time in time_of_days:
-                    df_data = card_data[card_data['time_of_day'] == time]
+                for time in time_intervals:
+                    df_data = card_data[card_data['time_interval'] == time]
 
                     searched_sum = df_data['searched_data'].sum()
 
                     fetched_data.append(
                         {
                             'state': 'TT', 
-                            'time_of_day': time, 
+                            'time_interval': time, 
                             'total_conversion_percentage': "{:.2f}".format((df_data['confirmed_data'].sum()/(searched_sum if searched_sum else 1))*100),
                             'total_assigned_percentage':"{:.2f}".format((df_data['assigned_data'].sum()/(searched_sum if searched_sum else 1))*100),
                             'searched_data': int(searched_sum)
@@ -106,23 +106,23 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             if not city:
                 for record in fetched_data:
                     state = record["state"]
-                    time_of_day = record["time_of_day"]
+                    time_interval = record["time_interval"]
                     # Ensure state exists in the formatted structure
                     if state not in formatted_response["data"]:
                         formatted_response["data"][state] = {}
-                    # Add the time_of_day data
-                    formatted_response["data"][state][time_of_day] = {
-                        k: v for k, v in record.items() if k not in ["state", "time_of_day"]
+                    # Add the time_interval data
+                    formatted_response["data"][state][time_interval] = {
+                        k: v for k, v in record.items() if k not in ["state", "time_interval"]
                     }
             else:
                 for record in fetched_data:
-                    time_of_day = record["time_of_day"]
+                    time_interval = record["time_interval"]
                     # Ensure state exists in the formatted structure
                     if city not in formatted_response["data"]:
                         formatted_response["data"][city] = {}
-                    # Add the time_of_day data
-                    formatted_response["data"][city][time_of_day] = {
-                        k: v for k, v in record.items() if k not in ["city", "time_of_day"]
+                    # Add the time_interval data
+                    formatted_response["data"][city][time_interval] = {
+                        k: v for k, v in record.items() if k not in ["city", "time_interval"]
                     }
             cache.set(cache_key, formatted_response, constant.CACHE_EXPIRY)
         else:
@@ -182,7 +182,7 @@ class FetchCityWiseData(SummaryBaseDataAPI):
                     result[pincode] = {}
                     
                     for _, row in group.iterrows():
-                        result[pincode][row['time_of_day']] = {
+                        result[pincode][row['time_interval']] = {
                             'conversion_rate': row['conversion_rate'],
                             'assigned_rate': row['assigned_rate'],
                             'searched_data': int(row['searched_data']),
@@ -201,8 +201,8 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             return JsonResponse(error_message, status=500, safe=False)
     
     def prepare_insight_data(self, df):
-        # time_of_days = df['time_of_day'].unique()
-        time_of_days = ["Overall", "3am-6am", "6am-8am", "8am-10am", "10am-12pm", 
+        # time_intervals = df['time_interval'].unique()
+        time_intervals = ["Overall", "3am-6am", "6am-8am", "8am-10am", "10am-12pm", 
             "12pm-3pm", "3pm-6pm", "6pm-9pm", "9pm-12am", "12am-3am"]
 
         insight_data = {
@@ -214,8 +214,8 @@ class FetchCityWiseData(SummaryBaseDataAPI):
             # 'high_demand_in_evening_hours': {}
         }
 
-        for time in time_of_days:
-            filtered_df = df[df['time_of_day']==time]
+        for time in time_intervals:
+            filtered_df = df[df['time_interval']==time]
 
             # for high demand
             high_demand_df = filtered_df.sort_values(by='searched_data', ascending=False)[:10]
@@ -393,7 +393,7 @@ class FetchStateData(SummaryBaseDataAPI):
 
 
 def format_overall_chart_data(df, date_range):
-    time_of_days = ['3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
+    time_intervals = ['3am-6am', '6am-8am', '8am-10am', '10am-12pm', 
                 '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am', 'Overall']
 
     df['date'] = pd.to_datetime(df['date'])
@@ -401,42 +401,42 @@ def format_overall_chart_data(df, date_range):
 
     # Fill missing combinations with 0
     complete_index = pd.DataFrame(
-        list(product(date_range, time_of_days[:-1])),  # Exclude "Overall" here
-        columns=["date", "time_of_day"]
+        list(product(date_range, time_intervals[:-1])),  # Exclude "Overall" here
+        columns=["date", "time_interval"]
     )
-    df = complete_index.merge(df, on=["date", "time_of_day"], how="left").fillna(0)
+    df = complete_index.merge(df, on=["date", "time_interval"], how="left").fillna(0)
 
     # Calculate "Overall" searched_count per date
     overall_data = df.groupby('date')['searched_count'].sum().reset_index()
-    overall_data['time_of_day'] = 'Overall'
+    overall_data['time_interval'] = 'Overall'
 
     # Add "Overall" data to the main DataFrame
     df = pd.concat([df, overall_data])
 
-    # Pivot to get series for each time_of_day
+    # Pivot to get series for each time_interval
     response = {}
     categories = [date.strftime("%b %d, %y") for date in date_range]  # Format dates as "Apr-24"
 
-    for tod in time_of_days:
-        series_data = df[df['time_of_day'] == tod].set_index('date').reindex(date_range, fill_value=0)
+    for tod in time_intervals:
+        series_data = df[df['time_interval'] == tod].set_index('date').reindex(date_range, fill_value=0)
         response[tod] = {
             "series": [{"name": "India", "data": series_data['searched_count'].tolist()}],
             "categories": categories
         }
     return response
 
-def format_seach_data_by_time_of_day(df, date_list, level='state'):
+def format_seach_data_by_time_interval(df, date_list, level='state'):
     series_key = level
     df['searched'] = pd.to_numeric(df['searched'], errors='coerce').fillna(0)
     df['date'] = pd.to_datetime(df['date']).dt.strftime('%Y-%m-%d')
-    time_of_days = ['3am-6am', '6am-8am', '8am-10am', '10am-12pm',
+    time_intervals = ['3am-6am', '6am-8am', '8am-10am', '10am-12pm',
                     '12pm-3pm', '3pm-6pm', '6pm-9pm', '9pm-12am', '12am-3am', 'Overall']
     category_data = [date.strftime("%b %d, %y") for date in pd.to_datetime(date_list)]
 
     response = {}
 
-    for tod in time_of_days:
-        tod_data = df[df['time_of_day'] == tod]
+    for tod in time_intervals:
+        tod_data = df[df['time_interval'] == tod]
 
         if tod_data.empty:
             response[tod] = None
@@ -541,7 +541,7 @@ class FetchTopStatesSearches(SummaryBaseDataAPI):
             if data is None:
                 df = data_service.get_top_states_search_distribution(**params)
                 date_list = self.get_dates_between(start_date, end_date, day_type)
-                response_data = format_seach_data_by_time_of_day(df, date_list, "state")
+                response_data = format_seach_data_by_time_interval(df, date_list, "state")
                 cache.set(cache_key, response_data, constant.CACHE_EXPIRY)
             else:
                 response_data = data
@@ -585,7 +585,7 @@ class FetchTopDistrictSearches(SummaryBaseDataAPI):
             if data is None:
                 df = data_service.get_top_districts_search_distribution(**params)
                 date_list = self.get_dates_between(start_date, end_date, day_type)
-                response_data = format_seach_data_by_time_of_day(df, date_list, "district")
+                response_data = format_seach_data_by_time_interval(df, date_list, "district")
                 cache.set(cache_key, response_data, constant.CACHE_EXPIRY)
             else:
                 response_data = data

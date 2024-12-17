@@ -65,7 +65,7 @@ class FetchDistrictList(APIView):
 
 
 def fetch_state_list():
-    query = f''' select distinct "Statecode" as delivery_state_code_current from {constant.PINCODE_TABLE}'''
+    query = f''' select distinct state_code as delivery_state_code_current from {constant.PINCODE_TABLE}'''
     db_util = DatabaseUtility(alias='default')
     df = db_util.execute_query(query, return_type='df')
     return df

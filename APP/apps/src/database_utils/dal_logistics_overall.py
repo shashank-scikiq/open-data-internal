@@ -47,20 +47,7 @@ class DataAccessLayer:
                                    sub_category=None, domain=None, state=None):
 
         table_name = constant.MONTHLY_DISTRICT_TABLE
-        # stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
-        # edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
-        #
-        # start_month = stdate_obj.month
-        # start_year = stdate_obj.year
-        # end_month = edate_obj.month
-        # end_year = edate_obj.year
-        #
-        # parameters = {
-        #     'start_month': start_month,
-        #     'start_year': start_year,
-        #     'end_month': end_month,
-        #     'end_year': end_year
-        # }
+        
         parameters = self.get_query_month_parameters(start_date, end_date)
 
         query = """
@@ -80,7 +67,7 @@ class DataAccessLayer:
         """
 
         if domain:
-            query += " AND domain_name = %(domain)s"
+            query += " AND domain = %(domain)s"
             parameters['domain'] = domain
 
         query += f"""
@@ -122,7 +109,7 @@ class DataAccessLayer:
         """
 
         if domain:
-            query += " AND domain_name = %(domain)s"
+            query += " AND domain = %(domain)s"
 
         query += """
                 GROUP BY
@@ -143,7 +130,7 @@ class DataAccessLayer:
         """
 
         if domain:
-            query += " AND domain_name = %(domain)s"
+            query += " AND domain = %(domain)s"
 
         query += f"""
                 GROUP BY
@@ -175,7 +162,7 @@ class DataAccessLayer:
             """
 
         if domain:
-            query += " AND domain_name = %(domain)s"
+            query += " AND domain = %(domain)s"
             parameters['domain'] = domain
 
         query += """
@@ -255,7 +242,7 @@ class DataAccessLayer:
         """
 
         if domain:
-            query += " AND swdlo.domain_name = %(domain)s"
+            query += " AND swdlo.domain = %(domain)s"
             parameters['domain'] = domain
 
         query += f"""
@@ -286,7 +273,7 @@ class DataAccessLayer:
         """
 
         if domain:
-            query += " AND swdlo.domain_name = %(domain)s"
+            query += " AND swdlo.domain = %(domain)s"
             parameters['domain'] = domain
 
         query += """
@@ -346,7 +333,7 @@ class DataAccessLayer:
         """
 
         if domain_name:
-            query += " AND domain_name = %(domain_name)s"
+            query += " AND domain = %(domain_name)s"
             parameters['domain_name'] = domain_name
 
         if state:
@@ -388,7 +375,7 @@ class DataAccessLayer:
                 parameters['state'] = state
 
             if domain_name and domain_name != 'None':
-                query += ' AND domain_name = %(domain_name)s'
+                query += ' AND domain = %(domain_name)s'
                 parameters['domain_name'] = domain_name
 
             query += f'''
@@ -417,7 +404,7 @@ class DataAccessLayer:
                 query += ' AND upper(om.delivery_state) = upper(%(state)s)'
 
             if domain_name and domain_name != 'None':
-                query += ' AND om.domain_name = %(domain_name)s'
+                query += ' AND om.domain = %(domain_name)s'
 
             query += '''
                     GROUP BY 
@@ -486,7 +473,7 @@ class DataAccessLayer:
                       params.start_month, params.end_year, params.end_year, params.end_month]
 
         if domain:
-            conditions.append("AND domain_name = %s")
+            conditions.append("AND domain = %s")
             parameters.append(domain)
 
         if state:
@@ -497,7 +484,7 @@ class DataAccessLayer:
                            params.end_year, params.end_year, params.end_month])
 
         if domain:
-            final_conditions.append("AND foslm.domain_name = %s")
+            final_conditions.append("AND foslm.domain = %s")
             parameters.append(domain)
 
         if state:
@@ -565,7 +552,7 @@ class DataAccessLayer:
         """
 
         if domain_name:
-            base_query += " AND domain_name = %s"
+            base_query += " AND domain = %s"
             parameters.append(domain_name)
 
         if state:
@@ -602,7 +589,7 @@ class DataAccessLayer:
                            params.end_year, params.end_year, params.end_month])
 
         if domain_name:
-            base_query += " AND om.domain_name = %s"
+            base_query += " AND om.domain = %s"
             parameters.append(domain_name)
 
         if state:
@@ -648,7 +635,7 @@ class DataAccessLayer:
         """
 
         if domain_name:
-            base_query += " AND domain_name = %(domain_name)s"
+            base_query += " AND domain = %(domain_name)s"
             parameters['domain_name'] = domain_name
 
         if state:
@@ -683,7 +670,7 @@ class DataAccessLayer:
         """
 
         if domain_name:
-            base_query += " AND om.domain_name = %(domain_name)s"
+            base_query += " AND om.domain = %(domain_name)s"
 
         if state:
             base_query += " AND upper(om.delivery_state) = upper(%(state)s)"
@@ -738,7 +725,7 @@ class DataAccessLayer:
                     FROM {table_name} swdlo
                     where (swdlo.order_year > %s OR (swdlo.order_year = %s AND swdlo.order_month >= %s))
                     AND (swdlo.order_year < %s OR (swdlo.order_year = %s AND swdlo.order_month <= %s))
-                    AND swdlo.domain_name = 'Logistics'
+                    AND swdlo.domain = 'Logistics'
                      -- AND swdlo.delivery_state <> ''
         """
 
@@ -813,7 +800,7 @@ class DataAccessLayer:
                     FROM {table_name} swdlo
                     WHERE (swdlo.order_year > %s OR (swdlo.order_year = %s AND swdlo.order_month >= %s))
                     AND (swdlo.order_year < %s OR (swdlo.order_year = %s AND swdlo.order_month <= %s))
-                    AND swdlo.domain_name = 'Logistics'
+                    AND swdlo.domain = 'Logistics'
                     AND swdlo.delivery_district <> ''
                     AND swdlo.seller_district <> ''
                     AND swdlo.seller_district is not NULL
@@ -849,7 +836,7 @@ class DataAccessLayer:
             query += " AND upper(om.delivery_district) = upper(%s)"
             parameters.append(district)
         if domain:
-            query += " AND om.domain_name = %s"
+            query += " AND om.domain = %s"
             parameters.append(domain)
 
         query += """
@@ -891,7 +878,7 @@ class DataAccessLayer:
         conditions = []
 
         if domain:
-            conditions.append("AND domain_name = %s")
+            conditions.append("AND domain = %s")
             parameters.append(domain)
 
         if state:
@@ -1002,7 +989,7 @@ class DataAccessLayer:
         conditions = []
 
         if domain:
-            conditions.append("AND domain_name = %s")
+            conditions.append("AND domain = %s")
             parameters.append(domain)
 
         if state:
@@ -1045,7 +1032,7 @@ class DataAccessLayer:
         parameters = [params.end_year, params.end_month]
 
         if domain:
-            query += " AND domain_name = %s"
+            query += " AND domain = %s"
             parameters.append(domain)
         query += " group by delivery_state_code, delivery_state"
         district_count = self.db_utility.execute_query(query, parameters)
@@ -1087,7 +1074,7 @@ class DataAccessLayer:
                         ((swdlo.order_year * 100) + swdlo.order_month) BETWEEN 
                         (({params.start_year}*100) + {params.start_month}) AND
                         (({params.end_year}*100) + {params.end_month})
-                    AND swdlo.domain_name = 'Logistics' 
+                    AND swdlo.domain = 'Logistics' 
                     AND swdlo.seller_state <> ''
                     and swdlo.seller_state <> 'Missing'
                     GROUP BY swdlo.seller_state
@@ -1096,7 +1083,7 @@ class DataAccessLayer:
                     ((om.order_year * 100) + om.order_month) BETWEEN
                     (({params.start_year}*100) + {params.start_month}) AND
                     (({params.end_year}*100) + {params.end_month})
-                    AND om.domain_name = 'Logistics'
+                    AND om.domain = 'Logistics'
                     AND UPPER(om.seller_state) = UPPER('{state}')
                     AND om.delivery_state <> ''
                     and om.delivery_state <> 'Missing'
@@ -1153,7 +1140,7 @@ class DataAccessLayer:
                     FROM {table_name} swdlo
                     WHERE 
                         (swdlo.order_year = %s AND swdlo.order_month BETWEEN %s AND %s)
-                        AND swdlo.domain_name = %s
+                        AND swdlo.domain = %s
                         AND swdlo.delivery_district <> ''
                         AND swdlo.seller_district <> ''
                         AND swdlo.seller_district IS NOT NULL
@@ -1174,7 +1161,7 @@ class DataAccessLayer:
                 ) total ON upper(om.seller_district) = upper(total.seller_district)
                 WHERE 
                     (om.order_year = %s AND om.order_month BETWEEN %s AND %s)
-                    AND om.domain_name = %s
+                    AND om.domain = %s
                     AND om.delivery_district <> 'Missing'
         """
 

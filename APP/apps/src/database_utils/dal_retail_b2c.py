@@ -60,7 +60,7 @@ class DataAccessLayer:
                 FROM 
                     {table_name}
                 WHERE
-                    ((year_val*100)+mnth_val) = ((%(end_year)s*100)+%(end_month)s)
+                    ((year_value*100)+month_value) = ((%(end_year)s*100)+%(end_month)s)
                     AND seller_district <> 'Undefined'
                     AND seller_district IS NOT NULL
                     AND seller_district <> ''
@@ -95,8 +95,8 @@ class DataAccessLayer:
             ),
             FinalResult AS (
                 SELECT 
-                    om.mnth_val AS order_month,
-                    om.year_val AS order_year,
+                    om.month_value AS order_month,
+                    om.year_value AS order_year,
                     om.seller_district AS district,
                     max(om.{seller_column}) as active_sellers_count
                 FROM 
@@ -104,7 +104,7 @@ class DataAccessLayer:
                 INNER JOIN 
                     TopDistricts td ON om.seller_district = td.seller_district
                 WHERE
-                    ((om.year_val*100)+om.mnth_val) between 
+                    ((om.year_value*100)+om.month_value) between 
                     ((%(start_year)s*100)+%(start_month)s) and ((%(end_year)s*100)+%(end_month)s)
         """
 
@@ -126,7 +126,7 @@ class DataAccessLayer:
         query += f"""
                 group by 1,2,3
                 ORDER BY 
-                    om.year_val, om.mnth_val
+                    om.year_value, om.month_value
             )
             SELECT * FROM FinalResult;
         """
@@ -152,7 +152,7 @@ class DataAccessLayer:
                 FROM 
                     {base_table}
                 WHERE
-                    ((year_val*100)+mnth_val) = ((%(end_year)s*100)+%(end_month)s)
+                    ((year_value*100)+month_value) = ((%(end_year)s*100)+%(end_month)s)
                     AND seller_district = 'AGG'
                     and not seller_state in ('Missing', 'Misssing', '')
         '''
@@ -189,8 +189,8 @@ class DataAccessLayer:
                 LIMIT 3
             )
             SELECT 
-                om.mnth_val AS order_month,
-                om.year_val AS order_year,
+                om.month_value AS order_month,
+                om.year_value AS order_year,
                 COALESCE(om.seller_state, 'MISSING') AS state,
                 max(om.{seller_column}) as active_sellers_count,
                 rs.state_rank
@@ -199,7 +199,7 @@ class DataAccessLayer:
             INNER JOIN 
                 RankedStates rs ON COALESCE(om.seller_state, 'MISSING') = rs.seller_state
             WHERE
-                ((om.year_val*100)+om.mnth_val) between 
+                ((om.year_value*100)+om.month_value) between 
                 ((%(start_year)s*100)+%(start_month)s) and ((%(end_year)s*100)+%(end_month)s)
                 AND seller_district = 'AGG'
         '''
@@ -222,7 +222,7 @@ class DataAccessLayer:
         query += '''
         group by 1,2,3, 5
             ORDER BY 
-                rs.state_rank, om.year_val, om.mnth_val
+                rs.state_rank, om.year_value, om.month_value
         '''
         
         df = self.db_utility.execute_query(query, parameters)
@@ -284,7 +284,7 @@ class DataAccessLayer:
                 FROM
                     {provider_table}
                 WHERE
-                    ((year_val*100) + mnth_val) = (({parameters['end_year']} * 100) + {parameters['end_month']})
+                    ((year_value*100) + month_value) = (({parameters['end_year']} * 100) + {parameters['end_month']})
                     and seller_district = {aggregate_value}
                     and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
                     and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
@@ -335,7 +335,7 @@ class DataAccessLayer:
                 FROM
                     {provider_table}
                 WHERE
-                    ((year_val*100) + mnth_val) = (({parameters['end_year']} * 100) + {parameters['end_month']})
+                    ((year_value*100) + month_value) = (({parameters['end_year']} * 100) + {parameters['end_month']})
                     and seller_district = {aggregate_value}
                     and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
                     and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
@@ -440,7 +440,7 @@ class DataAccessLayer:
                 FROM
                     {provider_table}
                 WHERE
-                    ((year_val*100) + mnth_val) = (({parameters['end_year']} * 100) + {parameters['end_month']})
+                    ((year_value*100) + month_value) = (({parameters['end_year']} * 100) + {parameters['end_month']})
                     and seller_district = {aggregate_value}
                     and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
                     and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
@@ -491,7 +491,7 @@ class DataAccessLayer:
                 FROM
                     {provider_table}
                 WHERE
-                    ((year_val*100) + mnth_val) = (({parameters['end_year']} * 100) + {parameters['end_month']})
+                    ((year_value*100) + month_value) = (({parameters['end_year']} * 100) + {parameters['end_month']})
                     and seller_district = {aggregate_value}
                     and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
                     and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
@@ -553,8 +553,8 @@ class DataAccessLayer:
 
     @log_function_call(ondcLogger)
     def fetch_retail_overall_orders(self, start_date, end_date, category=None,
-                                    sub_category=None, domain_name='Retail', state=None):
-        domain_name = 'Retail' if domain_name is None else domain_name
+                                    sub_category=None, domain='Retail', state=None):
+        domain = 'Retail' if domain is None else domain
         selected_view = constant.MONTHLY_DISTRICT_TABLE
         if (category):
             selected_view = constant.CAT_MONTHLY_DISTRICT_TABLE
@@ -598,7 +598,7 @@ class DataAccessLayer:
                 WHERE 
                     (order_year > %(start_year)s OR (order_year = %(start_year)s AND order_month >= %(start_month)s))
                     AND (order_year < %(end_year)s OR (order_year = %(end_year)s AND order_month <= %(end_month)s))
-                    AND domain_name = 'Retail' and sub_domain = 'B2C'
+                    AND domain = 'Retail' and sub_domain = 'B2C'
             """
 
             if state:
@@ -618,7 +618,7 @@ class DataAccessLayer:
 
     @log_function_call(ondcLogger)
     def fetch_retail_overall_top_states_orders(self, start_date, end_date, category=None,
-                                               sub_category=None, domain_name=None, state=None):
+                                               sub_category=None, domain=None, state=None):
         selected_view = constant.MONTHLY_DISTRICT_TABLE
         
         parameters = self.get_query_month_parameters(start_date, end_date)
@@ -671,7 +671,7 @@ class DataAccessLayer:
                             (({parameters['start_year']}*100)+{parameters['start_month']}) and 
                             (({parameters['end_year']}*100) + {parameters['end_month']})
                         AND delivery_state != 'MISSING'
-                        and domain_name = 'Retail' and sub_domain='B2C'
+                        and domain = 'Retail' and sub_domain='B2C'
             '''
 
             if state and state != 'None' and state != 'null':
@@ -705,7 +705,7 @@ class DataAccessLayer:
                         ((om.order_year*100) + om.order_month) between 
                             (({parameters['start_year']}*100)+{parameters['start_month']}) and 
                             (({parameters['end_year']}*100) + {parameters['end_month']})
-                        and om.domain_name = 'Retail' and om.sub_domain = 'B2C'
+                        and om.domain = 'Retail' and om.sub_domain = 'B2C'
             '''
 
             if state and state != 'None' and state != 'null':
@@ -784,7 +784,7 @@ class DataAccessLayer:
                         AND delivery_district IS NOT NULL
                         AND delivery_state IS NOT NULL 
                         AND delivery_state <> ''
-                        and domain_name = 'Retail' and sub_domain = 'B2C'
+                        and domain = 'Retail' and sub_domain = 'B2C'
                 """
 
             if state:
@@ -811,7 +811,7 @@ class DataAccessLayer:
                         AND td.delivery_district <> '' 
                         AND upper(td.delivery_district) <> upper('undefined') 
                         AND td.delivery_district IS NOT NULL 
-                        and foslm.domain_name = 'Retail' and foslm.sub_domain='B2C' """
+                        and foslm.domain = 'Retail' and foslm.sub_domain='B2C' """
 
             if state:
                 query+= f"AND upper(foslm.delivery_state) = upper('{state}')"
@@ -829,7 +829,7 @@ class DataAccessLayer:
 
     @log_function_call(ondcLogger)
     def fetch_overall_cumulative_sellers(self, start_date, end_date, category=None,
-                                         sub_category=None, domain_name=None, state=None, seller_type='Total'):
+                                         sub_category=None, domain=None, state=None, seller_type='Total'):
         table_name = constant.ACTIVE_TOTAL_SELLER_TBL
         aggregate_value= "'AGG'"
         seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
@@ -837,13 +837,13 @@ class DataAccessLayer:
 
         query = f"""
             SELECT 
-                mnth_val as order_month,
-                year_val as order_year,
+                month_value as order_month,
+                year_value as order_year,
                 max({seller_column}) as total_orders_delivered
             FROM 
                 {table_name}
             WHERE
-                ((year_val*100) + mnth_val) between
+                ((year_value*100) + month_value) between
                     (({parameters['start_year']} * 100) + {parameters['start_month']})
                     and
                     (({parameters['end_year']} * 100) + {parameters['end_month']})
@@ -860,7 +860,7 @@ class DataAccessLayer:
 
     @log_function_call(ondcLogger)
     def fetch_overall_top_states_hyperlocal_orders(self, start_date, end_date, category=None, sub_category=None,
-                                                   domain_name=None, state=None):
+                                                   domain=None, state=None):
 
         selected_view = constant.MONTHLY_DISTRICT_TABLE
 
@@ -936,7 +936,7 @@ class DataAccessLayer:
                             (({params.end_year} * 100) + {params.end_month})
                         AND delivery_state != 'MISSING'
                         AND delivery_state is not NULL
-                        AND domain_name = 'Retail' and sub_domain = 'B2C'
+                        AND domain = 'Retail' and sub_domain = 'B2C'
             """
             if state:
                 base_query += f" AND upper(delivery_state) = upper('{state}')"
@@ -966,7 +966,7 @@ class DataAccessLayer:
                             (({params.start_year} * 100) + {params.start_month})
                                 and 
                             (({params.end_year} * 100) + {params.end_month})
-                        and om.domain_name = 'Retail' and om.sub_domain = 'B2C'
+                        and om.domain = 'Retail' and om.sub_domain = 'B2C'
             """
 
             if state:
@@ -993,7 +993,7 @@ class DataAccessLayer:
 
     @log_function_call(ondcLogger)
     def fetch_overall_top_district_hyperlocal_orders(self, start_date, end_date, category=None, sub_category=None,
-                                                     domain_name=None, state=None):
+                                                     domain=None, state=None):
         selected_view = constant.MONTHLY_DISTRICT_TABLE
 
         parameters = self.get_query_month_parameters(start_date, end_date)
@@ -1068,7 +1068,7 @@ class DataAccessLayer:
                         AND delivery_district <> '' AND UPPER(delivery_district) <> 'UNDEFINED'
                         AND delivery_district IS NOT NULL
                         AND delivery_district <> ''
-                        AND domain_name = 'Retail' 
+                        AND domain = 'Retail' 
                         AND sub_domain = 'B2C'
             """
 
@@ -1106,7 +1106,7 @@ class DataAccessLayer:
                             (({parameters['start_year']} * 100) + {parameters['start_month']})
                                 and 
                             (({parameters['end_year']} * 100) + {parameters['end_month']})
-                        and om.domain_name = 'Retail' and om.sub_domain = 'B2C'
+                        and om.domain = 'Retail' and om.sub_domain = 'B2C'
             """
 
             if state:
@@ -1224,7 +1224,7 @@ class DataAccessLayer:
                             ((swdlo.order_year * 100) + swdlo.order_month) between 
                             (({params.start_year}*100) + {params.start_month}) and
                             (({params.end_year}*100) + {params.end_month})
-                        AND swdlo.domain_name = 'Retail' 
+                        AND swdlo.domain = 'Retail' 
                         AND swdlo.sub_domain = 'B2C'
                         AND swdlo.delivery_state <> ''
                         GROUP BY swdlo.delivery_state
@@ -1233,7 +1233,7 @@ class DataAccessLayer:
                         ((om.order_year*100) + om.order_month) between
                         (({params.start_year}*100) + {params.start_month}) and
                             (({params.end_year}*100) + {params.end_month})
-                        AND om.domain_name = 'Retail'
+                        AND om.domain = 'Retail'
                         AND om.sub_domain = 'B2C'      
             """
 
@@ -1357,7 +1357,7 @@ class DataAccessLayer:
                             ((swdlo.order_year*100) + swdlo.order_month) between 
                             (({params.start_year}*100) + {params.start_month}) and
                             (({params.end_year}*100) + {params.end_month})
-                        AND swdlo.domain_name = 'Retail'
+                        AND swdlo.domain = 'Retail'
                         AND swdlo.sub_domain = 'B2C'
                         AND swdlo.delivery_district <> ''
                         AND swdlo.seller_district <> ''
@@ -1379,7 +1379,7 @@ class DataAccessLayer:
                     where ((om.order_year*100) + om.order_month) between 
                             (({params.start_year}*100) + {params.start_month}) and
                             (({params.end_year}*100) + {params.end_month})
-                        AND om.domain_name = 'Retail'
+                        AND om.domain = 'Retail'
                         AND om.sub_domain = 'B2C'
             """
 
@@ -1450,7 +1450,7 @@ class DataAccessLayer:
 
             parameters = [params.end_year, params.end_month]
 
-            query += " AND domain_name = %s AND sub_domain = 'B2C'"
+            query += " AND domain = %s AND sub_domain = 'B2C'"
             parameters.append(domain)
 
             if bool(category) and (category != 'None'):
@@ -1515,7 +1515,7 @@ class DataAccessLayer:
                     ((order_year*100) + order_month) between 
                         (({params.start_year}*100) + {params.start_month}) and
                         (({params.end_year}*100) + {params.end_month}) and
-                    domain_name = 'Retail' and sub_domain = 'B2C'
+                    domain = 'Retail' and sub_domain = 'B2C'
             '''
             conditions = []
 
@@ -1547,7 +1547,7 @@ class DataAccessLayer:
             FROM 
                 {table_name}
             WHERE
-                ((year_val*100) + mnth_val) =
+                ((year_value*100) + month_value) =
                     (({params.end_year} * 100) + {params.end_month})
                 and seller_state not in ('Missing', 'Misssing') 
                 
@@ -1610,7 +1610,7 @@ class DataAccessLayer:
                             (({params.start_year} * 100) + {params.start_month}) 
                                 and 
                             (({params.end_year} * 100) + {params.end_month})
-                            and domain_name = 'Retail' and sub_domain = 'B2C'
+                            and domain = 'Retail' and sub_domain = 'B2C'
                 """
 
             if state:
@@ -1672,7 +1672,7 @@ class DataAccessLayer:
                     max({seller_column}) as active_sellers_count
                 from 
                     {table_name}
-                where ((year_val*100)+mnth_val) =  (({params.end_year}*100)+{params.end_month})
+                where ((year_value*100)+month_value) =  (({params.end_year}*100)+{params.end_month})
                     and upper(category) { " = upper('"+ category +"') " if category else ' <> ' + aggregated_value}
                     { (" and upper(sub_category) = upper('" + sub_category + "') ") if sub_category else ' '}
                     and upper(seller_state) = {aggregated_value} 
@@ -1688,7 +1688,7 @@ class DataAccessLayer:
 
     @log_function_call(ondcLogger)
     def fetch_states_orders(self, start_date, end_date, category=None,
-                            sub_category=None, domain_name=None, state=None):
+                            sub_category=None, domain=None, state=None):
 
         table_name = constant.MONTHLY_DISTRICT_TABLE
         if (category):
@@ -1728,9 +1728,9 @@ class DataAccessLayer:
         if bool(sub_category) and (sub_category != 'None'):
             query += constant.sub_category_sub_query
             parameters.append(sub_category)
-        if domain_name:
+        if domain:
             query += constant.domain_sub_query
-            parameters.append(domain_name)
+            parameters.append(domain)
         if state:
             query += constant.delivery_state_sub_query
             parameters.append(state)
@@ -1746,7 +1746,7 @@ class DataAccessLayer:
         return df
 
     @log_function_call(ondcLogger)
-    def fetch_max_state_orders(self, start_date, end_date, category=None, sub_category=None, domain_name=None,
+    def fetch_max_state_orders(self, start_date, end_date, category=None, sub_category=None, domain=None,
                                state=None):
 
         table_name = constant.MONTHLY_DISTRICT_TABLE
@@ -1799,9 +1799,9 @@ class DataAccessLayer:
             query += constant.sub_category_sub_query
             params.append(sub_category)
 
-        if domain_name:
+        if domain:
             query += constant.domain_sub_query
-            params.append(domain_name)
+            params.append(domain)
 
         query += """
                     GROUP BY
@@ -1819,7 +1819,7 @@ class DataAccessLayer:
         df = self.db_utility.execute_query(query, params)
         return df
     
-    def fetch_max_district_orders(self, start_date, end_date, category=None, sub_category=None, domain_name=None,
+    def fetch_max_district_orders(self, start_date, end_date, category=None, sub_category=None, domain=None,
                                   state=None):
 
         # selected_view = self.get_table_name(category, sub_category)
@@ -1876,9 +1876,9 @@ class DataAccessLayer:
             query += constant.sub_category_sub_query
             params.append(sub_category)
 
-        if domain_name:
+        if domain:
             query += constant.domain_sub_query
-            params.append(domain_name)
+            params.append(domain)
 
         query += """
                     GROUP BY
@@ -2177,7 +2177,7 @@ class DataAccessLayer:
                             ((swdlo.order_year * 100) + swdlo.order_month) BETWEEN 
                             (({params.start_year} * 100) + {params.start_month}) AND
                             (({params.end_year} * 100) + {params.end_month})
-                        AND swdlo.domain_name = '{domain}' 
+                        AND swdlo.domain = '{domain}' 
                         AND swdlo.sub_domain = 'B2C'
                         AND swdlo.seller_state <> ''
             """
@@ -2193,7 +2193,7 @@ class DataAccessLayer:
                         ((om.order_year * 100) + om.order_month) BETWEEN
                         (({params.start_year} * 100) + {params.start_month}) AND
                         (({params.end_year} * 100) + {params.end_month})
-                        AND om.domain_name = '{domain}'
+                        AND om.domain = '{domain}'
                         AND om.sub_domain = 'B2C'
                         AND UPPER(om.seller_state) = UPPER('{state}')
                         AND om.delivery_state <> ''
@@ -2319,7 +2319,7 @@ class DataAccessLayer:
                             ((swdlo.order_year * 100) + swdlo.order_month) BETWEEN 
                             (({params.start_year}*100) + {params.start_month}) and
                             (({params.end_year}*100) + {params.end_month})
-                            AND swdlo.domain_name = 'Retail'
+                            AND swdlo.domain = 'Retail'
                             AND swdlo.sub_domain = 'B2C'
                             AND swdlo.delivery_district <> ''
                             AND swdlo.seller_district <> ''
@@ -2341,7 +2341,7 @@ class DataAccessLayer:
                                 ((om.order_year * 100) + om.order_month) BETWEEN 
                                 (({params.start_year}*100) + {params.start_month}) and
                                 (({params.end_year}*100) + {params.end_month})
-                                AND om.domain_name = 'Retail'
+                                AND om.domain = 'Retail'
                                 AND om.sub_domain = 'B2C'
             """
 

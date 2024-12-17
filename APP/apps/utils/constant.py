@@ -46,8 +46,8 @@ swdlo_category_ranking_sub_query = " AND swdlo.category = %(category)s"
 seller_category_ranking_sub_query = " AND ds.category = %(category)s"
 seller_sub_category_ranking_sub_query = " AND ds.sub_category = %(sub_category)s"
 
-tdr_domain_sub_query = " AND om.domain_name = %s"
-swdlo_domain_sub_query = " AND swdlo.domain_name = %s"
+tdr_domain_sub_query = " AND om.domain = %s"
+swdlo_domain_sub_query = " AND swdlo.domain = %s"
 tdr_sub_category_sub_query = " AND om.sub_category = %s"
 tdr_category_sub_query = " AND om.category = %s"
 tdr_delivery_state_sub_query = " AND upper(om.delivery_state) = upper(%s)"
@@ -55,7 +55,7 @@ tdr_seller_state_sub_query = " AND upper(om.seller_state) = upper(%s)"
 
 swdlo_cat_sub_query = " AND swdlo.category = %s"
 swdlo_sub_cat_sub_query = " AND swdlo.sub_category = %s"
-swdlo_domain_sub_query_overall = " AND swdlo.domain_name = %(domain)s"
+swdlo_domain_sub_query_overall = " AND swdlo.domain = %(domain)s"
 swdlo_delivery_st_sq = " AND upper(swdlo.delivery_state) = upper(%s)"
 
 INCLUDE_CATEGORY_FLAG = os.getenv('INCL_CAT_SCAT')

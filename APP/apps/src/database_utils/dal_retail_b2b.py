@@ -68,7 +68,7 @@ class DataAccessLayer:
         """
 
         if domain:
-            query += " AND domain_name = %(domain)s"
+            query += " AND domain = %(domain)s"
             parameters['domain'] = domain
 
         query += " AND sub_domain = %(sub_domain)s"
@@ -113,7 +113,7 @@ class DataAccessLayer:
         """
 
         if domain:
-            query += " AND domain_name = %(domain)s"
+            query += " AND domain = %(domain)s"
         
         query += " AND sub_domain = %(sub_domain)s"
 
@@ -136,7 +136,7 @@ class DataAccessLayer:
         """
 
         if domain:
-            query += " AND domain_name = %(domain)s"
+            query += " AND domain = %(domain)s"
         
         query += " AND sub_domain = %(sub_domain)s"
 
@@ -170,7 +170,7 @@ class DataAccessLayer:
             """
 
         if domain:
-            query += " AND domain_name = %(domain)s"
+            query += " AND domain = %(domain)s"
             parameters['domain'] = domain
         
         query += " AND sub_domain = %(sub_domain)s"
@@ -248,7 +248,7 @@ class DataAccessLayer:
                 WHERE
                     (swdlo.order_year > %(start_year)s OR (swdlo.order_year = %(start_year)s AND swdlo.order_month >= %(start_month)s))
                     AND (swdlo.order_year < %(end_year)s OR (swdlo.order_year = %(end_year)s AND swdlo.order_month <= %(end_month)s))
-                    AND swdlo.delivery_state <> '' AND swdlo.delivery_state IS NOT NULL and swdlo.domain_name = 'Retail' and swdlo.sub_domain = 'B2B'
+                    AND swdlo.delivery_state <> '' AND swdlo.delivery_state IS NOT NULL and swdlo.domain = 'Retail' and swdlo.sub_domain = 'B2B'
 
                 GROUP BY swdlo.delivery_state_code, swdlo.delivery_state
             ),
@@ -274,7 +274,7 @@ class DataAccessLayer:
                 WHERE
                     (swdlo.order_year > %(start_year)s OR (swdlo.order_year = %(start_year)s AND swdlo.order_month >= %(start_month)s))
                     AND (swdlo.order_year < %(end_year)s OR (swdlo.order_year = %(end_year)s AND swdlo.order_month <= %(end_month)s))
-                    and swdlo.domain_name = 'Retail' and swdlo.sub_domain = 'B2B'
+                    and swdlo.domain = 'Retail' and swdlo.sub_domain = 'B2B'
             )
             SELECT
                 COALESCE(AD.delivery_state_code, 'Missing') AS delivery_state_code,
@@ -339,7 +339,7 @@ class DataAccessLayer:
         conditions = []
 
         if domain:
-            conditions.append("AND domain_name = %s")
+            conditions.append("AND domain = %s")
             parameters.append(domain)
         if sub_domain:
             conditions.append("AND sub_domain = %s")
@@ -381,7 +381,7 @@ class DataAccessLayer:
         parameters = [params.end_year, params.end_month]
 
         if domain:
-            query += " AND domain_name = %s AND sub_domain = 'B2B'"
+            query += " AND domain = %s AND sub_domain = 'B2B'"
             parameters.append(domain)
         query += " group by delivery_state_code, delivery_state"
         district_count = self.db_utility.execute_query(query, parameters)
@@ -414,7 +414,7 @@ class DataAccessLayer:
         conditions = []
 
         if domain:
-            conditions.append("AND domain_name = %s")
+            conditions.append("AND domain = %s")
             parameters.append(domain)
 
         if state:
