@@ -1,0 +1,16 @@
+<div id="pincode-level-map" class="pincode-level-map-svg" 
+    [ngStyle]="{'visibility': isLoading || updatingData ? 'hidden' : 'visible'}">
+
+    <div class="map-control">
+        <div class="btn" (click)="zoomIn()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Zoom in">
+            <i class="fa-solid fa-plus"></i>
+        </div>
+        <div class="btn" (click)="zoomOut()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Zoom out">
+            <i class="fa-solid fa-minus"></i>
+        </div>
+        <div class="btn" (click)="resetZoom()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Reset view">
+            <i class="fa-solid fa-rotate-left"></i>
+        </div>
+    </div>  
+</div>
+<div class="tooltip" [ngStyle]="{'visibility': isLoading ? 'hidden' : 'visible'}"></div>

@@ -149,6 +149,7 @@ export class IndiaMapComponent implements OnInit, OnChanges, OnDestroy {
     );
 
     this.districtmap_geojson = topojson.feature(indiamapdata, indiamapdata.objects.districts);
+    console.log(this.districtmap_geojson)
     this.districtSortedData = this.districtmap_geojson.features.sort(
       (a: any, b: any) =>
         b.properties.totalcasedata[this.metrix] -

@@ -32,7 +32,8 @@
     flex-direction: row;
     place-content: space-between;
     align-items: center;
-    border: 1px solid $grey300;
+    gap: 16px;
+    // border: 1px solid $grey300;
     border-radius: 4px;
     padding: 8px 12px;
     

@@ -44,7 +44,9 @@ class DataAccessLayer:
     @log_function_call(ondcLogger)
     def fetch_logistic_searched_data(self, start_date, end_date, city, day_type='All'):
         where_condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " \
-            if city == 'Bangalore' else "state = 'DELHI'"
+            if city == 'Bangalore' else (
+                " state = 'DELHI' " if city == 'New Delhi' else f" lower(district) = lower('{city}') "
+            )
         
         day_type_condition = " and extract(dow from date) in (6,0) " if day_type == 'Weekends' else (
             " and extract(dow from date) in (1,2,3,4,5)" if day_type == 'Week days' else ''
@@ -114,6 +116,8 @@ class DataAccessLayer:
             condition = " state = 'DELHI' "
         elif city == "Bangalore":
             condition = " district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " 
+        elif city:
+            condition = f" lower(district) = lower('{city}') "
         
         day_type_condition = " and extract(dow from date) in (6,0) " if day_type == 'Weekends' else (
             " and extract(dow from date) in (1,2,3,4,5)" if day_type == 'Week days' else ''
@@ -184,7 +188,9 @@ class DataAccessLayer:
                     ) as td 
                         on 1=1 
                         { "where dd.delivery_district in ('Bangalore', 'Bengaluru Rural', 'Bengaluru Urban') " if city =='Bangalore' else (
-                            "where dd.delivery_state='DELHI' " if city=='New Delhi' else ""
+                            "where dd.delivery_state='DELHI' " if city=='New Delhi' else (
+                            f"where lower(dd.delivery_district) = lower('{city}') " if city else ""
+                            )
                         )}
                     group by 1,2
                     
