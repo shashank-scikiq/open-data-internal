@@ -295,7 +295,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
     if (this.activeState == 'TT') {
       this.overallData = await data.mapdata.filter(
         (item: any) => (
-          item.time_of_day === this.logisticSearchService.activeTimeInterval.value
+          item.time_interval === this.logisticSearchService.activeTimeInterval.value
         ) && (
           this.activeStyle == 'state_map' ? item.district == 'All' : true
         )
@@ -325,7 +325,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
     } else {
       this.stateData = null;
       this.stateData = await data.mapdata.filter(
-        (item: any) => item.time_of_day === this.logisticSearchService.activeTimeInterval.value
+        (item: any) => item.time_interval === this.logisticSearchService.activeTimeInterval.value
       ).reduce((acc: any, item: any) => {
 
         acc[item.district] = {
