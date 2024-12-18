@@ -51,6 +51,15 @@ export class LogisticSearchService {
     return [year, month, day].join('-');
   }
 
+  resetFilters() {
+    this.dateRange.next(this.choosableDateRange.value);
+    this.pincodeLevelView.next(false);
+    this.activeCity.next('New Delhi');
+    this.activeDayType.next('All');
+    this.activeState.next('TT');
+
+  }
+
   getFormattedDateRange() {
     let startDate: any = this.formatDate(this.dateRange.value[0]);
     let endDate: any = this.formatDate(this.dateRange.value[1]);

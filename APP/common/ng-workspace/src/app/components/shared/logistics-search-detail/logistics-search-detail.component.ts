@@ -121,6 +121,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
 
   ngOnInit(): void {
     this.isLoading = true;
+    this.logisticSearchService.resetFilters();
 
     this.logisticSearchService.getDateRange().subscribe(
       (response: any) => {
