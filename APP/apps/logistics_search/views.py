@@ -74,66 +74,66 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
 
         cache_key = f"Logistic_search_FetchTopCardDeltaData_{self.generate_cache_key(params)}"
         data = get_cached_data(cache_key)
-        if data is None:
-            card_data = data_service.get_logistic_searched_top_card_data(**params)
-            # import pdb; pdb.set_trace()
-            card_data['city'] = city
-            
-            fetched_data = []
-            
-            if not city:
-                time_intervals = card_data['time_interval'].unique()
+        try:
+            if data is None:
+                card_data = data_service.get_logistic_searched_top_card_data(**params)
+                # import pdb; pdb.set_trace()
+                card_data['city'] = city
+                
+                fetched_data = []
+                
+                if not city:
+                    time_intervals = card_data['time_interval'].unique()
 
-                for time in time_intervals:
-                    df_data = card_data[card_data['time_interval'] == time]
+                    for time in time_intervals:
+                        df_data = card_data[card_data['time_interval'] == time]
 
-                    searched_sum = df_data['searched_data'].sum()
+                        searched_sum = df_data['searched_data'].sum()
 
-                    fetched_data.append(
-                        {
-                            'state': 'TT', 
-                            'time_interval': time, 
-                            'total_conversion_percentage': "{:.2f}".format((df_data['confirmed_data'].sum()/(searched_sum if searched_sum else 1))*100),
-                            'total_assigned_percentage':"{:.2f}".format((df_data['assigned_data'].sum()/(searched_sum if searched_sum else 1))*100),
-                            'searched_data': int(searched_sum)
+                        fetched_data.append(
+                            {
+                                'state': 'TT', 
+                                'time_interval': time, 
+                                'total_conversion_percentage': "{:.2f}".format((df_data['confirmed_data'].sum()/(searched_sum if searched_sum else 1))*100),
+                                'total_assigned_percentage':"{:.2f}".format((df_data['assigned_data'].sum()/(searched_sum if searched_sum else 1))*100),
+                                'searched_data': int(searched_sum)
+                            }
+                        )
+                card_data = card_data.drop(columns=['confirmed_data', 'assigned_data'])
+
+                fetched_data += card_data.to_dict(orient="records")
+                formatted_response = {"data": {}}
+
+                if not city:
+                    for record in fetched_data:
+                        state = record["state"]
+                        time_interval = record["time_interval"]
+                        # Ensure state exists in the formatted structure
+                        if state not in formatted_response["data"]:
+                            formatted_response["data"][state] = {}
+                        # Add the time_interval data
+                        formatted_response["data"][state][time_interval] = {
+                            k: v for k, v in record.items() if k not in ["state", "time_interval"]
                         }
-                    )
-            card_data = card_data.drop(columns=['confirmed_data', 'assigned_data'])
+                else:
+                    for record in fetched_data:
+                        time_interval = record["time_interval"]
+                        # Ensure state exists in the formatted structure
+                        if city not in formatted_response["data"]:
+                            formatted_response["data"][city] = {}
+                        # Add the time_interval data
+                        formatted_response["data"][city][time_interval] = {
+                            k: v for k, v in record.items() if k not in ["city", "time_interval"]
+                        }
 
-            fetched_data += card_data.to_dict(orient="records")
-            formatted_response = {"data": {}}
-
-            if not city:
-                for record in fetched_data:
-                    state = record["state"]
-                    time_interval = record["time_interval"]
-                    # Ensure state exists in the formatted structure
-                    if state not in formatted_response["data"]:
-                        formatted_response["data"][state] = {}
-                    # Add the time_interval data
-                    formatted_response["data"][state][time_interval] = {
-                        k: v for k, v in record.items() if k not in ["state", "time_interval"]
-                    }
+                cache.set(cache_key, formatted_response, constant.CACHE_EXPIRY)
             else:
-                for record in fetched_data:
-                    time_interval = record["time_interval"]
-                    # Ensure state exists in the formatted structure
-                    if city not in formatted_response["data"]:
-                        formatted_response["data"][city] = {}
-                    # Add the time_interval data
-                    formatted_response["data"][city][time_interval] = {
-                        k: v for k, v in record.items() if k not in ["city", "time_interval"]
-                    }
-            cache.set(cache_key, formatted_response, constant.CACHE_EXPIRY)
-        else:
-            formatted_response = data
-        # import pdb; pdb.set_trace()
-        return JsonResponse(formatted_response, status=200, safe=False)
-        # try:
+                formatted_response = data
+            return JsonResponse(formatted_response, status=200, safe=False)
 
-        # except Exception as e:
-        #     error_message = {'error': f"An error occurred: {str(e)}"}
-        #     return JsonResponse(error_message, status=500, safe=False)
+        except Exception as e:
+            error_message = {'error': f"An error occurred: {str(e)}"}
+            return JsonResponse(error_message, status=500, safe=False)
 
     def generate_cache_key(self, params):
         p_d = params.values()

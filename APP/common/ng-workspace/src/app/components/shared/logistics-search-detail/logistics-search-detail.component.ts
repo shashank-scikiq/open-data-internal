@@ -142,7 +142,7 @@ export class LogisticsSearchDetailComponent implements OnInit {
         this.isLoading = true;
         this.dateRangeInitialized = true;
         this.getMapData();
-        this.activeView = this.viewsOptions[0].type;
+        this.activeView = this.viewsOptions[2].type;
         this.activeInsight = this.insightOptions[0];
       }
     )
