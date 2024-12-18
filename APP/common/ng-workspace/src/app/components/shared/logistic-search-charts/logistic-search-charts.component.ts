@@ -13,6 +13,7 @@ export class LogisticSearchChartsComponent implements OnInit {
   isLoadingStatesData: boolean = false;
   panIndiaSearchData: any = null;
   visiblePanIndiaSearchData: any = null;
+  isPincodeView: any = false;
 
   topStatesSearchData: any = null;
   topDistrictsSearchData: any = null;
@@ -26,9 +27,12 @@ export class LogisticSearchChartsComponent implements OnInit {
   constructor(private logisticsSearchService: LogisticSearchService) {}
 
   ngOnInit(): void {
+    this.logisticsSearchService.pincodeLevelView$.subscribe((response: any) => {
+      this.isPincodeView = response;
+    })
     this.logisticsSearchService.filterUpdated$.subscribe(
       (val: any) => {
-        if (val.updatedFor && ['dayType', 'activeState'].includes(val.updatedFor)) {
+        if (val.updatedFor && ['dayType', 'activeState', 'dateRange'].includes(val.updatedFor)) {
           this.fetchTrendChartsData();
         }
       }
@@ -79,11 +83,12 @@ export class LogisticSearchChartsComponent implements OnInit {
       (response: any) => {
         this.topStatesSearchData = response;
         this.visibleTopStatesSearchData = this.topStatesSearchData[this.activeTimeInterval];
-
-
+        console.log(this.visibleTopStatesSearchData)
         this.isLoadingStatesData = false;
       }, (error: Error) => {
         console.log(error);
+        this.topStatesSearchData = null
+        this.visibleTopStatesSearchData = null;
         this.isLoadingStatesData = false;
       }
     )
@@ -96,6 +101,8 @@ export class LogisticSearchChartsComponent implements OnInit {
         this.isLoadingDistrictsData = false;
       }, (error: Error) => {
         console.log(error);
+        this.topDistrictsSearchData = null;
+        this.visibleTopDistrictsSearchData = null;
         this.isLoadingDistrictsData = false;
       }
     )
