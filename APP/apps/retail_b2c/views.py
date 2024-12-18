@@ -26,6 +26,31 @@ data_service = DataService(data_access_layer)
 round_off_offset = 0
 
 
+def decorator():
+    def wrapper(func):
+        def inner(*args, **kwargs):
+            func_name = func.__name__
+            class_name = None
+
+            if hasattr(func, '__qualname__'):  # For methods
+                class_name = func.__qualname__.split('.')[0]
+            if hasattr(func, '__self__') and func.__self__:
+                class_name = func.__self__.__class__.__name__
+
+            p_d = "$$$".join([class_name, func_name, args[1].query_params.urlencode()])
+
+            data = get_cached_data(p_d)
+
+            if data is None:
+                response_data = func(*args, **kwargs)
+                cache.set(p_d, response_data, constant.CACHE_EXPIRY)
+            else:
+                response_data = data
+            
+            return JsonResponse(response_data, safe=False)
+        return inner
+    return wrapper
+
 class FetchDistrictList(APIView):
     """
     API view for fetching the district list.
@@ -85,59 +110,48 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             "records the highest order count": 'Maximum Orders by State/Districts, basis the date range. It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.',
             "No. of items per order": "Average items per orders"
         }
-    @exceptionAPI(ondcLogger)
+    
+    @decorator()
     def get(self, request, *args):
         """
         APIView BaseDataAPI FetchTopCardDeltaData
         """
+
         params = self.extract_common_params(request)
         params['domain_name'] = 'Retail'
+        top_cards_current = data_service.get_total_orders_summary(**params)
+        districts_count = data_service.get_district_count(**params)
+        delta_required = 0 if (datetime.strptime(params['start_date'], "%Y-%m-%d").date()
+                            == datetime.strptime(constant.FIXED_MIN_DATE,
+                                                "%Y-%m-%d").date()) else 1
 
-        try:
-            cache_key = self.generate_cache_key(params)
-            data = get_cached_data(cache_key)
+        if delta_required:
+            previous_start_date, previous_end_date = self.get_previous_date_range(params)
+            params['start_date'], params['end_date'] = previous_start_date, previous_end_date
+            top_cards_previous = data_service.get_total_orders_summary(**params)
+            top_cards_previous = top_cards_previous.drop(columns=['most_ordering_district'])
+            # import pdb; pdb.set_trace()
+        else:
+            previous_start_date, previous_end_date = None, None
+            top_cards_previous = top_cards_current
+            top_cards_previous = top_cards_previous.drop(columns=['most_ordering_district'])
+        merged_data = self.merge_data(top_cards_current, top_cards_previous)
+        # import pdb; pdb.set_trace()
+        filtered_merged_df = self.clean_and_prepare_data(merged_data)
 
-            if data is None:
-                top_cards_current = data_service.get_total_orders_summary(**params)
-                districts_count = data_service.get_district_count(**params)
-                delta_required = 0 if (datetime.strptime(params['start_date'], "%Y-%m-%d").date()
-                                   == datetime.strptime(constant.FIXED_MIN_DATE,
-                                                        "%Y-%m-%d").date()) else 1
+        total_district_count = districts_count['district_count'].sum()
 
-                if delta_required:
-                    previous_start_date, previous_end_date = self.get_previous_date_range(params)
-                    params['start_date'], params['end_date'] = previous_start_date, previous_end_date
-                    top_cards_previous = data_service.get_total_orders_summary(**params)
-                    top_cards_previous = top_cards_previous.drop(columns=['most_ordering_district'])
-                    # import pdb; pdb.set_trace()
-                else:
-                    previous_start_date, previous_end_date = None, None
-                    top_cards_previous = top_cards_current
-                    top_cards_previous = top_cards_previous.drop(columns=['most_ordering_district'])
-                merged_data = self.merge_data(top_cards_current, top_cards_previous)
-                # import pdb; pdb.set_trace()
-                filtered_merged_df = self.clean_and_prepare_data(merged_data)
+        total_row = pd.DataFrame({
+            'delivery_state_code': ['TT'],
+            'delivery_state': ['Total'],
+            'district_count': [total_district_count]
+        })
 
-                total_district_count = districts_count['district_count'].sum()
-
-                total_row = pd.DataFrame({
-                    'delivery_state_code': ['TT'],
-                    'delivery_state': ['Total'],
-                    'district_count': [total_district_count]
-                })
-
-                districts_count = pd.concat([districts_count, total_row], ignore_index=True)
-                top_cards_data = self.format_response_data(filtered_merged_df, previous_start_date, previous_end_date,
-                                                           districts_count, delta_required)
-                cache.set(cache_key, top_cards_data, constant.CACHE_EXPIRY)
-            else:
-                top_cards_data = data
-
-            return JsonResponse(top_cards_data, safe=False)
-
-        except Exception as e:
-            error_message = {'error': f"An error occurred: {str(e)}"}
-            return JsonResponse(error_message, status=200, safe=False)
+        districts_count = pd.concat([districts_count, total_row], ignore_index=True)
+        top_cards_data = self.format_response_data(filtered_merged_df, previous_start_date, previous_end_date,
+                                                    districts_count, delta_required)
+        return top_cards_data
+    
 
     def generate_cache_key(self, params):
         cleaned_list = params.values()
@@ -460,31 +474,25 @@ class FetchCumulativeOrders(SummaryBaseDataAPI):
         return JsonResponse(formatted_data, safe=False)
 
 
+
+
 class FetchCumulativeSellers(SummaryBaseDataAPI):
     """
     API view for fetching the top states orders.
     """
 
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
+    # @exceptionAPI(ondcLogger)
+    @decorator()
+    def get(self, request):
         """
         APIView BaseDataAPI FetchCumulativeSellers
         """
         params = self.extract_common_params(request)
         params['domain_name'] = 'Retail'
-        params_list = [value for value in params.values() if value not in [None, 'None']]
+        data = data_service.get_overall_cumulative_sellers(**params)
+        formatted_data = self.top_chart_format(data, chart_type='cumulative')
+        return formatted_data
 
-        p_d = "FetchCumulativeSellers_Retail_b2c_$$$".join(params_list)
-
-        data = get_cached_data(p_d)
-
-        if data is None:
-            data = data_service.get_overall_cumulative_sellers(**params)
-            formatted_data = self.top_chart_format(data, chart_type='cumulative')
-            cache.set(p_d, formatted_data, constant.CACHE_EXPIRY)
-        else:
-            formatted_data = data
-        return JsonResponse(formatted_data, safe=False)
 
 
 class FetchTopDistrictOrders(SummaryBaseDataAPI):
@@ -499,19 +507,9 @@ class FetchTopDistrictOrders(SummaryBaseDataAPI):
         """
         params = self.extract_common_params(request)
         params['domain_name'] = 'Retail'
-        params_list = [value for value in params.values() if value not in [None, 'None']]
-
-        p_d = "FetchTopDistrictOrders_Retail_b2c_$$$".join(params_list)
-
-        data = get_cached_data(p_d)
-
-        if data is None:
-            data = data_service.get_overall_top_district_orders(**params)
-            formatted_data = self.top_chart_format(data, chart_type='delivery_district')
-            cache.set(p_d, formatted_data, constant.CACHE_EXPIRY)
-        else:
-            formatted_data = data
-        return JsonResponse(formatted_data, safe=False)
+        data = data_service.get_overall_top_district_orders(**params)
+        formatted_data = self.top_chart_format(data, chart_type='delivery_district')
+        return formatted_data
 
 
 class FetchTopStatesHyperlocal(SummaryBaseDataAPI):
@@ -659,28 +657,17 @@ class FetchTopStatesSellers(SummaryBaseDataAPI):
     API view for fetching the top district orders.
     """
 
-    @exceptionAPI(ondcLogger)
+    # @exceptionAPI(ondcLogger)
+    @decorator()
     def get(self, request, *args, **kwargs):
         """
         APIView BaseDataAPI FetchTop5SellersDistrict
         """
         params = self.extract_common_params(request)
         params['domain_name'] = 'Retail'
-
-        params_list = [value for value in params.values() if value not in [None, 'None']]
-
-        p_d = "FetchTopStatesSellers_Retail_b2c_$$$".join(params_list)
-
-        data = get_cached_data(p_d)
-
-        if data is None:
-
-            data = data_service.get_top_state_sellers(**params)
-            formatted_data = self.top_seller_chart_format(data, chart_type='state')
-            cache.set(p_d, formatted_data, constant.CACHE_EXPIRY)
-        else:
-            formatted_data = data
-        return JsonResponse(formatted_data, safe=False)
+        data = data_service.get_top_state_sellers(**params)
+        formatted_data = self.top_seller_chart_format(data, chart_type='state')
+        return formatted_data
 
 
 class FetchCategoryList(APIView):
