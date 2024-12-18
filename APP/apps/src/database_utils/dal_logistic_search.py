@@ -60,11 +60,11 @@ class DataAccessLayer:
                             ls.pick_up_pincode, 
                             CASE
                                 WHEN SUM(ls.searched_count) = 0 OR SUM(ls.confirmed_count) = 0 THEN 0 
-                                ELSE ROUND((SUM(ls.confirmed_count) / SUM(ls.searched_count)) * 100.0, 1) 
+                                ELSE ROUND((SUM(ls.confirmed_count)*100.0) / SUM(ls.searched_count), 1) 
                             END AS conversion_rate,
                             CASE
                                 WHEN SUM(ls.searched_count) = 0 OR SUM(ls.assigned_count) = 0 THEN 0 
-                                ELSE ROUND((SUM(ls.assigned_count) / SUM(ls.searched_count)) * 100.0, 1) 
+                                ELSE ROUND((SUM(ls.assigned_count)*100.0) / SUM(ls.searched_count), 1) 
                             END AS assigned_rate,
                             SUM(ls.searched_count) AS searched_data,
                             CASE 
@@ -83,11 +83,11 @@ class DataAccessLayer:
                             ls.pick_up_pincode, 
                             CASE
                                 WHEN SUM(ls.searched_count) = 0 OR SUM(ls.confirmed_count) = 0 THEN 0 
-                                ELSE ROUND((SUM(ls.confirmed_count) / SUM(ls.searched_count)) * 100.0, 1) 
+                                ELSE ROUND((SUM(ls.confirmed_count)*100.0) / SUM(ls.searched_count), 1) 
                             END AS conversion_rate,
                             CASE
                                 WHEN SUM(ls.searched_count) = 0 OR SUM(ls.assigned_count) = 0 THEN 0 
-                                ELSE ROUND((SUM(ls.assigned_count) / SUM(ls.searched_count)) * 100.0, 1) 
+                                ELSE ROUND((SUM(ls.assigned_count)*100.0) / SUM(ls.searched_count), 1) 
                             END AS assigned_rate,
                             SUM(ls.searched_count) AS searched_data,
                             CASE 
@@ -129,12 +129,12 @@ class DataAccessLayer:
                         state_name as state, 
                         ls.time_interval,
                         CASE
-                            WHEN SUM(ls.searched_count) = 0 OR SUM(ls.confirmed_count) = 0 THEN 0 
-                            ELSE ROUND((SUM(ls.confirmed_count) / SUM(ls.searched_count)) * 100.0, 1) 
+                            WHEN SUM(ls.searched_count) = 0 OR SUM(ls.confirmed_count) = 0 THEN 0
+                            ELSE ROUND((SUM(ls.confirmed_count)*100.0) / SUM(ls.searched_count), 1)
                         END AS total_conversion_percentage,
                         CASE
-                            WHEN SUM(ls.searched_count) = 0 OR SUM(ls.assigned_count) = 0 THEN 0 
-                            ELSE ROUND((SUM(ls.assigned_count) / SUM(ls.searched_count)) * 100.0, 1) 
+                            WHEN SUM(ls.searched_count) = 0 OR SUM(ls.assigned_count) = 0 THEN 0
+                            ELSE ROUND((SUM(ls.assigned_count)* 100.0) / SUM(ls.searched_count) , 1)
                         END AS total_assigned_percentage,
                         SUM(ls.confirmed_count) AS confirmed_data,
                         SUM(ls.assigned_count) AS assigned_data,
@@ -149,12 +149,12 @@ class DataAccessLayer:
                         state_name as state,
                         'Overall' AS time_interval,
                         CASE
-                            WHEN SUM(ls.searched_count) = 0 OR SUM(ls.confirmed_count) = 0 THEN 0 
-                            ELSE ROUND((SUM(ls.confirmed_count) / SUM(ls.searched_count)) * 100.0, 1) 
+                            WHEN SUM(ls.searched_count) = 0 OR SUM(ls.confirmed_count) = 0 THEN 0
+                            ELSE ROUND((SUM(ls.confirmed_count)*100.0) / SUM(ls.searched_count), 1)
                         END AS total_conversion_percentage,
                         CASE
-                            WHEN SUM(ls.searched_count) = 0 OR SUM(ls.assigned_count) = 0 THEN 0 
-                            ELSE ROUND((SUM(ls.assigned_count) / SUM(ls.searched_count)) * 100.0, 1) 
+                            WHEN SUM(ls.searched_count) = 0 OR SUM(ls.assigned_count) = 0 THEN 0
+                            ELSE ROUND((SUM(ls.assigned_count)* 100.0) / SUM(ls.searched_count) , 1)
                         END AS total_assigned_percentage,
                         SUM(ls.confirmed_count) AS confirmed_data,
                         SUM(ls.assigned_count) AS assigned_data,
@@ -208,7 +208,6 @@ class DataAccessLayer:
                     order by 1,2;
                         
                 """
-
         df = self.db_utility.execute_query(query)
         return df
     
@@ -236,12 +235,12 @@ class DataAccessLayer:
                         district_name as district,
                         time_interval,
                         CASE
-                            WHEN SUM(searched_count) = 0 OR SUM(confirmed_count) = 0 THEN 0 
-                            ELSE ROUND((SUM(confirmed_count) / SUM(searched_count)) * 100.0, 1) 
+                            WHEN SUM(searched_count) = 0 OR SUM(confirmed_count) = 0 THEN 0
+                            ELSE ROUND((SUM(confirmed_count)*100.0) / SUM(searched_count), 1)
                         END AS total_conversion_percentage,
                         CASE
-                            WHEN SUM(searched_count) = 0 OR SUM(assigned_count) = 0 THEN 0 
-                            ELSE ROUND((SUM(assigned_count) / SUM(searched_count)) * 100.0, 1) 
+                            WHEN SUM(searched_count) = 0 OR SUM(assigned_count) = 0 THEN 0
+                            ELSE ROUND((SUM(assigned_count)* 100.0) / SUM(searched_count) , 1)
                         END AS total_assigned_percentage,
                         SUM(confirmed_count) AS confirmed_data,
                         SUM(assigned_count) AS assigned_data,
@@ -274,12 +273,12 @@ class DataAccessLayer:
                         district,
                         'Overall' AS time_interval,
                         CASE
-                            WHEN SUM(searched_data) = 0 OR SUM(confirmed_data) = 0 THEN 0 
-                            ELSE ROUND((SUM(confirmed_data) / SUM(searched_data)) * 100.0, 1) 
+                            WHEN SUM(searched_data) = 0 OR SUM(confirmed_data) = 0 THEN 0
+                            ELSE ROUND((SUM(confirmed_data)*100.0) / SUM(searched_data), 1)
                         END AS total_conversion_percentage,
                         CASE
-                            WHEN SUM(searched_data) = 0 OR SUM(assigned_data) = 0 THEN 0 
-                            ELSE ROUND((SUM(assigned_data) / SUM(searched_data)) * 100.0, 1) 
+                            WHEN SUM(searched_data) = 0 OR SUM(assigned_data) = 0 THEN 0
+                            ELSE ROUND((SUM(assigned_data)* 100.0) / SUM(searched_data) , 1)
                         END AS total_assigned_percentage,
                         SUM(confirmed_data) AS confirmed_data,
                         SUM(assigned_data) AS assigned_data,
@@ -295,12 +294,12 @@ class DataAccessLayer:
                         'All' as district,
                         time_interval,
                         CASE
-                            WHEN SUM(searched_data) = 0 OR SUM(confirmed_data) = 0 THEN 0 
-                            ELSE ROUND((SUM(confirmed_data) / SUM(searched_data)) * 100.0, 1) 
+                            WHEN SUM(searched_data) = 0 OR SUM(confirmed_data) = 0 THEN 0
+                            ELSE ROUND((SUM(confirmed_data)*100.0) / SUM(searched_data), 1)
                         END AS total_conversion_percentage,
                         CASE
-                            WHEN SUM(searched_data) = 0 OR SUM(assigned_data) = 0 THEN 0 
-                            ELSE ROUND((SUM(assigned_data) / SUM(searched_data)) * 100.0, 1) 
+                            WHEN SUM(searched_data) = 0 OR SUM(assigned_data) = 0 THEN 0
+                            ELSE ROUND((SUM(assigned_data)* 100.0) / SUM(searched_data) , 1)
                         END AS total_assigned_percentage,
                         SUM(confirmed_data) AS confirmed_data,
                         SUM(assigned_data) AS assigned_data,
@@ -316,12 +315,12 @@ class DataAccessLayer:
                         'All' as district,
                         'Overall' AS time_interval,
                         CASE
-                            WHEN SUM(searched_data) = 0 OR SUM(confirmed_data) = 0 THEN 0 
-                            ELSE ROUND((SUM(confirmed_data) / SUM(searched_data)) * 100.0, 1) 
+                            WHEN SUM(searched_data) = 0 OR SUM(confirmed_data) = 0 THEN 0
+                            ELSE ROUND((SUM(confirmed_data)*100.0) / SUM(searched_data), 1)
                         END AS total_conversion_percentage,
                         CASE
-                            WHEN SUM(searched_data) = 0 OR SUM(assigned_data) = 0 THEN 0 
-                            ELSE ROUND((SUM(assigned_data) / SUM(searched_data)) * 100.0, 1) 
+                            WHEN SUM(searched_data) = 0 OR SUM(assigned_data) = 0 THEN 0
+                            ELSE ROUND((SUM(assigned_data)* 100.0) / SUM(searched_data) , 1)
                         END AS total_assigned_percentage,
                         SUM(confirmed_data) AS confirmed_data,
                         SUM(assigned_data) AS assigned_data,
