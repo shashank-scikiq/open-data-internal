@@ -28,7 +28,7 @@ export class LogisticSearchChartsComponent implements OnInit {
   ngOnInit(): void {
     this.logisticsSearchService.filterUpdated$.subscribe(
       (val: any) => {
-        if (val.updatedFor && ['dayType', 'activeState'].includes(val.updatedFor)) {
+        if (val.updatedFor && ['dayType', 'activeState', 'dateRange'].includes(val.updatedFor)) {
           this.fetchTrendChartsData();
         }
       }
@@ -79,11 +79,12 @@ export class LogisticSearchChartsComponent implements OnInit {
       (response: any) => {
         this.topStatesSearchData = response;
         this.visibleTopStatesSearchData = this.topStatesSearchData[this.activeTimeInterval];
-
-
+        console.log(this.visibleTopStatesSearchData)
         this.isLoadingStatesData = false;
       }, (error: Error) => {
         console.log(error);
+        this.topStatesSearchData = null
+        this.visibleTopStatesSearchData = null;
         this.isLoadingStatesData = false;
       }
     )
@@ -96,6 +97,8 @@ export class LogisticSearchChartsComponent implements OnInit {
         this.isLoadingDistrictsData = false;
       }, (error: Error) => {
         console.log(error);
+        this.topDistrictsSearchData = null;
+        this.visibleTopDistrictsSearchData = null;
         this.isLoadingDistrictsData = false;
       }
     )
