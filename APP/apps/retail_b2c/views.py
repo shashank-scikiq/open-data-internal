@@ -54,7 +54,7 @@ def decorator():
 
                 cache.set(class_name, cached_data, constant.CACHE_EXPIRY)
 
-            return JsonResponse(response_data, safe=False)
+            return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
 
         return inner
     return wrapper
@@ -1155,62 +1155,6 @@ class RetailB2CViewset(BaseViewSet):
             "heading": 'records the highest order count',
             "mainText": str(most_ordering_district)
         }
-
-    
-    @action(detail=False, methods=['get'], url_path='b2c_map_data')
-    @decorator()
-    def get_top_card_delta(self, request):
-        params = self.prepare_params(request)
-        df = self.access_layer.fetch_district_level_order_summary_with_seller_state_info(**params)
-        seller_data = self.access_layer.fetch_district_level_sellers(**params)
-
-        total_order_df = df.groupby(
-            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
-        )['total_orders_in_district'].sum()
-        total_order_df.rename(columns={'total_orders_in_district': 'total_order'}, inplace=True)
-
-        # 2. Calculate `intrastate_orders` (sum of `total_orders_in_district` where delivery_state == seller_state)
-        intrastate_df = df[df['delivery_state'] == df['seller_state']].groupby(
-            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
-        )['total_orders_in_district'].sum()
-        intrastate_df.rename(columns={'total_orders_in_district': 'intrastate_orders'}, inplace=True)
-
-        # 3. Calculate `intradistrict_orders` (sum of `total_orders_in_district` where delivery_district == seller_district)
-        intradistrict_df = df[df['delivery_district'] == df['seller_district']].groupby(
-            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
-        )['total_orders_in_district'].sum()
-        intradistrict_df.rename(columns={'total_orders_in_district': 'intradistrict_orders'}, inplace=True)
-
-        # 4. Merge the results into a single DataFrame
-        final_df = total_order_df.merge(intrastate_df, on=['delivery_state_code', 'delivery_state', 'delivery_district'], how='left')
-        final_df = final_df.merge(intradistrict_df, on=['delivery_state_code', 'delivery_state', 'delivery_district'], how='left')
-
-        # 5. Fill NaN values with 0 (for cases where no matching intrastate or intradistrict orders were found)
-        final_df.fillna(0, inplace=True)
-
-        state_level_agg = final_df.groupby(
-            ['delivery_state_code', 'delivery_state'], as_index=False
-        ).sum()
-
-        # 2. Add the 'AGG' value for delivery_district
-        state_level_agg['delivery_district'] = 'AGG'
-
-        # 3. Append the aggregated rows to the original DataFrame
-        final_df_with_agg = pd.concat([final_df, state_level_agg], ignore_index=True)
-
-        # 4. Sort the DataFrame if needed
-        final_df_with_agg.sort_values(by=['delivery_state_code', 'delivery_district'], inplace=True)
-
-        merged_df = pd.merge(
-            final_df_with_agg, seller_data, 
-            left_on=['delivery_state_code', 'delivery_district'], 
-            right_on=['seller_state_code', 'seller_district'], 
-            how='outer'
-        ).drop(columns=['seller_state_code', 'seller_state', 'seller_district', 'active_sellers'])
-        merged_df = merged_df.fillna(0)
-        response_data = merged_df.to_dict(orient="records")
-
-        return response_data
     
     @action(detail=False, methods=['get'], url_path='top_seller_states')
     @decorator()
@@ -1374,14 +1318,64 @@ class RetailB2CViewset(BaseViewSet):
                 } for i in district_level_data.to_dict(orient="records")
             ]
         }
-        # import pdb; pdb.set_trace()
+        return response_data
+    
+    @action(detail=False, methods=['get'], url_path='map_data')
+    @decorator()
+    def get_map_data(self, request):
+        params = self.prepare_params(request)
+        df = self.access_layer.fetch_district_level_order_summary_with_seller_state_info(**params)
+        seller_data = self.access_layer.fetch_district_level_sellers(**params)
+
+        total_order_df = df.groupby(
+            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
+        )['total_orders_in_district'].sum()
+        total_order_df.rename(columns={'total_orders_in_district': 'total_order'}, inplace=True)
+
+        # 2. Calculate `intrastate_orders` (sum of `total_orders_in_district` where delivery_state == seller_state)
+        intrastate_df = df[df['delivery_state'] == df['seller_state']].groupby(
+            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
+        )['total_orders_in_district'].sum()
+        intrastate_df.rename(columns={'total_orders_in_district': 'intrastate_orders'}, inplace=True)
+
+        # 3. Calculate `intradistrict_orders` (sum of `total_orders_in_district` where delivery_district == seller_district)
+        intradistrict_df = df[df['delivery_district'] == df['seller_district']].groupby(
+            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
+        )['total_orders_in_district'].sum()
+        intradistrict_df.rename(columns={'total_orders_in_district': 'intradistrict_orders'}, inplace=True)
+
+        # 4. Merge the results into a single DataFrame
+        final_df = total_order_df.merge(intrastate_df, on=['delivery_state_code', 'delivery_state', 'delivery_district'], how='left')
+        final_df = final_df.merge(intradistrict_df, on=['delivery_state_code', 'delivery_state', 'delivery_district'], how='left')
+
+        # 5. Fill NaN values with 0 (for cases where no matching intrastate or intradistrict orders were found)
+        final_df.fillna(0, inplace=True)
+
+        state_level_agg = final_df.groupby(
+            ['delivery_state_code', 'delivery_state'], as_index=False
+        ).sum()
+
+        # 2. Add the 'AGG' value for delivery_district
+        state_level_agg['delivery_district'] = 'AGG'
+
+        # 3. Append the aggregated rows to the original DataFrame
+        final_df_with_agg = pd.concat([final_df, state_level_agg], ignore_index=True)
+
+        # 4. Sort the DataFrame if needed
+        final_df_with_agg.sort_values(by=['delivery_state_code', 'delivery_district'], inplace=True)
+
+        merged_df = pd.merge(
+            final_df_with_agg, seller_data, 
+            left_on=['delivery_state_code', 'delivery_district'], 
+            right_on=['seller_state_code', 'seller_district'], 
+            how='outer'
+        ).drop(columns=['seller_state_code', 'seller_state', 'seller_district', 'active_sellers'])
+        merged_df = merged_df.fillna(0)
+        response_data = merged_df.to_dict(orient="records")
+
         return response_data
 
-    @action(detail=False, methods=['get'], url_path='hi_there')
-    @decorator()
-    def get_hi(self, request):
-        return {"hi": "there"}
-
+    
     @action(detail=False, methods=['get'], url_path='top_card_delta')
     @decorator()
     def get_top_card_delta(self, request):

@@ -3,7 +3,7 @@ from django.urls import re_path, include, path
 from . import views
 
 router = DefaultRouter()
-router.register('retail/b2c', views.RetailB2CViewset, basename='retail_b2c')
+router.register(r'retail/b2c', views.RetailB2CViewset, basename='retail_b2c')
 
 urlpatterns = [
     path('api/', include(router.urls)),
@@ -39,7 +39,4 @@ urlpatterns = [
     # path('api/retail/b2c/top_delivery_states/', views.FetchTop5DeliveryState.as_view(), name='top_delivery_states'),
     # path('api/retail/b2c/top_delivery_districts/', views.FetchTop5DeliveryDistrict.as_view(), name='top_delivery_district'),
 ]
-
-
-
 
