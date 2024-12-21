@@ -1253,11 +1253,12 @@ class RetailB2CViewset(BaseViewSet):
         # import pdb; pdb.set_trace()
         return response_data
     
+
     @action(detail=False, methods=['get'], url_path='top_delivery_states')
     @decorator()
     def get_interstate_going_orders(self, request):
         params = self.prepare_params(request)
-        order_df = self.access_layer.fetch_interstate_coming_orders(**params)
+        order_df = self.access_layer.fetch_interstate_going_orders(**params)
         total_orders = order_df['order_demand'].sum()
         top_5_orders = order_df['order_demand'].nlargest(5).sum()
 
@@ -1272,8 +1273,8 @@ class RetailB2CViewset(BaseViewSet):
         )
 
         total_row = pd.DataFrame({
-            'delivery_state': [params['state']],
-            'seller_state': ['Others'],
+            'seller_state': [params['state']],
+            'delivery_state': ['Others'],
             'order_demand': [total_orders - top_5_orders],
             'percentage': [
                 float(
@@ -1287,7 +1288,7 @@ class RetailB2CViewset(BaseViewSet):
             'name': params['state'],
             'children': [
                 {
-                    'name': f"{i['seller_state']} ({round(float(i['percentage']), 2)}%)"
+                    'name': f"{i['delivery_state']} ({round(float(i['percentage']), 2)}%)"
                 } for i in state_level_data.to_dict(orient="records")
             ]
         }
@@ -1296,15 +1297,85 @@ class RetailB2CViewset(BaseViewSet):
 
     @action(detail=False, methods=['get'], url_path='top_seller_districts')
     @decorator()
-    def get_interdistrict_coming_orders(self, request):
+    def get_interdistrict_going_orders(self, request):
         params = self.prepare_params(request)
-        return {"hi": "there"}
+        order_df = self.access_layer.fetch_interdistrict_going_orders(**params)
+        total_orders = order_df['order_demand'].sum()
+        top_5_orders = order_df['order_demand'].nlargest(5).sum()
+
+        top_5_order_df = order_df.head(5)
+        top_5_order_df['percentage'] = np.where(
+            total_orders == 0,
+            0,
+            (
+                top_5_order_df['order_demand'].astype(float) *100.0 / 
+                total_orders.astype(float)
+            ).round(2)
+        )
+
+        total_row = pd.DataFrame({
+            'seller_district': [params['district']],
+            'delivery_district': ['Others'],
+            'order_demand': [total_orders - top_5_orders],
+            'percentage': [
+                float(
+                    ((total_orders - top_5_orders)*100.0) / total_orders
+                ) if total_orders else 0
+            ]
+        })
+        district_level_data = pd.concat([top_5_order_df, total_row], ignore_index=True)
+        
+        response_data = {
+            'name': params['district'],
+            'children': [
+                {
+                    'name': f"{i['delivery_district']} ({round(float(i['percentage']), 2)}%)"
+                } for i in district_level_data.to_dict(orient="records")
+            ]
+        }
+
+        return response_data
 
     @action(detail=False, methods=['get'], url_path='top_delivery_districts')
     @decorator()
     def get_interdistrict_coming_orders(self, request):
         params = self.prepare_params(request)
-        return {"hi": "there"}
+        order_df = self.access_layer.fetch_interdistrict_coming_orders(**params)
+        total_orders = order_df['order_demand'].sum()
+        top_5_orders = order_df['order_demand'].nlargest(5).sum()
+
+        top_5_order_df = order_df.head(5)
+        top_5_order_df['percentage'] = np.where(
+            total_orders == 0,
+            0,
+            (
+                top_5_order_df['order_demand'].astype(float) *100.0 / 
+                total_orders.astype(float)
+            ).round(2)
+        )
+
+        total_row = pd.DataFrame({
+            'seller_district': ['Others'],
+            'delivery_district': [params['district']],
+            'order_demand': [total_orders - top_5_orders],
+            'percentage': [
+                float(
+                    ((total_orders - top_5_orders)*100.0) / total_orders
+                ) if total_orders else 0
+            ]
+        })
+        district_level_data = pd.concat([top_5_order_df, total_row], ignore_index=True)
+        
+        response_data = {
+            'name': params['district'],
+            'children': [
+                {
+                    'name': f"{i['seller_district']} ({round(float(i['percentage']), 2)}%)"
+                } for i in district_level_data.to_dict(orient="records")
+            ]
+        }
+        # import pdb; pdb.set_trace()
+        return response_data
 
     @action(detail=False, methods=['get'], url_path='hi_there')
     @decorator()

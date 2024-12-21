@@ -2649,3 +2649,4 @@ class B2CDataAccessLayer(DatabaseUtility):
 
         df = self.execute_query(query)
         return df
+
