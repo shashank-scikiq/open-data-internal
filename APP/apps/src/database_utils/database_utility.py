@@ -3,6 +3,7 @@ import django
 from django.db import connections
 from contextlib import contextmanager
 import pandas as pd
+from datetime import datetime
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'APP.django_setup.settings')
@@ -67,3 +68,20 @@ class DatabaseUtility:
         except Exception as e:
             print(f"Error executing query_dict: {e}")
             return []
+    
+    def get_query_month_parameters(self, start_date, end_date):
+        stdate_obj = datetime.strptime(start_date, '%Y-%m-%d')
+        edate_obj = datetime.strptime(end_date, '%Y-%m-%d')
+
+        start_month = stdate_obj.month
+        start_year = stdate_obj.year
+        end_month = edate_obj.month
+        end_year = edate_obj.year
+
+        parameters = {
+            'start_month': start_month,
+            'start_year': start_year,
+            'end_month': end_month,
+            'end_year': end_year
+        }
+        return parameters

@@ -1,4 +1,3 @@
-__author__ = "Shashank Katyayan"
 from django.shortcuts import render
 from django.http import JsonResponse
 from rest_framework.views import APIView
@@ -6,6 +5,10 @@ from django.http import HttpRequest
 from django.core.cache import cache
 from django.db import connection
 from collections import defaultdict
+from rest_framework.viewsets import ViewSet
+from rest_framework.response import Response
+from rest_framework.decorators import action
+from rest_framework import status
 
 import pandas as pd
 import numpy as np
@@ -25,9 +28,11 @@ data_access_layer = DataAccessLayer(db_utility)
 data_service = DataService(data_access_layer)
 round_off_offset = 0
 
+from functools import wraps
 
 def decorator():
     def wrapper(func):
+        @wraps(func)
         def inner(*args, **kwargs):
             func_name = func.__name__
             class_name = None
@@ -37,19 +42,62 @@ def decorator():
             if hasattr(func, '__self__') and func.__self__:
                 class_name = func.__self__.__class__.__name__
 
-            p_d = "$$$".join([class_name, func_name, args[1].query_params.urlencode()])
+            function_key = "$$$".join([func_name, args[1].query_params.urlencode()])
 
-            data = get_cached_data(p_d)
+            cached_data = get_cached_data(class_name) or {}
 
-            if data is None:
-                response_data = func(*args, **kwargs)
-                cache.set(p_d, response_data, constant.CACHE_EXPIRY)
+            if function_key in cached_data:
+                response_data = cached_data[function_key]
             else:
-                response_data = data
-            
+                response_data = func(*args, **kwargs)
+                cached_data[function_key] = response_data
+
+                cache.set(class_name, cached_data, constant.CACHE_EXPIRY)
+
             return JsonResponse(response_data, safe=False)
+
         return inner
     return wrapper
+
+
+# def decorator():
+#     def wrapper(func):
+#         def inner(*args, **kwargs):
+#             func_name = func.__name__
+#             class_name = None
+
+#             if hasattr(func, '__qualname__'):  # For methods
+#                 class_name = func.__qualname__.split('.')[0]
+#             if hasattr(func, '__self__') and func.__self__:
+#                 class_name = func.__self__.__class__.__name__
+
+#             p_d = "$$$".join([class_name, func_name, args[1].query_params.urlencode()])
+
+#             data = get_cached_data(p_d)
+
+#             if data is None:
+#                 response_data = func(*args, **kwargs)
+#                 cache.set(p_d, response_data, constant.CACHE_EXPIRY)
+#             else:
+#                 response_data = data
+            
+#             return JsonResponse(response_data, safe=False)
+#         return inner
+#     return wrapper
+
+
+def fetch_state_list():
+    query = f''' select distinct state_code as delivery_state_code_current from {constant.PINCODE_TABLE}'''
+    db_util = DatabaseUtility(alias='default')
+    df = db_util.execute_query(query, return_type='df')
+    return df
+
+def safe_divide(a, b, default=1):
+    try:
+        return a/b
+    except Exception as e:
+        return default
+
 
 class FetchDistrictList(APIView):
     """
@@ -84,19 +132,6 @@ class FetchDistrictList(APIView):
         db_util = DatabaseUtility(alias='default')
         df = db_util.execute_query(fetch_district_list_query, return_type='df')
         return df
-
-
-def fetch_state_list():
-    query = f''' select distinct state_code as delivery_state_code_current from {constant.PINCODE_TABLE}'''
-    db_util = DatabaseUtility(alias='default')
-    df = db_util.execute_query(query, return_type='df')
-    return df
-
-def safe_divide(a, b, default=1):
-    try:
-        return a/b
-    except Exception as e:
-        return default
 
 
 class FetchTopCardDeltaData(SummaryBaseDataAPI):
@@ -348,7 +383,6 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
         }
 
 
-
 class FetchMapStateWiseData(SummaryBaseDataAPI):
     @exceptionAPI(ondcLogger)
     def get(self, request, *args, **kwargs):
@@ -474,8 +508,6 @@ class FetchCumulativeOrders(SummaryBaseDataAPI):
         return JsonResponse(formatted_data, safe=False)
 
 
-
-
 class FetchCumulativeSellers(SummaryBaseDataAPI):
     """
     API view for fetching the top states orders.
@@ -492,7 +524,6 @@ class FetchCumulativeSellers(SummaryBaseDataAPI):
         data = data_service.get_overall_cumulative_sellers(**params)
         formatted_data = self.top_chart_format(data, chart_type='cumulative')
         return formatted_data
-
 
 
 class FetchTopDistrictOrders(SummaryBaseDataAPI):
@@ -904,3 +935,390 @@ class FetchTop5DeliveryDistrict(SummaryBaseDataAPI):
             formatted_data = data
         return JsonResponse(formatted_data, safe=False)
 
+
+
+from apps.src.views import BaseViewSet
+from apps.src.database_utils.dal_retail_b2c import B2CDataAccessLayer
+from . import helper
+
+class RetailB2CViewset(BaseViewSet):
+    access_layer = B2CDataAccessLayer()
+
+    def prepare_params(self, request):
+        params = self.extract_common_params(request)
+        params['domain_name'] = 'Retail'
+        return params
+    
+    def prepare_missing_data(self, order_df, seller_df, calc_most_ordering_district=True):
+        order_df['avg_items_per_order_in_district'] = np.where(
+            order_df['total_orders_in_district'] == 0,
+            0,
+            (
+                order_df['total_ordered_items_in_district'].astype(float) / 
+                order_df['total_orders_in_district'].astype(float)
+            ).round(2)
+        )
+        total_active_sellers_percentage = 0 if seller_df['total_sellers'].sum() == 0 else \
+            round((
+                float(seller_df['active_sellers'].sum()) / 
+                float(seller_df['total_sellers'].sum())
+            ) *100, 2)
+
+        seller_df['active_sellers'] = np.where(
+            seller_df['total_sellers'] == 0,
+            0,
+            (
+                (seller_df['active_sellers'].astype(float)*100.0) / 
+                seller_df['total_sellers'].astype(float)
+            ).round(2)
+        )
+        state_level_data = (
+            order_df.groupby(["delivery_state_code", "delivery_state"], as_index=False)
+            .agg(
+                total_districts=("delivery_district", "count"),
+                delivered_orders=("total_orders_in_district", "sum"),
+                delivered_order_items=("total_ordered_items_in_district", "sum"),
+                avg_items_per_order_in_district=("avg_items_per_order_in_district", "mean"),
+            )
+        )
+        if calc_most_ordering_district:
+            most_ordering_district = (
+                order_df.loc[order_df.groupby(
+                    ["delivery_state_code", "delivery_state"]
+                )["total_orders_in_district"].idxmax()]
+                [["delivery_state_code", "delivery_state", "delivery_district"]]
+                .rename(columns={"delivery_district": "most_ordering_district"})
+            )
+
+            state_level_data = pd.merge(
+                state_level_data, 
+                most_ordering_district, 
+                on=["delivery_state_code", "delivery_state"]
+            )
+
+        state_level_data = pd.merge(state_level_data, seller_df, left_on="delivery_state", right_on="seller_state")
+        total_row = pd.DataFrame({
+            'delivery_state_code': ['TT'],
+            'delivery_state': ['Total'],
+            'total_districts': [state_level_data['total_districts'].sum()],
+            'delivered_orders': [state_level_data['delivered_orders'].sum()],
+            'avg_items_per_order_in_district': np.where(
+                    order_df['total_orders_in_district'].sum() == 0,
+                    0,
+                    (order_df['total_ordered_items_in_district'].astype(float).sum() / 
+                    order_df['total_orders_in_district'].astype(float).sum()
+                ).round(2)
+            ),
+            'most_ordering_district': [state_level_data.loc[state_level_data['delivered_orders'].idxmax(), 'delivery_state']],
+            'seller_state_code': ['TT'],
+            'seller_state': ['Total'],
+            'active_sellers': [total_active_sellers_percentage], 
+            'total_sellers': [state_level_data['total_sellers'].sum()]
+        })
+        state_level_data = pd.concat([state_level_data, total_row], ignore_index=True)
+        return state_level_data
+   
+    def transform_top_card_data(self, current_df, current_sellers, previous_df=pd.DataFrame(), previous_sellers=pd.DataFrame()):
+        previous_state_level_data = pd.DataFrame()
+        current_state_level_data = self.prepare_missing_data(current_df, current_sellers)
+
+        # For previous date range
+        if not previous_df.empty and not previous_sellers.empty:
+            previous_state_level_data = self.prepare_missing_data(previous_df, previous_sellers, False)
+        return current_state_level_data, previous_state_level_data
+    
+    def fetch_top_card_data(self, params):
+        current_data = self.access_layer.fetch_district_level_order_summary(**params)
+        current_sellers = self.access_layer.fetch_state_level_sellers(**params)
+
+        delta_required = helper.is_delta_required(params)
+        if delta_required:
+            previous_start_date, previous_end_date = helper.get_previous_date_range(params)
+            params.update({'start_date': previous_start_date, 'end_date': previous_end_date})
+            previous_data = self.access_layer.fetch_district_level_order_summary(**params)
+            previous_sellers = self.access_layer.fetch_state_level_sellers(**params)
+        else:
+            previous_data = pd.DataFrame()
+            previous_sellers = pd.DataFrame()
+        
+        current_data, previous_data = self.transform_top_card_data(
+            current_data, current_sellers, previous_data, previous_sellers
+        )
+
+        if previous_data.empty:
+            previous_data = current_data.drop(columns=['most_ordering_district'])
+
+        return current_data, previous_data, delta_required
+
+    def prepare_district_count(self, params):
+        districts_count = data_service.get_district_count(**params)
+        total_districts = districts_count['district_count'].sum()
+        total_row = pd.DataFrame({
+            'delivery_state_code': ['TT'],
+            'delivery_state': ['Total'],
+            'district_count': [total_districts]
+        })
+        
+        return pd.concat([districts_count, total_row], ignore_index=True)
+
+    def merge_and_clean_data(self, current_data, previous_data):
+        merged_data = pd.merge(
+            current_data, previous_data,
+            on='delivery_state', suffixes=('_current', '_previous'),
+            how='outer', validate="many_to_many"
+        )
+        return self.clean_and_prepare_data(merged_data)
+
+    def clean_and_prepare_data(self, merged_df):
+        fill_values = {
+            'most_ordering_district': constant.NO_DATA_MSG,
+            'delivery_state_code_current': 'TT',
+            'delivery_state': 'TOTAL',
+            np.inf: 100, -np.inf: 100, np.nan: 0
+        }
+        merged_df = merged_df.fillna(fill_values)
+        merged_df['avg_items_per_order_in_district_current'] = merged_df['avg_items_per_order_in_district_current'].astype(float)
+        merged_df['avg_items_per_order_in_district_previous'] = merged_df['avg_items_per_order_in_district_previous'].astype(float)
+        delta_columns = [
+            ('total_districts', 'district_count_delta'),
+            ('avg_items_per_order_in_district', 'avg_items_per_order_delta'),
+            ('delivered_orders', 'orders_count_delta'),
+            ('total_sellers', 'total_sellers_count_delta'),
+            ('active_sellers', 'active_sellers_count_delta')
+        ]
+        for current, delta in delta_columns:
+            merged_df[delta] = 100 * safe_divide(
+                    merged_df[f'{current}_current'] - merged_df[f'{current}_previous'],
+                    merged_df[f'{current}_previous']
+                ).round(0)
+        drop_columns = [
+            'delivered_orders_previous', 'total_districts_previous',
+            'total_sellers_previous', 'active_sellers_previous',
+            'delivery_state_code_previous', 'avg_items_per_order_in_district_previous'
+        ]
+        return merged_df.drop(columns=drop_columns)
+
+    def build_response_data(self, merged_df, delta_required, params):
+        top_card_data = {}
+        state_list = pd.DataFrame({
+            "state_code": constant.STATE_CODES.keys()
+        })
+
+        merged_df = pd.merge(state_list, merged_df, how='left', left_on='state_code', right_on="delivery_state_code_current")
+        merged_df = merged_df.fillna(0)
+
+        for _, row in merged_df.iterrows():
+            state_code = row['state_code']
+            top_card_data[state_code] = self.build_state_metrics(row, delta_required)
+        return {
+            "prev_date_range": self.format_previous_date_range(params),
+            "tooltip_text": helper.top_card_tooltip_text,
+            "top_card_data": top_card_data
+        }
+
+    def build_state_metrics(self, row, delta_required):
+        metrics = [
+            self.create_metric_data(row['delivered_orders_current'], 'Total Orders', row.get('orders_count_delta', 0)),
+            self.create_metric_data(row['total_districts_current'], 'Districts', 0),
+            self.create_metric_data(row['total_sellers_current'], 'Total sellers', row.get('total_sellers_count_delta', 0)),
+            self.create_metric_data(row['active_sellers_current'], 'Active sellers', row.get('active_sellers_count_delta', 0), ' %'),
+            self.create_metric_data(row['avg_items_per_order_in_district_current'], 'No. of items per order', row.get('avg_items_per_order_delta', 0)),
+            self.create_max_orders_delivered_area_data(row[f"most_ordering_district{'_current' if delta_required else ''}"])
+        ]
+        return metrics
+
+    def format_previous_date_range(self, params):
+        prev_start_date, prev_end_date = params.get('start_date'), params.get('end_date')
+        if prev_start_date and prev_end_date:
+            date_format = '%b, %Y'
+            prev_start_date_str = datetime.strptime(prev_start_date, '%Y-%m-%d').strftime(date_format)
+            prev_end_date_str = datetime.strptime(prev_end_date, '%Y-%m-%d').strftime(date_format)
+            return f"Vs {prev_start_date_str}" if prev_start_date_str == prev_end_date_str else f"Vs {prev_start_date_str} - {prev_end_date_str}"
+        return " "
+
+    def create_metric_data(self, count, heading, delta, count_suffix=''):
+        if heading in ['Total sellers', 'Active sellers'] and count <= 0:
+            return {"type": 'max_state', "heading": heading, "mainText": 'No Data To Display'}
+        return {
+            "type": 'default',
+            "count": f"{count}{count_suffix}" if count_suffix else int(count),
+            "heading": heading,
+            "icon": 'trending_up' if delta >= 0 else 'trending_down',
+            "positive": delta >= 0,
+            "percentageCount": float("{:.2f}".format(delta)),
+            "showVarience": bool(delta)
+        }
+
+    def create_max_orders_delivered_area_data(self, most_ordering_district):
+        return {
+            "type": 'max_state',
+            "heading": 'records the highest order count',
+            "mainText": str(most_ordering_district)
+        }
+
+    
+    @action(detail=False, methods=['get'], url_path='b2c_map_data')
+    @decorator()
+    def get_top_card_delta(self, request):
+        params = self.prepare_params(request)
+        df = self.access_layer.fetch_district_level_order_summary_with_seller_state_info(**params)
+        seller_data = self.access_layer.fetch_district_level_sellers(**params)
+
+        total_order_df = df.groupby(
+            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
+        )['total_orders_in_district'].sum()
+        total_order_df.rename(columns={'total_orders_in_district': 'total_order'}, inplace=True)
+
+        # 2. Calculate `intrastate_orders` (sum of `total_orders_in_district` where delivery_state == seller_state)
+        intrastate_df = df[df['delivery_state'] == df['seller_state']].groupby(
+            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
+        )['total_orders_in_district'].sum()
+        intrastate_df.rename(columns={'total_orders_in_district': 'intrastate_orders'}, inplace=True)
+
+        # 3. Calculate `intradistrict_orders` (sum of `total_orders_in_district` where delivery_district == seller_district)
+        intradistrict_df = df[df['delivery_district'] == df['seller_district']].groupby(
+            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
+        )['total_orders_in_district'].sum()
+        intradistrict_df.rename(columns={'total_orders_in_district': 'intradistrict_orders'}, inplace=True)
+
+        # 4. Merge the results into a single DataFrame
+        final_df = total_order_df.merge(intrastate_df, on=['delivery_state_code', 'delivery_state', 'delivery_district'], how='left')
+        final_df = final_df.merge(intradistrict_df, on=['delivery_state_code', 'delivery_state', 'delivery_district'], how='left')
+
+        # 5. Fill NaN values with 0 (for cases where no matching intrastate or intradistrict orders were found)
+        final_df.fillna(0, inplace=True)
+
+        state_level_agg = final_df.groupby(
+            ['delivery_state_code', 'delivery_state'], as_index=False
+        ).sum()
+
+        # 2. Add the 'AGG' value for delivery_district
+        state_level_agg['delivery_district'] = 'AGG'
+
+        # 3. Append the aggregated rows to the original DataFrame
+        final_df_with_agg = pd.concat([final_df, state_level_agg], ignore_index=True)
+
+        # 4. Sort the DataFrame if needed
+        final_df_with_agg.sort_values(by=['delivery_state_code', 'delivery_district'], inplace=True)
+
+        merged_df = pd.merge(
+            final_df_with_agg, seller_data, 
+            left_on=['delivery_state_code', 'delivery_district'], 
+            right_on=['seller_state_code', 'seller_district'], 
+            how='outer'
+        ).drop(columns=['seller_state_code', 'seller_state', 'seller_district', 'active_sellers'])
+        merged_df = merged_df.fillna(0)
+        response_data = merged_df.to_dict(orient="records")
+
+        return response_data
+    
+    @action(detail=False, methods=['get'], url_path='top_seller_states')
+    @decorator()
+    def get_interstate_coming_orders(self, request):
+        params = self.prepare_params(request)
+        order_df = self.access_layer.fetch_interstate_coming_orders(**params)
+        total_orders = order_df['order_demand'].sum()
+        top_5_orders = order_df['order_demand'].nlargest(5).sum()
+
+        top_5_order_df = order_df.head(5)
+        top_5_order_df['percentage'] = np.where(
+            total_orders == 0,
+            0,
+            (
+                top_5_order_df['order_demand'].astype(float) *100.0 / 
+                total_orders.astype(float)
+            ).round(2)
+        )
+
+        total_row = pd.DataFrame({
+            'seller_state': ['Others'],
+            'delivery_state': [params['state']],
+            'order_demand': [total_orders - top_5_orders],
+            'percentage': [
+                float(
+                    ((total_orders - top_5_orders)*100.0) / total_orders
+                ) if total_orders else 0
+            ]
+        })
+        state_level_data = pd.concat([top_5_order_df, total_row], ignore_index=True)
+        
+        response_data = {
+            'name': params['state'],
+            'children': [
+                {
+                    'name': f"{i['seller_state']} ({round(float(i['percentage']), 2)}%)"
+                } for i in state_level_data.to_dict(orient="records")
+            ]
+        }
+        # import pdb; pdb.set_trace()
+        return response_data
+    
+    @action(detail=False, methods=['get'], url_path='top_delivery_states')
+    @decorator()
+    def get_interstate_going_orders(self, request):
+        params = self.prepare_params(request)
+        order_df = self.access_layer.fetch_interstate_coming_orders(**params)
+        total_orders = order_df['order_demand'].sum()
+        top_5_orders = order_df['order_demand'].nlargest(5).sum()
+
+        top_5_order_df = order_df.head(5)
+        top_5_order_df['percentage'] = np.where(
+            total_orders == 0,
+            0,
+            (
+                top_5_order_df['order_demand'].astype(float) *100.0 / 
+                total_orders.astype(float)
+            ).round(2)
+        )
+
+        total_row = pd.DataFrame({
+            'delivery_state': [params['state']],
+            'seller_state': ['Others'],
+            'order_demand': [total_orders - top_5_orders],
+            'percentage': [
+                float(
+                    ((total_orders - top_5_orders)*100.0) / total_orders
+                ) if total_orders else 0
+            ]
+        })
+        state_level_data = pd.concat([top_5_order_df, total_row], ignore_index=True)
+        
+        response_data = {
+            'name': params['state'],
+            'children': [
+                {
+                    'name': f"{i['seller_state']} ({round(float(i['percentage']), 2)}%)"
+                } for i in state_level_data.to_dict(orient="records")
+            ]
+        }
+
+        return response_data
+
+    @action(detail=False, methods=['get'], url_path='top_seller_districts')
+    @decorator()
+    def get_interdistrict_coming_orders(self, request):
+        params = self.prepare_params(request)
+        return {"hi": "there"}
+
+    @action(detail=False, methods=['get'], url_path='top_delivery_districts')
+    @decorator()
+    def get_interdistrict_coming_orders(self, request):
+        params = self.prepare_params(request)
+        return {"hi": "there"}
+
+    @action(detail=False, methods=['get'], url_path='hi_there')
+    @decorator()
+    def get_hi(self, request):
+        return {"hi": "there"}
+
+    @action(detail=False, methods=['get'], url_path='top_card_delta')
+    @decorator()
+    def get_top_card_delta(self, request):
+        params = self.prepare_params(request)
+        current_data, previous_data, delta_required = self.fetch_top_card_data(params)
+        merged_data = self.merge_and_clean_data(current_data, previous_data)
+        top_cards_data = self.build_response_data(
+            merged_data, delta_required, params
+        )
+        return top_cards_data
+    
