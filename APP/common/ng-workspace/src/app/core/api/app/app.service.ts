@@ -47,6 +47,7 @@ export class AppService {
   private cancelTopDistrictOrdersPrevious$ = new Subject<void>();
   private cancelOverallOrdersPrevious$ = new Subject<void>();
   private cancelMapStateDataPrevious$ = new Subject<void>();
+  private cancelMapDataPrevious$ = new Subject<void>();
   private cancelOrderMetricsSummaryPrevious$ = new Subject<void>();
 
   stateAndDistrictData = new BehaviorSubject<any>(null);
@@ -250,6 +251,19 @@ export class AppService {
       this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/map_statewise_data/`,
       {params}).pipe(
         takeUntil(this.cancelMapStateDataPrevious$)
+      );
+  }
+
+  getMapData() {
+    this.cancelMapDataPrevious$.next();
+    let [startDate, endDate] = this.getFormattedDateRange();
+    const params = { endDate, startDate,
+      category: this.selectedCategory,
+      subCategory: this.selectedSubCategory }
+    return this.http.get(
+      this.baseUrl + `api/${AppApiMap[this.currentUrl.value]}/map_data/`,
+      {params}).pipe(
+        takeUntil(this.cancelMapDataPrevious$)
       );
   }
 

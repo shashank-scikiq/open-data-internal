@@ -26,7 +26,8 @@ export class LogisticsSearchDetailComponent implements OnInit {
     bubbleDataKey: 'Confirm percentage',
     chloroDataKey: 'Search count',
     maxChloroData: 0,
-    maxBubbleData: 0
+    maxBubbleData: 0,
+    showBackButton: true
   }
 
   loadingData: boolean = false;
@@ -331,8 +332,8 @@ export class LogisticsSearchDetailComponent implements OnInit {
 
         acc[item.district] = {
           'Search count': item.total_searches,
-          'Confirm percentage': `${item.total_conversion_percentage}%`,
-          'Assigned percentage': `${item.total_assigned_percentage}%`
+          'Confirm percentage': `${item.total_conversion_percentage}`,
+          'Assigned percentage': `${item.total_assigned_percentage}`
         };
         if (Number(maxSearchCount) < Number(item.total_searches)) 
           maxSearchCount = item.total_searches;
@@ -376,5 +377,10 @@ export class LogisticsSearchDetailComponent implements OnInit {
       await this.preparePincodeLevelViewData();
       this.loadingData = false;
     })()
+  }
+
+  onStateChange(event: any) {
+    this.logisticSearchService.activeState.next(event.state);
+    this.logisticSearchService.filterUpdated.next({ updated: true, updatedFor: 'activeState' });
   }
 }

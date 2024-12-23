@@ -13,10 +13,11 @@
 
             <app-pan-india-map *ngIf="activeState =='TT'" [configData]="configData" [mapData]="overallData"
                 [isLoading]="loadingData" class="width-100 height-100" [viewType]="activeStyle"
-                [visualType]="activeView"></app-pan-india-map>
+                [visualType]="activeView" (mapDataChange)="onStateChange($event)"></app-pan-india-map>
 
             <app-state-level-map *ngIf="activeState != 'TT'" [mapData]="stateData" [visualType]="activeView"
-                [isLoading]="loadingData" [configData]="configData" class="width-100 height-100">
+                [isLoading]="loadingData" [configData]="configData" class="width-100 height-100"
+                (backToIndia)="onStateChange($event)" [selectedState]="activeState">
             </app-state-level-map>
             }
 

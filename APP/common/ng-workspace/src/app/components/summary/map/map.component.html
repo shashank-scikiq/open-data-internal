@@ -1,14 +1,31 @@
 <div class="map-container">
-    @if(selectedState === 'TT'){<ng-container *ngIf="(mapStatewiseData && mapStateData); else mapLoadingView">
+    <!-- @if(selectedState === 'TT'){
+        <ng-container *ngIf="true; else mapLoadingView">
         <app-india-map [metrix]="metrix" [mapVisualOptions]="mapVisualOptions" [mapStatewiseData]="mapStatewiseData"
             [mapStateData]="mapStateData">
         </app-india-map>
-    </ng-container>}
+    </ng-container>} -->
+    <app-pan-india-map 
+        *ngIf="selectedState =='TT'" 
+        [configData]="configData" 
+        [mapData]="overallData"
+        [isLoading]="isLoading" 
+        class="width-100 height-100" [viewType]="activeStyle"
+        [visualType]="activeView" (mapDataChange)="onStateChange($event)"></app-pan-india-map>
+    
+    <app-state-level-map 
+        *ngIf="selectedState != 'TT'" 
+            [mapData]="overallData"
+            [visualType]="activeView"
+            [selectedState]="selectedState"
+            (backToIndia)="backToIndiaMap($event)"
+            [isLoading]="isLoading" [configData]="configData" class="width-100 height-100">
+        </app-state-level-map>
 
-    @if(selectedState != 'TT'){<ng-container *ngIf="mapStatewiseData && mapStateData; else mapLoadingView">
+    <!-- @if(selectedState != 'TT'){<ng-container *ngIf="mapStatewiseData && mapStateData; else mapLoadingView">
         <app-state-map [metrix]="metrix" [mapVisualOptions]="mapVisualOptions" [mapStateData]="mapStateData">
         </app-state-map>
-    </ng-container>}
+    </ng-container>} -->
 
     <ng-template #mapLoadingView>
         <div class="map-loader-container">
@@ -93,6 +110,45 @@
                         <button [class.active]="mapVisualOptions.isChloropeth" (click)="handleMapChange('chloropeth')"
                             class="btn-lt map-visual-button">Chloropeth</button>
                         <button [class.active]="mapVisualOptions.isBubble" (click)="handleMapChange('bubble')"
+                            class="btn-rgt map-visual-button">Bubble</button>
+                    </div>
+                </div>
+            </div>
+        </li>
+    </div>
+}
+
+@if(!isLoading) {
+    <div class="absolute bottom-1 left-1">
+        <app-map-legends [legendType]="activeView" [configData]="legendConfigData"
+            ></app-map-legends>
+    </div>
+    
+    <div nz-menu nzMode="horizontal" nzIcon="setting" class="map-visual-btn absolute">
+        <li nz-submenu nzPlacement="bottomCenter">
+            <span title>
+                <i class="fa-solid fa-sliders margin-right-2"></i> Map Style & Visualization
+            </span>
+            <div nz-menu-group
+                style="min-height: fit-content; margin-bottom: 12px; padding: 0 12px; border-radius: 8px; overflow: hidden;">
+                <div class="map-control-inner-section">
+                    @if(selectedState == 'TT'){
+                    <div style="display: flex;">
+    
+                        <button [class.active]="activeStyle == 'state_map'"
+                            (click)="updateStyleSelection(stylesOptions[0])" class="btn-lt map-type-button">State
+                            Map</button>
+    
+                        <button [class.active]="activeStyle == 'district_map'"
+                            (click)="updateStyleSelection(stylesOptions[1])"
+                            class="btn-rgt map-type-button">District Map</button>
+                    </div>}
+                    <div style="display: flex;">
+                        <button [class.active]="activeView == 'chloro'"
+                            (click)="updateViewSelection(viewsOptions[0])"
+                            class="btn-lt map-visual-button">Chloropeth</button>
+                        <button [class.active]="activeView == 'bubble'"
+                            (click)="updateViewSelection(viewsOptions[1])"
                             class="btn-rgt map-visual-button">Bubble</button>
                     </div>
                 </div>

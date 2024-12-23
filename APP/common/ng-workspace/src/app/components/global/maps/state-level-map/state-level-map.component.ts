@@ -1,5 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { LogisticSearchService } from '@openData/app/core/api/logistic-search/logistic-search.service';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { StateCode } from '@openData/app/core/utils/map';
 import * as d3 from "d3";
 import * as topojson from 'topojson-client';
@@ -18,9 +17,12 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
     bubbleDataKey: '',
     chloroDataKey: '',
     maxChloroData: 0,
-    maxBubbleData: 0
+    maxBubbleData: 0,
+    showBackButton: true
   }
   @Input() mapData: any;
+  @Input() selectedState: string = '';
+  @Output() backToIndia = new EventEmitter<any>();;
 
   statemapGeojson: any;
   districtmapGeojson: any;
@@ -37,9 +39,8 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
   bubbleRadiusMethod: any;
   tooltip: any;
   selectedStateCode: any;
-  selectedState: any;
 
-  constructor(private logisticSearchService: LogisticSearchService) {}
+  constructor() {}
 
 
   ngOnInit(): void {
@@ -81,7 +82,6 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
 
   async initMap() {
     if(!this.stateMapData) {
-      this.selectedState = this.logisticSearchService.activeState.value;
       this.selectedStateCode = StateCode[this.selectedState];
       const formattedStateFileName = this.selectedState.replaceAll(' ', '').toLowerCase();
       this.stateMapData = await(await fetch(`static/assets/data/map/${formattedStateFileName}.json`)).json();
@@ -185,7 +185,7 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
                 return 1;
               }
               const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(
-                Number(data[this.configData.bubbleDataKey].slice(0,-1))
+                Number(data[this.configData.bubbleDataKey])
               )));
               return radius;
             })
@@ -235,8 +235,7 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
   }
 
   backToIndiaMap() {
-    this.logisticSearchService.activeState.next('TT');
-    this.logisticSearchService.filterUpdated.next({updated: false, updatedFor: 'activeState'})
+    this.backToIndia.emit({state: 'TT'});
   }
 
 }

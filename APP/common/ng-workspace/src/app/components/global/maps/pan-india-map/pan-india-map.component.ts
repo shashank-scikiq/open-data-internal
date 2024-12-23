@@ -1,5 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { LogisticSearchService } from '@openData/app/core/api/logistic-search/logistic-search.service';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import * as d3 from "d3";
 import * as topojson from 'topojson-client';
 
@@ -22,6 +21,7 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
     maxBubbleData: 0
   }
   @Input() mapData: any;
+  @Output() mapDataChange = new EventEmitter<any>();
 
   statemapGeojson: any;
   districtmapGeojson: any;
@@ -38,16 +38,16 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
   bubbleRadiusMethod: any;
   tooltip: any;
 
-  constructor(private logisticSearchService: LogisticSearchService) {}
+  constructor() { }
 
 
   ngOnInit(): void {
-    
+
     this.initMap();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if(changes['viewType'] && !changes['viewType']['firstChange']) {
+    if (changes['viewType'] && !changes['viewType']['firstChange']) {
       this.initMap();
     }
     if (changes['mapData'] || changes['visualType']) {
@@ -80,14 +80,14 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
   }
 
   async initMap() {
-    if(!this.indiamapdata) {
-      this.indiamapdata = await(await fetch('static/assets/data/map/india.json')).json();
+    if (!this.indiamapdata) {
+      this.indiamapdata = await (await fetch('static/assets/data/map/india.json')).json();
 
       this.statemapGeojson = await topojson.feature(this.indiamapdata, this.indiamapdata.objects.states);
       this.districtmapGeojson = await topojson.feature(this.indiamapdata, this.indiamapdata.objects.districts);
     }
     const element = document.getElementsByClassName('pan-india-map-svg')[0];
-    
+
     this.width = element.clientWidth;
     this.height = element.clientHeight;
     this.resetMap();
@@ -120,78 +120,78 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
       .attr('stroke-width', 0.5)
       .attr('stroke', 'black')
       .on('click', (event: any, d: any) => {
-        this.logisticSearchService.activeState.next(d.properties.st_nm);
-        this.logisticSearchService.filterUpdated.next({ updated: true, updatedFor: 'activeState' });
+        this.mapDataChange.emit({ state: d.properties.st_nm });
       })
 
-      this.updateMapWithData();
+    this.updateMapWithData();
   }
 
   updateMapWithData() {
-    if(!this.mapData) return;
+    if (!this.mapData) return;
     let g = this.svg.selectAll('#pincodeGroup');
 
-    if (this.visualType == 'chloro' || this.visualType=='both') {
+    if (this.visualType == 'chloro' || this.visualType == 'both') {
       this.customColorRange = d3.scaleLinear()
         .domain([0, 1, this.configData.maxChloroData])
         .range(this.configData.chloroColorRange);
-  
+
       g.selectAll('path')
-      .style('fill', (d: any) => {
-        let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
-        let data = this.mapData[key];
-        return data ? this.customColorRange(
+        .style('fill', (d: any) => {
+          let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
+          let data = this.mapData[key];
+          let color = data ? this.customColorRange(
             this.mapData[key][this.configData.chloroDataKey]
           ) :
-          this.configData.chloroColorRange[0]
-      })
-      .on('mouseover', (event: any, d: any) => {
-        let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
-        const data = this.mapData[key];
-        let htmlString = this.viewType == 'state_map' ? `<b>State:</b> ${d.id} <br>` :
-          `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>` 
-        if (data) {
-          htmlString += Object.entries(data)
-          .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
-          .join('');
-        }
-        this.tooltip.style('opacity', 1)
-          .html(htmlString);
-      })
-      .on('mousemove', (event: any) => {
-        const svgElement: any = document.getElementById('pan-india-map')?.getBoundingClientRect();
-  
-        // Adjust the position relative to the SVG element, not the whole page
-        const offsetX = event.clientX - svgElement.left;
-        const offsetY = event.clientY - svgElement.top;
-        this.tooltip.style('left', (offsetX + 5) + 'px')
-          .style('top', (offsetY - 28) + 'px');
-      })
-      .on('mouseout', () => {
-        this.tooltip.style('opacity', 0);
-      })
+            this.configData.chloroColorRange[0]
+          return color;
+        })
+        .on('mouseover', (event: any, d: any) => {
+          let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
+          const data = this.mapData[key];
+          let htmlString = this.viewType == 'state_map' ? `<b>State:</b> ${d.id} <br>` :
+            `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>`
+          if (data) {
+            htmlString += Object.entries(data)
+              .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
+              .join('');
+          }
+          this.tooltip.style('opacity', 1)
+            .html(htmlString);
+        })
+        .on('mousemove', (event: any) => {
+          const svgElement: any = document.getElementById('pan-india-map')?.getBoundingClientRect();
+
+          // Adjust the position relative to the SVG element, not the whole page
+          const offsetX = event.clientX - svgElement.left;
+          const offsetY = event.clientY - svgElement.top;
+          this.tooltip.style('left', (offsetX + 5) + 'px')
+            .style('top', (offsetY - 28) + 'px');
+        })
+        .on('mouseout', () => {
+          this.tooltip.style('opacity', 0);
+        })
     }
-    
+
     if (this.visualType == 'bubble' || this.visualType == 'both') {
       this.bubbleRadiusMethod = d3.scaleSqrt()
-      .domain([0, this.configData.maxBubbleData])
-      .range([1, 12]);
-      
-      g.selectAll('path')
-      .each((d: any) => {
-        const centroid = this.mapProjectionResult[0](d3.geoCentroid(d));
-        let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
-        let data = this.mapData[key];
+        .domain([0, this.configData.maxBubbleData])
+        .range([1, 12]);
 
-        this.svg.select('#pincodeGroup').append('circle')
+      g.selectAll('path')
+        .each((d: any) => {
+          const centroid = this.mapProjectionResult[0](d3.geoCentroid(d));
+          let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
+          let data = this.mapData[key];
+
+          this.svg.select('#pincodeGroup').append('circle')
             .attr('cx', centroid[0])
             .attr('cy', centroid[1])
             .attr('r', (el: any) => {
-              if(!(data && data[this.configData.bubbleDataKey])) {
+              if (!(data && data[this.configData.bubbleDataKey])) {
                 return 1;
               }
               const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(
-                Number(data[this.configData.bubbleDataKey].slice(0,-1))
+                Number(data[this.configData.bubbleDataKey])
               )));
               return radius
             })
@@ -201,11 +201,11 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
             .on('mouseover', (event: any) => {
               const data = this.mapData[key];
               let htmlString = this.viewType == 'state_map' ? `<b>State:</b> ${d.id} <br>` :
-              `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>` 
+                `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>`
               if (data) {
                 htmlString += Object.entries(data)
-                .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
-                .join('');
+                  .map(([key, value]) => `<b>${key}:</b> ${value ?? 'No data'} <br>`)
+                  .join('');
               }
               this.tooltip.style('opacity', 1)
                 .html(htmlString);
@@ -222,11 +222,10 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
             .on('mouseout', () => {
               this.tooltip.style('opacity', 0);
             })
-            .on('click', (event: any) => {
-              this.logisticSearchService.activeState.next(d.properties.st_nm);
-              this.logisticSearchService.filterUpdated.next({ updated: true, updatedFor: 'activeState' });
+            .on('click', (event: any, d: any) => {
+              this.mapDataChange.emit({ state: d.s.st_nm });
             });
-      })
+        })
     }
   }
 
