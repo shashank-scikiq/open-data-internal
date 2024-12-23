@@ -1,6 +1,7 @@
 from rest_framework.viewsets import ViewSet
 from apps.utils import constant
 from datetime import datetime
+import pandas as pd
 
 
 class BaseViewSet(ViewSet):
@@ -56,3 +57,33 @@ class BaseViewSet(ViewSet):
 
         return params
 
+    def format_order_chart(self, df, params, chart_type=None):
+        if df.empty:
+            return {}
+
+        df['order_date'] = pd.to_datetime(
+            df['order_month'].astype(str).str.zfill(2) + '-' + df['order_year'].astype(str), errors='coerce'
+        )
+        df['total_orders_delivered'] = pd.to_numeric(df['total_orders_delivered'], errors='coerce')
+
+        formatted_data = {
+            "series": [],
+            "categories": df['order_date'].dt.strftime('%b-%y').unique().tolist()
+        }
+
+        if chart_type == 'cumulative':
+            formatted_data["series"].append({
+                "name": "India" if params['state'] is None else params['state'],
+                "data": df['total_orders_delivered'].tolist()
+            })
+        else:
+            for state in df[chart_type].dropna().unique():
+                if state in ('', 'Missing'):
+                    continue
+                state_data = {
+                    "name": state,
+                    "data": df[df[chart_type] == state]['total_orders_delivered'].tolist()
+                }
+                formatted_data["series"].append(state_data)
+
+        return formatted_data

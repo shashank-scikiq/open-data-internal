@@ -559,7 +559,7 @@ class DataAccessLayer:
         aggregate_value = "'AGG'"
         query = ''
 
-        if category or sub_category:
+        if category or sub_category: 
             query = f"""
                 SELECT 
                     order_month AS order_month,
@@ -2609,7 +2609,6 @@ class B2CDataAccessLayer(DatabaseUtility):
             """
         
         query += " group by 1,2 order by 3 desc"
-
         df = self.execute_query(query)
         return df
 
@@ -2658,5 +2657,51 @@ class B2CDataAccessLayer(DatabaseUtility):
                 from {constant.DIM_CATEGORIES}
                 group by 1,2
         '''
+        df = self.execute_query(query)
+        return df
+    
+    def fetch_month_level_orders(self, *args, **kwargs):
+        aggregate_value = "'AGG'"
+        category = kwargs.get('category', None)
+        sub_category = kwargs.get('sub_category', None)
+        state = kwargs.get('state', None)
+
+        table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE \
+            if category or sub_category else constant.MONTHLY_DISTRICT_TABLE
+        
+
+        parameters = self.get_query_month_parameters(kwargs.get('start_date'), kwargs.get('end_date'))
+
+        query = f"""
+            SELECT 
+                order_month AS order_month,
+                order_year AS order_year,
+                SUM(total_orders_delivered) AS total_orders_delivered
+            from 
+                {table_name}
+            where
+                ((order_year*100) + order_month) between 
+                    (({parameters['start_year']} * 100) + {parameters['start_month']}) 
+                    and 
+                    (({parameters['end_year']} * 100) + {parameters['end_month']})
+                and sub_domain = 'B2C'
+        """
+
+        if category or sub_category:
+            query += f"""
+                and upper(delivery_state) = upper({f"'{state}'" if state else aggregate_value})
+                and delivery_district <> 'AGG'
+                and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
+                and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})            
+            """
+        else:
+            query += f"""
+                {f"and upper(delivery_state) = upper('{state}')" if state else ''}
+            """
+        
+        query += """
+            group by 1,2
+        """
+        print(query)
         df = self.execute_query(query)
         return df

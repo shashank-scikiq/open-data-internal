@@ -1161,6 +1161,10 @@ class RetailB2CViewset(BaseViewSet):
     def get_interstate_coming_orders(self, request):
         params = self.prepare_params(request)
         order_df = self.access_layer.fetch_interstate_coming_orders(**params)
+
+        if order_df.empty:
+            return {}
+        
         total_orders = order_df['order_demand'].sum()
         top_5_orders = order_df['order_demand'].nlargest(5).sum()
 
@@ -1203,6 +1207,9 @@ class RetailB2CViewset(BaseViewSet):
     def get_interstate_going_orders(self, request):
         params = self.prepare_params(request)
         order_df = self.access_layer.fetch_interstate_going_orders(**params)
+
+        if order_df.empty:
+            return {}
         total_orders = order_df['order_demand'].sum()
         top_5_orders = order_df['order_demand'].nlargest(5).sum()
 
@@ -1244,6 +1251,10 @@ class RetailB2CViewset(BaseViewSet):
     def get_interdistrict_going_orders(self, request):
         params = self.prepare_params(request)
         order_df = self.access_layer.fetch_interdistrict_going_orders(**params)
+
+        if order_df.empty:
+            return {}
+        
         total_orders = order_df['order_demand'].sum()
         top_5_orders = order_df['order_demand'].nlargest(5).sum()
 
@@ -1285,6 +1296,10 @@ class RetailB2CViewset(BaseViewSet):
     def get_interdistrict_coming_orders(self, request):
         params = self.prepare_params(request)
         order_df = self.access_layer.fetch_interdistrict_coming_orders(**params)
+
+        if order_df.empty:
+            return {}
+        
         total_orders = order_df['order_demand'].sum()
         top_5_orders = order_df['order_demand'].nlargest(5).sum()
 
@@ -1386,6 +1401,17 @@ class RetailB2CViewset(BaseViewSet):
             merged_data, delta_required, params
         )
         return top_cards_data
+    
+    @action(detail=False, methods=['get'], url_path='top_cummulative_orders')
+    @decorator()
+    def get_top_cummylative_orders(self, request):
+        params = self.prepare_params(request)
+        data = self.access_layer.fetch_month_level_orders(**params)
+        merged_data = data.replace([np.nan], 0)
+
+        formatted_data = self.format_order_chart(merged_data, params, chart_type='cumulative')
+        return formatted_data
+        
     
     @action(detail=False, methods=['get'], url_path='categories')
     @decorator()
