@@ -1406,16 +1406,10 @@ class RetailB2CViewset(BaseViewSet):
     @decorator()
     def get_top_cummylative_orders(self, request):
         params = self.prepare_params(request)
-        data = self.access_layer.fetch_month_level_orders(**params)
+        data = self.access_layer.fetch_month_wise_orders_at_global_level(**params)
+
         merged_data = data.replace([np.nan], 0)
-
-        chart_type = 'delivery_state'
-
-        if not params.get('state', None):
-            merged_data = merged_data.groupby(
-                ['order_month', 'order_year'], as_index=False
-            ).agg(total_orders_delivered=('total_orders_delivered', 'sum'))
-            chart_type = 'cumulative'
+        chart_type = 'cumulative'
         
         formatted_data = self.format_order_chart(merged_data, params, chart_type)
         return formatted_data
@@ -1424,12 +1418,9 @@ class RetailB2CViewset(BaseViewSet):
     @decorator()
     def get_top_state_orders(self, request):
         params = self.prepare_params(request)
-        data = self.access_layer.fetch_month_level_orders(**params)
+        data = self.access_layer.fetch_month_wise_orders_at_state_level(**params)
         merged_data = data.replace([np.nan], 0)
-        merged_data = merged_data.groupby(
-            ['order_month', 'order_year', 'delivery_state'], as_index=False
-        ).agg(total_orders_delivered=('total_orders_delivered', 'sum'))
-
+        
         if not params['state']:
             top_data = merged_data.groupby(
                 ['delivery_state'], as_index=False
@@ -1445,7 +1436,7 @@ class RetailB2CViewset(BaseViewSet):
     @decorator()
     def get_top_district_orders(self, request):
         params = self.prepare_params(request)
-        data = self.access_layer.fetch_month_level_orders(**params)
+        data = self.access_layer.fetch_month_wise_orders_at_district_level(**params)
         merged_data = data.replace([np.nan], 0)
 
         top_data = merged_data.groupby(
