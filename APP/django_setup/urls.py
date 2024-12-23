@@ -34,7 +34,7 @@ urlpatterns = [
     # re_path(r'^.*$',RedirectView.as_view(url='/', permanent=False)),
     path('api/landing-page/echart/', landing_page_echart_data, name='landing_page_echart_data'),
     path('api/landing-page/cumulative_orders/', landing_page_cumulative_orders, name='landing_page_cumulative_orders'),
-    re_path(r'^(?:.*)/?$', angular_app, name='angular_app'),
+    # re_path(r'^(?:.*)/?$', angular_app, name='angular_app'),
 ]
 
 # handler404 = 'apps.dashboard.dashboard_app.views.custom_404'

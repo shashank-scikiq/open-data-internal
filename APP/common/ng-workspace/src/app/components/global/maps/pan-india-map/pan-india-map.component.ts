@@ -9,7 +9,7 @@ import * as topojson from 'topojson-client';
   styleUrl: './pan-india-map.component.scss'
 })
 export class PanIndiaMapComponent implements OnInit, OnChanges {
-  @Input() isLoading: boolean = false;
+  @Input() isLoading: boolean = true;
   @Input() viewType: 'state_map' | 'district_map' = 'state_map';
   @Input() visualType: 'chloro' | 'bubble' | 'both' = 'chloro';
   @Input() configData: any = {

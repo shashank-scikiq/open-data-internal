@@ -2674,8 +2674,10 @@ class B2CDataAccessLayer(DatabaseUtility):
 
         query = f"""
             SELECT 
-                order_month AS order_month,
-                order_year AS order_year,
+                order_month,
+                order_year,
+                delivery_state,
+                delivery_district,
                 SUM(total_orders_delivered) AS total_orders_delivered
             from 
                 {table_name}
@@ -2700,8 +2702,37 @@ class B2CDataAccessLayer(DatabaseUtility):
             """
         
         query += """
-            group by 1,2
+            group by 1,2,3,4
         """
-        print(query)
+        df = self.execute_query(query)
+        return df
+    
+    def fetch_category_penetration_orders(self, *args, **kwargs):
+        category = kwargs.get('category', None)
+        sub_category = kwargs.get('sub_category', None)
+        aggregated_value = "'AGG'"
+        params = self.get_query_month_parameters(kwargs.get('start_date'), kwargs.get('end_date'))
+        
+        table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE
+        
+        query = f'''
+                select 
+                    category, 
+                    case 
+                        when sub_category = {aggregated_value} then 'ALL' 
+                        else sub_category 
+                    end as sub_category, 
+                    max(total_orders_delivered) as order_demand
+                from 
+                    {table_name}
+                where ((order_year*100)+order_month) =  (({params['end_year']}*100)+{params['end_month']})
+                    and upper(category) { " = upper('"+ category +"') " if category else ' <> ' + aggregated_value}
+                    { (" and upper(sub_category) = upper('" + sub_category + "') ") if sub_category else ' '}
+                    and upper(seller_state) = {aggregated_value} 
+                    and not category in ('Undefined', '')  
+                    and seller_state <> ''
+                group by 1,2
+                order by category
+                '''
         df = self.execute_query(query)
         return df

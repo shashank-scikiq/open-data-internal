@@ -1409,14 +1409,67 @@ class RetailB2CViewset(BaseViewSet):
         data = self.access_layer.fetch_month_level_orders(**params)
         merged_data = data.replace([np.nan], 0)
 
-        formatted_data = self.format_order_chart(merged_data, params, chart_type='cumulative')
+        chart_type = 'delivery_state'
+
+        if not params.get('state', None):
+            merged_data = merged_data.groupby(
+                ['order_month', 'order_year'], as_index=False
+            ).agg(total_orders_delivered=('total_orders_delivered', 'sum'))
+            chart_type = 'cumulative'
+        
+        formatted_data = self.format_order_chart(merged_data, params, chart_type)
+        return formatted_data
+    
+    @action(detail=False, methods=['get'], url_path='top_state_orders')
+    @decorator()
+    def get_top_state_orders(self, request):
+        params = self.prepare_params(request)
+        data = self.access_layer.fetch_month_level_orders(**params)
+        merged_data = data.replace([np.nan], 0)
+        merged_data = merged_data.groupby(
+            ['order_month', 'order_year', 'delivery_state'], as_index=False
+        ).agg(total_orders_delivered=('total_orders_delivered', 'sum'))
+
+        if not params['state']:
+            top_data = merged_data.groupby(
+                ['delivery_state'], as_index=False
+            ).agg(
+                total_orders_delivered=('total_orders_delivered', 'sum')
+            ).sort_values(by=['total_orders_delivered'], ascending=[False])[:3]
+            merged_data = merged_data[merged_data['delivery_state'].isin(top_data['delivery_state'].unique())]
+
+        formatted_data = self.format_order_chart(merged_data, params, chart_type='delivery_state')
+        return formatted_data
+    
+    @action(detail=False, methods=['get'], url_path='top_district_orders')
+    @decorator()
+    def get_top_district_orders(self, request):
+        params = self.prepare_params(request)
+        data = self.access_layer.fetch_month_level_orders(**params)
+        merged_data = data.replace([np.nan], 0)
+
+        top_data = merged_data.groupby(
+            ['delivery_district'], as_index=False
+        ).agg(
+            total_orders_delivered=('total_orders_delivered', 'sum')
+        ).sort_values(by=['total_orders_delivered'], ascending=[False])[:3]
+
+        merged_data = merged_data[merged_data['delivery_district'].isin(top_data['delivery_district'].unique())]
+
+        formatted_data = self.format_order_chart(merged_data, params, chart_type='delivery_district')
         return formatted_data
         
     
     @action(detail=False, methods=['get'], url_path='categories')
     @decorator()
     def get_categories(self, request):
-        # params = self.prepare_params(request)
         category_df = self.access_layer.fetch_categories()
         return category_df.to_dict(orient='records')
-    
+
+    @action(detail=False, methods=['get'], url_path='category_penetration_orders')
+    @decorator()
+    def get_category_penetration_orders(self, request):
+        params = self.prepare_params(request)
+        data = self.access_layer.fetch_category_penetration_orders(**params)
+        formatted_data = self.sunburst_format(data, 'order_demand')
+        return formatted_data

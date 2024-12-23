@@ -87,3 +87,43 @@ class BaseViewSet(ViewSet):
                 formatted_data["series"].append(state_data)
 
         return formatted_data
+
+    def sunburst_format(self, category_penetration_df, chart_type):
+        sunburst_data = {}
+        total_data = {}
+
+        for index, row in category_penetration_df.iterrows():
+            category = row['category']
+            sub_category = row['sub_category']
+            order_demand = int(row[chart_type])
+
+            if category not in sunburst_data:
+                sunburst_data[category] = {'children': [], 'value': 0}
+            if sub_category == 'ALL':
+                total_data[category] = order_demand
+            else:
+                sunburst_data[category]['children'].append({'name': sub_category, 'value': order_demand})
+                sunburst_data[category]['value'] += order_demand
+
+        ids, labels, parents, values, percent = [], [], [], [], []
+        total_value = sum(total_data.values())
+
+        for category, data in sunburst_data.items():
+            category_id = category
+            ids.append(category_id)
+            labels.append(category)
+            parents.append("")
+            values.append(data['value'])
+            category_percentage = (total_data.get(category, 0) / total_value * 100) if total_value else 0
+            percent.append(round(category_percentage, 2))
+
+            for sub_category in data['children']:
+                sub_category_id = f"{category_id}-{sub_category['name']}"
+                ids.append(sub_category_id)
+                labels.append(sub_category['name'])
+                parents.append(category_id)
+                values.append(sub_category['value'])
+                sub_category_percentage = (sub_category['value'] / data['value'] * 100) if data['value'] else 0
+                percent.append(round(sub_category_percentage, 2))
+
+        return {'ids': ids, 'labels': labels, 'parents': parents, 'values': values, 'percent': percent}

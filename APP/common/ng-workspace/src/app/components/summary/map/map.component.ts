@@ -15,7 +15,7 @@ export class MapComponent implements OnInit, OnChanges {
   mapStateData: any;
   selectedState: string = 'TT';
   mapData: any = null;
-  isLoading: boolean = false;
+  isLoading: boolean = true;
 
   mapVisualOptions: any = {
     isStateMap: true,
@@ -86,6 +86,7 @@ export class MapComponent implements OnInit, OnChanges {
       this.mapData = null;
       // this.fetchMapStateData();
       // this.fetchOrderMetricsSummary();
+      this.isLoading = true;
       this.fetchMapData();
     });
     this.appService.filterUpdated$.subscribe((val) => {
@@ -93,6 +94,7 @@ export class MapComponent implements OnInit, OnChanges {
         // this.mapStateData = null;
         // this.mapStatewiseData = null;
         this.mapData = null;
+        this.isLoading = true;
         this.fetchMapData();
         // this.fetchMapStateData();
         // this.fetchOrderMetricsSummary();
@@ -101,7 +103,10 @@ export class MapComponent implements OnInit, OnChanges {
     this.mapService.selectedState$.subscribe((state: string) => {
       if (state != this.selectedState)
         this.selectedState = state;
-        this.prepareMapData();
+        (async () => {
+          await this.prepareMapData();
+          this.isLoading = false;
+        })();
     });
   }
 
@@ -111,16 +116,23 @@ export class MapComponent implements OnInit, OnChanges {
       this.mapVisualOptions.isStateMap = true;
       this.mapVisualOptions.isDistrictMap = false;
     }
-    this.prepareMapData();
+    (async () => {
+      await this.prepareMapData();
+      this.isLoading = false;
+    })();
   }
 
   fetchMapData() {
+    this.isLoading = true;
     this.appService.getMapData().subscribe(
       (response: any) => {
         if (response) {
           this.mapData = response;
           // console.log(this.mapData);
-          this.prepareMapData();
+          (async () => {
+            await this.prepareMapData();
+            this.isLoading = false;
+          })();
         }
       }, (error: Error) => {
         console.log('Error is ', error);
@@ -204,8 +216,6 @@ export class MapComponent implements OnInit, OnChanges {
       maxChloroData: maxValue,
       maxBubbleData: maxValue
     }
-
-    this.isLoading = false;
   }
 
   // fetchMapStateData() {
