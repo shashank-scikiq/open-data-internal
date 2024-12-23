@@ -2650,3 +2650,13 @@ class B2CDataAccessLayer(DatabaseUtility):
         df = self.execute_query(query)
         return df
 
+    def fetch_categories(self, *args, **kwargs):
+        query = f'''
+                select 
+                    category  as category,
+                    sub_category 
+                from {constant.DIM_CATEGORIES}
+                group by 1,2
+        '''
+        df = self.execute_query(query)
+        return df

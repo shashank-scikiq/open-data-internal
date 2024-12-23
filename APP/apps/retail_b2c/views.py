@@ -1387,3 +1387,10 @@ class RetailB2CViewset(BaseViewSet):
         )
         return top_cards_data
     
+    @action(detail=False, methods=['get'], url_path='categories')
+    @decorator()
+    def get_categories(self, request):
+        # params = self.prepare_params(request)
+        category_df = self.access_layer.fetch_categories()
+        return category_df.to_dict(orient='records')
+    
