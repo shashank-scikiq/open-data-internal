@@ -1,6 +1,6 @@
 <div id="state-level-map" class="state-level-map-svg" [ngStyle]="{'visibility': isLoading ? 'hidden' : 'visible'}">
 
-    <div class="map-control">
+    <div [class]="'map-control ' + mapData?.mapControlPosition">
         <div class="btn" (click)="zoomIn()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Zoom in">
             <i class="fa-solid fa-plus"></i>
         </div>
@@ -12,7 +12,7 @@
         </div>
     </div>
 
-    <div class="map-back-btn-container" *ngIf="configData.showBackButton">
+    <div class="map-back-btn-container" *ngIf="mapData?.configData?.showBackButton">
         <i class="location-icon fa-solid fa-map-location-dot"></i>
         <div class="detail-section">
             <p class="margin-0 font-md font-bolder">{{selectedState}}</p>

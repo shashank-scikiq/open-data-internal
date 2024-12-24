@@ -83,7 +83,6 @@ export class LogisticSearchChartsComponent implements OnInit {
       (response: any) => {
         this.topStatesSearchData = response;
         this.visibleTopStatesSearchData = this.topStatesSearchData[this.activeTimeInterval];
-        console.log(this.visibleTopStatesSearchData)
         this.isLoadingStatesData = false;
       }, (error: Error) => {
         console.log(error);

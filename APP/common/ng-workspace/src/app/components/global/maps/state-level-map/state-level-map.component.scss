@@ -17,9 +17,6 @@
 
 .map-control {
   position: absolute;
-  top: 0px;
-  left: 0px;
-  // transform: translate(-50%);
   background: white;
   display: flex;
   flex-direction: column;
@@ -44,6 +41,15 @@
   .active {
     background-color: $blue700;
     color: $white;
+  }
+
+  &.top-right {
+    top: 0px;
+    right: 16px;
+  }
+  &.top-left {
+    top: 0px;
+    left: 0px;
   }
 }
 

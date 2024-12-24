@@ -1,6 +1,6 @@
 <div id="pan-india-map" class="pan-india-map-svg" [ngStyle]="{'visibility': isLoading ? 'hidden' : 'visible'}">
 
-    <div class="map-control">
+    <div [class]="'map-control ' + mapData?.mapControlPosition">
         <div class="btn" (click)="zoomIn()" nz-tooltip nzTooltipPlacement="left" nzTooltipTitle="Zoom in">
             <i class="fa-solid fa-plus"></i>
         </div>

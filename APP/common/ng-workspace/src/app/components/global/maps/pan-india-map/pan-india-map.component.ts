@@ -9,17 +9,17 @@ import * as topojson from 'topojson-client';
   styleUrl: './pan-india-map.component.scss'
 })
 export class PanIndiaMapComponent implements OnInit, OnChanges {
-  @Input() isLoading: boolean = true;
+  @Input() isLoading: boolean = false;
   @Input() viewType: 'state_map' | 'district_map' = 'state_map';
   @Input() visualType: 'chloro' | 'bubble' | 'both' = 'chloro';
-  @Input() configData: any = {
-    chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
-    bubbleColorRange: ["RGBA( 0, 139, 139, 0.4)", "RGBA( 0, 139, 139, 0.8)"],
-    bubbleDataKey: '',
-    chloroDataKey: '',
-    maxChloroData: 0,
-    maxBubbleData: 0
-  }
+  // @Input() configData: any = {
+  //   chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
+  //   bubbleColorRange: ["RGBA( 0, 139, 139, 0.4)", "RGBA( 0, 139, 139, 0.8)"],
+  //   bubbleDataKey: '',
+  //   chloroDataKey: '',
+  //   maxChloroData: 0,
+  //   maxBubbleData: 0
+  // }
   @Input() mapData: any;
   @Output() mapDataChange = new EventEmitter<any>();
 
@@ -127,27 +127,27 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
   }
 
   updateMapWithData() {
-    if (!this.mapData) return;
+    if (!this.mapData?.data) return;
     let g = this.svg.selectAll('#pincodeGroup');
 
     if (this.visualType == 'chloro' || this.visualType == 'both') {
       this.customColorRange = d3.scaleLinear()
-        .domain([0, 1, this.configData.maxChloroData])
-        .range(this.configData.chloroColorRange);
+        .domain([0, 1, this.mapData.configData.maxChloroData])
+        .range(this.mapData.configData.chloroColorRange);
 
       g.selectAll('path')
         .style('fill', (d: any) => {
           let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
-          let data = this.mapData[key];
+          let data = this.mapData.data[key];
           let color = data ? this.customColorRange(
-            this.mapData[key][this.configData.chloroDataKey]
+            this.mapData.data[key][this.mapData.configData.chloroDataKey]
           ) :
-            this.configData.chloroColorRange[0]
+            this.mapData.configData.chloroColorRange[0]
           return color;
         })
         .on('mouseover', (event: any, d: any) => {
           let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
-          const data = this.mapData[key];
+          const data = this.mapData.data[key];
           let htmlString = this.viewType == 'state_map' ? `<b>State:</b> ${d.id} <br>` :
             `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>`
           if (data) {
@@ -174,32 +174,32 @@ export class PanIndiaMapComponent implements OnInit, OnChanges {
 
     if (this.visualType == 'bubble' || this.visualType == 'both') {
       this.bubbleRadiusMethod = d3.scaleSqrt()
-        .domain([0, this.configData.maxBubbleData])
+        .domain([0, this.mapData.configData.maxBubbleData])
         .range([1, 12]);
 
       g.selectAll('path')
         .each((d: any) => {
           const centroid = this.mapProjectionResult[0](d3.geoCentroid(d));
           let key = this.viewType == 'state_map' ? d.id.toUpperCase() : d.properties.district
-          let data = this.mapData[key];
+          let data = this.mapData.data[key];
 
           this.svg.select('#pincodeGroup').append('circle')
             .attr('cx', centroid[0])
             .attr('cy', centroid[1])
             .attr('r', (el: any) => {
-              if (!(data && data[this.configData.bubbleDataKey])) {
+              if (!(data && data[this.mapData.configData.bubbleDataKey])) {
                 return 1;
               }
               const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(
-                Number(data[this.configData.bubbleDataKey])
+                Number(data[this.mapData.configData.bubbleDataKey])
               )));
               return radius
             })
-            .attr('fill', this.configData.bubbleColorRange[0])
-            .attr('stroke', this.configData.bubbleColorRange[1])
+            .attr('fill', this.mapData.configData.bubbleColorRange[0])
+            .attr('stroke', this.mapData.configData.bubbleColorRange[1])
             .attr('stroke-width', 0.5)
             .on('mouseover', (event: any) => {
-              const data = this.mapData[key];
+              const data = this.mapData.data[key];
               let htmlString = this.viewType == 'state_map' ? `<b>State:</b> ${d.id} <br>` :
                 `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>`
               if (data) {

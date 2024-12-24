@@ -2,28 +2,17 @@ from django.http import JsonResponse
 from django.core.cache import cache
 from rest_framework.decorators import action
 from rest_framework import status
-
+from functools import wraps
 import pandas as pd
 import numpy as np
 from datetime import datetime
+
 from apps.utils.helpers import get_cached_data
-
-from apps.logging_conf import log_function_call, exceptionAPI, ondcLogger
 from apps.utils import constant
-from apps.src.database_utils.database_utility import DatabaseUtility
-from apps.src.database_utils.dal_retail_b2c import DataAccessLayer
-from apps.src.database_utils.data_service_layer import DataService
-
-db_utility = DatabaseUtility()
-data_access_layer = DataAccessLayer(db_utility)
-data_service = DataService(data_access_layer)
-round_off_offset = 0
-
-from functools import wraps
-
 from apps.src.views import BaseViewSet
 from apps.src.database_utils.dal_retail_b2c import B2CDataAccessLayer
 from . import helper
+
 
 def decorator():
     def wrapper(func):
@@ -70,7 +59,7 @@ class RetailB2CViewset(BaseViewSet):
             (
                 order_df['total_ordered_items_in_district'].astype(float) / 
                 order_df['total_orders_in_district'].astype(float)
-            ).round(2)
+            ).round(1)
         )
         total_active_sellers_percentage = 0 if seller_df['total_sellers'].sum() == 0 else \
             round((
@@ -84,7 +73,7 @@ class RetailB2CViewset(BaseViewSet):
             (
                 (seller_df['active_sellers'].astype(float)*100.0) / 
                 seller_df['total_sellers'].astype(float)
-            ).round(2)
+            ).round(1)
         )
         state_level_data = (
             order_df.groupby(["delivery_state_code", "delivery_state"], as_index=False)
@@ -500,6 +489,24 @@ class RetailB2CViewset(BaseViewSet):
             how='outer'
         ).drop(columns=['seller_state_code', 'seller_state', 'seller_district', 'active_sellers'])
         merged_df = merged_df.fillna(0)
+
+        merged_df['intrastate_orders'] = np.where(
+            merged_df['total_order'] == 0,
+            0,
+            (
+                merged_df['intrastate_orders'].astype(float)*100.0 / 
+                merged_df['total_order'].astype(float)
+            ).round(1)
+        )
+        merged_df['intradistrict_orders'] = np.where(
+            merged_df['total_order'] == 0,
+            0,
+            (
+                merged_df['intradistrict_orders'].astype(float)*100.0 / 
+                merged_df['total_order'].astype(float)
+            ).round(1)
+        )
+
         response_data = merged_df.to_dict(orient="records")
 
         return response_data
@@ -534,14 +541,17 @@ class RetailB2CViewset(BaseViewSet):
         params = self.prepare_params(request)
         data = self.access_layer.fetch_month_wise_orders_at_state_level(**params)
         merged_data = data.replace([np.nan], 0)
+
+        values_to_drop = ['', 'Missing', 'MISSING']
+        merged_data = merged_data[~merged_data['delivery_state'].isin(values_to_drop)]
         
-        if not params['state']:
-            top_data = merged_data.groupby(
-                ['delivery_state'], as_index=False
-            ).agg(
-                total_orders_delivered=('total_orders_delivered', 'sum')
-            ).sort_values(by=['total_orders_delivered'], ascending=[False])[:3]
-            merged_data = merged_data[merged_data['delivery_state'].isin(top_data['delivery_state'].unique())]
+        top_states = merged_data.groupby(
+            ['delivery_state'], as_index=False
+        ).agg(
+            total_orders_delivered=('total_orders_delivered', 'sum')
+        ).sort_values(by=['total_orders_delivered'], ascending=[False])[:3]['delivery_state'].unique()
+        merged_data = merged_data[merged_data['delivery_state'].isin(top_states)]
+        merged_data = merged_data.reset_index(drop=True)
 
         formatted_data = self.format_order_chart(merged_data, params, chart_type='delivery_state')
         return formatted_data
@@ -553,13 +563,16 @@ class RetailB2CViewset(BaseViewSet):
         data = self.access_layer.fetch_month_wise_orders_at_district_level(**params)
         merged_data = data.replace([np.nan], 0)
 
-        top_data = merged_data.groupby(
+        values_to_drop = ['', 'Missing', 'MISSING']
+        merged_data = merged_data[~merged_data['delivery_district'].isin(values_to_drop)]
+
+        top_districts = merged_data.groupby(
             ['delivery_district'], as_index=False
         ).agg(
             total_orders_delivered=('total_orders_delivered', 'sum')
-        ).sort_values(by=['total_orders_delivered'], ascending=[False])[:3]
-
-        merged_data = merged_data[merged_data['delivery_district'].isin(top_data['delivery_district'].unique())]
+        ).sort_values(by=['total_orders_delivered'], ascending=[False])[:3]['delivery_district'].unique()
+        merged_data = merged_data[merged_data['delivery_district'].isin(top_districts)]
+        merged_data = merged_data.reset_index(drop=True)
 
         formatted_data = self.format_order_chart(merged_data, params, chart_type='delivery_district')
         return formatted_data
@@ -589,14 +602,17 @@ class RetailB2CViewset(BaseViewSet):
         params = self.prepare_params(request)
         data = self.access_layer.fetch_month_wise_sellers_at_state_level(**params)
         merged_data = data.replace([np.nan], 0)
+        values_to_drop = ['', 'Missing', 'MISSING']
+        merged_data = merged_data[~merged_data['state'].isin(values_to_drop)]
         
         if not params['state']:
-            top_data = merged_data.groupby(
+            top_states = merged_data.groupby(
                 ['state'], as_index=False
             ).agg(
                 sellers_count=('sellers_count', 'sum')
-            ).sort_values(by=['sellers_count'], ascending=[False])[:3]
-            merged_data = merged_data[merged_data['state'].isin(top_data['state'].unique())]
+            ).sort_values(by=['sellers_count'], ascending=[False])[:3]['state'].unique()
+            merged_data = merged_data[merged_data['state'].isin(top_states)]
+            merged_data = merged_data.reset_index(drop=True)
 
         formatted_data = self.format_seller_chart(merged_data, params, chart_type='state')
         return formatted_data
@@ -607,14 +623,16 @@ class RetailB2CViewset(BaseViewSet):
         params = self.prepare_params(request)
         data = self.access_layer.fetch_month_wise_sellers_at_district_level(**params)
         merged_data = data.replace([np.nan], 0)
+        values_to_drop = ['', 'Missing', 'MISSING']
+        merged_data = merged_data[~merged_data['district'].isin(values_to_drop)]
 
-        top_data = merged_data.groupby(
+        top_districts = merged_data.groupby(
             ['district'], as_index=False
         ).agg(
             sellers_count=('sellers_count', 'sum')
-        ).sort_values(by=['sellers_count'], ascending=[False])[:3]
-
-        merged_data = merged_data[merged_data['district'].isin(top_data['district'].unique())]
+        ).sort_values(by=['sellers_count'], ascending=[False])[:3]['district'].unique()
+        merged_data = merged_data[merged_data['district'].isin(top_districts)]
+        merged_data = merged_data.reset_index(drop=True)
 
         formatted_data = self.format_seller_chart(merged_data, params, chart_type='district')
         return formatted_data
@@ -625,16 +643,24 @@ class RetailB2CViewset(BaseViewSet):
         params = self.prepare_params(request)
         data = self.access_layer.fetch_month_wise_hyperlocal_orders_at_state_level(**params)
         merged_data = data.replace([np.nan], 0)
-        
-        if not params['state']:
-            top_data = merged_data.groupby(
-                ['state'], as_index=False
-            ).agg(
-                sellers_count=('sellers_count', 'sum')
-            ).sort_values(by=['sellers_count'], ascending=[False])[:3]
-            merged_data = merged_data[merged_data['state'].isin(top_data['state'].unique())]
+        values_to_drop = ['', 'Missing', 'MISSING']
+        merged_data = merged_data[~merged_data['delivery_state'].isin(values_to_drop)]
 
-        formatted_data = self.format_seller_chart(merged_data, params, chart_type='state')
+        top_states = merged_data.groupby(
+            ['delivery_state'], as_index=False
+        ).agg(
+            total_orders_delivered=('intrastate_orders_total', 'sum')
+        ).sort_values(by=['total_orders_delivered'], ascending=[False])[:3]['delivery_state'].unique()
+        merged_data = merged_data[merged_data['delivery_state'].isin(top_states)]
+
+        merged_data['intrastate_orders_percentage'] = np.where(
+            merged_data['total_orders_delivered'] == 0, 
+            0 , 
+            (merged_data['intrastate_orders_total']*100.0)/merged_data['total_orders_delivered']
+        ).round(1)
+        merged_data = merged_data.reset_index(drop=True)
+        
+        formatted_data = self.format_hyperlocal_chart(merged_data, params, chart_type='delivery_state')
         return formatted_data
     
     @action(detail=False, methods=['get'], url_path='top_district_hyperlocal')
@@ -643,16 +669,24 @@ class RetailB2CViewset(BaseViewSet):
         params = self.prepare_params(request)
         data = self.access_layer.fetch_month_wise_hyperlocal_orders_at_district_level(**params)
         merged_data = data.replace([np.nan], 0)
+        values_to_drop = ['', 'Missing', 'MISSING']
+        merged_data = merged_data[~merged_data['delivery_district'].isin(values_to_drop)]
 
-        top_data = merged_data.groupby(
-            ['district'], as_index=False
+        top_districts = merged_data.groupby(
+            ['delivery_district'], as_index=False
         ).agg(
-            sellers_count=('sellers_count', 'sum')
-        ).sort_values(by=['sellers_count'], ascending=[False])[:3]
+            total_orders_delivered=('intradistrict_orders', 'sum')
+        ).sort_values(by=['total_orders_delivered'], ascending=[False])[:3]['delivery_district'].unique()
+        merged_data = merged_data[merged_data['delivery_district'].isin(top_districts)]
 
-        merged_data = merged_data[merged_data['district'].isin(top_data['district'].unique())]
+        merged_data['intrastate_orders_percentage'] = np.where(
+            merged_data['total_orders_delivered'] == 0, 
+            0 , 
+            (merged_data['intradistrict_orders']*100.0)/merged_data['total_orders_delivered']
+        ).round(1)
+        merged_data = merged_data.reset_index(drop=True)
 
-        formatted_data = self.format_seller_chart(merged_data, params, chart_type='district')
+        formatted_data = self.format_hyperlocal_chart(merged_data, params, chart_type='delivery_district')
         return formatted_data
         
 

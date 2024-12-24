@@ -250,8 +250,8 @@ export class LogisticsSearchDetailComponent implements OnInit {
       const data = timeData[this.logisticSearchService.activeTimeInterval.value];
       cityLevelData[pincode] = {
         "Search count": data?.searched_data ?? 'No Data',
-        "Confirm percentage": `${parseFloat(data?.conversion_rate) ?? 0}%`,
-        "Assigned percentage": `${parseFloat(data?.assigned_rate ?? 0)}%`,
+        "Confirm percentage": parseFloat(data?.conversion_rate) ?? 0,
+        "Assigned percentage": parseFloat(data?.assigned_rate ?? 0),
       };
 
       if (data?.searched_data && maxSearchCount < data.searched_data) 
@@ -265,12 +265,20 @@ export class LogisticsSearchDetailComponent implements OnInit {
       for (const [pincode, timeData] of insightData) {
         iconData[pincode] = {
           "Search count": timeData?.searched_data ?? 'No Data',
-          "Confirm percentage": `${parseFloat(timeData?.conversion_rate) ?? 0}%`,
-          "Assigned percentage": `${parseFloat(timeData?.assigned_rate ?? 0)}%`,
+          "Confirm percentage": parseFloat(timeData?.conversion_rate) ?? 0,
+          "Assigned percentage": parseFloat(timeData?.assigned_rate ?? 0),
         };
       }
     }
-    this.cityData = {mapData: cityLevelData, iconData };
+    this.cityData = {
+      configData: {
+        ...this.configData,
+      maxChloroData: maxSearchCount,
+      maxBubbleData: maxConfirmPercentage
+      },
+      mapData: cityLevelData, 
+      iconData 
+    };
 
     this.legendConfigData = {
       ...this.legendConfigData,
@@ -294,8 +302,9 @@ export class LogisticsSearchDetailComponent implements OnInit {
     this.loadingData = true;
     let maxSearchCount = 0;
     let maxConfirmPercentage = 0;
+    let mapData = null;
     if (this.activeState == 'TT') {
-      this.overallData = await data.mapdata.filter(
+     mapData = await data.mapdata.filter(
         (item: any) => (
           item.time_interval === this.logisticSearchService.activeTimeInterval.value
         ) && (
@@ -305,14 +314,14 @@ export class LogisticsSearchDetailComponent implements OnInit {
         if (this.activeStyle == 'state_map') {
           acc[item.state] = {
             'Search count': item.total_searches,
-            'Confirm percentage': `${item.total_conversion_percentage}%`,
-            'Assigned percentage': `${item.total_assigned_percentage}%`
+            'Confirm percentage': item.total_conversion_percentage,
+            'Assigned percentage': item.total_assigned_percentage
           };
         } else {
           acc[item.district] = {
             'Search count': item.total_searches,
-            'Confirm percentage': `${item.total_conversion_percentage}%`,
-            'Assigned percentage': `${item.total_assigned_percentage}%`
+            'Confirm percentage': item.total_conversion_percentage,
+            'Assigned percentage': item.total_assigned_percentage
           };
         }
         if (Number(maxSearchCount) < Number(item.total_searches)) 
@@ -325,15 +334,14 @@ export class LogisticsSearchDetailComponent implements OnInit {
       }, {});
 
     } else {
-      this.stateData = null;
-      this.stateData = await data.mapdata.filter(
+      mapData = await data.mapdata.filter(
         (item: any) => item.time_interval === this.logisticSearchService.activeTimeInterval.value
       ).reduce((acc: any, item: any) => {
 
         acc[item.district] = {
           'Search count': item.total_searches,
-          'Confirm percentage': `${item.total_conversion_percentage}`,
-          'Assigned percentage': `${item.total_assigned_percentage}`
+          'Confirm percentage': item.total_conversion_percentage,
+          'Assigned percentage': item.total_assigned_percentage
         };
         if (Number(maxSearchCount) < Number(item.total_searches)) 
           maxSearchCount = item.total_searches;
@@ -351,10 +359,14 @@ export class LogisticsSearchDetailComponent implements OnInit {
       chloroMaxData: maxSearchCount
     }
 
-    this.configData = {
-      ...this.configData,
+    this.overallData = {
+      data: mapData,
+      mapControlPosition: 'top-left',
+      configData:  {
+        ...this.configData,
       maxChloroData: maxSearchCount,
       maxBubbleData: maxConfirmPercentage
+      }
     }
 
     this.loadingData = false;

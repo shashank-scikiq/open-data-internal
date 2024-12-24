@@ -22,7 +22,7 @@ import { KeyInsightsComponent } from './key-insights/key-insights.component';
 import { ColumnChartComponent } from '../global/charts/column-chart/column-chart.component';
 import { RouterModule } from '@angular/router';
 import { BarChartComponent } from '../global/charts/bar-chart/bar-chart.component';
-import { PincodeLevelMapViewComponent } from './pincode-level-map-view/pincode-level-map-view.component';
+// import { PincodeLevelMapViewComponent } from './pincode-level-map-view/pincode-level-map-view.component';
 import { DomainDetailComponent } from './domain-detail/domain-detail.component';
 import { TopCardsGroupComponent } from './top-cards-group/top-cards-group.component';
 import { TopCardComponent } from './top-card/top-card.component';
@@ -65,7 +65,7 @@ import { PincodeLevelMapComponent } from './pincode-level-map/pincode-level-map.
     DetailCategoryFilterComponent,
     KeyInsightsComponent,
     BarChartComponent,
-    PincodeLevelMapViewComponent,
+    // PincodeLevelMapViewComponent,
     DomainDetailComponent,
     TopCardsGroupComponent,
     TopCardComponent,
@@ -114,7 +114,7 @@ import { PincodeLevelMapComponent } from './pincode-level-map/pincode-level-map.
     SunburstChartComponent,
     DetailCategoryFilterComponent,
     BarChartComponent, 
-    PincodeLevelMapViewComponent,
+    // PincodeLevelMapViewComponent,
     DomainDetailComponent,
     TopCardsGroupComponent,
     TopCardComponent,

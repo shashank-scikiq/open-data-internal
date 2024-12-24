@@ -2,6 +2,7 @@ from rest_framework.viewsets import ViewSet
 from apps.utils import constant
 from datetime import datetime
 import pandas as pd
+from itertools import product
 
 
 class BaseViewSet(ViewSet):
@@ -57,12 +58,42 @@ class BaseViewSet(ViewSet):
 
         return params
 
+    def generate_month_year_wise_values(self, values, start_date, end_date):
+        # Generate a range of months and years
+        date_range = pd.date_range(start=start_date, end=end_date, freq='MS')
+        months_years = [(d.month, d.year) for d in date_range]
+
+        combinations = list(product(months_years, values))
+
+        df = pd.DataFrame(combinations, columns=['month_year', 'value'])
+
+        # Split 'month_year' into separate 'month' and 'year' columns
+        df[['month', 'year']] = pd.DataFrame(df['month_year'].tolist(), index=df.index)
+        df.drop(columns=['month_year'], inplace=True)
+
+        # Rearrange columns
+        df = df[['month', 'year', 'value']]
+
+        return df
+
     def format_order_chart(self, df, params, chart_type=None):
         if df.empty:
             return {}
+        
+        if 'delivery_state' not in df.columns:
+            df['delivery_state'] = 'India'
+        
+        month_year_values = self.generate_month_year_wise_values(
+            df['delivery_state'].unique(), params['start_date'], params['end_date']
+        )
+
+        month_year_values.rename(columns={'value': 'delivery_state'}, inplace=True)
+        df.rename(columns={'order_month': 'month', 'order_year': 'year'}, inplace=True)
+        
+        df = pd.merge(month_year_values, df, on=['delivery_state', 'month', 'year'], how='left').fillna(0)
 
         df['order_date'] = pd.to_datetime(
-            df['order_month'].astype(str).str.zfill(2) + '-' + df['order_year'].astype(str), errors='coerce'
+            df['month'].astype(str).str.zfill(2) + '-' + df['year'].astype(str), errors='coerce'
         )
         df['total_orders_delivered'] = pd.to_numeric(df['total_orders_delivered'], errors='coerce')
 
@@ -91,9 +122,20 @@ class BaseViewSet(ViewSet):
     def format_seller_chart(self, df: pd.DataFrame, params, chart_type):
         if df.empty:
             return {}
+        
+        if 'delivery_state' not in df.columns:
+            df['delivery_state'] = 'India'
+        
+        month_year_values = self.generate_month_year_wise_values(
+            df['delivery_state'].unique(), params['start_date'], params['end_date']
+        )
+
+        month_year_values.rename(columns={'value': 'delivery_state'}, inplace=True)
+        df.rename(columns={'order_month': 'month', 'order_year': 'year'}, inplace=True)
+        df = pd.merge(month_year_values, df, on=['delivery_state', 'month', 'year'], how='left').fillna(0)
 
         df['order_date'] = pd.to_datetime(
-            df['order_month'].astype(str).str.zfill(2) + '-' + df['order_year'].astype(str), errors='coerce'
+            df['month'].astype(str).str.zfill(2) + '-' + df['year'].astype(str), errors='coerce'
         )
         df['sellers_count'] = pd.to_numeric(df['sellers_count'], errors='coerce')
 
@@ -118,6 +160,39 @@ class BaseViewSet(ViewSet):
                 formatted_data["series"].append(state_data)
 
         return formatted_data
+
+    
+    def format_hyperlocal_chart(self, df: pd.DataFrame, params, chart_type):
+        if df.empty:
+            return {}
+
+        month_year_values = self.generate_month_year_wise_values(
+            df['delivery_state'].unique(), params['start_date'], params['end_date']
+        )
+
+        month_year_values.rename(columns={'value': 'delivery_state'}, inplace=True)
+        df.rename(columns={'order_month': 'month', 'order_year': 'year'}, inplace=True)
+        df = pd.merge(month_year_values, df, on=['delivery_state', 'month', 'year'], how='left').fillna(0)
+
+        df['order_date'] = pd.to_datetime(df['month'].astype(str).str.zfill(2) + '-' + df['year'].astype(str), errors='coerce')
+        df['intrastate_orders_percentage'] = pd.to_numeric(df['intrastate_orders_percentage'], errors='coerce')
+
+        formatted_data = {
+            "series": [],
+            "categories": df['order_date'].dt.strftime('%b-%y').unique().tolist()
+        }
+
+        for state in df[chart_type].dropna().unique():
+            if state in ('', 'Missing'):
+                continue
+            state_data = {
+                "name": state,
+                "data": df[df[chart_type] == state]['intrastate_orders_percentage'].tolist()
+            }
+            formatted_data["series"].append(state_data)
+
+        return formatted_data
+
 
     def sunburst_format(self, category_penetration_df, chart_type):
         sunburst_data = {}

@@ -11,15 +11,6 @@ import * as topojson from 'topojson-client';
 export class StateLevelMapComponent implements OnInit, OnChanges {
   @Input() isLoading: boolean = false;
   @Input() visualType: 'chloro' | 'bubble' | 'both' = 'chloro';
-  @Input() configData: any = {
-    chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
-    bubbleColorRange: [],
-    bubbleDataKey: '',
-    chloroDataKey: '',
-    maxChloroData: 0,
-    maxBubbleData: 0,
-    showBackButton: true
-  }
   @Input() mapData: any;
   @Input() selectedState: string = '';
   @Output() backToIndia = new EventEmitter<any>();;
@@ -51,7 +42,6 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['mapData'] || changes['visualType']) {
       this.initMap();
-      console.log(this.mapData, this.configData)
     }
     
   }
@@ -124,25 +114,25 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
   }
 
   updateMapWithData() {
-    if(!this.mapData) return;
+    if(!this.mapData?.data) return;
     let g = this.svg.selectAll('#stateDistrictGroup');
 
     if (this.visualType == 'chloro' || this.visualType=='both') {
       
       this.customColorRange = d3.scaleLinear()
-        .domain([0, 1, this.configData.maxChloroData])
-        .range(this.configData.chloroColorRange);
+        .domain([0, 1, this.mapData.configData.maxChloroData])
+        .range(this.mapData.configData.chloroColorRange);
   
       g.selectAll('path')
       .style('fill', (d: any) => {
-        let data = this.mapData[d.properties.district];
+        let data = this.mapData.data[d.properties.district];
         return data ? this.customColorRange(
-            this.mapData[d.properties.district][this.configData.chloroDataKey]
+            this.mapData.data[d.properties.district][this.mapData.configData.chloroDataKey]
           ) :
-          this.configData.chloroColorRange[0]
+          this.mapData.configData.chloroColorRange[0]
       })
       .on('mouseover', (event: any, d: any) => {
-        const data = this.mapData[d.properties.district];
+        const data = this.mapData.data[d.properties.district];
         let htmlString = `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>` 
         if (data) {
           htmlString += Object.entries(data)
@@ -169,31 +159,31 @@ export class StateLevelMapComponent implements OnInit, OnChanges {
     if (this.visualType == 'bubble' || this.visualType == 'both') {
 
       this.bubbleRadiusMethod = d3.scaleSqrt()
-      .domain([0, this.configData.maxBubbleData])
+      .domain([0, this.mapData.configData.maxBubbleData])
       .range([1, 12]);
       
       g.selectAll('path')
       .each((d: any) => {
         const centroid = this.mapProjectionResult[0](d3.geoCentroid(d));
-        let data = this.mapData[d.properties.district];
+        let data = this.mapData.data[d.properties.district];
 
         this.svg.select('#stateDistrictGroup').append('circle')
             .attr('cx', centroid[0])
             .attr('cy', centroid[1])
             .attr('r', (el: any) => {
-              if(!(data && data[this.configData.bubbleDataKey])) {
+              if(!(data && data[this.mapData.configData.bubbleDataKey])) {
                 return 1;
               }
               const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(
-                Number(data[this.configData.bubbleDataKey])
+                Number(data[this.mapData.configData.bubbleDataKey])
               )));
               return radius;
             })
-            .attr('fill', this.configData.bubbleColorRange[0])
-            .attr('stroke', this.configData.bubbleColorRange[1])
+            .attr('fill', this.mapData.configData.bubbleColorRange[0])
+            .attr('stroke', this.mapData.configData.bubbleColorRange[1])
             .attr('stroke-width', 0.5)
             .on('mouseover', (event: any) => {
-              const data = this.mapData[d.properties.district];
+              const data = this.mapData.data[d.properties.district];
               let htmlString = `<b>State:</b> ${d.properties.st_nm} <br> <b>District:</b> ${d.properties.district} <br>` 
               if (data) {
                 htmlString += Object.entries(data)

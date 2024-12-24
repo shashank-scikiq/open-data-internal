@@ -2,7 +2,7 @@ import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges }
 import { MapService } from '@openData/app/core/api/map/map.service';
 import { AppService } from '@openData/core/api/app/app.service';
 import { METRICS, MetrixType } from '@openData/core/utils/global';
-import { MapStatewiseData } from '@openData/core/utils/map';
+import { MapStatewiseData, chloroplethcolormapper3, chloroplethcolormapper2 } from '@openData/core/utils/map';
 
 @Component({
   selector: 'app-map',
@@ -15,14 +15,7 @@ export class MapComponent implements OnInit, OnChanges {
   mapStateData: any;
   selectedState: string = 'TT';
   mapData: any = null;
-  isLoading: boolean = true;
-
-  mapVisualOptions: any = {
-    isStateMap: true,
-    isDistrictMap: false,
-    isChloropeth: true,
-    isBubble: false,
-  }
+  isLoading: boolean = false;
 
   overallData: any = null;
 
@@ -81,23 +74,13 @@ export class MapComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.appService.dateRange$.subscribe(() => {
-      // this.mapStateData = null;
-      // this.mapStatewiseData = null;
       this.mapData = null;
-      // this.fetchMapStateData();
-      // this.fetchOrderMetricsSummary();
-      this.isLoading = true;
       this.fetchMapData();
     });
     this.appService.filterUpdated$.subscribe((val) => {
       if (val.updated) {
-        // this.mapStateData = null;
-        // this.mapStatewiseData = null;
         this.mapData = null;
-        this.isLoading = true;
         this.fetchMapData();
-        // this.fetchMapStateData();
-        // this.fetchOrderMetricsSummary();
       }
     });
     this.mapService.selectedState$.subscribe((state: string) => {
@@ -105,7 +88,6 @@ export class MapComponent implements OnInit, OnChanges {
         this.selectedState = state;
         (async () => {
           await this.prepareMapData();
-          this.isLoading = false;
         })();
     });
   }
@@ -113,25 +95,20 @@ export class MapComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['metrix'] && changes['metrix'].currentValue == "map_total_active_sellers_metrics") {
       this.mapService.setSelectedState('TT');
-      this.mapVisualOptions.isStateMap = true;
-      this.mapVisualOptions.isDistrictMap = false;
+      this.activeStyle = 'state_map';
     }
     (async () => {
       await this.prepareMapData();
-      this.isLoading = false;
     })();
   }
 
   fetchMapData() {
-    this.isLoading = true;
     this.appService.getMapData().subscribe(
       (response: any) => {
         if (response) {
           this.mapData = response;
-          // console.log(this.mapData);
           (async () => {
             await this.prepareMapData();
-            this.isLoading = false;
           })();
         }
       }, (error: Error) => {
@@ -146,12 +123,10 @@ export class MapComponent implements OnInit, OnChanges {
       return;
     }
 
-    this.isLoading = true;
     this.overallData = null;
     let maxValue = 0;
     let key = '';
-    console.log(this.selectedState);
-    this.overallData = await data.filter(
+    const mapData = await data.filter(
       (item: any) => {
         if (this.selectedState == 'TT') {
           return  this.activeStyle == 'state_map' ? item.delivery_district == 'AGG' : item.delivery_district != 'AGG';
@@ -160,7 +135,6 @@ export class MapComponent implements OnInit, OnChanges {
         }
       }
     ).reduce((acc: any, item: any) => {
-      console.log(item);
       let mainKey = '';
       if (this.mapService.selectedState.value == 'TT' && this.activeStyle == 'state_map') {
         mainKey = item.delivery_state;
@@ -186,7 +160,7 @@ export class MapComponent implements OnInit, OnChanges {
           maxValue = item.total_sellers;
         }
       } else if (this.metrix == METRICS[2]) {
-        key = this.mapVisualOptions.isDistrictMap || this.selectedState != 'TT' ?
+        key = this.activeStyle == 'district_map' || this.selectedState != 'TT' ?
           'Intradistrict Percentage' : 'Intrastate Percentage';
         acc[mainKey] =
           key == 'Intradistrict Percentage' ?
@@ -205,71 +179,30 @@ export class MapComponent implements OnInit, OnChanges {
 
     this.legendConfigData = {
       ...this.legendConfigData,
+      bubbleColorRange: chloroplethcolormapper2[this.metrix],
+      chloroColorRange: chloroplethcolormapper3[this.metrix],
       bubbleMaxData: maxValue,
       chloroMaxData: maxValue
     }
 
-    this.configData = {
-      ...this.configData,
-      bubbleDataKey: key,
-      chloroDataKey: key,
-      maxChloroData: maxValue,
-      maxBubbleData: maxValue
+    this.overallData = {
+      data: mapData,
+      mapControlPosition: 'top-right',
+      configData:  {
+        ...this.configData,
+        bubbleColorRange: chloroplethcolormapper2[this.metrix],
+        chloroColorRange: chloroplethcolormapper3[this.metrix],
+        bubbleDataKey: key,
+        chloroDataKey: key,
+        maxChloroData: maxValue,
+        maxBubbleData: maxValue
+      }
     }
   }
-
-  // fetchMapStateData() {
-  //   this.appService.getMapStateData().subscribe(
-  //     (response: any) => {
-  //       if (response) {
-  //         this.mapStatewiseData = response.statewise;
-  //       }
-  //     }, (error: Error) => {
-  //       console.log('Error is ', error);
-  //     }
-  //   )
-  // }
-
-  // fetchOrderMetricsSummary() {
-  //   this.appService.getOrderMetricsSummary().subscribe(
-  //     (response: any) => {
-  //       if (response) {
-  //         this.mapStateData = response;
-  //         this.appService.setStateData(response);
-  //       }
-  //     }, (error: Error) => {
-  //       console.log('Error is ', error);
-  //     }
-  //   )
-  // }
 
   backToIndiaMap($event: any = null) {
     this.selectedState = 'TT';
     this.mapService.setSelectedState('TT');
-  }
-
-  handleMapChange(option: string) {
-    const newOptions = JSON.parse(JSON.stringify(this.mapVisualOptions));
-    if (option === 'chloropeth') {
-      newOptions.isChloropeth = true;
-      newOptions.isBubble = false;
-    }
-    if (option === 'bubble') {
-      newOptions.isChloropeth = false;
-      newOptions.isBubble = true;
-    }
-
-    if (option === 'state') {
-      newOptions.isStateMap = true;
-      newOptions.isDistrictMap = false;
-    }
-
-    if (option === 'district') {
-      newOptions.isStateMap = false;
-      newOptions.isDistrictMap = true;
-    }
-    this.mapVisualOptions = newOptions;
-    // this.changeDetectionRef.detectChanges();
   }
 
   onStateChange(event: any) {

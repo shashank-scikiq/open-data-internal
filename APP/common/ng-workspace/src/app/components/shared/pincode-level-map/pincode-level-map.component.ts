@@ -16,14 +16,14 @@ interface Data {
 export class PincodeLevelMapComponent implements OnChanges {
   @Input() isLoading: boolean = false;
   @Input() visualType: 'chloro' | 'bubble' | 'both' = 'chloro';
-  @Input() configData: any = {
-    chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
-    bubbleColorRange: [],
-    bubbleDataKey: '',
-    chloroDataKey: '',
-    maxChloroData: 0,
-    maxBubbleData: 0
-  }
+  // @Input() configData: any = {
+  //   chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
+  //   bubbleColorRange: [],
+  //   bubbleDataKey: '',
+  //   chloroDataKey: '',
+  //   maxChloroData: 0,
+  //   maxBubbleData: 0
+  // }
   @Input() data: any;
 
   pincodeMapGeojson: any;
@@ -121,24 +121,25 @@ export class PincodeLevelMapComponent implements OnChanges {
       this.updatingData = false;
       return;
     }
+    console.log(this.data)
     let g = this.svg.selectAll('#pincodeGroup');
     if (this.visualType == 'chloro' || this.visualType == 'both') {
       this.customColorRange = d3.scaleLinear()
-        .domain([0, 1, this.configData.maxChloroData])
-        .range(this.configData.chloroColorRange);
+        .domain([0, 1, this.data?.configData?.maxChloroData])
+        .range(this.data.configData.chloroColorRange);
 
       g.selectAll('path')
         .style('fill', (d: any) => {
           if (d.properties.pincode == "110039") {
             console.log(this.data.mapData[d.properties.pincode])
           }
-          let color = this.configData.chloroColorRange[0];
+          let color = this.data.configData.chloroColorRange[0];
           if (this.data.mapData[d.properties.pincode]) {
             color = this.customColorRange(
-              this.data.mapData[d.properties.pincode][this.configData.chloroDataKey]
+              this.data.mapData[d.properties.pincode][this.data.configData.chloroDataKey]
             )
           } else {
-            color = this.configData.chloroColorRange[0];
+            color = this.data.configData.chloroColorRange[0];
           }
           return color
         })
@@ -168,7 +169,7 @@ export class PincodeLevelMapComponent implements OnChanges {
 
     if (this.visualType == 'bubble' || this.visualType == 'both') {
       this.bubbleRadiusMethod = d3.scaleSqrt()
-        .domain([0, this.configData.maxBubbleData])
+        .domain([0, this.data.configData.maxBubbleData])
         .range([1, 12]);
 
       g.selectAll('path')
@@ -181,17 +182,17 @@ export class PincodeLevelMapComponent implements OnChanges {
             .attr('r', (el: any) => {
               if (
                 !(this.data.mapData[d.properties.pincode] && 
-                  this.data.mapData[d.properties.pincode][this.configData.bubbleDataKey])
+                  this.data.mapData[d.properties.pincode][this.data.configData.bubbleDataKey])
                 ) {
                 return 1;
               }
               const radius = Math.min(12, Math.max(1, this.bubbleRadiusMethod(
-                Number(this.data.mapData[d.properties.pincode][this.configData.bubbleDataKey].slice(0, -1))
+                Number(this.data.mapData[d.properties.pincode][this.data.configData.bubbleDataKey])
               )));
               return radius;
             })
-            .attr('fill', this.configData.bubbleColorRange[0])
-            .attr('stroke', this.configData.bubbleColorRange[1])
+            .attr('fill', this.data.configData.bubbleColorRange[0])
+            .attr('stroke', this.data.configData.bubbleColorRange[1])
             .attr('stroke-width', 0.5)
             .on('mouseover', (event: any) => {
               let htmlString = `<b>City:</b> ${this.selectedCity} <br> <b>Pincode:</b> ${d.properties.pincode} <br>`
