@@ -31,3 +31,9 @@ def get_previous_date_range(params):
     previous_start_date, previous_end_date = shift_date_months(original_start_date, original_end_date)
 
     return previous_start_date, previous_end_date
+
+def safe_divide(a, b, default=1):
+    try:
+        return a/b
+    except Exception as e:
+        return default

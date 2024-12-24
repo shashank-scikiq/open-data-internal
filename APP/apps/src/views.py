@@ -87,6 +87,37 @@ class BaseViewSet(ViewSet):
                 formatted_data["series"].append(state_data)
 
         return formatted_data
+    
+    def format_seller_chart(self, df: pd.DataFrame, params, chart_type):
+        if df.empty:
+            return {}
+
+        df['order_date'] = pd.to_datetime(
+            df['order_month'].astype(str).str.zfill(2) + '-' + df['order_year'].astype(str), errors='coerce'
+        )
+        df['sellers_count'] = pd.to_numeric(df['sellers_count'], errors='coerce')
+
+        formatted_data = {
+            "series": [],
+            "categories": df['order_date'].dt.strftime('%b-%y').unique().tolist()
+        }
+
+        if chart_type == 'cumulative':
+            formatted_data["series"].append({
+                "name": "India" if params['state'] is None else params['state'],
+                "data": df['active_sellers_count'].tolist()
+            })
+        else:
+            for state in df[chart_type].dropna().unique():
+                if state in ('', 'Missing'):
+                    continue
+                state_data = {
+                    "name": state,
+                    "data": df[df[chart_type] == state]['sellers_count'].tolist()
+                }
+                formatted_data["series"].append(state_data)
+
+        return formatted_data
 
     def sunburst_format(self, category_penetration_df, chart_type):
         sunburst_data = {}

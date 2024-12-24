@@ -2828,3 +2828,232 @@ class B2CDataAccessLayer(DatabaseUtility):
                 '''
         df = self.execute_query(query)
         return df
+    
+    def fetch_month_wise_sellers_at_district_level(self, *args, **kwargs):
+        category = kwargs.get('category', None)
+        sub_category = kwargs.get('sub_category', None)
+        seller_type = kwargs.get('seller_type', 'Total')
+        state = kwargs.get('state', None)
+        seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
+        aggregated_value = "'AGG'"
+        params = self.get_query_month_parameters(kwargs.get('start_date'), kwargs.get('end_date'))
+        
+        table_name = constant.ACTIVE_TOTAL_SELLER_TBL
+
+        query = f"""
+            SELECT 
+                month_value as order_month,
+                year_value as order_year,
+                seller_state as state,
+                seller_district as district,
+                max({seller_column}) as sellers_count
+            FROM 
+                {table_name}
+            WHERE
+                ((year_value*100) + month_value) between
+                    (({params['start_year']} * 100) + {params['start_month']})
+                    and
+                    (({params['end_year']} * 100) + {params['end_month']})
+                and seller_district <> {aggregated_value}
+                and upper(seller_state) {f" = upper('{state}'" if state else f" <> upper({aggregated_value}"})
+                and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregated_value})
+                and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregated_value})
+            group by 1, 2,3,4
+        """
+        df = self.execute_query(query)
+        return df
+    
+    def fetch_month_wise_sellers_at_state_level(self, *args, **kwargs):
+        category = kwargs.get('category', None)
+        sub_category = kwargs.get('sub_category', None)
+        seller_type = kwargs.get('seller_type', 'Total')
+        state = kwargs.get('state', None)
+        seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
+        aggregated_value = "'AGG'"
+        params = self.get_query_month_parameters(kwargs.get('start_date'), kwargs.get('end_date'))
+        
+        table_name = constant.ACTIVE_TOTAL_SELLER_TBL
+
+        query = f"""
+            SELECT 
+                month_value as order_month,
+                year_value as order_year,
+                seller_state as state,
+                max({seller_column}) as sellers_count
+            FROM 
+                {table_name}
+            WHERE
+                ((year_value*100) + month_value) between
+                    (({params['start_year']} * 100) + {params['start_month']})
+                    and
+                    (({params['end_year']} * 100) + {params['end_month']})
+                and seller_district = {aggregated_value}
+                and upper(seller_state) {f" = upper('{state}'" if state else f" <> upper({aggregated_value}"})
+                and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregated_value})
+                and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregated_value})
+            group by 1, 2,3
+        """
+        df = self.execute_query(query)
+        return df
+    
+    def fetch_month_wise_sellers_at_global_level(self, *args, **kwargs):
+        category = kwargs.get('category', None)
+        sub_category = kwargs.get('sub_category', None)
+        seller_type = kwargs.get('seller_type', 'Total')
+        seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
+        aggregated_value = "'AGG'"
+        params = self.get_query_month_parameters(kwargs.get('start_date'), kwargs.get('end_date'))
+        
+        table_name = constant.ACTIVE_TOTAL_SELLER_TBL
+
+        query = f"""
+            SELECT 
+                month_value as order_month,
+                year_value as order_year,
+                max({seller_column}) as total_orders_delivered
+            FROM 
+                {table_name}
+            WHERE
+                ((year_value*100) + month_value) between
+                    (({params['start_year']} * 100) + {params['start_month']})
+                    and
+                    (({params['end_year']} * 100) + {params['end_month']})
+                and seller_district = {aggregated_value}
+                and  upper(seller_state) = {aggregated_value}
+                and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregated_value})
+                and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregated_value})
+            group by 1, 2
+            order by 1,2
+        """
+        df = self.execute_query(query)
+        return df
+
+    def fetch_category_penetration_sellers(self, *args, **kwargs):
+        category = kwargs.get('category', None)
+        sub_category = kwargs.get('sub_category', None)
+        seller_type = kwargs.get('seller_type', 'Total')
+        seller_column = 'total_sellers' if seller_type == 'Total' else 'active_sellers'
+        aggregated_value = "'AGG'"
+        params = self.get_query_month_parameters(kwargs.get('start_date'), kwargs.get('end_date'))
+        
+        table_name = constant.ACTIVE_TOTAL_SELLER_TBL
+        
+        query = f'''
+            select 
+                category, 
+                case 
+                    when sub_category = {aggregated_value} then 'ALL' 
+                    else sub_category 
+                end as sub_category, 
+                max({seller_column}) as active_sellers_count
+            from 
+                {table_name}
+            where ((year_value*100)+month_value) =  (({params['end_year']}*100)+{params['end_month']})
+                and upper(category) { " = upper('"+ category +"') " if category else ' <> ' + aggregated_value}
+                { (" and upper(sub_category) = upper('" + sub_category + "') ") if sub_category else ' '}
+                and upper(seller_state) = {aggregated_value} 
+                and category <>'Undefined' 
+                and seller_state <> ''
+            group by 1,2
+            order by category
+        '''
+        print(query)
+        df = self.execute_query(query)
+        return df
+
+    def fetch_month_wise_hyperlocal_orders_at_district_level(self, *args, **kwargs):
+        aggregate_value = "'AGG'"
+        category = kwargs.get('category', None)
+        sub_category = kwargs.get('sub_category', None)
+        state = kwargs.get('state', None)
+
+        table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE \
+            if category or sub_category else constant.MONTHLY_DISTRICT_TABLE
+        
+
+        parameters = self.get_query_month_parameters(kwargs.get('start_date'), kwargs.get('end_date'))
+
+        query = f"""
+            SELECT 
+                order_month,
+                order_year,
+                delivery_state,
+                delivery_district,
+                SUM(total_orders_delivered) AS total_orders_delivered,
+                SUM(intradistrict_orders) AS intradistrict_orders
+            from 
+                {table_name}
+            where
+                ((order_year*100) + order_month) between 
+                    (({parameters['start_year']} * 100) + {parameters['start_month']}) 
+                    and 
+                    (({parameters['end_year']} * 100) + {parameters['end_month']})
+                and sub_domain = 'B2C'
+        """
+
+        if category or sub_category:
+            query += f"""
+                and upper(delivery_state) {f" = upper('{state}'" if state else f" <> upper({aggregate_value}"})
+                and delivery_district <> {aggregate_value}
+                and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
+                and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})            
+            """
+        else:
+            query += f"""
+                {f"and upper(delivery_state) = upper('{state}')" if state else ''}
+            """
+        
+        query += """
+            group by 1,2,3,4
+        """
+        print(query)
+        df = self.execute_query(query)
+        return df
+    
+    def fetch_month_wise_hyperlocal_orders_at_state_level(self, *args, **kwargs):
+        aggregate_value = "'AGG'"
+        category = kwargs.get('category', None)
+        sub_category = kwargs.get('sub_category', None)
+        state = kwargs.get('state', None)
+
+        table_name = constant.SUB_CAT_MONTHLY_DISTRICT_TABLE \
+            if category or sub_category else constant.MONTHLY_DISTRICT_TABLE
+        
+
+        parameters = self.get_query_month_parameters(kwargs.get('start_date'), kwargs.get('end_date'))
+
+        query = f"""
+            SELECT 
+                order_month,
+                order_year,
+                delivery_state,
+                SUM(total_orders_delivered) AS total_orders_delivered,
+                SUM(intrastate_orders) AS intrastate_orders_total,
+            from 
+                {table_name}
+            where
+                ((order_year*100) + order_month) between 
+                    (({parameters['start_year']} * 100) + {parameters['start_month']}) 
+                    and 
+                    (({parameters['end_year']} * 100) + {parameters['end_month']})
+                and sub_domain = 'B2C'
+        """
+
+        if category or sub_category:
+            query += f"""
+                and upper(delivery_state) {f" = upper('{state}'" if state else f" <> upper({aggregate_value}"})
+                and delivery_district = {aggregate_value}
+                and upper(category) = upper({f"'{category}'" if bool(category) and (category != 'None') else aggregate_value})
+                and upper(sub_category) = upper({f"'{sub_category}'" if bool(sub_category) and (sub_category != 'None') else aggregate_value})
+            """
+        else:
+            query += f"""
+                {f"and upper(delivery_state) = upper('{state}')" if state else ''}
+            """
+        
+        query += """
+            group by 1,2,3
+        """
+        df = self.execute_query(query)
+        return df
+    
