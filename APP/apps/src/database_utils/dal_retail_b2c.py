@@ -1,8 +1,5 @@
-from decimal import getcontext
 from apps.src.database_utils.database_utility import DatabaseUtility
 from apps.utils import constant
-
-getcontext().prec = 4
 
 class B2CDataAccessLayer(DatabaseUtility):
     def fetch_district_level_order_summary(self, *args, **kwargs):

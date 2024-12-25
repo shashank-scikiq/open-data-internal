@@ -7,11 +7,21 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-from apps.utils.helpers import get_cached_data
+from apps.utils.helpers import get_cached_data, is_delta_required, get_previous_date_range
 from apps.utils import constant
 from apps.src.views import BaseViewSet
 from apps.src.database_utils.dal_retail_b2c import B2CDataAccessLayer
-from . import helper
+
+top_card_tooltip_text = {
+    'Total Orders': 'Count of Distinct Network Order Id within the selected range.',
+    'Districts': '''Unique count of Districts where orders have been delivered in the latest month within the date range. 
+        Districts are fetched using districts mapping using End pincode''',
+    'Total sellers': 'Unique count of combination of (Provider ID + Seller App) within the date range',
+    'Active sellers': 'Unique count of combination of active (Provider ID + Seller App) within the date range',
+    'records the highest order count': '''Maximum Orders by State/Districts, basis the date range. It will show top 
+        districts within a state if a state map is selected. Districts are mapped using delivery pincode.''',
+    'No. of items per order': 'Average items per orders'
+}
 
 
 def decorator():
@@ -151,9 +161,9 @@ class RetailB2CViewset(BaseViewSet):
         current_data = self.access_layer.fetch_district_level_order_summary(**params)
         current_sellers = self.access_layer.fetch_state_level_sellers(**params)
 
-        delta_required = helper.is_delta_required(params)
+        delta_required = is_delta_required(params)
         if delta_required:
-            previous_start_date, previous_end_date = helper.get_previous_date_range(params)
+            previous_start_date, previous_end_date = get_previous_date_range(params)
             params.update({'start_date': previous_start_date, 'end_date': previous_end_date})
             previous_data = self.access_layer.fetch_district_level_order_summary(**params)
             previous_sellers = self.access_layer.fetch_state_level_sellers(**params)
@@ -164,22 +174,10 @@ class RetailB2CViewset(BaseViewSet):
         current_data, previous_data = self.transform_top_card_data(
             current_data, current_sellers, previous_data, previous_sellers
         )
-
         previous_data = previous_data.drop(columns=['most_ordering_district']) if not previous_data.empty \
             else current_data.drop(columns=['most_ordering_district'])
 
-        return current_data, previous_data, delta_required
-
-    def prepare_district_count(self, params):
-        districts_count = data_service.get_district_count(**params)
-        total_districts = districts_count['district_count'].sum()
-        total_row = pd.DataFrame({
-            'delivery_state_code': ['TT'],
-            'delivery_state': ['Total'],
-            'district_count': [total_districts]
-        })
-        
-        return pd.concat([districts_count, total_row], ignore_index=True)
+        return current_data, previous_data
 
     def merge_and_clean_data(self, current_data, previous_data):
         merged_data = pd.merge(
@@ -187,7 +185,7 @@ class RetailB2CViewset(BaseViewSet):
             on='delivery_state', suffixes=('_current', '_previous'),
             how='outer', validate="many_to_many"
         )
-        return self.clean_and_prepare_data(merged_data.copy())
+        return self.clean_and_prepare_data(merged_data)
 
     def clean_and_prepare_data(self, merged_df):
         fill_values = {
@@ -206,14 +204,16 @@ class RetailB2CViewset(BaseViewSet):
             ('total_sellers', 'total_sellers_count_delta'),
             ('active_sellers_percentage', 'active_sellers_percentage_delta')
         ]
-        for current, delta in delta_columns:
+        for value, delta in delta_columns:
             if delta == 'active_sellers_percentage_delta':
-                merged_df[delta] = merged_df[f'{current}_current'] - merged_df[f'{current}_previous']
+                merged_df[delta] = merged_df[f'{value}_current'] - merged_df[f'{value}_previous']
                 continue
-            merged_df[delta] = 100 * helper.safe_divide(
-                    merged_df[f'{current}_current'] - merged_df[f'{current}_previous'],
-                    merged_df[f'{current}_previous']
-                ).round(constant.ROUND_OFF_DIGITS)
+            merged_df[delta] = np.where(
+                merged_df[f'{value}_previous'].astype(float) == 0,
+                0,
+                (merged_df[f'{value}_current'] - merged_df[f'{value}_previous']).astype(float)*100.0/
+                    merged_df[f'{value}_previous'].astype(float)
+            ).round(constant.ROUND_OFF_DIGITS)
         
         drop_columns = [
             'delivered_orders_previous', 'total_districts_previous',
@@ -223,7 +223,7 @@ class RetailB2CViewset(BaseViewSet):
         merged_df = merged_df.drop(columns=drop_columns).fillna(0)
         return merged_df.copy()
 
-    def build_response_data(self, merged_df, delta_required, params):
+    def build_response_data(self, merged_df, params):
         top_card_data = {}
         state_list = pd.DataFrame({
             "delivery_state_code_current": constant.STATE_CODES.keys(),
@@ -232,17 +232,18 @@ class RetailB2CViewset(BaseViewSet):
 
         merged_df = pd.merge(state_list, merged_df, how='left', on=["delivery_state_code_current", "delivery_state"])
         merged_df = merged_df.fillna(0)
+        merged_df['avg_items_per_order_in_district_current'] = merged_df['avg_items_per_order_in_district_current'].round(constant.ROUND_OFF_DIGITS)
 
         for _, row in merged_df.iterrows():
             state_code = row['delivery_state_code_current']
-            top_card_data[state_code] = self.build_state_metrics(row, delta_required)
+            top_card_data[state_code] = self.build_state_metrics(row)
         return {
             "prev_date_range": self.format_previous_date_range(params),
-            "tooltip_text": helper.top_card_tooltip_text,
+            "tooltip_text": top_card_tooltip_text,
             "top_card_data": top_card_data
         }
 
-    def build_state_metrics(self, row, delta_required):
+    def build_state_metrics(self, row):
         metrics = [
             self.create_metric_data(row['delivered_orders_current'], 'Total Orders', row.get('orders_count_delta', 0)),
             self.create_metric_data(row['total_districts_current'], 'Districts', 0),
@@ -538,11 +539,11 @@ class RetailB2CViewset(BaseViewSet):
     @decorator()
     def get_top_card_delta(self, request):
         params = self.prepare_params(request)
-        current_data, previous_data, delta_required = self.fetch_top_card_data(params)
-        merged_data = self.merge_and_clean_data(current_data.copy(), previous_data.copy())
+        current_data, previous_data = self.fetch_top_card_data(params)
+        merged_data = self.merge_and_clean_data(current_data, previous_data)
 
         top_cards_data = self.build_response_data(
-            merged_data, delta_required, params
+            merged_data, params
         )
         return top_cards_data
     
