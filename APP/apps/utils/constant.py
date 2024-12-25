@@ -2,7 +2,7 @@ import os
 
 
 FIXED_MIN_DATE = os.getenv('START_DATE')
-
+ROUND_OFF_DIGITS = int(os.getenv('ROUND_OFF_DIGITS', 1))
 LOG_LEVEL = os.getenv('LOG_LEVEL', 'INFO').upper()
 ENABLE_CONSOLE_LOG = enable_console_log = os.getenv('ENABLE_CONSOLE_LOG', 'true').lower() in ('true', '1', 't')
 ONDC_DASHBOARD_VERSION_TABLE = os.getenv('ONDC_DASHBOARD_VERSION_TBL', 'ondc_dashboard_version')

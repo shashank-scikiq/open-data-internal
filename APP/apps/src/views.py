@@ -23,12 +23,12 @@ class BaseViewSet(ViewSet):
         category = request.query_params.get('category', None)
         if category in ('undefined', 'all', 'None', 'All'):
             category = None
-        else:
+        elif category:
             category = category.replace("'", "''")
         sub_category = request.query_params.get('subCategory', None)
         if sub_category in ('undefined', 'all', 'All', 'None', 'Select Sub-Category'):
             sub_category = None
-        else:
+        elif sub_category:
             sub_category = sub_category.replace("'", "''")
 
         domain_name = request.query_params.get('domainName', None)
