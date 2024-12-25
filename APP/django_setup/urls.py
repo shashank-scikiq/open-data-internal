@@ -14,15 +14,17 @@ Including another URLconf
     2. Add a URL to urlpatterns:  re_path(r'^blog/', include('blog.urls'))
 """
 
+from django.shortcuts import render
 from django.urls import include, re_path, path
 import importlib
 from django.conf import settings
 from django.views.generic.base import RedirectView
-from apps.retail_all.retail_all_app.views import angular_app
 from .views import * 
 from apps.key_data_insight.views import FetchActiveSellerData
 
-
+def angular_app(request):
+    return render(request, 'common/web/index.html', {})
+    
 urlpatterns = [
     re_path(r'^', include('apps.retail_all.retail_all_app.urls')),
     re_path(r'^', include('apps.logistics_all.logistics_all_app.urls')),

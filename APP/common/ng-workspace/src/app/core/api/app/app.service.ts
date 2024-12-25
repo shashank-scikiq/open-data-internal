@@ -91,7 +91,7 @@ export class AppService {
   }
 
   getStateDistrictData() {
-    return this.http.get(`${this.baseUrl}api/state_district_list/`);
+    return this.http.get(`${this.baseUrl}api/retail/overall/state_district_list/`);
   }
 
   setStateData(data: any) {
