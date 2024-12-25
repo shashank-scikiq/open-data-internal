@@ -64,7 +64,7 @@ class RetailB2CViewset(BaseViewSet):
         
         total_active_sellers_percentage = 0.0 if seller_df['total_sellers'].sum() == 0 else round(
             (float(seller_df['active_sellers'].sum()) * 100.0) /
-            float(seller_df['total_sellers'].sum()), 1
+            float(seller_df['total_sellers'].sum()), constant.ROUND_OFF_DIGITS
         )
 
         seller_df['active_sellers_percentage'] = np.where(
@@ -301,7 +301,7 @@ class RetailB2CViewset(BaseViewSet):
             (
                 top_5_order_df['order_demand'].astype(float) *100.0 / 
                 total_orders.astype(float)
-            ).round(2)
+            ).round(constant.ROUND_OFF_DIGITS)
         )
 
         total_row = pd.DataFrame({
@@ -345,7 +345,7 @@ class RetailB2CViewset(BaseViewSet):
             (
                 top_5_order_df['order_demand'].astype(float) *100.0 / 
                 total_orders.astype(float)
-            ).round(2)
+            ).round(constant.ROUND_OFF_DIGITS)
         )
 
         total_row = pd.DataFrame({
@@ -364,7 +364,7 @@ class RetailB2CViewset(BaseViewSet):
             'name': params['state'],
             'children': [
                 {
-                    'name': f"{i['delivery_state']} ({round(float(i['percentage']), 2)}%)"
+                    'name': f"{i['delivery_state']} ({round(float(i['percentage']), constant.ROUND_OFF_DIGITS)}%)"
                 } for i in state_level_data.to_dict(orient="records")
             ]
         }
@@ -390,7 +390,7 @@ class RetailB2CViewset(BaseViewSet):
             (
                 top_5_order_df['order_demand'].astype(float) *100.0 / 
                 total_orders.astype(float)
-            ).round(2)
+            ).round(constant.ROUND_OFF_DIGITS)
         )
 
         total_row = pd.DataFrame({
@@ -409,7 +409,7 @@ class RetailB2CViewset(BaseViewSet):
             'name': params['district'],
             'children': [
                 {
-                    'name': f"{i['delivery_district']} ({round(float(i['percentage']), 2)}%)"
+                    'name': f"{i['delivery_district']} ({round(float(i['percentage']), constant.ROUND_OFF_DIGITS)}%)"
                 } for i in district_level_data.to_dict(orient="records")
             ]
         }
@@ -435,7 +435,7 @@ class RetailB2CViewset(BaseViewSet):
             (
                 top_5_order_df['order_demand'].astype(float) *100.0 / 
                 total_orders.astype(float)
-            ).round(2)
+            ).round(constant.ROUND_OFF_DIGITS)
         )
 
         total_row = pd.DataFrame({
@@ -454,7 +454,7 @@ class RetailB2CViewset(BaseViewSet):
             'name': params['district'],
             'children': [
                 {
-                    'name': f"{i['seller_district']} ({round(float(i['percentage']), 2)}%)"
+                    'name': f"{i['seller_district']} ({round(float(i['percentage']), constant.ROUND_OFF_DIGITS)}%)"
                 } for i in district_level_data.to_dict(orient="records")
             ]
         }
