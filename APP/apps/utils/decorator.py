@@ -1,11 +1,16 @@
+from functools import wraps
+from django.http import JsonResponse
+from django.core.cache import cache
+from rest_framework import status
 import os
 import pandas as pd
 from django.db import connection
-from django_setup.settings import APP_VERSION
+from apps.utils import constant
+# from django_setup.settings import APP_VERSION
 import logging
 from apps.utils.constant import ONDC_DASHBOARD_VERSION_TABLE
 
-ONDC_DASHBOARD_VERSION_TABLE = ONDC_DASHBOARD_VERSION_TABLE
+from apps.utils.helpers import get_cached_data
 
 
 def verify_version():
@@ -35,5 +40,36 @@ def verify_version():
         logging.exception("verifyVersion :" + str(error_msg) + ' ' +  APP_VERSION +' DB Version Not Available' )
         # sys.exit(error_msg)
 
+def api_decorator():
+    def wrapper(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            func_name = func.__name__
+            class_name = None
 
-verify_version()
+            if hasattr(func, '__qualname__'):  # For methods
+                class_name = func.__qualname__.split('.')[0]
+            if hasattr(func, '__self__') and func.__self__:
+                class_name = func.__self__.__class__.__name__
+
+            function_key = "$$$".join([func_name, args[1].query_params.urlencode()])
+
+            cached_data = get_cached_data(class_name) or {}
+
+            if function_key in cached_data:
+                response_data = cached_data[function_key]
+            else:
+                response_data = func(*args, **kwargs)
+                cached_data[function_key] = response_data
+
+                cache.set(class_name, cached_data, constant.CACHE_EXPIRY)
+
+            return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
+
+        return inner
+    return wrapper
+
+
+
+
+# verify_version()

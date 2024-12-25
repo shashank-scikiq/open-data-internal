@@ -1,13 +1,11 @@
-
-from django.urls import path
+from rest_framework.routers import DefaultRouter
+from django.urls import include, path
 from . import views
 
+router = DefaultRouter()
+router.register(r'retail/b2b', views.RetailB2BViewset, basename='retail_b2b')
+
 urlpatterns = [
-    path('api/retail/b2b/map_state_data/', views.FetchMapStateData.as_view(), name='map_state_data'),
-    path('api/retail/b2b/map_statewise_data/', views.FetchMapStateWiseData.as_view(), name='map_statewise_data'),
-    path('api/retail/b2b/top_card_delta/', views.FetchTopCardDeltaData.as_view(), name='map_statewise_data'),
+    path('api/', include(router.urls)),
 ]
-
-
-
 

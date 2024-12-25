@@ -1,281 +1,176 @@
-__author__ = "Shashank Katyayan"
-from django.shortcuts import render
-from django.http import JsonResponse
-from rest_framework.views import APIView
-from django.http import HttpRequest
-from django.core.cache import cache
-from django.db import connection
-from collections import defaultdict
-from dotenv import load_dotenv
-import calendar
-
+from rest_framework.decorators import action
 import pandas as pd
 import numpy as np
 from datetime import datetime
-from apps.utils.helpers import get_cached_data
 
-
-from apps.logging_conf import log_function_call, exceptionAPI, ondcLogger
-from apps.src.api_response_utils import SummaryBaseDataAPI, shift_date_months
+from apps.utils.helpers import is_delta_required, get_previous_date_range
+from apps.utils.decorator import api_decorator as decorator
 from apps.utils import constant
-from apps.src.database_utils.database_utility import DatabaseUtility
-from apps.src.database_utils.dal_retail_b2b import DataAccessLayer
-from apps.src.database_utils.data_service_layer import DataService
-from apps.src.database_utils.generic_queries import  fetch_district_list_query
+from apps.src.views import BaseViewSet
+from apps.src.database_utils.dal_retail_b2b import B2BDataAccessLayer
 
-db_utility = DatabaseUtility()
-data_access_layer = DataAccessLayer(db_utility)
-data_service = DataService(data_access_layer)
-round_off_offset = 0
+top_card_tooltip_text = {
+    "Total Orders": 'Count of Distinct Network Order Id within the selected range.',
+    "Districts": 'Unique count of Districts where orders have been delivered in the latest month within the date range. Districts are fetched using districts mapping using End pincode',
+    "records the highest order count": 'Maximum Orders by State/Districts, basis the date range. It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.'
+}
 
+class RetailB2BViewset(BaseViewSet):
+    access_layer = B2BDataAccessLayer()
 
-class FetchDistrictList(APIView):
-    """
-    API view for fetching the district list.
-    """
-
-    @exceptionAPI(ondcLogger)
-    def get(self, request: HttpRequest, *args, **kwargs):
-        """
-        APIView FetchDistrictList
-        """
-        p_d = "FetchDistrictList_$$$"
-
-        data = get_cached_data(p_d)
-        if data is None:
-            with connection.cursor():
-                district_list_df = self.fetch_data()
-                state_district_mapping = defaultdict(list)
-                for _, row in district_list_df.iterrows():
-                    state = row['delivery_state']
-                    district = row['delivery_district']
-                    state_district_mapping[state].append(district)
-
-            structured_data = {state: [district for district in districts]
-                               for state, districts in state_district_mapping.items()}
-            cache.set(p_d, structured_data, constant.CACHE_EXPIRY)
-        else:
-            structured_data = data
-        return JsonResponse(structured_data, safe=False)
-
-    def fetch_data(self):
-        db_util = DatabaseUtility(alias='default')
-        df = db_util.execute_query(fetch_district_list_query, return_type='df')
-        return df
-
-
-def fetch_state_list():
-    query = f''' select distinct state_code as delivery_state_code_current from {constant.PINCODE_TABLE}'''
-    db_util = DatabaseUtility(alias='default')
-    df = db_util.execute_query(query, return_type='df')
-    return df
-
-def safe_divide(a, b, default=1):
-    try:
-        return np.divide(a, b)
-    except Exception as e:
-        return default
-
-
-class FetchTopCardDeltaData(SummaryBaseDataAPI):
-
-    def __init__(self):
-        self.tooltip_text = {
-            "Total Orders": 'Count of Distinct Network Order Id within the selected range.',
-            "Districts": 'Unique count of Districts where orders have been delivered in the latest month within the date range. Districts are fetched using districts mapping using End pincode',
-            "Sellers": 'Unique count of combination of (Provider ID + Seller App) within the date range',
-            "records the highest order count": 'Maximum Orders by State/Districts, basis the date range. It will show top districts within a state if a state map is selected. Districts are mapped using delivery pincode.'
-
-        }
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args):
-        """
-        APIView BaseDataAPI FetchTopCardDeltaData
-        """
+    def prepare_params(self, request):
         params = self.extract_common_params(request)
         params['domain_name'] = 'Retail'
+        return params
+    
+    def prepare_missing_data(self, order_df, calc_most_ordering_district=True):
+        state_level_data = (
+            order_df.groupby(["delivery_state_code", "delivery_state"], as_index=False)
+            .agg(
+                total_districts=("delivery_district", "count"),
+                delivered_orders=("total_orders_in_district", "sum")
+            )
+        )
+        
+        if calc_most_ordering_district:
+            most_ordering_district = (
+                order_df.loc[order_df.groupby(
+                    ["delivery_state_code", "delivery_state"]
+                )["total_orders_in_district"].idxmax()]
+                [["delivery_state_code", "delivery_state", "delivery_district"]]
+                .rename(columns={"delivery_district": "most_ordering_district"})
+            )
+            most_ordering_district.reset_index(drop=True, inplace=True)
 
-        try:
-            cache_key = self.generate_cache_key(params)
-            data = get_cached_data(cache_key)
+            state_level_data = pd.merge(
+                state_level_data,
+                most_ordering_district,
+                on=["delivery_state_code", "delivery_state"]
+            )
 
-            if data is None:
-                top_cards_current = self.fetch_current_data(params)
-                districts_count = data_service.get_district_count(**params)
-                delta_required = 0 if (datetime.strptime(params['start_date'], "%Y-%m-%d").date()
-                                   == datetime.strptime(constant.FIXED_MIN_DATE, "%Y-%m-%d").date()) else 1
+        state_level_data = state_level_data.fillna(0)
 
-                if delta_required:
-                    previous_start_date, previous_end_date = self.get_previous_date_range(params)
-                    params['start_date'], params['end_date'] = previous_start_date, previous_end_date
-                    top_cards_previous = self.fetch_previous_data(params)
-                else:
-                    previous_start_date, previous_end_date = None, None
-                    top_cards_previous = top_cards_current
-                    top_cards_previous = top_cards_previous.drop(columns=['most_ordering_district'])
-                merged_data = self.merge_data(top_cards_current, top_cards_previous)
-                filtered_merged_df = self.clean_and_prepare_data(merged_data)
+        total_row = pd.DataFrame({
+            'delivery_state_code': ['TT'],
+            'delivery_state': ['TOTAL'],
+            'total_districts': [state_level_data['total_districts'].sum()],
+            'delivered_orders': [state_level_data['delivered_orders'].sum()],
+            'most_ordering_district': [state_level_data.loc[state_level_data['delivered_orders'].idxmax(), 'delivery_state']]
+        })
+        state_level_data = pd.concat([state_level_data, total_row], ignore_index=True)
 
-                total_district_count = districts_count['district_count'].sum()
+        return state_level_data
 
-                total_row = pd.DataFrame({
-                    'delivery_state_code': ['TT'],
-                    'delivery_state': ['Total'],
-                    'district_count': [total_district_count]
-                })
+    def transform_top_card_data(self, current_df, previous_df=pd.DataFrame()):
+        previous_state_level_data = pd.DataFrame()
+        current_state_level_data = self.prepare_missing_data(current_df)
 
-                districts_count = pd.concat([districts_count, total_row], ignore_index=True)
-                top_cards_data = self.format_response_data(filtered_merged_df, previous_start_date, previous_end_date,
-                                                           districts_count, delta_required)
-                cache.set(cache_key, top_cards_data, constant.CACHE_EXPIRY)
-            else:
-                top_cards_data = data
+        # For previous date range
+        if not previous_df.empty:
+            previous_state_level_data = self.prepare_missing_data(previous_df, False)
+        return current_state_level_data, previous_state_level_data
+    
+    def fetch_top_card_data(self, params):
+        current_data = self.access_layer.fetch_district_level_order_summary(**params)
 
-            return JsonResponse(top_cards_data, safe=False)
+        delta_required = is_delta_required(params)
+        if delta_required:
+            previous_start_date, previous_end_date = get_previous_date_range(params)
+            params.update({'start_date': previous_start_date, 'end_date': previous_end_date})
+            previous_data = self.access_layer.fetch_district_level_order_summary(**params)
+        else:
+            previous_data = pd.DataFrame()
+        
+        current_data, previous_data = self.transform_top_card_data(
+            current_data, previous_data
+        )
+        previous_data = previous_data.drop(columns=['most_ordering_district']) if not previous_data.empty \
+            else current_data.drop(columns=['most_ordering_district'])
 
-        except Exception as e:
-            error_message = {'error': f"An error occurred: {str(e)}"}
-            return JsonResponse(error_message, status=200, safe=False)
+        return current_data, previous_data
 
-    def generate_cache_key(self, params):
-        cleaned_list = [params['domain_name'], params['start_date'], params['end_date'], params['state']]
-        cleaned_list = [element for element in cleaned_list if element not in [None, 'None']]
-        return "FetchTopCardDeltaData_Retail_B2B_$$$".join(cleaned_list)
-
-    def fetch_current_data(self, params):
-        return data_service.get_total_orders_summary(**params)
-
-    def get_previous_date_range(self, params):
-        original_start_date = params['start_date']
-        original_end_date = params['end_date']
-        previous_start_date, previous_end_date = shift_date_months(original_start_date, original_end_date)
-
-        return previous_start_date, previous_end_date
-
-    def fetch_previous_data(self, params):
-        return data_service.get_total_orders_summary_prev(**params)
-
-    def merge_data(self, current_data, previous_data):
-        current_data['delivery_state'] = current_data['delivery_state'].astype(str)
-        previous_data['delivery_state'] = previous_data['delivery_state'].astype(str)
-
-        return pd.merge(
+    def merge_and_clean_data(self, current_data, previous_data):
+        merged_data = pd.merge(
             current_data, previous_data,
             on='delivery_state', suffixes=('_current', '_previous'),
             how='outer', validate="many_to_many"
         )
+        return self.clean_and_prepare_data(merged_data)
 
     def clean_and_prepare_data(self, merged_df):
-        merged_df['most_ordering_district'] = merged_df['most_ordering_district'].fillna(constant.NO_DATA_MSG)
-        merged_df['delivery_state_code_current'] = merged_df['delivery_state_code_current'].fillna('TT')
-        merged_df['delivery_state'] = merged_df['delivery_state'].fillna('TOTAL')
-        merged_df = merged_df.fillna(0)
+        fill_values = {
+            'most_ordering_district': constant.NO_DATA_MSG,
+            'delivery_state_code_current': 'TT',
+            'delivery_state': 'TOTAL',
+            np.inf: 100, -np.inf: 100, np.nan: 0
+        }
+        merged_df = merged_df.fillna(fill_values)
+        
+        delta_columns = [
+            ('total_districts', 'district_count_delta'),
+            ('delivered_orders', 'orders_count_delta')
+        ]
+        for value, delta in delta_columns:
+            merged_df[delta] = np.where(
+                merged_df[f'{value}_previous'].astype(float) == 0,
+                0,
+                (merged_df[f'{value}_current'] - merged_df[f'{value}_previous']).astype(float)*100.0/
+                    merged_df[f'{value}_previous'].astype(float)
+            ).round(constant.ROUND_OFF_DIGITS)
+        
+        drop_columns = [
+            'delivered_orders_previous', 'total_districts_previous',
+            'delivery_state_code_previous'
+        ]
+        merged_df = merged_df.drop(columns=drop_columns).fillna(0)
+        return merged_df.copy()
 
-        merged_df['district_count_delta'] = np.round(
-            100 * safe_divide(merged_df['total_districts_current'] - merged_df['total_districts_previous'],
-                              merged_df['total_districts_previous']), round_off_offset
-        )
-        merged_df['orders_count_delta'] = np.round(
-            100 * safe_divide(merged_df['delivered_orders_current'] - merged_df['delivered_orders_previous'],
-                              merged_df['delivered_orders_previous']), round_off_offset
-        )
-        # merged_df['sellers_count_delta'] = np.round(
-        #     100 * safe_divide(merged_df['total_active_sellers_current'] - merged_df['total_active_sellers_previous'],
-        #                       merged_df['total_active_sellers_previous']), round_off_offset
-        # )
-
-        merged_df = merged_df.replace([np.inf, -np.inf], 100).replace([np.nan], 0).fillna(0)
-
-        return merged_df.drop(
-            ['delivered_orders_previous', 'total_districts_previous', 'total_active_sellers_previous',
-             'delivery_state_code_previous'], axis=1
-        )
-
-    def format_response_data(self, merged_df, previous_start_date, previous_end_date, district_count, delta_req=1):
+    def build_response_data(self, merged_df, params):
         top_card_data = {}
+        state_list = pd.DataFrame({
+            "delivery_state_code_current": constant.STATE_CODES.keys(),
+            "delivery_state": constant.STATE_CODES.values()
+        })
 
-        state_list = fetch_state_list()
-        state_list.loc[len(state_list.index)] = ['TT']
-        merged_df = pd.merge(state_list, merged_df, how='left', on='delivery_state_code_current', validate="many_to_many")
-        merged_df['most_ordering_district'] = merged_df['most_ordering_district'].fillna(constant.NO_DATA_MSG)
+        merged_df = pd.merge(state_list, merged_df, how='left', on=["delivery_state_code_current", "delivery_state"])
         merged_df = merged_df.fillna(0)
-        if delta_req:
-            for _, row in merged_df.iterrows():
-                state_code = row['delivery_state_code_current']
-                if state_code not in top_card_data:
-                    top_card_data[state_code] = [
-                        self.create_metric_data(
-                            int(row['delivered_orders_current']), 'Total Orders', row['orders_count_delta']
-                            
-                        ),
-                        self.create_metric_data(
-                            int(district_count[district_count['delivery_state_code'] == state_code]['district_count'].sum()),
-                            'Districts', 0
-                            
-                        ),
-                        # self.create_metric_data(
-                        #     int(row['total_active_sellers_current']), 'Sellers', row['sellers_count_delta']
-                            
-                        # ),
-                        self.create_max_orders_delivered_area_data(
-                            row['most_ordering_district'])
-                    ]
 
+        for _, row in merged_df.iterrows():
+            state_code = row['delivery_state_code_current']
+            top_card_data[state_code] = self.build_state_metrics(row)
+        return {
+            "prev_date_range": self.format_previous_date_range(params),
+            "tooltip_text": top_card_tooltip_text,
+            "top_card_data": top_card_data
+        }
+
+    def build_state_metrics(self, row):
+        metrics = [
+            self.create_metric_data(row['delivered_orders_current'], 'Total Orders', row.get('orders_count_delta', 0)),
+            self.create_metric_data(row['total_districts_current'], 'Districts', 0),
+            self.create_max_orders_delivered_area_data(row["most_ordering_district"])
+        ]
+        return metrics
+
+    def format_previous_date_range(self, params):
+        prev_start_date, prev_end_date = params.get('start_date'), params.get('end_date')
+        if prev_start_date and prev_end_date:
             date_format = '%b, %Y'
-            prev_start_date_str = datetime.strftime(datetime.strptime(previous_start_date, '%Y-%m-%d'), date_format)
-            prev_end_date_str = datetime.strftime(datetime.strptime(previous_end_date, '%Y-%m-%d'), date_format)
+            prev_start_date_str = datetime.strptime(prev_start_date, '%Y-%m-%d').strftime(date_format)
+            prev_end_date_str = datetime.strptime(prev_end_date, '%Y-%m-%d').strftime(date_format)
+            return f"Vs {prev_start_date_str}" if prev_start_date_str == prev_end_date_str else f"Vs {prev_start_date_str} - {prev_end_date_str}"
+        return " "
 
-            return {
-                "prev_date_range": f"Vs {prev_start_date_str}" if
-                prev_start_date_str == prev_end_date_str else
-                f"Vs {prev_start_date_str} - {prev_end_date_str}",
-                "tooltip_text": self.tooltip_text,
-                "top_card_data": top_card_data
-            }
-        else:
-
-            for _, row in merged_df.iterrows():
-                state_code = row['delivery_state_code_current']
-                if state_code not in top_card_data:
-                    top_card_data[state_code] = [
-                        self.create_metric_data(
-                            row['delivered_orders_current'], 'Total Orders', 0
-                        ),
-                        self.create_metric_data(
-                            district_count[district_count['delivery_state_code'] == state_code]['district_count'].sum(),
-                            'Districts', 0
-                        ),
-                        # self.create_metric_data(
-                        #     row['total_active_sellers_current'], 'Sellers', 0
-                        # ),
-                        self.create_max_orders_delivered_area_data(
-                            row['most_ordering_district'])
-                    ]
-
-            if previous_start_date is None or previous_end_date is None:
-                return {
-                    "prev_date_range": f"  ",
-                    "tooltip_text": self.tooltip_text,
-                    "top_card_data": top_card_data
-                }
-
-    def create_metric_data(self, count, heading, delta):
-        if heading == 'Sellers' and count <3:
-            return {
-                "type": 'max_state',
-                "heading": 'Sellers',
-                "mainText": 'No Data To Display'
-            }
-        else:
-            return {
-                "type": 'default',
-                "count": int(count),
-                "heading": heading,
-                "icon": 'trending_up' if delta >= 0 else 'trending_down',
-                "positive": bool(delta >= 0),
-                "percentageCount": float(delta),
-                "showVarience": bool(delta)
-            }
+    def create_metric_data(self, count, heading, delta, count_suffix=''):
+        return {
+            "type": 'default',
+            "count": f"{count}{count_suffix}" if count_suffix else count,
+            "heading": heading,
+            "icon": 'trending_up' if delta >= 0 else 'trending_down',
+            "positive": delta >= 0,
+            "percentageCount": float("{:.2f}".format(delta)),
+            "showVarience": bool(delta)
+        }
 
     def create_max_orders_delivered_area_data(self, most_ordering_district):
         return {
@@ -283,102 +178,45 @@ class FetchTopCardDeltaData(SummaryBaseDataAPI):
             "heading": 'records the highest order count',
             "mainText": str(most_ordering_district)
         }
+    
+    @action(detail=False, methods=['get'], url_path='map_data')
+    @decorator()
+    def get_map_data(self, request):
+        params = self.prepare_params(request)
+        df = self.access_layer.fetch_district_level_order_summary_with_seller_state_info(**params)
 
+        total_order_df = df.groupby(
+            ['delivery_state_code', 'delivery_state', 'delivery_district'], as_index=False
+        )['total_orders_in_district'].sum()
+        total_order_df.rename(columns={'total_orders_in_district': 'total_order'}, inplace=True)
 
+        total_order_df.fillna(0, inplace=True)
 
-class FetchMapStateWiseData(SummaryBaseDataAPI):
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
-        """
-        APIView BaseDataAPI FetchMapStateWiseData
-        """
-        params = self.extract_common_params(request)
-        params['domain_name'] = 'Retail'
-        p_d = [params['domain_name'], params['start_date'],
-               params['end_date'], params['state']]
-        cleaned_list = [element for element in p_d if element not in [None, 'None']]
+        state_level_agg = total_order_df.groupby(
+            ['delivery_state_code', 'delivery_state'], as_index=False
+        ).sum()
 
-        p_d = "FetchMapStateWiseData_Retail_B2B_$$$".join(cleaned_list)
+        state_level_agg['delivery_district'] = 'AGG'
 
-        resp_data = get_cached_data(p_d)
-        if resp_data is None:
-            data = data_service.get_cumulative_orders_statewise_summary(**params)
-            current_sellers = data_service.get_overall_active_sellers(**params)
+        final_df_with_agg = pd.concat([total_order_df, state_level_agg], ignore_index=True)
+        final_df_with_agg.sort_values(by=['delivery_state_code', 'delivery_district'], inplace=True)
 
-            current_sellers_renamed = current_sellers.rename(columns={'seller_state_code': 'delivery_state_code',
-                                                                      'seller_state': 'delivery_state'})
-            current_merged = data.merge(current_sellers_renamed,
-                                        on=['delivery_state_code', 'delivery_state'],
-                                        how='outer')
+        response_data = final_df_with_agg.to_dict(orient="records")
 
-            current_merged.fillna(0, inplace=True)
+        return response_data
 
-            json_data = self.map_state_wise_data_format(current_merged)
+    
+    @action(detail=False, methods=['get'], url_path='top_card_delta')
+    @decorator()
+    def get_top_card_delta(self, request):
+        params = self.prepare_params(request)
+        current_data, previous_data = self.fetch_top_card_data(params)
+        merged_data = self.merge_and_clean_data(current_data, previous_data)
 
-            cache.set(p_d, json_data, constant.CACHE_EXPIRY)
-        else:
-            json_data = resp_data
-        return JsonResponse(json_data, safe=False)
-
-
-class FetchMapStateData(SummaryBaseDataAPI):
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
-        """
-        APIView BaseDataAPI FetchMapStateData
-        """
-        params = self.extract_common_params(request)
-        params['domain_name'] = 'Retail'
-        p_d = [params['domain_name'], params['start_date'],
-               params['end_date'], params['state']]
-        cleaned_list = [element for element in p_d if element not in [None, 'None']]
-
-        p_d = "FetchMapStateData_Retail_B2B_$$$".join(cleaned_list)
-
-        resp_data = get_cached_data(p_d)
-        if resp_data is None:
-            data = data_service.get_cumulative_orders_statedata_summary(**params)
-            active_sellers_data_total = data_service.get_overall_active_sellers(**params)
-            data.fillna(0, inplace=True)
-
-            data['total_orders_delivered'] = pd.to_numeric(data['total_orders_delivered'], errors='coerce')
-            active_sellers_data_total['active_sellers_count'] = pd.to_numeric(
-                active_sellers_data_total['active_sellers_count'], errors='coerce')
-
-            formatted_data = self.map_state_data_format(data, active_sellers_data_total)
-            json_data = formatted_data
-
-            cache.set(p_d, json_data, constant.CACHE_EXPIRY)
-
-        else:
-            json_data = resp_data
-        return JsonResponse(json_data, safe=False)
-
-
-class FetchTopStatesOrders(SummaryBaseDataAPI):
-    """
-    API view for fetching the top states orders.
-    """
-
-    @exceptionAPI(ondcLogger)
-    def get(self, request, *args, **kwargs):
-        """
-        APIView BaseDataAPI FetchTopStatesOrders
-        """
-        params = self.extract_common_params(request)
-        params['domain_name'] = 'Retail'
-        params_list = [value for value in params.values() if value not in [None, 'None']]
-
-        p_d = "FetchTopStatesOrders_Retail_B2B_$$$".join(params_list)
-
-        data = get_cached_data(p_d)
-
-        if data is None:
-            data = data_service.get_Retail_B2B_top_states_orders(**params)
-            formatted_data = self.top_chart_format(data, chart_type='delivery_state')
-            cache.set(p_d, formatted_data, constant.CACHE_EXPIRY)
-        else:
-            formatted_data = data
-        return JsonResponse(formatted_data, safe=False)
-
+        top_cards_data = self.build_response_data(
+            merged_data, params
+        )
+        return top_cards_data
+    
+    
 

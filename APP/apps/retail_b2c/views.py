@@ -1,13 +1,10 @@
-from django.http import JsonResponse
-from django.core.cache import cache
 from rest_framework.decorators import action
-from rest_framework import status
-from functools import wraps
 import pandas as pd
 import numpy as np
 from datetime import datetime
 
-from apps.utils.helpers import get_cached_data, is_delta_required, get_previous_date_range
+from apps.utils.helpers import is_delta_required, get_previous_date_range
+from apps.utils.decorator import api_decorator as decorator
 from apps.utils import constant
 from apps.src.views import BaseViewSet
 from apps.src.database_utils.dal_retail_b2c import B2CDataAccessLayer
@@ -23,35 +20,6 @@ top_card_tooltip_text = {
     'No. of items per order': 'Average items per orders'
 }
 
-
-def decorator():
-    def wrapper(func):
-        @wraps(func)
-        def inner(*args, **kwargs):
-            func_name = func.__name__
-            class_name = None
-
-            if hasattr(func, '__qualname__'):  # For methods
-                class_name = func.__qualname__.split('.')[0]
-            if hasattr(func, '__self__') and func.__self__:
-                class_name = func.__self__.__class__.__name__
-
-            function_key = "$$$".join([func_name, args[1].query_params.urlencode()])
-
-            cached_data = get_cached_data(class_name) or {}
-
-            if function_key in cached_data:
-                response_data = cached_data[function_key]
-            else:
-                response_data = func(*args, **kwargs)
-                cached_data[function_key] = response_data
-
-                cache.set(class_name, cached_data, constant.CACHE_EXPIRY)
-
-            return JsonResponse(response_data, safe=False, status=status.HTTP_200_OK)
-
-        return inner
-    return wrapper
 
 
 class RetailB2CViewset(BaseViewSet):
