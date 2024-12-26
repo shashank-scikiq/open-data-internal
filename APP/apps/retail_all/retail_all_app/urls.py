@@ -3,7 +3,7 @@ from django.urls import include, path
 from . import views
 
 router = DefaultRouter()
-router.register(r'retail/overall', views.RetailViewset, basename='retail_b2c')
+router.register(r'retail/overall', views.RetailViewset, basename='retail_overall')
 
 urlpatterns = [
     path('api/', include(router.urls)),
