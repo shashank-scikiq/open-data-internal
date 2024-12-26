@@ -57,12 +57,12 @@ export class MapComponent implements OnInit, OnChanges {
   legendConfigData: any = {
     bubbleMaxData: 0,
     bubbleColorRange: ["RGBA( 0, 139, 139, 0.4)", "RGBA( 0, 139, 139, 0.8)"],
-    bubbleTitle: "% Search to confirm",
-    bubbleSuffixText: "%",
+    bubbleTitle: "",
+    bubbleSuffixText: "",
 
     chloroMaxData: 0,
     chloroColorRange: ["#F8F3C5", "#FFCD71", "#FF6F48"],
-    chloroTitle: "Search counts",
+    chloroTitle: "",
     chloroSuffixText: "",
   }
 
